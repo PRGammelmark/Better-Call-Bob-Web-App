@@ -1,0 +1,38 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Omnes;
+}
+
+#root {
+    min-height: 100vh;
+    height: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+ul li a:hover {
+    color: black!important;
+}
+
+ul li a.active {
+    color: #59bf1a!important;
+    transition: 0.2s ease;
+    padding-left: 5px;
+}
+
+.bold {
+    font-family: OmnesBold
+}
+
+@font-face {
+    font-family: Omnes;
+    src: url(./fonts/Omnes.ttf);
+}
+
+@font-face {
+    font-family: OmnesBold;
+    src: url(./fonts/OmnesBold.ttf);
+}

@@ -1,0 +1,26 @@
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 50px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px;
+    background: #fff;
+}
+
+header img {
+    width: clamp(100px, 10vw, 250px);
+}
+
+header ul {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+}
+
+header ul li {
+    list-style-type: none;
+    cursor: pointer;
+    font-size: clamp(1rem, 1.4vw, 1.6rem)
+}
+
