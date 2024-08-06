@@ -6,8 +6,8 @@ import Content from './components/Content'
 
 // pages
 import Overblik from './pages/Overblik'
-import AlleOpgaver from './pages/Alle_opgaver'
-import MineOpgaver from './pages/Mine_opgaver'
+import AlleOpgaver from './pages/AlleOpgaver'
+import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
 import Indstillinger from './pages/Indstillinger'
 

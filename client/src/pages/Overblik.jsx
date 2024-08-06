@@ -5,7 +5,7 @@ const Overblik = () => {
   return (
     <PageAnimation>
       <div>
-        <h1>Overblik</h1>
+        <h1 className='bold'>Overblik</h1>
       </div>
     </PageAnimation>
   )

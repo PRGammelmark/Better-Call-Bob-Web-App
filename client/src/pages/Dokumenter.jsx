@@ -5,7 +5,7 @@ const Dokumenter = () => {
   return (
     <PageAnimation>
       <div>
-        <h1>Dokumenter</h1>
+        <h1 className='bold'>Dokumenter</h1>
       </div>
     </PageAnimation>
   )

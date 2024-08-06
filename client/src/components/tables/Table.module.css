@@ -1,0 +1,84 @@
+.tabelHeader {
+    font-family: OmnesBold;
+}
+
+.opgaveListe h2 {
+    margin-top: 50px;
+}
+
+.opgaveTabel {
+    margin-top: 15px;
+    width: 100%;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #e7eae7;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.opgaveHeader {
+    background: #3c5a3f;
+}
+
+.opgaveHeader ul {
+    padding: 12px 15px;
+    max-width: 93%; /* This value accomodates for the button in the OpgaveBody taking up 7% of horisontal width */ 
+}
+
+.opgaveHeader ul, .opgaveBody ul {
+    display: flex;
+    gap: 10px;
+}
+
+.opgaveHeader ul li {
+    color: #fff;
+    list-style-type: none;
+    font-family: OmnesBold;
+    font-size: clamp(0.7rem, 1vw, 1rem);
+}
+
+.opgaveBody ul li {
+    list-style-type: none;
+    font-size: clamp(0.7rem, 1vw, 1rem);
+    display: flex;
+    align-items: center;
+}
+
+.opgaveListing {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+}
+
+.opgaveListing ul {
+    flex: 93%;
+}
+
+.opgaveListing::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 3%;
+    width: 94%;
+    height: 1px;
+    background: #3c5a3f30;
+}
+
+.opgaveListing:first-child::before {
+    height: 0px;
+}
+
+.button {
+    border-radius: 5px;
+    border: none;
+    background: #3c5a3f;
+    color: #fff;
+    padding: 4px 10px;
+    flex: 7%;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.button:hover {
+    background: #57bf23;
+}

@@ -1,0 +1,23 @@
+.openTasksHeader ul li:nth-child(1), .openTasksBody div ul li:nth-child(1) {
+    width: 6%;
+}
+
+.openTasksHeader ul li:nth-child(2), .openTasksBody div ul li:nth-child(2) {
+    width: 13%;
+}
+
+.openTasksHeader ul li:nth-child(3), .openTasksBody div ul li:nth-child(3) {
+    width: 11%;
+}
+
+.openTasksHeader ul li:nth-child(4), .openTasksBody div ul li:nth-child(4) {
+    width: 15%;
+}
+
+.openTasksHeader ul li:nth-child(5), .openTasksBody div ul li:nth-child(5) {
+    width: 25%;
+}
+
+.openTasksHeader ul li:nth-child(6), .openTasksBody div ul li:nth-child(6) {
+    width: 18%;
+}
