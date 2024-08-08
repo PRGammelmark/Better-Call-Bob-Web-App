@@ -68,7 +68,7 @@
     height: 0px;
 }
 
-.button {
+button.button {
     border-radius: 5px;
     border: none;
     background: #3c5a3f;
@@ -81,4 +81,10 @@
 
 .button:hover {
     background: #57bf23;
+}
+
+.link {
+    display: flex;
+    flex: 7%;
+    text-decoration: none;
 }

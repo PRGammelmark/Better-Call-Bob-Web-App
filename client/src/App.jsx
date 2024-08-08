@@ -10,6 +10,7 @@ import AlleOpgaver from './pages/AlleOpgaver'
 import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
 import Indstillinger from './pages/Indstillinger'
+import ÅbenOpgave from './pages/ÅbenOpgave'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -19,6 +20,7 @@ const router = createBrowserRouter(
       <Route path="mine-opgaver" element={<MineOpgaver />}/>
       <Route path="dokumenter" element={<Dokumenter />}/>
       <Route path="indstillinger" element={<Indstillinger />}/>
+      <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
     </Route>
   )
 )
