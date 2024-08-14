@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import ContentCSS from './Content.module.css'
+import FloatingActionButton from './FloatingActionButton'
 
 const Sidebar = () => {
   return (
@@ -17,6 +18,7 @@ const Sidebar = () => {
       <div className={ContentCSS.content}>
         <Outlet />
       </div>
+      <FloatingActionButton />
     </div>
   )
 }

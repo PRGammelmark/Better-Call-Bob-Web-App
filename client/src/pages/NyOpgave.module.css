@@ -1,0 +1,118 @@
+.headingSpan {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 50px;
+}
+
+.overskrift {
+    font-family: OmnesBold;
+}
+
+.form {
+    max-width: 800px;
+}
+
+.input {
+    width: 100%;
+    border-radius: 15px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    min-height: 36px;
+}
+
+.input:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.label {
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    margin-bottom: -15px;
+    margin-left: 10px;
+}
+
+.opgavebeskrivelse {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 70px;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.opgavebeskrivelse:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.kolonner {
+    display: flex;
+    gap: 50px;
+}
+
+.kolonneEt {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.kolonneTo {
+    display: flex;
+    width: 50%;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.checkboxContainer {
+    display: flex;
+    align-items: center;
+    margin-left: 15px;
+}
+
+.checkboxContainer .label {
+    margin-bottom: 0;
+    font-family: Omnes;
+}
+
+.checkbox {
+    width: 16px;
+    height: 16px;
+}
+
+.submitButton {
+    min-height: 36px;
+    border-radius: 15px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.submitButton:hover {
+    background: rgba(89, 191, 26, 1);
+}
+
+.submitMeddelelser {
+    margin-top: 50px;
+}
+
+.succesButtonsDiv {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}

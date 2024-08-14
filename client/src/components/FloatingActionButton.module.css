@@ -1,0 +1,50 @@
+.floatingActionButton {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    position: absolute;
+    bottom: 100px;
+    right: 25px;
+    z-index: 10;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.floatingActionButton:hover {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+}
+
+.addNewIcon {
+    height: 30px;
+    width: 30px;
+    transition: 0.3s ease;
+    user-select: none;
+}
+
+.addTaskButton {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    position: absolute;
+    bottom: 0px;
+    z-index: 9;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addNewTaskIcon {
+    height: 20px;
+    width: 20px;
+    transition: 0.3s ease;
+    user-select: none;
+}
