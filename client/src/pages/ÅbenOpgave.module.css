@@ -1,0 +1,115 @@
+.adresseHeading {
+    font-family: OmnesBold;
+}
+
+.kortLink {
+    display: block;
+    margin-top: 5px;
+    text-decoration: none;
+    color: #59bf1a;
+}
+
+.tilbageKnap {
+    height: 1.6rem;
+    width: 1.6rem;
+    margin-top: -5px;
+    cursor: pointer;
+}
+
+.tilbageOpgaveSektion {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.opgaveContainer {
+    margin-top: 30px;
+    max-width: 500px;
+}
+
+.label {
+    font-family: OmnesBold;
+    display: block;
+    font-size: 0.9rem;
+    margin-left: 10px;
+    margin-bottom: 5px;
+}
+
+.prefix {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+}
+
+.postfix {
+    font-family: Omnes;
+    font-size: 0.9rem;
+}
+
+.opgavebeskrivelse {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 70px;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.opgavebeskrivelse:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.opgavestatus {
+    width: 100%;
+    border-radius: 15px;
+    padding: 4px 15px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    appearance: none;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+}
+
+.opgavestatus:focus {
+    outline: none;
+}
+
+.kolonner {
+    display: flex;
+    gap: 50px;
+}
+
+.oprettetUdførtContainer {
+    display: flex;
+    gap: 30px;
+}
+
+.kundeinformationer {
+    padding-top: 20px;
+    margin-top: 20px;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-top: 1px solid #1f1f1f30;
+    border-bottom: 1px solid #1f1f1f30;
+}
+
+.marginTop10 {
+    margin-top: 10px;
+}
+
+.link {
+    transition: 0.2s ease;
+}
+
+.link:hover {
+    color: #59bf1a;
+}

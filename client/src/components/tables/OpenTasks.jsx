@@ -39,7 +39,7 @@ const OpenTasks = () => {
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
-                      <li>#{opgave._id.slice(0,3) + "..."}</li>
+                      <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                       <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
                       <li>{opgave.status}</li>
                       <li>{opgave.navn}</li>
