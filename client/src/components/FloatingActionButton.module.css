@@ -26,12 +26,13 @@
     user-select: none;
 }
 
-.addTaskButton {
+.addNewTaskButton {
     height: 60px;
     width: 60px;
     border-radius: 30px;
     position: absolute;
-    bottom: 0px;
+    bottom: 100px;
+    right: 25px;
     z-index: 9;
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
@@ -42,9 +43,31 @@
     justify-content: center;
 }
 
-.addNewTaskIcon {
-    height: 20px;
-    width: 20px;
+.addNewTaskButton:hover {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+}
+
+.addNewUserButton {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    position: absolute;
+    bottom: 100px;
+    right: 25px;
+    z-index: 9;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    cursor: pointer;
     transition: 0.3s ease;
-    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addNewUserButton:hover {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+}
+
+.icons {
+    transform: scale(1.5)
 }
