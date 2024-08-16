@@ -10,12 +10,14 @@ const NyBruger = () => {
 // State managers
 const [navn, setNavn] = useState("");
 const [adresse, setAdresse] = useState("");
+const [titel, setTitel] = useState("");
 const [password, setPassword] = useState("");
 const [telefon, setTelefon] = useState("");
 const [email, setEmail] = useState("");
+const [isAdmin, setIsAdmin] = useState(false);
 // const [loading, setLoading] = useState(false);
 const [brugerID, setBrugerID] = useState("");
-const { signup, error, loading, succes, setSucces} = useSignup();
+const { signup, error, loading, succes, setSucces } = useSignup();
 
 // const submitOpgave = async (e) => {
 //     e.preventDefault();
@@ -54,14 +56,16 @@ const { signup, error, loading, succes, setSucces} = useSignup();
 const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await signup(navn, adresse, telefon, email, password)
+    await signup(navn, adresse, titel, telefon, email, password, isAdmin)
 }
 
 function startForfra(){
     setNavn("");
     setTelefon("");
     setAdresse("");
+    setIsAdmin(false);
     setEmail("");
+    setTitel("");
     setPassword("");
     setSucces(false);
     setBrugerID("");
@@ -99,9 +103,9 @@ return (
                     <input type="text" name="navn" placeholder="Navn" className={styles.input} onChange={(e) => setNavn(e.target.value)} value={navn} required/>
                     <label className={styles.label}>Adresse</label>
                     <input type="text" name="adresse" placeholder="Adresse" className={styles.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
-                    <label className={styles.label}>Kodeord</label>
-                    <input type="text" name="password" className={styles.input} onChange={(e) => setPassword(e.target.value)} value={password} required/>
-                    <button type="button" className={styles.button} onClick={autoKode}>Autogenerér kodeord</button>
+                    <label className={styles.label}>Titel</label>
+                    <input type="text" name="titel" className={styles.input} onChange={(e) => setTitel(e.target.value)} value={titel} />
+                
                     
                 </div>
                 <div className={styles.kolonneTo}>
@@ -109,6 +113,13 @@ return (
                     <input type="tel" name="telefon" className={styles.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} required/>
                     <label className={styles.label}>Email</label>
                     <input type="email" name="email" className={styles.input} onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                    <label className={styles.label}>Kodeord</label>
+                    <input type="text" name="password" className={styles.input} onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                    <button type="button" className={styles.button} onClick={autoKode}>Autogenerér kodeord</button>
+                    <div className={styles.checkboxContainer}>
+                        <input type="checkbox" name="isAdmin" className={styles.checkbox} onChange={(e) => setIsAdmin(e.target.checked)} checked={isAdmin}/>  
+                        <label className={styles.label}>Giv administrator-rettigheder</label>
+                    </div>
                 </div>
             </div>
             <div className={styles.submitMeddelelser}>

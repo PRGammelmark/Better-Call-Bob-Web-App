@@ -1,7 +1,13 @@
 import express from "express"
-import { loginBruger, signupBruger } from '../controllers/brugerController.js'
+import { loginBruger, signupBruger, getBrugere, getBruger } from '../controllers/brugerController.js'
 
 const router = express.Router();
+
+// GET alle brugere
+router.get("/", getBrugere)
+
+// GET en enkelt bruger
+router.get('/:id', getBruger)
 
 // login route
 router.post('/login', loginBruger)

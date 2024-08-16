@@ -9,6 +9,10 @@ const brugerSchema = new Schema({
         type: String,
         required: true
     },
+    titel: {
+        type: String,
+        required: false
+    },
     telefon: {
         type: Number,
         required: false
@@ -25,11 +29,15 @@ const brugerSchema = new Schema({
     password: {
         type: String,
         required: true
+    },
+    isAdmin: {
+        type: Boolean,
+        default: false,
     }
 })
 
 // static signup method
-brugerSchema.statics.signup = async function (navn, adresse, telefon, email, password) {
+brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, email, password, isAdmin ) {
     
     // validation
     if (!email || !password) {
@@ -54,7 +62,7 @@ brugerSchema.statics.signup = async function (navn, adresse, telefon, email, pas
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
-    const bruger = await this.create({ navn, telefon, adresse, email, password: hash })
+    const bruger = await this.create({ navn, telefon, adresse, titel, email, password: hash, isAdmin })
 
     return bruger
 }

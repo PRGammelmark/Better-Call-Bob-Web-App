@@ -1,0 +1,52 @@
+.adminDiv, .medarbejdereDiv {
+    margin-top: 50px;
+    width: 100%;
+    padding: 20px;
+}
+
+.subheading {
+    margin-bottom: 15px;
+    font-family: OmnesBold;
+    display: block;
+    width: 300px;
+    border-bottom: 1px solid #33333330;
+    padding-bottom: 5px;
+}
+
+.cardHolder {
+    display: flex;
+    gap: 20px;
+}
+
+.card {
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    padding: 10px 16px;
+}
+
+.name {
+    font-family: OmnesBold;
+    font-size: 1.1rem;
+}
+
+.contactInfo {
+    font-size: 0.9rem;
+}
+
+.italics {
+    font-style: italic;
+    display: block;
+    font-size: 0.7rem;
+    padding-bottom: 5px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.links {
+    transition: 0.2s ease;
+}
+
+.links:hover {
+    color: #59bf1a;
+}

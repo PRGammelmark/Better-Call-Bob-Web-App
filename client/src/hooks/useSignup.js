@@ -7,14 +7,14 @@ export const useSignup = () => {
     const [succes, setSucces] = useState(false);
     // const { dispatch } = useAuthContext();
 
-    const signup = async (navn, adresse, telefon, email, password) => {
+    const signup = async (navn, adresse, titel, telefon, email, password, isAdmin) => {
         setLoading(true)
         setError(null)
 
         const response = await fetch('http://localhost:3000/api/brugere/signup', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ navn, adresse, telefon, email, password })
+            body: JSON.stringify({ navn, adresse, titel, telefon, email, password, isAdmin })
         })
 
         const json = await response.json();
