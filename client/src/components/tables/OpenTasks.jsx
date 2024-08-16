@@ -2,14 +2,20 @@ import TableCSS from './Table.module.css'
 import OpenTasksCSS from './OpenTasks.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import { useAuthContext } from "../../hooks/useAuthContext.js"
 
 const OpenTasks = () => {
 
   const [opgaver, setOpgaver] = useState(null)
+  const {user} = useAuthContext()
 
   useEffect(()=>{
     const fetchOpgaver = async () => {
-      const response = await fetch('http://localhost:3000/api/opgaver')
+      const response = await fetch('http://localhost:3000/api/opgaver', {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
       const json = await response.json();
 
       if (response.ok) {
@@ -17,8 +23,10 @@ const OpenTasks = () => {
       }
     }
 
-    fetchOpgaver()
-  }, [])
+    if (user) {
+      fetchOpgaver()
+    }
+  }, [user])
 
   return (
         <div className={TableCSS.opgaveListe}>
@@ -44,7 +52,7 @@ const OpenTasks = () => {
                       <li>{opgave.status}</li>
                       <li>{opgave.navn}</li>
                       <li>{opgave.adresse}</li>
-                      <li>{opgave.ansvarlig ? opgave.ansvarlig : "Ikke uddelegeret"}</li>
+                      <li>{opgave.ansvarlig.length > 0 ? opgave.ansvarlig : "Ikke uddelegeret"}</li>
                     </ul>
                     <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
                       <button className={TableCSS.button}>Åbn</button>

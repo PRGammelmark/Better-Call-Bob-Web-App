@@ -1,7 +1,10 @@
 import express from "express"
 import { getOpgaver, createOpgave, getOpgave, deleteOpgave, updateOpgave } from "../controllers/opgaveController.js"
+import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
+
+router.use(requireAuth) 
 
 // GET alle opgaver
 router.get("/", getOpgaver)

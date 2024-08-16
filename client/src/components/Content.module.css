@@ -49,4 +49,7 @@
 .content {
     padding: 20px 30px;
     flex: 2;
+    padding-bottom: 140px;
+    max-height: calc(100vh - 70px - 65px);
+    overflow: scroll;
 }

@@ -1,26 +1,36 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import ContentCSS from './Content.module.css'
 import FloatingActionButton from './FloatingActionButton'
+import Login from '../pages/Login'
+import { useAuthContext } from '../hooks/useAuthContext'
+import { Navigate } from 'react-router-dom'
 
-const Sidebar = () => {
+const Content = () => {
+
+  const { user } = useAuthContext();
+
   return (
-    <div className={ContentCSS.main}>
-      <div className={ContentCSS.sidebar}>
-        <ul>
-          <li><NavLink to="/">Overblik</NavLink></li>
-          <li><NavLink to="alle-opgaver">Alle opgaver</NavLink></li>
-          <li><NavLink to="mine-opgaver">Mine opgaver</NavLink></li>
-          <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
-          <li><NavLink to="indstillinger">Indstillinger</NavLink></li>
-        </ul>
-      </div>
+    <>
+      {/* {!user ? <Login /> :  */}
+        <div className={ContentCSS.main}>
+          <div className={ContentCSS.sidebar}>
+            <ul>
+              <li><NavLink to="/">Overblik</NavLink></li>
+              <li><NavLink to="alle-opgaver">Alle opgaver</NavLink></li>
+              <li><NavLink to="mine-opgaver">Mine opgaver</NavLink></li>
+              <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
+              <li><NavLink to="indstillinger">Indstillinger</NavLink></li>
+            </ul>
+          </div>
 
-      <div className={ContentCSS.content}>
-        <Outlet />
-      </div>
-      <FloatingActionButton />
-    </div>
+          <div className={ContentCSS.content}>
+            <Outlet />
+          </div>
+          <FloatingActionButton />
+        </div>
+      {/* } */}
+    </>
   )
 }
 
-export default Sidebar
+export default Content

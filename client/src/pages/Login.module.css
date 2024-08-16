@@ -1,0 +1,58 @@
+.loginContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10vh;
+}
+
+.heading {
+    font-family: OmnesBold;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.label {
+    font-family: OmnesBold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.input {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.input:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.button {
+    min-height: 36px;
+    border-radius: 15px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.button:hover {
+    background: rgba(89, 191, 26, 1);
+}
+
+.loginForm {
+    padding-left: 10px;
+    padding-right: 10px;
+}

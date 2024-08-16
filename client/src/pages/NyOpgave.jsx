@@ -1,24 +1,29 @@
 import React from 'react'
 import NyOpgaveCSS from "./NyOpgave.module.css"
 import PageAnimation from '../components/PageAnimation'
-import AddNewTaskImg from '../assets/add-task.svg'
 import { useNavigate } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useAuthContext } from '../hooks/useAuthContext'
 
 const NyOpgave = () => {
+
+    const {user} = useAuthContext()
+    if (!user) {
+        return "Du skal være logget ind."
+    }
 
     // State managers
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("");
     const [navn, setNavn] = useState("");
     const [adresse, setAdresse] = useState("");
     const [onsketDato, setOnsketDato] = useState("");
-    const [harStige, setHarStige] = useState(false);
+    const [harStige, setHarStige] = useState(true);
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState("");
     const [fremskridt, setFremskridt] = useState("");
-    const [ansvarlig, setAnsvarlig] = useState("");
     const [error, setError] = useState(null);
+    const [ansvarlig, setAnsvarlig] = useState("");
     const [succes, setSucces] = useState(false);
     const [loading, setLoading] = useState(false);
     const [opgaveID, setOpgaveID] = useState("");
@@ -41,7 +46,8 @@ const NyOpgave = () => {
             method: 'POST',
             body: JSON.stringify(opgave),
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${user.token}`
             }
         })
 
@@ -81,7 +87,7 @@ const NyOpgave = () => {
   return (
     <PageAnimation>
         <div>
-            <span className={NyOpgaveCSS.headingSpan}><img src={AddNewTaskImg} alt="" /><h1 className={NyOpgaveCSS.overskrift}>Opret ny opgave</h1></span>
+            <span className={NyOpgaveCSS.headingSpan}><h1 className={NyOpgaveCSS.overskrift}>📋 Opret ny opgave</h1></span>
             <form onSubmit={submitOpgave} className={NyOpgaveCSS.form}>
                 <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus="autofocus" name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
                 <div className={NyOpgaveCSS.kolonner}>
@@ -93,7 +99,7 @@ const NyOpgave = () => {
                         <label className={NyOpgaveCSS.label}>Hvornår ønskes opgaven udført?</label>
                         <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} required/>
                         <div className={NyOpgaveCSS.checkboxContainer}>
-                            <input type="checkbox" name="harStige" className={NyOpgaveCSS.checkbox} onChange={(e) => setHarStige(e.target.value)} value={harStige}/>  
+                            <input type="checkbox" name="harStige" className={NyOpgaveCSS.checkbox} onChange={(e) => setHarStige(e.target.value)} checked={harStige}/>  
                             <label className={NyOpgaveCSS.label}>Har kunden en stige?</label>
                         </div>
                         

@@ -41,10 +41,10 @@ const opgaverSchema = new Schema({
         required: true,
         default: "Åben opgave"
     },
-    ansvarlig: {
-        type: Number,
+    ansvarlig: [{
+        type: String,
         required: false
-    }
+    }]
 }, { timestamps: true })
 
 const model = mongoose.model('Opgave', opgaverSchema);

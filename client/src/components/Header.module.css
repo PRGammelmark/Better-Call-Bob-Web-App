@@ -2,14 +2,16 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 14px 50px;
+    padding: 0px 50px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.15);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px;
     background: #fff;
+    min-height: 80px;
+    max-height: 80px;
 }
 
 header img {
-    width: clamp(100px, 10vw, 250px);
+    width: clamp(100px, 10vw, 200px);
 }
 
 header ul {

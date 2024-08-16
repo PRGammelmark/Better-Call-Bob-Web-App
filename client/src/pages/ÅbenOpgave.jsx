@@ -5,8 +5,16 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import BackIcon from "../assets/back.svg"
 import axios from "axios"
+import { useAuthContext } from '../hooks/useAuthContext'
 
 const ÅbenOpgave = () => {
+    const {user} = useAuthContext();
+    
+    if (!user) {
+        
+        return
+    }
+    
     const { opgaveID } = useParams();
     const navigate = useNavigate();
 
@@ -24,7 +32,11 @@ const ÅbenOpgave = () => {
     const [timer, setTimer] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/opgaver/${opgaveID}`)
+        axios.get(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
         .then(res => {
             setOpgave(res.data);
             setOpgaveBeskrivelse(res.data.opgaveBeskrivelse);
@@ -65,6 +77,10 @@ const ÅbenOpgave = () => {
     function indsendOpgavebeskrivelse (x) {    
         axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
             opgaveBeskrivelse: x
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
         })
         .then(res => console.log(res.data))
         .catch(error => console.log(error))
@@ -78,6 +94,10 @@ const ÅbenOpgave = () => {
         
         axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
             status: syncOpgavestatus
+        },{
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
         })
         .then(res => console.log(res.data))
         .catch(error => console.log(error))
