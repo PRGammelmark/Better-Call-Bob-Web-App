@@ -53,3 +53,12 @@
     max-height: calc(100vh - 70px - 65px);
     overflow: scroll;
 }
+
+.velkomst {
+    margin-bottom: 30px;
+}
+
+.velkomstBesked {
+    font-family: OmnesBold;
+    font-size: 1.2rem;
+}

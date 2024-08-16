@@ -15,6 +15,7 @@ import ÅbenOpgave from './pages/ÅbenOpgave'
 import NyOpgave from './pages/NyOpgave'
 import NyBruger from './pages/NyBruger'
 import Login from './pages/Login'
+import Team from './pages/Team'
 
 // const router = createBrowserRouter(
 //   createRoutesFromElements(
@@ -42,6 +43,7 @@ function App() {
         <Route index element={<Overblik />}/>
         <Route path="alle-opgaver" element={<AlleOpgaver />}/>
         <Route path="mine-opgaver" element={<MineOpgaver />}/>
+        <Route path="team" element={<Team />}/>
         <Route path="dokumenter" element={<Dokumenter />}/>
         <Route path="indstillinger" element={<Indstillinger />}/>
         <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
