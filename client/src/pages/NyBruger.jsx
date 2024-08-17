@@ -105,7 +105,10 @@ return (
                     <input type="text" name="adresse" placeholder="Adresse" className={styles.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
                     <label className={styles.label}>Titel</label>
                     <input type="text" name="titel" className={styles.input} onChange={(e) => setTitel(e.target.value)} value={titel} />
-                
+                    <div className={styles.checkboxContainer}>
+                        <input type="checkbox" name="isAdmin" className={styles.checkbox} onChange={(e) => setIsAdmin(e.target.checked)} checked={isAdmin}/>  
+                        <label className={styles.label}>Giv administrator-rettigheder</label>
+                    </div>
                     
                 </div>
                 <div className={styles.kolonneTo}>
@@ -116,10 +119,6 @@ return (
                     <label className={styles.label}>Kodeord</label>
                     <input type="text" name="password" className={styles.input} onChange={(e) => setPassword(e.target.value)} value={password} required/>
                     <button type="button" className={styles.button} onClick={autoKode}>Autogenerér kodeord</button>
-                    <div className={styles.checkboxContainer}>
-                        <input type="checkbox" name="isAdmin" className={styles.checkbox} onChange={(e) => setIsAdmin(e.target.checked)} checked={isAdmin}/>  
-                        <label className={styles.label}>Giv administrator-rettigheder</label>
-                    </div>
                 </div>
             </div>
             <div className={styles.submitMeddelelser}>
