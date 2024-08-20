@@ -42,7 +42,7 @@ const opgaverSchema = new Schema({
         default: "Åben opgave"
     },
     ansvarlig: [{
-        type: String,
+        type: Object,
         required: false
     }]
 }, { timestamps: true })

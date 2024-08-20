@@ -113,3 +113,312 @@
 .link:hover {
     color: #59bf1a;
 }
+
+.uddelegering {
+    display: flex;
+    gap: 50px;
+    justify-content: start;
+    margin-bottom: 30px;
+}
+
+.praktisk {
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #1f1f1f30;
+}
+
+.ansvarshavendeListe {
+    width: 50%;
+}
+
+.tildelAnsvarligeForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.ansvarlige {
+    margin-top: 20px;
+}
+
+.tildelAnsvarlige {
+    width: 100%;
+    border-radius: 15px;
+    padding: 4px 15px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    appearance: none;
+    text-align: center;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+}
+
+.fjernAnsvarlig {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: none;
+    margin-left: 10px;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+}
+
+.aktuellePosteringer {
+    margin-top: 20px;
+    display: flex;
+    gap: 25px 10px;
+    flex-wrap: wrap;
+}
+
+.posteringCard {
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    padding: 10px 20px;
+    border-radius: 15px;
+    position: relative;
+    min-width: 240px;
+}
+
+.posteringDato {
+    font-size: 0.75rem;
+    color: #33333390;
+}
+
+.posteringBruger {
+    font-size: 1.2rem;
+    font-family: OmnesBold;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.posteringRække {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    gap: 25px;
+}
+
+.totalRække {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #1f1f1f30;
+}
+
+.totalRækkeBeskrivelse {
+    font-family: OmnesBold;
+}
+
+.totalRækkeResultat {
+    font-family: OmnesBold;
+}
+
+.paperclip {
+    position: absolute;
+    top: -15px;
+    right: 22px;
+    fill: green;
+}
+
+.tilføjPosteringButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    margin-top: 20px;
+    background: #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease
+}
+
+.tilføjPosteringButton:hover {
+    background: #59bf1a;
+}
+
+.modal {
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    padding: 20px 40px;
+    position: fixed;
+    background: white;
+    animation: fade-in 0.35s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    border-radius: 20px;
+    z-index: 30;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-10%); /* Slightly offset for a subtle movement effect */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes fade-in-no-movement {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 29;
+    animation: fade-in-no-movement 0.20s ease;
+}
+
+.lukModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    margin-left: 10px;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+}
+
+.modalHeading {
+    font-family: OmnesBold;
+    margin-bottom: 20px;
+}
+
+.modalHeading3 {
+    font-family: OmnesBold;
+    margin-bottom: 10px;
+}
+
+.udlæg {
+    padding: 0px;
+    margin-bottom: 20px;
+}
+
+.udlægInput {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 0px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.udlægInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.listeOverUdlæg {
+    border-left: 1px solid rgba(0, 0, 0, 0.3);
+    padding-left: 10px;
+    margin-left: 5px;
+}
+
+.enkeltUdlæg {
+    display: flex;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+.udlægBeskrivelse {
+    width: 60%;
+}
+
+.udlægBeløb {
+    width: 25%;
+}
+
+.modalForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.modalInput {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.modalInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.modalKolonner {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.tilføjUdlægButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    background: #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease
+}
+
+.tilføjUdlægButton:hover {
+    background: #59bf1a;
+}
+
+.registrerPosteringButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    background: #3c5a3f;
+    cursor: pointer;
+    font-family: OmnesBold;
+    color: #fff;
+    transition: 0.2s ease
+}
+
+.sletUdlægButton {
+    width: 20px;
+    height: 20px;
+    border-radius: 30px;
+    border: none;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+    margin-top: 26px;
+}

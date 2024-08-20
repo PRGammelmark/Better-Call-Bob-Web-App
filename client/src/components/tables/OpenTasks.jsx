@@ -52,7 +52,7 @@ const OpenTasks = () => {
                       <li>{opgave.status}</li>
                       <li>{opgave.navn}</li>
                       <li>{opgave.adresse}</li>
-                      <li>{opgave.ansvarlig.length > 0 ? opgave.ansvarlig : "Ikke uddelegeret"}</li>
+                      <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li> 
                     </ul>
                     <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
                       <button className={TableCSS.button}>Åbn</button>

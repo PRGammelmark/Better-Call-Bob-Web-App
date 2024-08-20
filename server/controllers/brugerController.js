@@ -28,6 +28,25 @@ const getBruger = async (req,res) => {
     res.status(200).json(bruger)
 }
 
+// // OPDATER en bruger
+// const opdaterBruger = async (req,res) => {
+//     const { id } = req.params
+
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     const opgave = await Opgave.findOneAndUpdate({_id: id}, {
+//         ...req.body
+//     })
+
+//     if(!opgave) {
+//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     res.status(200).json(opgave)
+// }
+
 // login bruger
 
 const loginBruger = async (req,res) => {
@@ -39,7 +58,7 @@ const loginBruger = async (req,res) => {
         // create token
         const token = createToken(bruger._id)
 
-        res.status(200).json({email, navn: bruger.navn, isAdmin: bruger.isAdmin, token})
+        res.status(200).json({id: bruger._id, email, navn: bruger.navn, isAdmin: bruger.isAdmin, token})
     } catch (error) {
         res.status(400).json({error: error.message})
     }

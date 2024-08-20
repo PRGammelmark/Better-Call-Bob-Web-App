@@ -4,6 +4,7 @@ import PageAnimation from '../components/PageAnimation'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import BackIcon from "../assets/back.svg"
+import Paperclip from "../assets/paperclip.svg"
 import axios from "axios"
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -11,11 +12,11 @@ const ÅbenOpgave = () => {
     const {user} = useAuthContext();
     
     if (!user) {
-        
         return
     }
     
     const { opgaveID } = useParams();
+    const userID = user.id;
     const navigate = useNavigate();
 
     // state managers
@@ -23,6 +24,8 @@ const ÅbenOpgave = () => {
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
     const [status, setStatus] = useState("");
+    const [ledigeAnsvarlige, setLedigeAnsvarlige] = useState(null);
+    const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(null);
     const [navn, setNavn] = useState("");
     const [adresse, setAdresse] = useState("");
     const [onsketDato, setOnsketDato] = useState("");
@@ -30,6 +33,85 @@ const ÅbenOpgave = () => {
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
     const [timer, setTimer] = useState(null);
+    const [openModal, setOpenModal] = useState(false);
+    const [outlays, setOutlays] = useState([]);
+    const [øvrige, setØvrige] = useState([]);
+    const [handymantimer, setHandymantimer] = useState("");
+    const [tømrertimer, setTømrertimer] = useState("");
+    const [posteringDato, setPosteringDato] = useState("");
+    const [posteringer, setPosteringer] = useState("");
+
+    const handleOutlayChange = (index, event) => {
+        const newOutlays = [...outlays];
+        newOutlays[index][event.target.name] = event.target.value;
+        setOutlays(newOutlays);
+    }
+
+    const handleØvrigeChange = (index, event) => {
+        const newØvrige = [...øvrige];
+        newØvrige[index][event.target.name] = event.target.value;
+        setØvrige(newØvrige);
+    }
+
+    const addOutlay = (e) => {
+        e.preventDefault();
+        setOutlays([...outlays, { description: '', amount: '' }]);
+    }
+
+    const addØvrig = (e) => {
+        e.preventDefault();
+        setØvrige([...øvrige, { description: '', amount: '' }]);
+    }
+
+    const deleteOutlay = (index) => {
+        const newOutlays = [...outlays];
+        newOutlays.splice(index, 1);
+        setOutlays(newOutlays);
+    };
+
+    const deleteØvrig = (index) => {
+        const newØvrige = [...øvrige];
+        newØvrige.splice(index, 1);
+        setØvrige(newØvrige);
+    };
+
+    function tilføjPostering (e) {
+
+        // console.log("Bruger: " + user.id)
+        // console.log("Opgave: " + opgaveID)
+        // console.log("Form data ...")
+        // console.log("Dato: " + posteringDato)
+        // console.log("Handymantimer: " + handymantimer)
+        // console.log("Tømrertimer: " + tømrertimer)
+        // console.log("Udlæg: " + JSON.stringify(outlays))
+        // console.log("Øvrige: " + JSON.stringify(øvrige))
+
+
+        const postering = {
+            dato: posteringDato,
+            handymanTimer: handymantimer,
+            tømrerTimer: tømrertimer,
+            udlæg: outlays,
+            øvrigt: øvrige,
+            opgaveID: opgaveID,
+            brugerID: userID
+        }
+
+        axios.post('http://localhost:3000/api/posteringer/', postering, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setOpenModal(false);
+            setPosteringDato("");
+            setHandymantimer("");
+            setTømrertimer("");
+            setOutlays("");
+            setØvrige("");
+        })
+        .catch(error => console.log(error))
+    }
 
     useEffect(() => {
         axios.get(`http://localhost:3000/api/opgaver/${opgaveID}`, {
@@ -42,6 +124,7 @@ const ÅbenOpgave = () => {
             setOpgaveBeskrivelse(res.data.opgaveBeskrivelse);
             setStatus(res.data.status);
             setNavn(res.data.navn);
+            setNuværendeAnsvarlige(res.data.ansvarlig)
             setAdresse(res.data.adresse);
             setHarStige(res.data.harStige);
             setTelefon(res.data.telefon);
@@ -50,6 +133,36 @@ const ÅbenOpgave = () => {
         })
         .catch(error => console.log(error))
     }, [])
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/brugere', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setLedigeAnsvarlige(res.data)
+        })
+        .catch(error => console.log(error))
+    }, [])
+
+    const getBrugerName = (brugerID) => {
+        const bruger = ledigeAnsvarlige.find(user => user._id === brugerID);
+        return bruger ? bruger.navn : 'Unknown User';
+    };
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/posteringer', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            const filteredPosteringer = res.data.filter(postering => postering.opgaveID === opgaveID);
+            setPosteringer(filteredPosteringer);
+        })
+        .catch(error => console.log(error))
+    }, [openModal])
 
     if (loading) {
         return (
@@ -108,6 +221,55 @@ const ÅbenOpgave = () => {
         color: status === "accepteret" ? 'rgba(89, 191, 26, 1)' : status === "afventerSvar" ? 'rgba(179, 116, 0, 0.85)' : status === "afvist" ? 'rgba(193, 26, 57, 1)' : '#333333'
     }
 
+    function tildelAnsvar(e){
+        e.preventDefault();
+
+        const nyAnsvarligId = e.target.value;
+        const nyAnsvarlig = ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === nyAnsvarligId);
+    
+        if (nyAnsvarlig) {
+            
+            const isAlreadyResponsible = nuværendeAnsvarlige.some(ansvarlig => ansvarlig._id === nyAnsvarlig._id);
+        
+            if (isAlreadyResponsible) {
+                console.log("Denne person er allerede ansvarlig.");
+                return; // Exit the function if already responsible
+            }
+
+            const opdateretAnsvarlige = [...nuværendeAnsvarlige, nyAnsvarlig];
+        
+            axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+                ansvarlig: opdateretAnsvarlige,
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                setNuværendeAnsvarlige(opdateretAnsvarlige);
+                console.log(res.data);
+            })
+            .catch(error => console.log(error));
+        }
+    }
+
+    function fjernAnsvarlig(ansvarligDerSkalFjernes){
+        const opdateredeAnsvarlige = nuværendeAnsvarlige.filter(ansvarlig => ansvarlig !== ansvarligDerSkalFjernes);
+
+        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+            ansvarlig: opdateredeAnsvarlige,
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setNuværendeAnsvarlige(opdateredeAnsvarlige);
+            console.log(res.data);
+        })
+        .catch(error => console.log(error));
+    }
+
     return (
     
         <div>
@@ -153,13 +315,167 @@ const ÅbenOpgave = () => {
                     </div>
                 </div>
 
-                <p>Opgave-ID: {opgave._id}</p>
-                <p>Navn: {opgave.navn}</p>
-                <p>Adresse: {opgave.adresse}</p>
-                <p>Modtaget: {new Date(opgave.createdAt).toLocaleDateString()}</p>
-                <p>Status: {opgave.status}</p>
-                <p>Fremskridt: {opgave.fremskridt}</p>
-                <p>Ansvarlig: {opgave.ansvarlig ? opgave.ansvarlig : "Ikke uddelegeret"}</p>
+                <div className={ÅbenOpgaveCSS.praktisk}>
+                    <div className={ÅbenOpgaveCSS.uddelegering}>
+                        <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
+                            <b className={ÅbenOpgaveCSS.prefix}>Tildel ansvarlige:</b>
+                            <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Vælg Bob ..." name="vælgBob" onChange={tildelAnsvar}>
+                                <option disabled>Vælg Bob ...</option>
+                                {ledigeAnsvarlige && ledigeAnsvarlige.map((ledigAnsvarlig) => {
+                                    return(
+                                        <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
+                                    )
+                                })}
+                            </select>
+                        </form>
+                        
+                        <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
+                            <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
+                            <div className={ÅbenOpgaveCSS.ansvarlige}>
+                            {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
+                                return (
+                                    <p key={ansvarlig._id}>{ansvarlig.navn}<button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}>-</button></p>
+                                )
+                            })}
+                            </div>
+                        </div>
+                    </div>
+                [Kalender & plan indsættes her]
+                </div>
+                <div className={ÅbenOpgaveCSS.posteringer}>
+                    <b className={ÅbenOpgaveCSS.prefix}>Posteringer & økonomi</b>
+                    <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
+                        {posteringer && posteringer.map((postering) => {
+                            return (
+                                <div className={ÅbenOpgaveCSS.posteringCard}>
+                                    <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
+                                    <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato.slice(0,10)}</p>
+                                    <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
+                                    <div className={ÅbenOpgaveCSS.posteringListe}>
+                                        <div className={ÅbenOpgaveCSS.posteringRække}>
+                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer} timer (handyman): </span>
+                                            <span>{(postering.handymanTimer * 300) + " kr."}</span>
+                                        </div>
+                                        <div className={ÅbenOpgaveCSS.posteringRække}>
+                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer} timer (tømrer): </span>
+                                            <span>{(postering.tømrerTimer * 360) + " kr."}</span>
+                                        </div>
+                                        <div className={ÅbenOpgaveCSS.posteringRække}>
+                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
+                                            <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                                        </div>
+                                        <div className={ÅbenOpgaveCSS.posteringRække}>
+                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
+                                            <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                                        </div>
+                                        <div className={ÅbenOpgaveCSS.totalRække}>
+                                            <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
+                                            <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{((postering.handymanTimer * 300)+(postering.tømrerTimer * 360)+(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0))+(postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0))) + " kr."}</b>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>
+                    {openModal ? 
+                    <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenModal(false)}>
+                        <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
+                            <button onClick={() => {setOpenModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
+                            <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
+                            <form className={ÅbenOpgaveCSS.modalForm} onSubmit={(e) => {
+                                e.preventDefault();
+                                tilføjPostering();
+                            }}>
+                                <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
+                                <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
+                                
+                                <div className={ÅbenOpgaveCSS.modalKolonner}>
+                                    <div>
+                                        <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal handymantimer:</label>
+                                        <input className={ÅbenOpgaveCSS.modalInput} value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" />
+                                    </div>
+                                    <div>
+                                        <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal tømrertimer:</label>
+                                        <input className={ÅbenOpgaveCSS.modalInput} value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" />
+                                    </div>
+                                </div>
+                                
+                                <div className={ÅbenOpgaveCSS.udlæg}>
+                                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Udlæg</h3>
+                                    <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
+                                    {outlays.map((outlay, index) => (
+                                        <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                            <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
+                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
+                                                <input
+                                                    type="text"
+                                                    className={ÅbenOpgaveCSS.udlægInput}
+                                                    name="beskrivelse"
+                                                    id={`beskrivelse-${index}`}
+                                                    value={outlay.beskrivelse}
+                                                    onChange={(e) => handleOutlayChange(index, e)}
+                                                />
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.udlægBeløb}>
+                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                                <input
+                                                    type="number"
+                                                    className={ÅbenOpgaveCSS.udlægInput}
+                                                    name="beløb"
+                                                    id={`beløb-${index}`}
+                                                    value={outlay.beløb}
+                                                    onChange={(e) => handleOutlayChange(index, e)}
+                                                />
+                                            </div>
+                                            <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}>-</button>
+                                        </div>
+                                    ))}
+                                    <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addOutlay}>+ Nyt udlæg</button>
+                                    </div>
+                                    
+                                </div>
+                                <div className={ÅbenOpgaveCSS.udlæg}>
+                                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Øvrige</h3>
+                                    <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
+                                    {øvrige.map((øvrig, index) => (
+                                        <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                            <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
+                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
+                                                <input
+                                                    type="text"
+                                                    className={ÅbenOpgaveCSS.udlægInput}
+                                                    name="beskrivelse"
+                                                    id={`beskrivelse-${index}`}
+                                                    value={øvrig.beskrivelse}
+                                                    onChange={(e) => handleØvrigeChange(index, e)}
+                                                />
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.udlægBeløb}>
+                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                                <input
+                                                    type="number"
+                                                    className={ÅbenOpgaveCSS.udlægInput}
+                                                    name="beløb"
+                                                    id={`beløb-${index}`}
+                                                    value={øvrig.beløb}
+                                                    onChange={(e) => handleØvrigeChange(index, e)}
+                                                />
+                                            </div>
+                                            <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteØvrig(index)}}>-</button>
+                                        </div>
+                                    ))}
+                                    <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addØvrig}>+ Ny øvrig</button>
+                                    </div>
+                                    
+                                </div>
+                                <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Registrér postering</button>
+                            </form>
+                        </div>
+                    </div>
+                    : 
+                    null}
+                </div>
             </div>
             </PageAnimation>
         </div>
