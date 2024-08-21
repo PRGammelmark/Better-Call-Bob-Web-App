@@ -4,6 +4,8 @@ const Schema = mongoose.Schema;
 
 const posteringSchema = new Schema({
     dato: Date,
+    beskrivelse: String,
+    opstart: Number,
     handymanTimer: Number,
     tømrerTimer: Number,
     udlæg: [{
@@ -15,7 +17,8 @@ const posteringSchema = new Schema({
         beløb: Number
     }],
     opgaveID: String,
-    brugerID: String
+    brugerID: String,
+    total: Number
 }, { timestamps: true })
 
 const model = mongoose.model('Postering', posteringSchema);

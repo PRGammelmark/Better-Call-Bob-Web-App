@@ -19,7 +19,8 @@ const OpenTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        setOpgaver(json)
+        const filteredOpgaver = json.filter(opgave => opgave.ansvarlig.length === 0);
+        setOpgaver(filteredOpgaver);
       }
     }
 

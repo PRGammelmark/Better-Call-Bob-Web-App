@@ -186,6 +186,9 @@
     border-radius: 15px;
     position: relative;
     min-width: 240px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .posteringDato {
@@ -196,7 +199,6 @@
 .posteringBruger {
     font-size: 1.2rem;
     font-family: OmnesBold;
-    padding-bottom: 10px;
     margin-bottom: 10px;
 }
 
@@ -236,14 +238,17 @@
     border-radius: 15px;
     border: none;
     margin-top: 20px;
-    background: #3c5a3f;
+    background: none;
+    border: 2px solid #3c5a3f;
     cursor: pointer;
-    color: #fff;
+    color: #333333;
     transition: 0.2s ease
 }
 
 .tilføjPosteringButton:hover {
     background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
 }
 
 .modal {
@@ -551,4 +556,102 @@
 .redigerKommentarInput:focus {
     box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
     outline: none;
+}
+
+.markerSomFærdigKnap {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    width: 100%;
+    margin-top: 20px;
+    font-family: OmnesBold;
+    background: #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease
+}
+
+.markerSomFærdigKnap:hover {
+    background: #59bf1a;
+}
+
+.posteringCheckbox {
+    margin-right: 10px;
+}
+
+.opstartsgebyrDiv {
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+
+.posteringBeskrivelse {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    display: block;
+    font-size: 0.9rem;
+}
+
+.posteringListe {
+    padding-top: 5px;
+    border-top: 1px solid #33333330;
+}
+
+.sletPosteringKnap {
+    font-size: 0.8rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: OmnesBold;
+    margin-left: 20px;
+}
+
+.færdigOpgaveDiv {
+    margin-top: 20px;
+    font-family: OmnesBold;
+}
+
+.genåbnButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    margin-top: 20px;
+    background: none;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #333333;
+    transition: 0.2s ease
+}
+
+.genåbnButton:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
+}
+
+.statusTekstVedFærdiggjort {
+    font-family: Omnes;
+    font-size: 0.9rem;
+}
+
+.færdiggjortOpgavebeskrivelse {
+    margin-bottom: 30px;
+}
+
+.indsendTilEconomicButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    margin-top: 20px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    margin-left: 10px;
+}
+
+.indsendTilEconomicButton:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
 }

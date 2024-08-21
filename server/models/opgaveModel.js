@@ -44,7 +44,12 @@ const opgaverSchema = new Schema({
     ansvarlig: [{
         type: Object,
         required: false
-    }]
+    }],
+    markeretSomFærdig: {
+        type: Boolean,
+        default: false,
+        required: false
+    }
 }, { timestamps: true })
 
 const model = mongoose.model('Opgave', opgaverSchema);

@@ -41,9 +41,12 @@ const ÅbenOpgave = () => {
     const [handymantimer, setHandymantimer] = useState("");
     const [tømrertimer, setTømrertimer] = useState("");
     const [posteringDato, setPosteringDato] = useState("");
+    const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
+    const [inkluderOpstart, setInkluderOpstart] = useState(300);
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
+    const [færdiggjort, setFærdiggjort] = useState(false);
 
     const submitKommentar = () => {
         
@@ -114,17 +117,9 @@ const ÅbenOpgave = () => {
     };
 
     function tilføjPostering (e) {
-
-        // console.log("Bruger: " + user.id)
-        // console.log("Opgave: " + opgaveID)
-        // console.log("Form data ...")
-        // console.log("Dato: " + posteringDato)
-        // console.log("Handymantimer: " + handymantimer)
-        // console.log("Tømrertimer: " + tømrertimer)
-        // console.log("Udlæg: " + JSON.stringify(outlays))
-        // console.log("Øvrige: " + JSON.stringify(øvrige))
-
-
+        
+        const total = (handymantimer * 300) + (tømrertimer * 360) + inkluderOpstart + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
+        
         const postering = {
             dato: posteringDato,
             handymanTimer: handymantimer,
@@ -132,7 +127,10 @@ const ÅbenOpgave = () => {
             udlæg: outlays,
             øvrigt: øvrige,
             opgaveID: opgaveID,
-            brugerID: userID
+            brugerID: userID,
+            opstart: inkluderOpstart,
+            beskrivelse: posteringBeskrivelse,
+            total: total
         }
 
         axios.post('http://localhost:3000/api/posteringer/', postering, {
@@ -145,8 +143,8 @@ const ÅbenOpgave = () => {
             setPosteringDato("");
             setHandymantimer("");
             setTømrertimer("");
-            setOutlays("");
-            setØvrige("");
+            setOutlays([]);
+            setØvrige([]);
         })
         .catch(error => console.log(error))
     }
@@ -167,7 +165,8 @@ const ÅbenOpgave = () => {
             setHarStige(res.data.harStige);
             setTelefon(res.data.telefon);
             setEmail(res.data.email);
-            setLoading(false)
+            setFærdiggjort(res.data.markeretSomFærdig);
+            setLoading(false);
         })
         .catch(error => console.log(error))
     }, [])
@@ -327,6 +326,25 @@ const ÅbenOpgave = () => {
         });
     }
 
+    function sletPostering(posteringID){
+        axios.delete(`http://localhost:3000/api/posteringer/${posteringID}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            // Assuming `setKommentarer` is a state update function that you've defined
+            setPosteringer(prevPosteringer => 
+                prevPosteringer.filter(postering => postering._id !== posteringID)
+            );
+            console.log("Postering slettet:", response.data);
+        })
+        .catch(error => {
+            console.error("Der opstod en fejl ved sletning af posteringen:", error);
+            // Optionally, display an error message to the user
+        });
+    }
+
     function editKommentar(kommentarID) {
 
         const opdateretKommentar = {
@@ -348,6 +366,42 @@ const ÅbenOpgave = () => {
         });
     }
 
+    function færdiggørOpgave () {
+
+        const færdiggør = {
+            markeretSomFærdig: true
+        }
+        
+        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, færdiggør, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log("Opgave færdiggjort: " + response.data)
+            setFærdiggjort(true);
+        })
+        .catch(error => console.log(error))
+    }
+
+    function åbnForÆndringer () {
+        const færdiggør = {
+            markeretSomFærdig: false
+        }
+
+        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, færdiggør, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log("Opgave genåbnet: " + response.data)
+            setFærdiggjort(false);
+        })
+        .catch(error => console.log(error))
+
+    }
+
     return (
     
         <div>
@@ -362,10 +416,10 @@ const ÅbenOpgave = () => {
             </div>
             
             <div className={ÅbenOpgaveCSS.opgaveContainer}>
-                <form>
+                {færdiggjort ? <div><b className={ÅbenOpgaveCSS.prefix}>Opgavebeskrivelse</b><p className={ÅbenOpgaveCSS.færdiggjortOpgavebeskrivelse}>{opgaveBeskrivelse}</p></div> : <form>
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
-                </form>
+                </form>}
                 <div className={ÅbenOpgaveCSS.oprettetUdførtContainer}>
                     <span className={ÅbenOpgaveCSS.prefix}>Oprettet: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.createdAt).toLocaleDateString()}</span></span>
                     <span className={ÅbenOpgaveCSS.prefix}>Ønskes udført: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.onsketDato).toLocaleDateString()}, fra kl. {new Date(opgave.onsketDato).toLocaleTimeString().slice(0,5)}</span></span>
@@ -380,22 +434,22 @@ const ÅbenOpgave = () => {
                             <p>✉️ <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
                         </div>
                         <div>
-                            <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus</b>
-                            <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
+                            <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
+                            {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
                                 <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
                                     <option value="modtaget">Modtaget</option>
                                     <option value="accepteret">Accepteret</option>
                                     <option value="afventerSvar">Afventer svar</option>
                                     <option value="afvist">Afvist</option>
                                 </select>
-                            </form>
+                            </form>}
                         </div>
                     </div>
                 </div>
 
                 <div className={ÅbenOpgaveCSS.praktisk}>
                     <div className={ÅbenOpgaveCSS.uddelegering}>
-                        <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
+                        {færdiggjort ? null : <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
                             <b className={ÅbenOpgaveCSS.prefix}>Tildel ansvarlige:</b>
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Vælg Bob ..." name="vælgBob" onChange={tildelAnsvar}>
                                 <option disabled>Vælg Bob ...</option>
@@ -405,14 +459,14 @@ const ÅbenOpgave = () => {
                                     )
                                 })}
                             </select>
-                        </form>
+                        </form>}
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
                             <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
                             {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
-                                    <p key={ansvarlig._id}>{ansvarlig.navn}<button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}>-</button></p>
+                                    <p key={ansvarlig._id}>{ansvarlig.navn}{færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}>-</button>}</p>
                                 )
                             })}
                             </div>
@@ -425,37 +479,47 @@ const ÅbenOpgave = () => {
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
                             return (
-                                <div className={ÅbenOpgaveCSS.posteringCard} key={postering._id}>
-                                    <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
-                                    <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato.slice(0,10)}</p>
-                                    <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
-                                    <div className={ÅbenOpgaveCSS.posteringListe}>
-                                        <div className={ÅbenOpgaveCSS.posteringRække}>
-                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer} timer (handyman): </span>
-                                            <span>{(postering.handymanTimer * 300) + " kr."}</span>
+                                <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
+                                    <div className={ÅbenOpgaveCSS.posteringCard}>
+                                        <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
+                                        <div>
+                                            <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
+                                            <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
+                                            <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
                                         </div>
-                                        <div className={ÅbenOpgaveCSS.posteringRække}>
-                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer} timer (tømrer): </span>
-                                            <span>{(postering.tømrerTimer * 360) + " kr."}</span>
-                                        </div>
-                                        <div className={ÅbenOpgaveCSS.posteringRække}>
-                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
-                                            <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                                        </div>
-                                        <div className={ÅbenOpgaveCSS.posteringRække}>
-                                            <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
-                                            <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                                        </div>
-                                        <div className={ÅbenOpgaveCSS.totalRække}>
-                                            <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                            <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{((postering.handymanTimer * 300)+(postering.tømrerTimer * 360)+(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0))+(postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0))) + " kr."}</b>
+                                        <div className={ÅbenOpgaveCSS.posteringListe}>
+                                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart: </span>
+                                                <span>{(postering.opstart ? postering.opstart : "0") + " kr."}</span>
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer} timer (handyman): </span>
+                                                <span>{(postering.handymanTimer * 300) + " kr."}</span>
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer} timer (tømrer): </span>
+                                                <span>{(postering.tømrerTimer * 360) + " kr."}</span>
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
+                                                <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
+                                                <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                                            </div>
+                                            <div className={ÅbenOpgaveCSS.totalRække}>
+                                                <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
+                                                <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{postering.total + " kr."}</b>
+                                            </div>
                                         </div>
                                     </div>
+                                    {færdiggjort ? null : <button className={ÅbenOpgaveCSS.sletPosteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
                                 </div>
                             )
                         })}
                     </div>
-                    <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>
+                    {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
                     {openModal ? 
                     <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenModal(false)}>
                         <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
@@ -466,7 +530,13 @@ const ÅbenOpgave = () => {
                                 tilføjPostering();
                             }}>
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
-                                <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
+                                <input className={ÅbenOpgaveCSS.modalInput} required type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
+                                <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
+                                <textarea className={ÅbenOpgaveCSS.modalInput} type="text" required value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
+                                <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
+                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 300 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 300 ? 0 : 300)}/>
+                                    <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 300,-)</label>
+                                </div>
                                 
                                 <div className={ÅbenOpgaveCSS.modalKolonner}>
                                     <div>
@@ -553,6 +623,9 @@ const ÅbenOpgave = () => {
                     </div>
                     : 
                     null}
+                    <div>
+                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton}>Indsend til e-conomic</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.kommentarer}>
                     <b className={ÅbenOpgaveCSS.prefix}>Kommentarer</b>
@@ -568,7 +641,7 @@ const ÅbenOpgave = () => {
                                         <p className={ÅbenOpgaveCSS.kommentarIndhold}>{kommentar.kommentarIndhold}</p>
                                     </div>
                                     <div className={ÅbenOpgaveCSS.kommentarKnapper}>   
-                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>
+                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>}
                                         {openCommentModalID === kommentar._id && ( 
                                         <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenCommentModalID(null)}>
                                             <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
@@ -584,14 +657,14 @@ const ÅbenOpgave = () => {
                                             </div>
                                         </div>
                                         )}
-                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>
+                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>}
                                         <span className={ÅbenOpgaveCSS.kommentarRegigeretMarkør}>{kommentar.createdAt === kommentar.updatedAt ? null : "Redigeret"}</span>
                                     </div>
                                 </div>
                             )
                         })}
                     </div>
-                    <form>
+                    {færdiggjort ? null : <form>
                         <textarea 
                             type="text" 
                             className={ÅbenOpgaveCSS.nyKommentar} 
@@ -605,7 +678,7 @@ const ÅbenOpgave = () => {
                                 }
                               }}
                         />
-                    </form>
+                    </form>}
                 </div>
             </div>
             </PageAnimation>
