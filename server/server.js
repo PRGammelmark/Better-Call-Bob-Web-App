@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import opgaverRoutes from "./routes/opgaver.js"
 import brugerRoutes from "./routes/brugere.js"
 import posteringRoutes from "./routes/posteringer.js"
+import kommentarerRoutes from "./routes/kommentarer.js"
 import mongoose from "mongoose"
 import cors from "cors"
 
@@ -18,7 +19,8 @@ app.use(express.json());
 // routes
 app.use('/api/opgaver', opgaverRoutes);
 app.use('/api/brugere', brugerRoutes);
-app.use('/api/posteringer', posteringRoutes)
+app.use('/api/posteringer', posteringRoutes);
+app.use('/api/kommentarer', kommentarerRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

@@ -34,13 +34,51 @@ const ÅbenOpgave = () => {
     const [email, setEmail] = useState("");
     const [timer, setTimer] = useState(null);
     const [openModal, setOpenModal] = useState(false);
+    const [openCommentModalID, setOpenCommentModalID] = useState(null);
+    const [editedComment, setEditedComment] = useState("");
     const [outlays, setOutlays] = useState([]);
     const [øvrige, setØvrige] = useState([]);
     const [handymantimer, setHandymantimer] = useState("");
     const [tømrertimer, setTømrertimer] = useState("");
     const [posteringDato, setPosteringDato] = useState("");
     const [posteringer, setPosteringer] = useState("");
+    const [kommentar, setKommentar] = useState("");
+    const [kommentarer, setKommentarer] = useState([]);
 
+    const submitKommentar = () => {
+        
+        const kommentarObject = {
+            kommentarIndhold: kommentar,
+            brugerID: userID,
+            opgaveID: opgaveID
+        }
+        
+        console.log(kommentarObject)
+
+        axios.post('http://localhost:3000/api/kommentarer/', kommentarObject, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            } 
+        })
+        .then(res => {
+            setKommentar("");
+        })
+        .catch(error => console.log(error))
+    }
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/kommentarer', {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            const filteredKommentarer = res.data.filter(kommentar => kommentar.opgaveID === opgaveID);
+            setKommentarer(filteredKommentarer);
+        })
+        .catch(error => console.log(error))
+    }, [submitKommentar])
+    
     const handleOutlayChange = (index, event) => {
         const newOutlays = [...outlays];
         newOutlays[index][event.target.name] = event.target.value;
@@ -270,6 +308,46 @@ const ÅbenOpgave = () => {
         .catch(error => console.log(error));
     }
 
+    function sletKommentar(kommentarID){
+        axios.delete(`http://localhost:3000/api/kommentarer/${kommentarID}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            // Assuming `setKommentarer` is a state update function that you've defined
+            setKommentarer(prevKommentarer => 
+                prevKommentarer.filter(kommentar => kommentar._id !== kommentarID)
+            );
+            console.log("Kommentar slettet:", response.data);
+        })
+        .catch(error => {
+            console.error("Der opstod en fejl ved sletning af kommentaren:", error);
+            // Optionally, display an error message to the user
+        });
+    }
+
+    function editKommentar(kommentarID) {
+
+        const opdateretKommentar = {
+            kommentarIndhold: editedComment
+        }
+
+        axios.patch(`http://localhost:3000/api/kommentarer/${kommentarID}`, opdateretKommentar, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log("Kommentar opdateret:", response.data);
+            setOpenCommentModalID(null)
+            setEditedComment("");
+        })
+        .catch(error => {
+            console.error("Der opstod en fejl ved opdatering af kommentaren:", error);
+        });
+    }
+
     return (
     
         <div>
@@ -347,7 +425,7 @@ const ÅbenOpgave = () => {
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
                             return (
-                                <div className={ÅbenOpgaveCSS.posteringCard}>
+                                <div className={ÅbenOpgaveCSS.posteringCard} key={postering._id}>
                                     <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
                                     <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato.slice(0,10)}</p>
                                     <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
@@ -475,6 +553,59 @@ const ÅbenOpgave = () => {
                     </div>
                     : 
                     null}
+                </div>
+                <div className={ÅbenOpgaveCSS.kommentarer}>
+                    <b className={ÅbenOpgaveCSS.prefix}>Kommentarer</b>
+                    <div className={ÅbenOpgaveCSS.kommentarListe}>
+                        {kommentarer && kommentarer.map((kommentar) => {
+                            return (
+                                <div key={kommentar._id} className={ÅbenOpgaveCSS.kommentarContainer}>
+                                    <div className={ÅbenOpgaveCSS.kommentar}>
+                                        <div className={ÅbenOpgaveCSS.kommentarHeader}>
+                                            <span className={ÅbenOpgaveCSS.kommentarForfatter}>{getBrugerName(kommentar.brugerID)}</span>
+                                            <span className={ÅbenOpgaveCSS.kommentarDato}>{kommentar.createdAt.slice(0,10)}</span>
+                                        </div>
+                                        <p className={ÅbenOpgaveCSS.kommentarIndhold}>{kommentar.kommentarIndhold}</p>
+                                    </div>
+                                    <div className={ÅbenOpgaveCSS.kommentarKnapper}>   
+                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>
+                                        {openCommentModalID === kommentar._id && ( 
+                                        <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenCommentModalID(null)}>
+                                            <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
+                                                <button onClick={() => {setOpenCommentModalID(null)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
+                                                <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kommentar</h2>
+                                                <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
+                                                    e.preventDefault();
+                                                    editKommentar(kommentar._id);
+                                                }}>
+                                                    <textarea className={ÅbenOpgaveCSS.redigerKommentarInput} type="text" value={editedComment} onChange={(e) => setEditedComment(e.target.value)} />
+                                                    <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater kommentar</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        )}
+                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>
+                                        <span className={ÅbenOpgaveCSS.kommentarRegigeretMarkør}>{kommentar.createdAt === kommentar.updatedAt ? null : "Redigeret"}</span>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                    <form>
+                        <textarea 
+                            type="text" 
+                            className={ÅbenOpgaveCSS.nyKommentar} 
+                            placeholder='Skriv en kommentar til opgaven ...' 
+                            value={kommentar} 
+                            onChange={(e) => setKommentar(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                  e.preventDefault();
+                                  submitKommentar();
+                                }
+                              }}
+                        />
+                    </form>
                 </div>
             </div>
             </PageAnimation>

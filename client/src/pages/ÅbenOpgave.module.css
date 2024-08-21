@@ -174,6 +174,12 @@
     flex-wrap: wrap;
 }
 
+.posteringer {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1f1f1f30;
+}
+
 .posteringCard {
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
     padding: 10px 20px;
@@ -259,7 +265,7 @@
 @keyframes fade-in {
     0% {
         opacity: 0;
-        transform: translateX(-50%) translateY(-10%); /* Slightly offset for a subtle movement effect */
+        transform: translateX(-50%) translateY(-40%); /* Slightly offset for a subtle movement effect */
     }
     100% {
         opacity: 1;
@@ -386,21 +392,23 @@
 .tilføjUdlægButton {
     padding: 10px 20px;
     border-radius: 15px;
-    border: none;
-    margin-top: 15px;
+    border: 2px solid #3c5a3f;
+    margin-top: 10px;
     margin-bottom: 10px;
-    background: #3c5a3f;
+    background: none;
     cursor: pointer;
-    color: #fff;
+    color: #3c5a3f;
     transition: 0.2s ease
 }
 
 .tilføjUdlægButton:hover {
     background: #59bf1a;
+    border: 2px solid #59bf1a;
+    color: white;
 }
 
 .registrerPosteringButton {
-    padding: 10px 20px;
+    padding: 14px 20px;
     border-radius: 15px;
     border: none;
     margin-top: 15px;
@@ -412,6 +420,10 @@
     transition: 0.2s ease
 }
 
+.registrerPosteringButton:hover {
+    background: #59bf1a;
+}
+
 .sletUdlægButton {
     width: 20px;
     height: 20px;
@@ -421,4 +433,122 @@
     color: rgba(193, 26, 57, 1);
     cursor: pointer;
     margin-top: 26px;
+}
+
+.kommentarListe {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.kommentar {
+    border-radius: 15px;
+    background: #3c5a3f17;
+    padding: 10px 13px;
+    position: relative;
+}
+
+/* .kommentar::after {
+    content: '';
+    height: 14px;
+    width: 14px;
+    background: #fff;
+    position: absolute;
+    bottom: -14px;
+    left: 3px;
+    border-radius: 100px 0px 100px 100px;
+}
+
+.kommentar::before {
+    content: '';
+    height: 14px;
+    width: 14px;
+    background: #3c5a3f30;
+    position: absolute;
+    bottom: -14px;
+    left: 14px;
+    border-radius: 21% 79% 100% 0% / 77% 0% 100% 23% 
+} */
+
+.kommentarHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 2px;
+}
+
+.kommentarForfatter {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+}
+
+.kommentarDato {
+    font-size: 0.8rem;
+    line-height: 1.3rem;
+    color: #33333360;
+}
+
+.kommentarIndhold {
+    font-size: 0.9rem;
+}
+
+.nyKommentar {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 70px;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.nyKommentar:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.kommentarKnapper {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    padding-left: 20px;
+}
+
+.kommentarKnap {
+    font-size: 0.8rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: OmnesBold;
+}
+
+.kommentarRegigeretMarkør {
+    font-size: 0.8rem;
+    color: #33333380;
+}
+
+.redigerKommentarInput {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 80px;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.redigerKommentarInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
 }
