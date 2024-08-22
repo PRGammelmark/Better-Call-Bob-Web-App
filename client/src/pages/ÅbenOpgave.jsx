@@ -47,6 +47,7 @@ const ÅbenOpgave = () => {
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
     const [færdiggjort, setFærdiggjort] = useState(false);
+    const [bekræftIndsendelseModal, setBekræftIndsendelseModal] = useState(false);
 
     const submitKommentar = () => {
         
@@ -402,6 +403,129 @@ const ÅbenOpgave = () => {
 
     }
 
+    function bekræftIndsendelseTilEconomic () {
+        setBekræftIndsendelseModal(true);
+    }
+
+    function opretFakturakladde () {
+        
+        // definer linjestrukturen for hver postering
+        const lines = []; 
+
+        let lineNumber = 1;
+        
+        posteringer.forEach((postering) => {
+            if (postering.opstart > 0 ) {
+                lines.push({
+                    lineNumber: lineNumber++,
+                    description: `Startpris (${postering.dato ? postering.dato.slice(0,10) : null})`,
+                    product: {
+                        productNumber: "5"
+                    },
+                    quantity: 1,
+                    unitNetPrice: 319.20,
+                    discountPercentage: 0.00
+                });
+            }
+
+            if (postering.handymanTimer > 0 ) {
+                lines.push({
+                    lineNumber: lineNumber++,
+                    description: `Handymanarbejde: ${postering.beskrivelse}`,
+                    product: {
+                        productNumber: "1"
+                    },
+                    quantity: (postering.handymanTimer),
+                    unitNetPrice: 447.20,
+                    discountPercentage: 0.00
+                });
+            }
+
+            if (postering.tømrerTimer > 0) {
+                lines.push({
+                    lineNumber: lineNumber++,
+                    description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                    product: {
+                        productNumber: "6"
+                    },
+                    quantity: (postering.tømrerTimer),
+                    unitNetPrice: 480,
+                    discountPercentage: 0.00
+                });
+            }
+
+            if (postering.udlæg && postering.udlæg.length > 0) {
+                lines.push({
+                    lineNumber: lineNumber++,
+                    description: `Materialer: ${postering.udlæg.map(udlæg => udlæg.beskrivelse).join(', ')}`,
+                    product: {
+                        productNumber: "2"
+                    },
+                    quantity: 1,
+                    unitNetPrice: postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0),
+                    discountPercentage: 0.00
+                })
+            }
+
+            if (postering.øvrigt && postering.øvrigt.length > 0) {
+                postering.øvrigt.forEach(posteringØvrig => {
+                    lines.push({
+                        lineNumber: lineNumber++,
+                        description: `${posteringØvrig.beskrivelse}`,
+                        product: {
+                            productNumber: "3"
+                        },
+                        quantity: 1,
+                        unitNetPrice: posteringØvrig.beløb,
+                        discountPercentage: 0.00
+                    })
+                })
+            }
+        })
+
+        // console.log(lines)
+        
+        axios.post('https://restapi.e-conomic.com/invoices/drafts', {
+            date: "2024-08-23",
+            currency: "DKK",
+            customer: {
+                customerNumber: 100
+            },
+            paymentTerms: {
+                paymentTermsNumber: 1,
+                daysOfCredit: 8,
+                name: "Netto 8 dage",
+                paymentTermsType: "net"
+            },
+            layout: {
+                layoutNumber: 3
+            },
+            recipient: {
+                name: `${opgave.navn}`,
+                address: `${opgave.adresse}`,
+                city: "1000 København",
+                country: "Danmark",
+                vatZone: {
+                    name: "Domestic",
+                    vatZoneNumber: 1,
+                    enabledForCustomer: true,
+                    enabledForSupplier: true
+                }
+            },
+            lines: lines
+        },{
+            headers: {
+                'Content-Type': 'application/json',
+                'X-AppSecretToken': 'slqOaZMVfv2FjeQOJ24yYZSW9vM92QhdunfuPCSVi5I',
+                'X-AgreementGrantToken': 'Y4UNQnz1PnaE2176wOw5e0EiTNfEoHsKNiIA6DpTGlI1'
+            }
+        })
+        .then(response => {
+            console.log(response.data);
+        })
+        .catch(error => console.log(error))
+    }
+
     return (
     
         <div>
@@ -530,7 +654,7 @@ const ÅbenOpgave = () => {
                                 tilføjPostering();
                             }}>
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
-                                <input className={ÅbenOpgaveCSS.modalInput} required type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
+                                <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" required value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
                                 <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
@@ -624,7 +748,16 @@ const ÅbenOpgave = () => {
                     : 
                     null}
                     <div>
-                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton}>Indsend til e-conomic</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret fakturakladde</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    {bekræftIndsendelseModal && ( 
+                                        <div className={ÅbenOpgaveCSS.overlay} onClick={() => setBekræftIndsendelseModal(false)}>
+                                            <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
+                                                <button onClick={() => {setBekræftIndsendelseModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
+                                                <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Bekræft: Vil du lukke opgaven og oprette en fakturakladde i E-conomic?</h2>
+                                                <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
+                                            </div>
+                                        </div>
+                                        )}
                     </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.kommentarer}>
