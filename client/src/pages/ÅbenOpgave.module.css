@@ -674,3 +674,9 @@
     color: #fff;
     border: 2px solid #59bf1a;
 }
+
+.økonomiDiv {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1f1f1f30;
+}

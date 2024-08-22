@@ -14,7 +14,7 @@ const ÅbenOpgave = () => {
     if (!user) {
         return
     }
-    
+
     const { opgaveID } = useParams();
     const userID = user.id;
     const navigate = useNavigate();
@@ -379,7 +379,6 @@ const ÅbenOpgave = () => {
             }
         })
         .then(response => {
-            console.log("Opgave færdiggjort: " + response.data)
             setFærdiggjort(true);
         })
         .catch(error => console.log(error))
@@ -396,7 +395,6 @@ const ÅbenOpgave = () => {
             }
         })
         .then(response => {
-            console.log("Opgave genåbnet: " + response.data)
             setFærdiggjort(false);
         })
         .catch(error => console.log(error))
@@ -516,14 +514,15 @@ const ÅbenOpgave = () => {
         },{
             headers: {
                 'Content-Type': 'application/json',
-                'X-AppSecretToken': 'slqOaZMVfv2FjeQOJ24yYZSW9vM92QhdunfuPCSVi5I',
-                'X-AgreementGrantToken': 'Y4UNQnz1PnaE2176wOw5e0EiTNfEoHsKNiIA6DpTGlI1'
+                'X-AppSecretToken': import.meta.env.VITE_BCBSECRETTOKEN,
+                'X-AgreementGrantToken': import.meta.env.VITE_BCBAGREEMENTGRANTTOKEN
             }
         })
         .then(response => {
             console.log(response.data);
         })
         .catch(error => console.log(error))
+
     }
 
     return (
@@ -599,7 +598,7 @@ const ÅbenOpgave = () => {
                 [Kalender & plan indsættes her]
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
-                    <b className={ÅbenOpgaveCSS.prefix}>Posteringer & økonomi</b>
+                    <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
                             return (
@@ -758,6 +757,12 @@ const ÅbenOpgave = () => {
                                             </div>
                                         </div>
                                         )}
+                    </div>
+                </div>
+                <div className={ÅbenOpgaveCSS.økonomiDiv}>
+                    <b className={ÅbenOpgaveCSS.prefix}>Økonomi</b>
+                    <div className={ÅbenOpgaveCSS.noget}>
+
                     </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.kommentarer}>
