@@ -47,6 +47,7 @@ const ÅbenOpgave = () => {
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
     const [færdiggjort, setFærdiggjort] = useState(false);
+    const [opgaveAfsluttet, setOpgaveAfsluttet] = useState(false)
     const [bekræftIndsendelseModal, setBekræftIndsendelseModal] = useState(false);
 
     const submitKommentar = () => {
@@ -66,8 +67,18 @@ const ÅbenOpgave = () => {
         })
         .then(res => {
             setKommentar("");
-        })
-        .catch(error => console.log(error))
+            axios.get('http://localhost:3000/api/kommentarer', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                const filteredKommentarer = res.data.filter(kommentar => kommentar.opgaveID === opgaveID);
+                setKommentarer(filteredKommentarer);
+            })
+            .catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
     }
 
     useEffect(() => {
@@ -81,7 +92,7 @@ const ÅbenOpgave = () => {
             setKommentarer(filteredKommentarer);
         })
         .catch(error => console.log(error))
-    }, [submitKommentar])
+    }, [])
     
     const handleOutlayChange = (index, event) => {
         const newOutlays = [...outlays];
@@ -198,6 +209,9 @@ const ÅbenOpgave = () => {
         .then(res => {
             const filteredPosteringer = res.data.filter(postering => postering.opgaveID === opgaveID);
             setPosteringer(filteredPosteringer);
+
+
+
         })
         .catch(error => console.log(error))
     }, [openModal])
@@ -319,11 +333,9 @@ const ÅbenOpgave = () => {
             setKommentarer(prevKommentarer => 
                 prevKommentarer.filter(kommentar => kommentar._id !== kommentarID)
             );
-            console.log("Kommentar slettet:", response.data);
         })
         .catch(error => {
             console.error("Der opstod en fejl ved sletning af kommentaren:", error);
-            // Optionally, display an error message to the user
         });
     }
 
@@ -334,15 +346,12 @@ const ÅbenOpgave = () => {
             }
         })
         .then(response => {
-            // Assuming `setKommentarer` is a state update function that you've defined
             setPosteringer(prevPosteringer => 
                 prevPosteringer.filter(postering => postering._id !== posteringID)
             );
-            console.log("Postering slettet:", response.data);
         })
         .catch(error => {
             console.error("Der opstod en fejl ved sletning af posteringen:", error);
-            // Optionally, display an error message to the user
         });
     }
 
@@ -520,10 +529,38 @@ const ÅbenOpgave = () => {
         })
         .then(response => {
             console.log(response.data);
-        })
-        .catch(error => console.log(error))
+            setOpgaveAfsluttet(true);
 
+            axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+                opgaveAfsluttet: true
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => console.log(res.data))
+            .catch(error => console.log(error))
+            })
+        .catch(error => console.log(error))
     }
+    
+    // konstater til regnskabsopstillingen -- HONORARER --
+    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0);
+    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 300;
+    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0) * 360);
+    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.udlæg.beløb || 0), 0);
+    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.øvrigt.beløb || 0), 0);
+
+    const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
+
+    // konstanter til regnskabsopstillingen -- FAKTURA --
+    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0)) / 300 * 319.2);
+    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 447.2);
+    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0)) * 480);
+    const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.udlæg.beløb || 0), 0);
+    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.øvrigt.beløb || 0), 0);
+
+    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
     return (
     
@@ -660,7 +697,6 @@ const ÅbenOpgave = () => {
                                     <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 300 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 300 ? 0 : 300)}/>
                                     <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 300,-)</label>
                                 </div>
-                                
                                 <div className={ÅbenOpgaveCSS.modalKolonner}>
                                     <div>
                                         <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal handymantimer:</label>
@@ -759,12 +795,74 @@ const ÅbenOpgave = () => {
                                         )}
                     </div>
                 </div>
-                <div className={ÅbenOpgaveCSS.økonomiDiv}>
-                    <b className={ÅbenOpgaveCSS.prefix}>Økonomi</b>
-                    <div className={ÅbenOpgaveCSS.noget}>
-
+                {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
+                    <b className={ÅbenOpgaveCSS.prefix}>Økonomisk overblik</b>
+                    <div className={ÅbenOpgaveCSS.regnskabContainer}>
+                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
+                        {opstartTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalFaktura} kr.</span>
+                        </div>}
+                        {handymanTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalFaktura} kr.</span>
+                        </div>}
+                        {tømrerTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalFaktura} kr.</span>
+                        </div>}
+                        {udlægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalFaktura} kr.</span>
+                        </div>}
+                        {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura} kr.</span>
+                        </div>}
+                        <div className={ÅbenOpgaveCSS.subtotalRække}>
+                            <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>
+                            <span className={ÅbenOpgaveCSS.subtotalFaktura}>{totalFaktura} kr.</span>
+                        </div>
+                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Honorar-udgifter</b>
+                        {opstartTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalHonorar} kr.</span>
+                        </div>}
+                        {handymanTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalHonorar} kr.</span>
+                        </div>}
+                        {tømrerTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalHonorar} kr.</span>
+                        </div>}
+                        {udlægTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalHonorar} kr.</span>
+                        </div>}
+                        {øvrigtTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalHonorar} kr.</span>
+                        </div>}
+                        <div className={ÅbenOpgaveCSS.subtotalRække}>
+                            <span className={ÅbenOpgaveCSS.subtotalHonorar}>Total, honorarbeløb:</span>
+                            <span className={ÅbenOpgaveCSS.subtotalHonorar}>{totalHonorar} kr.</span>
+                        </div>
+                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Opgørelse</b>
+                        <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>Fakturabeløb:</span>
+                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{totalFaktura} kr.</span>
+                        </div>
+                        <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Honorarbeløb:</span>
+                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar} kr.</span>
+                        </div>
+                        <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
+                            <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
+                            <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{totalFaktura - totalHonorar} kr.</span>
+                        </div>
                     </div>
-                </div>
+                </div>}
                 <div className={ÅbenOpgaveCSS.kommentarer}>
                     <b className={ÅbenOpgaveCSS.prefix}>Kommentarer</b>
                     <div className={ÅbenOpgaveCSS.kommentarListe}>

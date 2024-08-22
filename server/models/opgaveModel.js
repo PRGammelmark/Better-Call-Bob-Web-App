@@ -45,7 +45,18 @@ const opgaverSchema = new Schema({
         type: Object,
         required: false
     }],
+    planlagt: [{
+        dato: Date,
+        tidFra: String,
+        tidTil: String,
+        ansvarlig: String
+    }],
     markeretSomFærdig: {
+        type: Boolean,
+        default: false,
+        required: false
+    },
+    opgaveAfsluttet: {
         type: Boolean,
         default: false,
         required: false

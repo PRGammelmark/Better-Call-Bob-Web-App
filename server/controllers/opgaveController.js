@@ -25,9 +25,9 @@ const getOpgave = async (req,res) => {
 
 // CREATE en opgave
 const createOpgave = async (req, res) => {
-    const { opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig } = req.body;
+    const { opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet } = req.body;
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig})
+        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet})
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})

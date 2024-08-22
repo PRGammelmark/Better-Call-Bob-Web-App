@@ -680,3 +680,73 @@
     padding-bottom: 20px;
     border-bottom: 1px solid #1f1f1f30;
 }
+
+.regnskabContainer {
+    margin-top: 20px;
+    width: 60%;
+}
+
+.regnskabRække {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.subtotalRække {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: 1px solid #1f1f1f30;
+}
+
+.subtotalHonorar {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+}
+
+.subtotalFaktura {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+}
+
+.regnskabTekst {
+    font-size: 0.9rem;
+}
+
+.dækningsbidragRække {
+    margin-top: 5px;
+    margin-bottom: 20px;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    border-top: 1px solid #1f1f1f30;
+}
+
+.bottomMargin10 {
+    margin-bottom: 10px;
+    display: block;
+}
+
+.grønTekst {
+    color: rgba(89, 191, 26, 1);
+}
+
+.rødTekst {
+    color: rgba(255, 84, 84);
+}
+
+.sortTekst {
+    color: #333333!important;
+}
