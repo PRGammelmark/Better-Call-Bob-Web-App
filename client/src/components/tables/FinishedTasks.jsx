@@ -53,7 +53,9 @@ const FinishedTasks = () => {
                       <li>{opgave.adresse}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
-                    <button className={TableCSS.button}>Åbn</button>
+                    <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
+                      <button className={TableCSS.button}>Åbn</button>
+                    </Link>
                   </div>
                 )
               })}

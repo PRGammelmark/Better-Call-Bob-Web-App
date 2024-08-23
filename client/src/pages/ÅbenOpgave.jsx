@@ -5,7 +5,10 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import BackIcon from "../assets/back.svg"
 import Paperclip from "../assets/paperclip.svg"
+import VisLedighed from "../components/VisLedighed.jsx"
 import axios from "axios"
+import Calendar from "../components/Calendar.jsx"
+import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 
 const ÅbenOpgave = () => {
@@ -42,13 +45,16 @@ const ÅbenOpgave = () => {
     const [tømrertimer, setTømrertimer] = useState("");
     const [posteringDato, setPosteringDato] = useState("");
     const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
-    const [inkluderOpstart, setInkluderOpstart] = useState(300);
+    const [inkluderOpstart, setInkluderOpstart] = useState(200);
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
     const [færdiggjort, setFærdiggjort] = useState(false);
     const [opgaveAfsluttet, setOpgaveAfsluttet] = useState(false)
     const [bekræftIndsendelseModal, setBekræftIndsendelseModal] = useState(false);
+    
+    const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
+    const [selectedDate, setSelectedDate] = useState(initialDate);
 
     const submitKommentar = () => {
         
@@ -93,6 +99,12 @@ const ÅbenOpgave = () => {
         })
         .catch(error => console.log(error))
     }, [])
+
+    useEffect(() => {
+        if (opgave && opgave.onsketDato) {
+          setSelectedDate(dayjs(opgave.onsketDato));
+        }
+      }, [opgave]);
     
     const handleOutlayChange = (index, event) => {
         const newOutlays = [...outlays];
@@ -196,7 +208,7 @@ const ÅbenOpgave = () => {
     }, [])
 
     const getBrugerName = (brugerID) => {
-        const bruger = ledigeAnsvarlige.find(user => user._id === brugerID);
+        const bruger = ledigeAnsvarlige && ledigeAnsvarlige.find(user => user._id === brugerID);
         return bruger ? bruger.navn : 'Unknown User';
     };
 
@@ -277,7 +289,7 @@ const ÅbenOpgave = () => {
         e.preventDefault();
 
         const nyAnsvarligId = e.target.value;
-        const nyAnsvarlig = ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === nyAnsvarligId);
+        const nyAnsvarlig = ledigeAnsvarlige && ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === nyAnsvarligId);
     
         if (nyAnsvarlig) {
             
@@ -548,17 +560,17 @@ const ÅbenOpgave = () => {
     const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0);
     const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 300;
     const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0) * 360);
-    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.udlæg.beløb || 0), 0);
-    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.øvrigt.beløb || 0), 0);
+    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb || 0), 0); return akk + udlægSum;}, 0);
+    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (øvrig.beløb || 0), 0); return akk + øvrigSum;}, 0);
 
     const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
 
     // konstanter til regnskabsopstillingen -- FAKTURA --
-    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0)) / 300 * 319.2);
+    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0)) / 200 * 319.2);
     const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 447.2);
     const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0)) * 480);
-    const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.udlæg.beløb || 0), 0);
-    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.øvrigt.beløb || 0), 0);
+    const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb || 0), 0); return akk + udlægSum;}, 0);
+    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (øvrig.beløb || 0), 0); return akk + øvrigSum;}, 0);
 
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
@@ -632,7 +644,16 @@ const ÅbenOpgave = () => {
                             </div>
                         </div>
                     </div>
-                [Kalender & plan indsættes her]
+                    <div className={ÅbenOpgaveCSS.calendarDiv}>
+                        <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
+                        <div className={ÅbenOpgaveCSS.dayDetail}>
+                            <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('DD/MM – YYYY') : 'Ingen valgt dato'}</p>
+                            {(selectedDate && dayjs(selectedDate).isSame(opgave.onsketDato, 'day')) && <p style={{fontSize: '0.9rem'}}>Kunden ønsker opgaven udført fra kl. {dayjs(opgave.onsketDato).format('HH:mm')} denne dag.</p>}
+                            {selectedDate && <div className={ÅbenOpgaveCSS.ledigeMedarbejdere}>
+                                <p className={ÅbenOpgaveCSS.prefix}>Ledige medarbejdere</p>
+                            </div>}
+                        </div>
+                    </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
                     <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
@@ -694,8 +715,8 @@ const ÅbenOpgave = () => {
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" required value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
                                 <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
-                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 300 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 300 ? 0 : 300)}/>
-                                    <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 300,-)</label>
+                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 200 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 200 ? 0 : 200)}/>
+                                    <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 200,-)</label>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.modalKolonner}>
                                     <div>

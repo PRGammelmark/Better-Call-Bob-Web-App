@@ -24,7 +24,7 @@
 
 .opgaveContainer {
     margin-top: 30px;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .label {
@@ -749,4 +749,37 @@
 
 .sortTekst {
     color: #333333!important;
+}
+
+.calendarDiv {
+    display: flex;
+    gap: 20px;
+}
+
+.dayDetail {
+    width: 50%;
+    position: relative;
+    padding-left: 20px;
+    padding-top: 22px;
+}
+
+.dayDetail::before {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 70%;
+    top: 15%;
+    left: 0;
+    background: rgba(0, 0, 0, 0.15)
+}
+
+.bottomMargin20 {
+    display: block;
+    margin-bottom: 20px;
+}
+
+.ledigeMedarbejdere {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.15)
 }

@@ -6,6 +6,7 @@ const Indstillinger = () => {
     <PageAnimation>
       <div>
         <h1 className='bold'>Indstillinger</h1>
+        
       </div>
     </PageAnimation>
   )

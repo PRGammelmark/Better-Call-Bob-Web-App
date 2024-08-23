@@ -4,6 +4,7 @@ import opgaverRoutes from "./routes/opgaver.js"
 import brugerRoutes from "./routes/brugere.js"
 import posteringRoutes from "./routes/posteringer.js"
 import kommentarerRoutes from "./routes/kommentarer.js"
+import ledigeTiderRoutes from "./routes/ledigeTider.js"
 import mongoose from "mongoose"
 import cors from "cors"
 
@@ -21,6 +22,7 @@ app.use('/api/opgaver', opgaverRoutes);
 app.use('/api/brugere', brugerRoutes);
 app.use('/api/posteringer', posteringRoutes);
 app.use('/api/kommentarer', kommentarerRoutes);
+app.use('/api/ledige-tider', ledigeTiderRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
