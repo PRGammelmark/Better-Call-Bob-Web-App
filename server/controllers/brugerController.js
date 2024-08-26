@@ -1,6 +1,8 @@
 import Bruger from '../models/brugerModel.js'
 import mongoose from 'mongoose'
 import jwt from "jsonwebtoken"
+import bcrypt from "bcrypt"
+import validator from "validator"
 
 const createToken = (_id) => {
     return jwt.sign({_id}, process.env.SECRET, { expiresIn: '28d' })
@@ -28,24 +30,46 @@ const getBruger = async (req,res) => {
     res.status(200).json(bruger)
 }
 
-// // OPDATER en bruger
-// const opdaterBruger = async (req,res) => {
-//     const { id } = req.params
+// OPDATER en bruger
+const updateBruger = async (req,res) => {
+    const { id } = req.params
 
-//     if(!mongoose.Types.ObjectId.isValid(id)){
-//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({error: 'Ingen brugere fundet med et matchende ID.'})
+    }
 
-//     const opgave = await Opgave.findOneAndUpdate({_id: id}, {
-//         ...req.body
-//     })
+    const bruger = await Bruger.findOneAndUpdate({_id: id}, {
+        ...req.body
+    })
 
-//     if(!opgave) {
-//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
+    if(!bruger) {
+        return res.status(400).json({error: 'Ingen brugere fundet med et matchende ID.'})
+    }
 
-//     res.status(200).json(opgave)
-// }
+    res.status(200).json(bruger)
+}
+
+// OPDATER en brugers kodeord
+
+const updateBrugerPassword = async (req, res) => {
+    const { id } = req.params
+    const { password } = req.body
+
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        return res.status(400).json({error: 'Ingen brugere fundet med et matchende ID.'})
+    }
+
+    // if(!validator.isStrongPassword(password)) {
+    //     res.status(500).send('Adgangskode er ikke stærk nok!');
+    // }
+
+    const salt = await bcrypt.genSalt(12)
+    const hash = await bcrypt.hash(password, salt)
+
+    const bruger = await Bruger.findOneAndUpdate({_id: id}, {password: hash})
+
+    res.status(200).json(hash)
+}
 
 // login bruger
 
@@ -82,5 +106,7 @@ export {
     loginBruger,
     signupBruger,
     getBrugere,
-    getBruger
+    getBruger,
+    updateBruger,
+    updateBrugerPassword
 }

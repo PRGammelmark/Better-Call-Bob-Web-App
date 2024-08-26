@@ -1,24 +1,26 @@
 import * as React from 'react';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-import Styles from "./Calendar.module.css"
-import { styled } from '@mui/material/styles';
+import Styles from "./UserCalendar.module.css"
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 function HighlightablePickersDay (props) {
-  const { highlightedDays = [], day, opgave, outsideCurrentMonth, ...other } = props;
+  const { highlightedDays = [], day, ledigeTider, outsideCurrentMonth, ...other } = props;
   
-  const checkDayForHighlight = opgave && dayjs(opgave.onsketDato).isSame(day, 'day');
+  const checkDayForLedighed = ledigeTider && ledigeTider.some((ledigTid) => 
+    dayjs(ledigTid.datoTidFra).isSame(day, 'day')
+  );
+  
 
   return (
     <div className={Styles.buttons}>
       <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day}/>
-      {checkDayForHighlight && <div className={Styles.highlightØnsketUdført}></div>}
+      {checkDayForLedighed && <div className={Styles.highlightØnsketUdført}></div>}
     </div>
   )
 }
 
-const Calendar = ({selectedDate, setSelectedDate, opgave}) => {
+const UserCalendar = ({selectedDate, setSelectedDate, ledigeTider}) => {
 
   return (
     <>
@@ -32,11 +34,11 @@ const Calendar = ({selectedDate, setSelectedDate, opgave}) => {
             displayWeekNumber={true}
             slots={{day: HighlightablePickersDay}}
             slotProps={{
-              day: { opgave }
+              day: { ledigeTider }
             }}
         />
     </>
   ) 
 }
 
-export default Calendar
+export default UserCalendar

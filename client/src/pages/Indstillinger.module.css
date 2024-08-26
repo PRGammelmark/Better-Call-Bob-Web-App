@@ -1,0 +1,265 @@
+.pageContent {
+    max-width: 600px;
+}
+
+.personligInfo {
+    margin-top: 50px;
+}
+
+.miniheading {
+    font-family: OmnesBold;
+    font-size: 1.2rem;
+}
+
+.label {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.navn {
+    font-family: OmnesBold;
+}
+
+.titel {
+    font-size: 0.8rem!important;
+}
+
+.infoListe {
+    width: 300px;
+    margin-top: 20px;
+}
+
+.infoListeElement {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.text {
+    font-size: 0.9rem;
+}
+
+.marginTop10 {
+    display: block;
+    margin-top: 10px;
+}
+
+.subPersonligInfo {
+    padding-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    padding-top: 1px;
+    padding-bottom: 6px;
+    border-left: 1px solid rgba(0, 0, 0, 0.15)
+}
+
+.button {
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: none;
+    margin-top: 20px;
+    background: none;
+    border: 1px solid #3c5a3f;
+    cursor: pointer;
+    color: #333333;
+    transition: 0.2s ease
+}
+
+.button:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 1px solid #59bf1a;
+}
+
+.præferencer {
+    margin-top: 50px;
+}
+
+.modal {
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    padding: 20px 40px;
+    position: fixed;
+    background: white;
+    animation: fade-in 0.35s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    border-radius: 20px;
+    z-index: 30;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40%); /* Slightly offset for a subtle movement effect */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes fade-in-no-movement {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 29;
+    animation: fade-in-no-movement 0.20s ease;
+}
+
+.lukModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    margin-left: 10px;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+}
+
+.modalHeading {
+    font-family: OmnesBold;
+    margin-bottom: 20px;
+    padding-right: 30px;
+}
+
+.modalInput {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.modalInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.buttonFullWidth {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    background: none;
+    background: #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    font-family: OmnesBold;
+    transition: 0.2s ease
+}
+
+.buttonFullWidth:hover {
+    background: #59bf1a;
+}
+
+.marginBottom10 {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.listItem {
+    list-style-type: none;
+    margin-left: 10px;
+}
+
+.nytKodeordForm {
+    margin-top: 20px;
+}
+
+.timeSelectorDiv {
+    display: flex;
+    flex-direction: row;
+    max-height: 100px;
+    gap: 20px;  
+}
+
+.simulateModalInput {
+    width: 100%;
+    border-radius: 45px;
+    margin-bottom: 20px;
+    font-family: Omnes;
+    border: none;
+    transition: 0.2s ease;
+    overflow: hidden;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.timeInputLabel {
+    width: 100%;
+    margin-bottom: -20px;
+}
+
+.ledigTidDisplay {
+    width: 100%;
+    padding: 25px 25px;
+    border: 1px solid #59bf1a;
+    background: #59bf1a20;
+    border-radius: 50px;
+    margin-bottom: 30px;
+    position: relative;
+}
+
+.ledigTidBeskrivelse {
+    position: absolute;
+    background: rgba(255,255,255.0.1);
+    font-size: 0.7rem;
+    border: 1px solid #59bf1a50;
+    top: -0.6rem;
+    padding: 2px 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color:#3c5a3f
+}
+
+.ledigTidSlet {
+    position: absolute;
+    background: rgba(193, 26, 57, 0.15);
+    font-size: 0.7rem;
+    border: 1px solid rgba(193, 26, 57, 0.35);
+    top: -0.6rem;
+    right: 40px;
+    padding: 2px 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: rgba(193, 26, 57, 0.85);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.ledigTidSlet:hover {
+    border: 1px solid rgba(193, 26, 57, 1);
+    color: rgba(193, 26, 57, 1);
+}

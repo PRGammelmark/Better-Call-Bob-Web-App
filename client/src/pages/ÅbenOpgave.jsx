@@ -7,7 +7,7 @@ import BackIcon from "../assets/back.svg"
 import Paperclip from "../assets/paperclip.svg"
 import VisLedighed from "../components/VisLedighed.jsx"
 import axios from "axios"
-import Calendar from "../components/Calendar.jsx"
+import TaskCalendar from "../components/calendars/TaskCalendar.jsx"
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -52,9 +52,22 @@ const ÅbenOpgave = () => {
     const [færdiggjort, setFærdiggjort] = useState(false);
     const [opgaveAfsluttet, setOpgaveAfsluttet] = useState(false)
     const [bekræftIndsendelseModal, setBekræftIndsendelseModal] = useState(false);
+    const [ledigeTider, setLedigeTider] = useState(null)
     
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
     const [selectedDate, setSelectedDate] = useState(initialDate);
+
+    useEffect(() => {
+        axios.get('http://localhost:3000/api/ledige-tider', {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                setLedigeTider(res.data)
+            })
+            .catch(error => console.log(error))
+    }, [])
 
     const submitKommentar = () => {
         
@@ -501,8 +514,6 @@ const ÅbenOpgave = () => {
                 })
             }
         })
-
-        // console.log(lines)
         
         axios.post('https://restapi.e-conomic.com/invoices/drafts', {
             date: "2024-08-23",
@@ -645,12 +656,24 @@ const ÅbenOpgave = () => {
                         </div>
                     </div>
                     <div className={ÅbenOpgaveCSS.calendarDiv}>
-                        <Calendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
+                        <TaskCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
                         <div className={ÅbenOpgaveCSS.dayDetail}>
                             <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('DD/MM – YYYY') : 'Ingen valgt dato'}</p>
                             {(selectedDate && dayjs(selectedDate).isSame(opgave.onsketDato, 'day')) && <p style={{fontSize: '0.9rem'}}>Kunden ønsker opgaven udført fra kl. {dayjs(opgave.onsketDato).format('HH:mm')} denne dag.</p>}
                             {selectedDate && <div className={ÅbenOpgaveCSS.ledigeMedarbejdere}>
-                                <p className={ÅbenOpgaveCSS.prefix}>Ledige medarbejdere</p>
+                                <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>Ledige medarbejdere denne dag:</p>
+                                {ledigeTider && ledigeTider.map((ledigTid) => {
+                                    if (dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedDate).format("DD-MM-YYYY")) {
+                                        return (
+                                            <div className={ÅbenOpgaveCSS.ledigTidDisplay}>
+                                                <p className={ÅbenOpgaveCSS.ledigTidBeskrivelse}>{dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
+                                                <p className={ÅbenOpgaveCSS.ledigTidMedarbejder}>{getBrugerName(ledigTid.brugerID)}</p>
+                                            </div>
+                                        )
+                                    } else {
+                                        return null
+                                    }
+                                })}
                             </div>}
                         </div>
                     </div>
