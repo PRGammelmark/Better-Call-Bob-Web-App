@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-import Styles from "./UserCalendar.module.css"
+import Styles from "./LedighedCalendar.module.css"
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 function HighlightablePickersDay (props) {
@@ -20,7 +20,7 @@ function HighlightablePickersDay (props) {
   )
 }
 
-const UserCalendar = ({selectedDate, setSelectedDate, ledigeTider}) => {
+const LedighedCalendar = ({selectedDate, setSelectedDate, ledigeTider}) => {
 
   return (
     <>
@@ -41,4 +41,4 @@ const UserCalendar = ({selectedDate, setSelectedDate, ledigeTider}) => {
   ) 
 }
 
-export default UserCalendar
+export default LedighedCalendar

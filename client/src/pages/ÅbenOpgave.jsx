@@ -7,7 +7,7 @@ import BackIcon from "../assets/back.svg"
 import Paperclip from "../assets/paperclip.svg"
 import VisLedighed from "../components/VisLedighed.jsx"
 import axios from "axios"
-import TaskCalendar from "../components/calendars/TaskCalendar.jsx"
+import DelegationCalendar from "../components/calendars/DelegationCalendar.jsx"
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 
@@ -656,7 +656,7 @@ const ÅbenOpgave = () => {
                         </div>
                     </div>
                     <div className={ÅbenOpgaveCSS.calendarDiv}>
-                        <TaskCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
+                        <DelegationCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
                         <div className={ÅbenOpgaveCSS.dayDetail}>
                             <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('DD/MM – YYYY') : 'Ingen valgt dato'}</p>
                             {(selectedDate && dayjs(selectedDate).isSame(opgave.onsketDato, 'day')) && <p style={{fontSize: '0.9rem'}}>Kunden ønsker opgaven udført fra kl. {dayjs(opgave.onsketDato).format('HH:mm')} denne dag.</p>}

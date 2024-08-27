@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-import Styles from "./TaskCalendar.module.css"
-import { styled } from '@mui/material/styles';
+import Styles from "./DelegationCalendar.module.css"
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 function HighlightablePickersDay (props) {
@@ -18,7 +17,7 @@ function HighlightablePickersDay (props) {
   )
 }
 
-const TaskCalendar = ({selectedDate, setSelectedDate, opgave}) => {
+const DelegationCalendar = ({selectedDate, setSelectedDate, opgave}) => {
 
   return (
     <>
@@ -39,4 +38,4 @@ const TaskCalendar = ({selectedDate, setSelectedDate, opgave}) => {
   ) 
 }
 
-export default TaskCalendar
+export default DelegationCalendar

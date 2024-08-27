@@ -3,7 +3,7 @@ import PageAnimation from '../components/PageAnimation'
 import Styles from './Indstillinger.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
 import axios from 'axios'
-import UserCalendar from '../components/calendars/UserCalendar'
+import LedighedCalendar from '../components/calendars/LedighedCalendar'
 import dayjs from 'dayjs'
 
 const Indstillinger = () => {
@@ -241,7 +241,7 @@ const Indstillinger = () => {
                 <h2 className={Styles.modalHeading}>Fortæl os hvornår du er ledig</h2>
                 <form onSubmit={submitLedigeTider}>
                 <div>
-                  <UserCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+                  <LedighedCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
                 </div>
                 <div className={Styles.nuvLedigeTiderOverblik}>
                   {/* {ledigeTider ? <span className={Styles.label}>D. {selectedDate.format("DD. MMMM")} har du markeret dig ledig i følgende tidsrum:</span> : <span className={Styles.label}>Du har ikke meldt dig ledig denne dag.</span>} */}
