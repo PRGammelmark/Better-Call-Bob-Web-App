@@ -59,6 +59,7 @@ const ÅbenOpgave = () => {
     const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(null)
     const [planlægBesøgFraTidspunkt, setPlanlægBesøgFraTidspunkt] = useState("08:00")
     const [planlægBesøgTilTidspunkt, setPlanlægBesøgTilTidspunkt] = useState("12:00")
+    const [alleBesøg, setAlleBesøg] = useState([])
     const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
     const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
     const [egneBesøg, setEgneBesøg] = useState([])
@@ -104,6 +105,7 @@ const ÅbenOpgave = () => {
                 }
             })
             .then(res => {
+                setAlleBesøg(res.data)
                 const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
                 setEgneBesøg(filterEgneBesøg)
                 const filterOpgaveBesøg = res.data.filter(opgave => opgave.opgaveID === opgaveID);
@@ -810,23 +812,41 @@ const ÅbenOpgave = () => {
                     {user.isAdmin && visUddelegeringskalender && <div className={ÅbenOpgaveCSS.calendarDiv}>
                         <DelegationCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
                         <div className={ÅbenOpgaveCSS.dayDetail}>
-                            <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('DD/MM – YYYY') : 'Ingen valgt dato'}</p>
+                            <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('D. MMMM YYYY') : 'Ingen valgt dato'}</p>
                             {(selectedDate && dayjs(selectedDate).isSame(opgave.onsketDato, 'day')) && <p style={{fontSize: '0.9rem'}}>Kunden ønsker opgaven udført fra kl. {dayjs(opgave.onsketDato).format('HH:mm')} denne dag.</p>}
-                            {selectedDate && <div className={ÅbenOpgaveCSS.ledigeMedarbejdere}>
-                                <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>Ledige medarbejdere denne dag:</p>
-                                {ledigeTider && ledigeTider.map((ledigTid) => {
-                                    if (dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedDate).format("DD-MM-YYYY")) {
-                                        return (
-                                            <div className={ÅbenOpgaveCSS.ledigTidDisplay}>
+                            {selectedDate && (
+                                <div className={ÅbenOpgaveCSS.ledigeMedarbejdere}>
+                                    <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>Ledige medarbejdere denne dag:</p>
+                                    {ledigeTider && ledigeTider
+                                        .filter(ledigTid => dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedDate).format("DD-MM-YYYY"))
+                                        .map(ledigTid => (
+                                            <div className={ÅbenOpgaveCSS.ledigTidDisplay} key={ledigTid.id}>
                                                 <p className={ÅbenOpgaveCSS.ledigTidBeskrivelse}>{dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
+                                                {alleBesøg && alleBesøg
+                                                    .filter(besøg => 
+                                                        dayjs(besøg.datoTidFra).format("YYYY-MM-DD") === dayjs(selectedDate).format("YYYY-MM-DD") &&
+                                                        besøg.brugerID === ledigTid.brugerID &&
+                                                        dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm") &&
+                                                        dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")
+                                                    )
+                                                    .map(besøg => (
+                                                        <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
+                                                            <div className={ÅbenOpgaveCSS.opgaveCard}>
+                                                                <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
+                                                                    🛠️
+                                                                </div>
+                                                                <b className={ÅbenOpgaveCSS.opgaveCardName}>Opgave #{besøg.opgaveID.slice(-3)}</b>
+                                                                <div>
+                                                                    <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 <p className={ÅbenOpgaveCSS.ledigTidMedarbejder}>{getBrugerName(ledigTid.brugerID)}</p>
                                             </div>
-                                        )
-                                    } else {
-                                        return null
-                                    }
-                                })}
-                            </div>}
+                                        ))}
+                                </div>
+                            )}
                         </div>
                     </div>}
                     <button className={ÅbenOpgaveCSS.visUddelegeringskalender} onClick={() => {visUddelegeringskalender ? setVisUddelegeringskalender(false) : setVisUddelegeringskalender(true)}}>{visUddelegeringskalender ? "Luk " : "Åbn "} uddelegeringskalender</button>

@@ -797,6 +797,9 @@
     border-radius: 50px;
     margin-bottom: 30px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .ledigTidBeskrivelse {
