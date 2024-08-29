@@ -9,16 +9,13 @@
 }
 
 .highlightØnsketUdført {
-    position: absolute;
-    bottom: 4px;
-    left: 55%;
-    transform: translateX(-50%);
-    border-radius: 100px;
-    height: 5px;
-    width: 5px;
     background: #59bf1a;
     z-index: 2;
-
+    position: absolute;
+    bottom: 11px;
+    left: 35%;
+    width: 38%;
+    height: 2px;
 }
 
 .buttons {

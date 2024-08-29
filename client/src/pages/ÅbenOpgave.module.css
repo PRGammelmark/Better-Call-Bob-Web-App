@@ -822,3 +822,118 @@
     border-radius: 50px;
     color:#3c5a3f
 }
+
+.visUddelegeringskalender {
+    background: none;
+    border: none;
+    color: #59bf1a;
+    cursor: pointer;
+}
+
+.planDiv {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #1f1f1f30;
+}
+
+.opgaveBesøgDiv {
+    display: flex;
+    align-items: stretch;
+    gap: 30px;
+}
+
+.opgavebesøgDates {
+    width: 50%;
+    flex-grow: 1;
+}
+
+.opgavebesøgDetaljer {
+    width: 50%;
+    padding-top: 20px;
+    padding-left: 20px;
+    border-left: 1px solid #1f1f1f30;
+    flex-grow: 1;
+}
+
+.formFlex {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.opgaveListevisning {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.opgaveCard {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background:#3c5a3f;
+    color: white;
+    position: relative;
+    height: 50px;
+}
+
+.greyedOpgaveCard {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background:#3c5a3f;
+    color: white;
+    position: relative;
+    height: 50px;
+    opacity: 0.5;
+    margin-bottom: 10px;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.greyedOpgaveCard:hover {
+    opacity: 1;
+}
+
+.opgaveCardIkon {
+    font-size: 20px;
+    background: white;
+    padding: 5px;
+    border-radius: 50px;
+    display: flex;
+    max-width: 40px;
+    width: 40px;
+    max-height: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.opgaveCardName {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    margin-bottom: -5px;
+    display: block;
+}
+
+.opgaveCardTime {
+    font-size: 0.7rem;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.sletBesøg {
+    margin-left: 30px;
+    background: none;
+    border: none;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.boldFont {
+    font-family: OmnesBold;
+}

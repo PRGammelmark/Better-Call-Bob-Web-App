@@ -5,6 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import axios from 'axios'
 import LedighedCalendar from '../components/calendars/LedighedCalendar'
 import dayjs from 'dayjs'
+import { useNavigate } from 'react-router-dom'
 
 const Indstillinger = () => {
     const {user} = useAuthContext();
@@ -14,6 +15,7 @@ const Indstillinger = () => {
     }
 
     const userID = user.id;
+    const navigate = useNavigate();
 
     const [bruger, setBruger] = useState(null);
     const [redigerPersonligeOplysninger, setRedigerPersonligeOplysninger] = useState(false);
@@ -23,6 +25,7 @@ const Indstillinger = () => {
     const [ledigeTider, setLedigeTider] = useState([])
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
+    const [opgaveBesøg, setOpgaveBesøg] = useState([])
     
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -49,6 +52,19 @@ const Indstillinger = () => {
             setRedigerbarAdresse(res.data.adresse)
             setRedigerbarTelefon(res.data.telefon)
             setRedigerbarEmail(res.data.email)
+        })
+        .catch(error => console.log(error))
+    }, [])
+
+    useEffect(() => {
+      axios.get(`http://localhost:3000/api/besoeg`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            const personligeBesøg = res.data.filter(besøg => besøg.brugerID === userID)
+            setOpgaveBesøg(personligeBesøg)
         })
         .catch(error => console.log(error))
     }, [])
@@ -156,6 +172,11 @@ const Indstillinger = () => {
         .catch(error => console.log(error))
     }
 
+    function navigateToOpgave(id) {
+      setRedigerLedigeTider(false)
+      navigate(`/opgave/${id}`)
+    }
+
   return (
     <PageAnimation>
       <div className={Styles.pageContent}>
@@ -241,15 +262,31 @@ const Indstillinger = () => {
                 <h2 className={Styles.modalHeading}>Fortæl os hvornår du er ledig</h2>
                 <form onSubmit={submitLedigeTider}>
                 <div>
-                  <LedighedCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+                  <LedighedCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgaveBesøg={opgaveBesøg}/>
                 </div>
                 <div className={Styles.nuvLedigeTiderOverblik}>
-                  {/* {ledigeTider ? <span className={Styles.label}>D. {selectedDate.format("DD. MMMM")} har du markeret dig ledig i følgende tidsrum:</span> : <span className={Styles.label}>Du har ikke meldt dig ledig denne dag.</span>} */}
                   {ledigeTider && ledigeTider.map((ledigTid) => {
                     if (dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === selectedDate.format("DD-MM-YYYY")) {
                       return (
                         <div className={Styles.ledigTidDisplay} key={ledigTid._id}>
                           <p className={Styles.ledigTidBeskrivelse}>{dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
+                          {opgaveBesøg && opgaveBesøg.map(besøg => {
+                            if (dayjs(besøg.datoTidFra).isSame(selectedDate, 'day')) {
+                              return (
+                                <div key={opgaveBesøg._id} className={Styles.opgaveCardContainer} onClick={() => navigateToOpgave(besøg.opgaveID)}>
+                                  <div className={Styles.opgaveCard}>
+                                    <div className={Styles.opgaveCardIkon}>
+                                      🛠️
+                                    </div>
+                                    <b className={Styles.opgaveCardName}>Opgave #{besøg.opgaveID.slice((besøg.opgaveID.length - 3), besøg.opgaveID.length)}</b>
+                                    <div>
+                                      <span className={Styles.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              )
+                            } else return null
+                          })}
                           <p className={Styles.ledigTidSlet} onClick={() => sletLedighed(ledigTid._id)}>Slet</p>
                         </div>
                       )

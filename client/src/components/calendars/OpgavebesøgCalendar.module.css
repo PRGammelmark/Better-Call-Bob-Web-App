@@ -1,0 +1,74 @@
+.yellow {
+    margin-right: 10px;
+}
+
+.yellow * {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #333333;
+}
+
+.highlightEgenPlanlagtOpgave {
+    border-radius: 100px;
+    height: 3px;
+    width: 3px;
+    background: #333333;
+    z-index: 2;
+}
+
+.highlightEgenPlanlagtOpgaveUdenLedighed {
+    border-radius: 100px;
+    height: 6px;
+    width: 6px;
+    background: #333333;
+    z-index: 2;
+}
+
+.highlightAndresPlanlagteOpgaver {
+    border-radius: 100px;
+    height: 6px;
+    width: 6px;
+    background: #333333;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.highlightØnsketUdført {
+    background: #59bf1a;
+    z-index: 2;
+    position: absolute;
+    bottom: 11px;
+    left: 35%;
+    width: 38%;
+    height: 2px;
+}
+
+.highlightLedighed {
+    border-radius: 100px;
+    height: 6px;
+    width: 6px;
+    background: #59bf1a;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.buttons {
+    width: 36px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+.highlightDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
+    position: absolute;
+    bottom: 4px;
+    left: 55%;
+    transform: translateX(-50%);
+}

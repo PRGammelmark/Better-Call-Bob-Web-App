@@ -11,10 +11,10 @@ const besøgSchema = new Schema({
         type: Date,
         required: true
     },
-    brugerID: [{
+    brugerID: {
         type: String,
         required: true
-    }],
+    },
     opgaveID: {
         type: String,
         required: true

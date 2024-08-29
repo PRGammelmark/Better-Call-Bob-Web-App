@@ -9,16 +9,29 @@
 }
 
 .highlightØnsketUdført {
-    position: absolute;
-    bottom: 4px;
-    left: 55%;
-    transform: translateX(-50%);
     border-radius: 100px;
     height: 5px;
     width: 5px;
     background: #59bf1a;
     z-index: 2;
+}
 
+.highlightOpgaver {
+    border-radius: 100px;
+    height: 5px;
+    width: 5px;
+    background: #333333;
+    z-index: 2;
+}
+
+.highlightDiv {
+    position: absolute;
+    bottom: 4px;
+    left: 55%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    gap: 3px;
 }
 
 .buttons {

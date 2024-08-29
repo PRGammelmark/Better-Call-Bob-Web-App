@@ -24,7 +24,7 @@ app.use('/api/brugere', brugerRoutes);
 app.use('/api/posteringer', posteringRoutes);
 app.use('/api/kommentarer', kommentarerRoutes);
 app.use('/api/ledige-tider', ledigeTiderRoutes);
-app.use('/api/besøg', besøgRoutes);
+app.use('/api/besoeg', besøgRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
