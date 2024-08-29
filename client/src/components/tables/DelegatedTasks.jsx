@@ -46,7 +46,7 @@ const DelegatedTasks = () => {
             <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
               {uddelegeredeOpgaver && uddelegeredeOpgaver.map((opgave) => {
                 return (
-                  <div className={TableCSS.opgaveListing}>
+                  <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                       <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
