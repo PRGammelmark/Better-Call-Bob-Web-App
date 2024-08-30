@@ -829,6 +829,7 @@ const ÅbenOpgave = () => {
                                                         dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm") &&
                                                         dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")
                                                     )
+                                                    .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
                                                     .map(besøg => (
                                                         <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
                                                             <div className={ÅbenOpgaveCSS.opgaveCard}>
@@ -859,15 +860,18 @@ const ÅbenOpgave = () => {
                             {visKalender ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Skjul din kalender</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Vis din kalender</button>}
                         </div>
                         <div className={ÅbenOpgaveCSS.opgavebesøgDetaljer}>
-                            <b>{selectedOpgaveDate ? "Planlagte besøg d. " + dayjs(selectedOpgaveDate).format("D. MMMM") : "Vælg en dato i kalenderen ..."}</b>
+                            <b>{selectedOpgaveDate ? <span className={ÅbenOpgaveCSS.dateHeading}>{dayjs(selectedOpgaveDate).format("D. MMMM")}</span> : "Vælg en dato i kalenderen ..."}</b>
                             <div>
                                 <div className={ÅbenOpgaveCSS.opgaveListevisning}>
+                                    {egneBesøg && egneBesøg.some((besøg) => (dayjs(besøg.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedOpgaveDate).format("DD-MM-YYYY")) && besøg.opgaveID === opgaveID) && <b>Dine besøg på denne opgave</b>}
                                     {visKalender ? (ledigeTider && ledigeTider.map((ledigTid) => {
                                         if ((dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedOpgaveDate).format("DD-MM-YYYY")) && ledigTid.brugerID === userID) {
                                             return (
                                                 <div key={ledigTid._id} className={ÅbenOpgaveCSS.ledigTidDisplay}>
                                                     <p className={ÅbenOpgaveCSS.ledigTidBeskrivelse}>Din BCB-kalender d. {dayjs(selectedOpgaveDate).format("D. MMMM")}</p>
-                                                    {egneBesøg && egneBesøg.map((besøg) => {
+                                                    {egneBesøg && egneBesøg
+                                                    .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
+                                                    .map((besøg) => {
                                                         // EGNE BESØG PÅ DENNE OPGAVE
                                                         if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && besøg.opgaveID == opgaveID && ((dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm")) && (dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")))) {
                                                             return (
@@ -909,7 +913,9 @@ const ÅbenOpgave = () => {
                                         } else {
                                             return null
                                         }
-                                    })) : (egneBesøg && egneBesøg.map((besøg) => {
+                                    })) : (egneBesøg && egneBesøg
+                                        .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
+                                        .map((besøg) => {
                                         // EGNE BESØG PÅ DENNE OPGAVE
                                         if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && besøg.opgaveID == opgaveID) {
                                             return (
@@ -931,7 +937,10 @@ const ÅbenOpgave = () => {
                                         }
                                     }))}
                                     {planlagteOpgaver && planlagteOpgaver.some(opgave => (dayjs(opgave.datoTidFra).isSame(selectedOpgaveDate, 'day')) && opgave.brugerID !== userID) ? <b>Andres besøg på denne opgave:</b> : null}
-                                    {planlagteOpgaver && planlagteOpgaver.map((planlagtOpgave) => {
+                                    {planlagteOpgaver && planlagteOpgaver
+                                        .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
+                                        .map((planlagtOpgave) => {
+                                                        // ANDRES BESØG PÅ DENNE OGPAVE
                                                         if ((dayjs(planlagtOpgave.datoTidFra).isSame(selectedOpgaveDate, 'day')) && planlagtOpgave.brugerID !== userID) {
                                                             return (
                                                                 <div key={planlagtOpgave._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>

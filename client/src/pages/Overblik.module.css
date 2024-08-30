@@ -1,0 +1,331 @@
+.flex {
+    display: flex;
+    gap: 20px;
+}
+
+.besøgsKalenderDiv {
+    width: 50%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.næsteBesøgDiv {
+    width: 50%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+.overskrift {
+    font-family: OmnesBold;
+}
+
+.button {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+}
+
+.button:hover {
+    background:#59bf1a;
+    border-color: #59bf1a
+}
+
+.redigerLedighed {
+    display: flex;
+    justify-content: end;
+    margin-top: -30px;
+    margin-bottom: 13.5px;
+}
+
+.tilføjLedighedButton {
+    cursor: pointer;
+    z-index: 2;
+}
+
+.flexSb {
+    display: flex;
+    justify-content: space-between;
+}
+
+.visLedighedButton {
+    color: #59bf1a;
+    background: none;
+    border: none;
+    font-family: OmnesBold;
+    margin-left: 20px;
+    cursor: pointer;
+}
+
+.opgaveListevisning {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.opgaveCard {
+    padding: 10px 20px;
+    border-radius: 25px;
+    background:#3c5a3f;
+    color: white;
+    position: relative;
+    height: 50px;
+    cursor: pointer;
+}
+
+.opgaveCardIkon {
+    font-size: 20px;
+    background: white;
+    padding: 5px;
+    border-radius: 50px;
+    display: flex;
+    max-width: 40px;
+    width: 40px;
+    max-height: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.opgaveCardName {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    margin-bottom: -5px;
+    display: block;
+}
+
+.opgaveCardTime {
+    font-size: 0.7rem;
+    color: #fff;
+    margin-left: 10px;
+}
+
+.ledigTidDisplay {
+    width: 100%;
+    padding: 25px 25px;
+    border: 1px solid #59bf1a;
+    background: #59bf1a20;
+    border-radius: 50px;
+    margin-bottom: 30px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ledigTidBeskrivelse {
+    position: absolute;
+    background: rgba(255,255,255.0.1);
+    font-size: 0.7rem;
+    border: 1px solid #59bf1a50;
+    bottom: -0.7rem;
+    padding: 2px 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color:#3c5a3f
+}
+
+.ledigTidMedarbejder {
+    position: absolute;
+    background: rgba(255,255,255.0.1);
+    font-size: 0.7rem;
+    border: 1px solid #59bf1a50;
+    top: -0.63rem;
+    padding: 2px 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color:#3c5a3f
+}
+
+.sletBesøg {
+    margin-left: 30px;
+    background: none;
+    border: none;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.modal {
+    top: 50%;
+    left: 50%;
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -ms-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    padding: 20px 40px;
+    position: fixed;
+    background: white;
+    animation: fade-in 0.35s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    border-radius: 20px;
+    z-index: 30;
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40%); /* Slightly offset for a subtle movement effect */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes fade-in-no-movement {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 29;
+    animation: fade-in-no-movement 0.20s ease;
+}
+
+.lukModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: none;
+    margin-left: 10px;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+}
+
+.modalHeading {
+    font-family: OmnesBold;
+    margin-bottom: 20px;
+    padding-right: 30px;
+}
+
+.modalInput {
+    width: 100%;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.modalInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.buttonFullWidth {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    background: none;
+    background: #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    font-family: OmnesBold;
+    transition: 0.2s ease
+}
+
+.buttonFullWidth:hover {
+    background: #59bf1a;
+}
+
+.marginBottom10 {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.timeSelectorDiv {
+    display: flex;
+    flex-direction: row;
+    max-height: 100px;
+    gap: 20px;  
+}
+
+.timeInputLabel {
+    width: 100%;
+    margin-bottom: -20px;
+}
+
+.label {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.ledigTidSlet {
+    position: absolute;
+    background: rgba(193, 26, 57, 0.15);
+    font-size: 0.7rem;
+    border: 1px solid rgba(193, 26, 57, 0.35);
+    top: -0.6rem;
+    right: 40px;
+    padding: 2px 10px;
+    backdrop-filter: blur(10px);
+    border-radius: 50px;
+    color: rgba(193, 26, 57, 0.85);
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.ledigTidSlet:hover {
+    border: 1px solid rgba(193, 26, 57, 1);
+    color: rgba(193, 26, 57, 1);
+}
+
+.opretLedigTidFormDiv {
+    margin-top: -22px;
+    padding: 10px 20px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 20px;
+    position: relative;
+}
+
+.lukTilføjLedighed {
+    position: absolute;
+    top: -0.53rem;
+    right: 10px;
+    padding-left: 10px;
+    padding-right: 10px;
+    background: white;
+    border: none;
+    color: #59bf1a;
+    font-family: OmnesBold;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    font-size: 0.8rem;
+  }

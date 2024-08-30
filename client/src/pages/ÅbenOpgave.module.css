@@ -799,7 +799,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 0px;
+    margin-top: 10px;
 }
 
 .ledigTidBeskrivelse {
@@ -880,6 +881,10 @@
     height: 50px;
 }
 
+.opgaveCardContainer {
+    margin-bottom: 10px;
+}
+
 .greyedOpgaveCard {
     padding: 10px 20px;
     border-radius: 25px;
@@ -939,4 +944,8 @@
 
 .boldFont {
     font-family: OmnesBold;
+}
+
+.dateHeading {
+    font-size: 1.4rem;
 }

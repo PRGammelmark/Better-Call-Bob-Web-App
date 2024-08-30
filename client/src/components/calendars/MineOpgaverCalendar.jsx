@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { DateCalendar } from '@mui/x-date-pickers/DateCalendar';
 import dayjs from 'dayjs';
-import Styles from "./LedighedCalendar.module.css"
+import Styles from "./OpgavebesøgCalendar.module.css"
 import { PickersDay } from '@mui/x-date-pickers/PickersDay';
 
 function HighlightablePickersDay (props) {
-  const { highlightedDays = [], day, egneBesøg, egneLedigeTider, opgaveBesøg, outsideCurrentMonth, ...other } = props;
-  
-  const checkDayForLedighed = egneLedigeTider && egneLedigeTider.some((ledigTid) => 
-    dayjs(ledigTid.datoTidFra).isSame(day, 'day')
-  );
-  
+  const { highlightedDays = [], day, userID, visLedighed, egneBesøg, egneLedigeTider, outsideCurrentMonth, ...other } = props;
+
+
   const checkDayForEgneBesøg = egneBesøg && egneBesøg.some((besøg) => 
     dayjs(besøg.datoTidFra).isSame(day, 'day')
+  );
+
+  const checkDayForLedighed = egneLedigeTider && egneLedigeTider.some((ledigTid) => 
+    dayjs(ledigTid.datoTidFra).isSame(day, 'day')
   );
 
   return (
@@ -20,33 +21,39 @@ function HighlightablePickersDay (props) {
       <PickersDay {...other} outsideCurrentMonth={outsideCurrentMonth} day={day} />
   
       <div className={Styles.highlightDiv}>
-        {checkDayForLedighed && (
+        {visLedighed ? (
+          checkDayForLedighed && (
             <div className={Styles.highlightLedighed}>
               {checkDayForEgneBesøg && (
                 <div className={Styles.highlightEgenPlanlagtOpgave}></div>
               )}
             </div>
+          )
+        ) : (
+          (checkDayForEgneBesøg) && (
+            <div className={Styles.highlightEgenPlanlagtOpgaveUdenLedighed}></div>
+          )
         )}
       </div>
     </div>
   )
 }
 
-const LedighedCalendar = ({selectedDate, setSelectedDate, egneLedigeTider, egneBesøg}) => {
+const LedighedCalendar = ({selectedOpgaveDate, setSelectedOpgaveDate, visLedighed, egneBesøg, egneLedigeTider, userID }) => {
 
   return (
     <>
         <DateCalendar 
             className={Styles.yellow} 
-            value={selectedDate} 
+            value={selectedOpgaveDate} 
             onChange={(newValue) => {
-                setSelectedDate(newValue);
+                setSelectedOpgaveDate(newValue);
             }}
             disableHighlightToday={false}
             displayWeekNumber={true}
             slots={{day: HighlightablePickersDay}}
             slotProps={{
-              day: { egneLedigeTider, egneBesøg }
+              day: { egneLedigeTider, egneBesøg, userID, visLedighed }
             }}
         />
     </>
