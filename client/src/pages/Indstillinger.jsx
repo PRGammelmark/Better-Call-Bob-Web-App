@@ -26,6 +26,7 @@ const Indstillinger = () => {
     const [selectedDate, setSelectedDate] = useState(dayjs());
     const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
     const [opgaveBesøg, setOpgaveBesøg] = useState([])
+    const [kalenderVisning, setKalenderVisning] = useState("")
     
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -52,6 +53,7 @@ const Indstillinger = () => {
             setRedigerbarAdresse(res.data.adresse)
             setRedigerbarTelefon(res.data.telefon)
             setRedigerbarEmail(res.data.email)
+            setKalenderVisning(res.data.showTraditionalCalendar)
         })
         .catch(error => console.log(error))
     }, [])
@@ -177,6 +179,22 @@ const Indstillinger = () => {
       navigate(`/opgave/${id}`)
     }
 
+    function skiftKalendervisning() {
+      const updatedKalenderVisning = !kalenderVisning;
+      setKalenderVisning(updatedKalenderVisning);
+      const redigeretBrugerData = { showTraditionalCalendar: updatedKalenderVisning };
+      
+      axios.patch(`http://localhost:3000/api/brugere/${userID}`, redigeretBrugerData, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(res => {
+        console.log("User data updated.")
+      })
+      .catch(error => console.log(error))
+    }
+
   return (
     <PageAnimation>
       <div className={Styles.pageContent}>
@@ -254,6 +272,15 @@ const Indstillinger = () => {
         </div>
         <div className={Styles.præferencer}>
           <p className={Styles.miniheading}>Præferencer:</p>
+          <div>
+            <b >Vis traditionel kalender</b>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={kalenderVisning} onChange={skiftKalendervisning} />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+          </div>
           <button className={Styles.button} onClick={() => setRedigerLedigeTider(true)}>Fortæl hvornår du er ledig</button>
           {redigerLedigeTider ? 
             <div className={Styles.overlay} onClick={() => setRedigerLedigeTider(false)}>

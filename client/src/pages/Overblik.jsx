@@ -32,7 +32,20 @@ const Overblik = () => {
   const [tilTid, setTilTid] = useState("16:00")
   const [registrerLedighedError, setRegistrerLedighedError] = useState("")
   const [sletLedighedErrors, setSletLedighedErrors] = useState({})
+  const [bruger, setBruger] = useState("")
 
+  useEffect(() => {
+    axios.get(`http://localhost:3000/api/brugere/${userID}`, {
+          headers: {
+              'Authorization': `Bearer ${user.token}`
+          }
+      })
+      .then(res => {
+          setBruger(res.data)
+      })
+      .catch(error => console.log(error))
+  }, [])
+  
   useEffect(() => {
     axios.get('http://localhost:3000/api/ledige-tider', {
       headers: {
@@ -240,7 +253,16 @@ const Overblik = () => {
           <div className={Styles.næsteBesøgDiv}>
             <b className={Styles.overskrift}>Dit næste besøg</b>
           </div>
-          <div className={Styles.besøgsKalenderDiv}>
+          {bruger.showTraditionalCalendar && bruger.showTraditionalCalendar 
+          ? 
+          <div className={Styles.traditionelBesøgsKalenderDiv}>
+            <b className={Styles.overskrift}>Din kalender</b>
+            <div>
+              Og her kommer kalenderen til at ligge
+            </div>
+          </div>
+          : 
+          <div className={Styles.moderneBesøgsKalenderDiv}>
             <div className={Styles.flexSb}>
               <b className={Styles.overskrift}>Din kalender</b>
               {visLedighed ? <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Skjul din ledighed</button> : <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Vis din ledighed</button>}
@@ -338,7 +360,7 @@ const Overblik = () => {
                                 </div>
                             </div>
                         </div>
-          </div>
+          </div>}
         </div>
       </div>
     </PageAnimation>
