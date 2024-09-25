@@ -3,10 +3,15 @@
     gap: 20px;
 }
 
-.moderneBesøgsKalenderDiv, .traditionelBesøgsKalenderDiv {
+.moderneBesøgsKalenderDiv {
     width: 50%;
     max-width: 400px;
     padding: 20px;
+}
+
+.traditionelBesøgsKalenderDiv {
+    padding: 20px;
+    width: 100%;
 }
 
 .næsteBesøgDiv {

@@ -3,11 +3,11 @@ import PageAnimation from '../components/PageAnimation'
 import MyTasks from '../components/tables/MyTasks.jsx'
 import Styles from './Overblik.module.css'
 import MineOpgaverCalendar from '../components/calendars/MineOpgaverCalendar.jsx'
-import LedighedCalendar from '../components/calendars/LedighedCalendar.jsx'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
+import TraditionalCalendar from '../components/traditionalCalendars/Calendar.jsx'
 
 const Overblik = () => {
   const {user} = useAuthContext();
@@ -33,6 +33,8 @@ const Overblik = () => {
   const [registrerLedighedError, setRegistrerLedighedError] = useState("")
   const [sletLedighedErrors, setSletLedighedErrors] = useState({})
   const [bruger, setBruger] = useState("")
+
+  
 
   useEffect(() => {
     axios.get(`http://localhost:3000/api/brugere/${userID}`, {
@@ -258,7 +260,7 @@ const Overblik = () => {
           <div className={Styles.traditionelBesøgsKalenderDiv}>
             <b className={Styles.overskrift}>Din kalender</b>
             <div>
-              Og her kommer kalenderen til at ligge
+              <TraditionalCalendar user={user}/>
             </div>
           </div>
           : 
