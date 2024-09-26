@@ -11,7 +11,7 @@ const OpenTasks = () => {
 
   useEffect(()=>{
     const fetchOpgaver = async () => {
-      const response = await fetch('http://localhost:3000/api/opgaver', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -32,7 +32,7 @@ const OpenTasks = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Åbne opgaver (database fetch)</h2>
+          <h2 className={TableCSS.tabelHeader}>Åbne opgaver</h2>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeader}`}>
               <ul>

@@ -15,43 +15,8 @@ const [password, setPassword] = useState("");
 const [telefon, setTelefon] = useState("");
 const [email, setEmail] = useState("");
 const [isAdmin, setIsAdmin] = useState(false);
-// const [loading, setLoading] = useState(false);
 const [brugerID, setBrugerID] = useState("");
 const { signup, error, loading, succes, setSucces } = useSignup();
-
-// const submitOpgave = async (e) => {
-//     e.preventDefault();
-    
-//     await signup(email, password);
-//     const bruger = {
-//         navn,
-//         telefon,
-//         email,
-//         password
-//     }
-
-//     const response = await fetch('http://localhost:3000/api/brugere', {
-//         method: 'POST',
-//         body: JSON.stringify(bruger),
-//         headers: {
-//             'Content-Type': 'application/json'
-//         }
-//     })
-
-//     const json = await response.json()
-
-//     if (!response.ok) {
-//         setLoading(false)
-//         setError(json.error)
-//     }
-
-//     if (response.ok) {
-//         setLoading(false)
-//         setError(null);
-//         setSucces(true);
-//         setBrugerID(json._id);
-//     }
-// }
 
 const handleSubmit = async (e) => {
     e.preventDefault();

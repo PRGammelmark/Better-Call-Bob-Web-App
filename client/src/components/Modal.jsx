@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDom from 'react-dom'
-import Styles from './Modal.module.css'
+import ModalStyles from './Modal.module.css'
 
 const Modal = ({ children, trigger, setTrigger }) => {
     if(!trigger){
@@ -9,9 +9,9 @@ const Modal = ({ children, trigger, setTrigger }) => {
   
     return ReactDom.createPortal (
     <>
-        <div className={Styles.overlay} onClick={() => setTrigger(false)}>
-            <div className={Styles.modal} onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => setTrigger(false)} className={Styles.lukModal}>-</button>
+        <div className={ModalStyles.overlay} onClick={() => setTrigger(false)}>
+            <div className={ModalStyles.modal} onClick={(e) => e.stopPropagation()}>
+                <button onClick={() => setTrigger(false)} className={ModalStyles.lukModal}>-</button>
                 {children}
             </div>
         </div>

@@ -101,3 +101,7 @@
 .buttonFullWidth:hover {
     background: #59bf1a;
 }
+
+.bold {
+    font-family: OmnesBold;
+}

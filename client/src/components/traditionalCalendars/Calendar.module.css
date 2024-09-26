@@ -2,7 +2,7 @@
     height: 400px;
 }
 
-.modal {
+/* .modal {
     top: 50%;
     left: 50%;
     -webkit-transform: translateX(-50%) translateY(-50%);
@@ -21,7 +21,7 @@
 @keyframes fade-in {
     0% {
         opacity: 0;
-        transform: translateX(-50%) translateY(-40%); /* Slightly offset for a subtle movement effect */
+        transform: translateX(-50%) translateY(-40%);
     }
     100% {
         opacity: 1;
@@ -85,4 +85,4 @@
 .modalInput:focus {
     box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
     outline: none;
-}
+} */

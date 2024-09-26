@@ -37,7 +37,7 @@ const Overblik = () => {
   
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/brugere/${userID}`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
           headers: {
               'Authorization': `Bearer ${user.token}`
           }
@@ -49,7 +49,7 @@ const Overblik = () => {
   }, [])
   
   useEffect(() => {
-    axios.get('http://localhost:3000/api/ledige-tider', {
+    axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -62,7 +62,7 @@ const Overblik = () => {
   }, [refetchLedigeTider])
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/besoeg', {
+    axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -83,7 +83,7 @@ const Overblik = () => {
   }
 
   function sletBesøg(id) {
-    axios.delete(`http://localhost:3000/api/besoeg/${id}`, {
+    axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${id}`, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
@@ -159,7 +159,7 @@ const Overblik = () => {
         brugerID: userID,
       };
   
-      axios.patch(`http://localhost:3000/api/ledige-tider/${patchId}`, updatedLedigTid, {
+      axios.patch(`${import.meta.env.VITE_API_URL}/ledige-tider/${patchId}`, updatedLedigTid, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -172,7 +172,7 @@ const Overblik = () => {
           const remainingTimes = overlappingTimes.slice(1);
   
           remainingTimes.forEach((tid) => {
-            axios.delete(`http://localhost:3000/api/ledige-tider/${tid._id}`, {
+            axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${tid._id}`, {
               headers: {
                 'Authorization': `Bearer ${user.token}`
               }
@@ -186,7 +186,7 @@ const Overblik = () => {
   
     } else {
       // No overlap, simply create a new slot
-      axios.post(`http://localhost:3000/api/ledige-tider/`, newLedigTid, {
+      axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, newLedigTid, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -222,7 +222,7 @@ const Overblik = () => {
         });
       }, 5000);
     } else {
-      axios.delete(`http://localhost:3000/api/ledige-tider/${id}`, {
+      axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${id}`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }

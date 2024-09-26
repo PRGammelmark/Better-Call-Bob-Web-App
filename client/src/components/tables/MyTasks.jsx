@@ -14,7 +14,7 @@ const MyTasks = () => {
   const userID = user.id;
 
   useEffect(()=>{
-    axios.get(`http://localhost:3000/api/opgaver`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
         headers: {
             "Authorization": `Bearer ${user.token}`
         }

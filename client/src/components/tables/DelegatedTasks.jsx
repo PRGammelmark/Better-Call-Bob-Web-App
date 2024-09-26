@@ -11,7 +11,7 @@ const DelegatedTasks = () => {
 
   useEffect(()=>{
     const fetchOpgaver = async () => {
-      const response = await fetch('http://localhost:3000/api/opgaver', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }

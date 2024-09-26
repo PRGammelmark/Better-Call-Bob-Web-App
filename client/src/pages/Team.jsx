@@ -12,7 +12,7 @@ const Team = () => {
     const {user} = useAuthContext()
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/brugere/`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/brugere/`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }

@@ -74,7 +74,7 @@ const ÅbenOpgave = () => {
     const [, forceUpdate] = useReducer(x => x + 1, 0);
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/brugere', {
+        axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -86,7 +86,7 @@ const ÅbenOpgave = () => {
     }, [])
     
     useEffect(() => {
-        axios.get('http://localhost:3000/api/ledige-tider', {
+        axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -100,7 +100,7 @@ const ÅbenOpgave = () => {
     }, [triggerLedigeTiderRefetch])
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/besoeg', {
+        axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -125,14 +125,14 @@ const ÅbenOpgave = () => {
         
         console.log(kommentarObject)
 
-        axios.post('http://localhost:3000/api/kommentarer/', kommentarObject, {
+        axios.post(`${import.meta.env.VITE_API_URL}/kommentarer/`, kommentarObject, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             } 
         })
         .then(res => {
             setKommentar("");
-            axios.get('http://localhost:3000/api/kommentarer', {
+            axios.get(`${import.meta.env.VITE_API_URL}/kommentarer`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -147,7 +147,7 @@ const ÅbenOpgave = () => {
     }
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/kommentarer', {
+        axios.get(`${import.meta.env.VITE_API_URL}/kommentarer`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -216,7 +216,7 @@ const ÅbenOpgave = () => {
             total: total
         }
 
-        axios.post('http://localhost:3000/api/posteringer/', postering, {
+        axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -233,7 +233,7 @@ const ÅbenOpgave = () => {
     }
 
     useEffect(() => {
-        axios.get(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -262,7 +262,7 @@ const ÅbenOpgave = () => {
     };
 
     useEffect(() => {
-        axios.get('http://localhost:3000/api/posteringer', {
+        axios.get(`${import.meta.env.VITE_API_URL}/posteringer`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -301,7 +301,7 @@ const ÅbenOpgave = () => {
     }
 
     function indsendOpgavebeskrivelse (x) {    
-        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             opgaveBeskrivelse: x
         }, {
             headers: {
@@ -318,7 +318,7 @@ const ÅbenOpgave = () => {
 
         const syncOpgavestatus = e.target.value;
         
-        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             status: syncOpgavestatus
         },{
             headers: {
@@ -351,7 +351,7 @@ const ÅbenOpgave = () => {
 
             const opdateretAnsvarlige = [...nuværendeAnsvarlige, nyAnsvarlig];
         
-            axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                 ansvarlig: opdateretAnsvarlige,
             }, {
                 headers: {
@@ -369,7 +369,7 @@ const ÅbenOpgave = () => {
     function fjernAnsvarlig(ansvarligDerSkalFjernes){
         const opdateredeAnsvarlige = nuværendeAnsvarlige.filter(ansvarlig => ansvarlig !== ansvarligDerSkalFjernes);
 
-        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             ansvarlig: opdateredeAnsvarlige,
         }, {
             headers: {
@@ -384,7 +384,7 @@ const ÅbenOpgave = () => {
     }
 
     function sletKommentar(kommentarID){
-        axios.delete(`http://localhost:3000/api/kommentarer/${kommentarID}`, {
+        axios.delete(`${import.meta.env.VITE_API_URL}/kommentarer/${kommentarID}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -401,7 +401,7 @@ const ÅbenOpgave = () => {
     }
 
     function sletPostering(posteringID){
-        axios.delete(`http://localhost:3000/api/posteringer/${posteringID}`, {
+        axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -422,7 +422,7 @@ const ÅbenOpgave = () => {
             kommentarIndhold: editedComment
         }
 
-        axios.patch(`http://localhost:3000/api/kommentarer/${kommentarID}`, opdateretKommentar, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/kommentarer/${kommentarID}`, opdateretKommentar, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -443,7 +443,7 @@ const ÅbenOpgave = () => {
             markeretSomFærdig: true
         }
         
-        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, færdiggør, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -459,7 +459,7 @@ const ÅbenOpgave = () => {
             markeretSomFærdig: false
         }
 
-        axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, færdiggør, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -590,7 +590,7 @@ const ÅbenOpgave = () => {
             console.log(response.data);
             setOpgaveAfsluttet(true);
 
-            axios.patch(`http://localhost:3000/api/opgaver/${opgaveID}`, {
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                 opgaveAfsluttet: true
             }, {
                 headers: {
@@ -640,7 +640,7 @@ const ÅbenOpgave = () => {
         if (isWithinAvailableTime) {
             console.log("Besøget er inden for en ledig tid.");
             
-            axios.post('http://localhost:3000/api/besoeg', besøg, {
+            axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -674,7 +674,7 @@ const ÅbenOpgave = () => {
         }
 
         // OPRET LEDIG TID
-        axios.post(`http://localhost:3000/api/ledige-tider/`, ledigTid, {
+        axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, ledigTid, {
           headers: {
             'Authorization': `Bearer ${user.token}`
           }
@@ -685,7 +685,7 @@ const ÅbenOpgave = () => {
         .catch(error => console.log(error))
 
         // OPRET BESØG
-        axios.post('http://localhost:3000/api/besoeg', besøg, {
+        axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -697,7 +697,7 @@ const ÅbenOpgave = () => {
     }
 
     function sletBesøg(besøgID){
-        axios.delete(`http://localhost:3000/api/besoeg/${besøgID}`, {
+        axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${besøgID}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }

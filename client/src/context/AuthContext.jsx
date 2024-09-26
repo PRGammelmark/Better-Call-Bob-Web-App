@@ -23,19 +23,11 @@ export const AuthContextProvider = ({ children }) => {
         const user = JSON.parse(localStorage.getItem('user')); // Get user info
         const token = user.token;
 
-        console.log('Initial Token:', token);
-        console.log('Initial User:', user);
-
         if (token) {
             try {
                 const decoded = jwtDecode(token); // Decode the JWT
                 const isExpired = decoded.exp * 1000 < Date.now(); // Check if expired
-
-                console.log('Decoded JWT:', decoded);
-                console.log('Is Token Expired:', isExpired);
-
                 if (isExpired) {
-                    console.log('Token expired. Logging out...');
                     dispatch({ type: 'LOGOUT' }); // Logout if expired
                     localStorage.removeItem('user'); // Clear user data
                     localStorage.removeItem('jwt'); // Clear expired token

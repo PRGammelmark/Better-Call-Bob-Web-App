@@ -43,7 +43,7 @@ const Indstillinger = () => {
     const [ledighedDato, setLedighedDato] = useState("")
 
     useEffect(() => {
-      axios.get(`http://localhost:3000/api/brugere/${userID}`, {
+      axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -61,7 +61,7 @@ const Indstillinger = () => {
     }, [])
 
     useEffect(() => {
-      axios.get(`http://localhost:3000/api/besoeg`, {
+      axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
@@ -84,7 +84,7 @@ const Indstillinger = () => {
         email: redigerbarEmail
       }
       
-      axios.patch(`http://localhost:3000/api/brugere/${userID}`, redigeretBrugerData, {
+      axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, redigeretBrugerData, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -105,7 +105,7 @@ const Indstillinger = () => {
       if (nytKodeord === gentagNytKodeord) {
         passwordError && setPasswordError(false)
         
-        axios.patch(`http://localhost:3000/api/brugere/updatePassword/${userID}`, {password: nytKodeord}, {
+        axios.patch(`${import.meta.env.VITE_API_URL}/brugere/updatePassword/${userID}`, {password: nytKodeord}, {
           headers: {
             'Authorization': `Bearer ${user.token}`
           }
@@ -136,7 +136,7 @@ const Indstillinger = () => {
         brugerID: userID
       }
 
-      axios.post(`http://localhost:3000/api/ledige-tider/`, ledigTid, {
+      axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, ledigTid, {
           headers: {
             'Authorization': `Bearer ${user.token}`
           }
@@ -149,7 +149,7 @@ const Indstillinger = () => {
     }
 
     useEffect(() => {
-      axios.get(`http://localhost:3000/api/ledige-tider/`, {
+      axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider/`, {
         headers: {
             'Authorization': `Bearer ${user.token}`
         }})
@@ -161,7 +161,7 @@ const Indstillinger = () => {
     }, [opdaterLedigeTider])
 
     function sletLedighed (id) {
-      axios.delete(`http://localhost:3000/api/ledige-tider/${id}`, {
+      axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${id}`, {
         headers: {
             'Authorization': `Bearer ${user.token}`
         }})
@@ -186,7 +186,7 @@ const Indstillinger = () => {
       setKalenderVisning(updatedKalenderVisning);
       const redigeretBrugerData = { showTraditionalCalendar: updatedKalenderVisning };
       
-      axios.patch(`http://localhost:3000/api/brugere/${userID}`, redigeretBrugerData, {
+      axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, redigeretBrugerData, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
