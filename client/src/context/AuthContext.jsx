@@ -21,9 +21,9 @@ export const AuthContextProvider = ({ children }) => {
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user')); // Get user info
-        const token = user.token;
 
-        if (token) {
+        if (user && user.token) {
+            const token = user.token;
             try {
                 const decoded = jwtDecode(token); // Decode the JWT
                 const isExpired = decoded.exp * 1000 < Date.now(); // Check if expired
@@ -43,7 +43,7 @@ export const AuthContextProvider = ({ children }) => {
                 localStorage.removeItem('jwt'); // Clear invalid token
             }
         } else {
-            console.log('No token found. User is logged out.');
+            console.log('No user or token found. User is logged out.');
             dispatch({ type: 'LOGOUT' }); // Logout if no token is found
         }
     }, []);
