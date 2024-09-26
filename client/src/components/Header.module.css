@@ -1,4 +1,4 @@
-header {
+.header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -10,17 +10,17 @@ header {
     max-height: 80px;
 }
 
-header img {
+.headerImg {
     width: clamp(100px, 10vw, 200px);
 }
 
-header ul {
+.headerUl {
     display: flex;
     gap: 30px;
     align-items: center;
 }
 
-header ul li {
+.headerLi {
     list-style-type: none;
     cursor: pointer;
     font-size: clamp(1rem, 1.4vw, 1.6rem)

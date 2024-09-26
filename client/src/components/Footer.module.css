@@ -1,4 +1,4 @@
-footer {
+.footer {
     position: absolute;
     bottom: 0;
     padding: 0px 50px;
@@ -13,6 +13,6 @@ footer {
     justify-content: center;
 }
 
-footer span {
+.footerSpan {
     display: flex;
 }
