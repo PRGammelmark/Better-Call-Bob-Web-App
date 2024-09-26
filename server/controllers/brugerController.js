@@ -1,7 +1,7 @@
 import Bruger from '../models/brugerModel.js'
 import mongoose from 'mongoose'
 import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import bcrypt from "bcryptjs"
 import validator from "validator"
 
 const createToken = (_id) => {
