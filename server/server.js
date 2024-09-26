@@ -15,7 +15,29 @@ const app = express();
 const port = process.env.PORT;
 
 // middleware
-app.use(cors())
+const allowedOrigins = [
+    'https://bcb-pwa-app.onrender.com',  // Production
+    'http://localhost:3000',             // Development
+    'http://localhost:5173'              // Development
+];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // If no origin (like in server-to-server calls) or origin is allowed, proceed
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true, // if using cookies/authentication
+    optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
 app.use(express.json());
 
 // routes
