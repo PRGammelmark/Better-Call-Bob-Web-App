@@ -17,14 +17,14 @@ dayjs.updateLocale('en', {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <AuthContextProvider>
-      <LocalizationProvider 
-        dateAdapter={AdapterDayjs} 
-        adapterLocale="da" // Set the locale for AdapterDayjs
-        localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
-      >
-        <App />
-      </LocalizationProvider>
-    </AuthContextProvider>
+      <AuthContextProvider>
+        <LocalizationProvider 
+          dateAdapter={AdapterDayjs} 
+          adapterLocale="da" // Set the locale for AdapterDayjs
+          localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
+        >
+          <App />
+        </LocalizationProvider>
+      </AuthContextProvider>
   </React.StrictMode>
 )

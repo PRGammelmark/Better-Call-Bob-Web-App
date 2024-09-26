@@ -5,6 +5,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import Styles from './Calendar.module.css'
 import '../../extra-styles/styles.scss';
+import Modal from '../../components/Modal.jsx'
 
 const localizer = dayjsLocalizer(dayjs)
 
@@ -112,7 +113,10 @@ const TraditionalCalendar = ({user}) => {
         views={["month", "week", "day"]}
         formats={{dayHeaderFormat:(date)=>dayjs(date).format("dddd [d.] DD. MMMM YYYY")}}
       />
-      {openDialog ? 
+      {/* <Modal trigger={openDialog} setTrigger={setOpenDialog}>
+        <h2 className={Styles.modalHeading}>Besøg #{eventData._id}</h2>
+      </Modal> */}
+      {/* {openDialog ? 
       <div className={Styles.overlay} onClick={() => setOpenDialog(false)}>
         <div className={Styles.modal} onClick={(e) => e.stopPropagation()}>
           <button onClick={() => {closeDialog()}}className={Styles.lukModal}>-</button>
@@ -121,7 +125,7 @@ const TraditionalCalendar = ({user}) => {
         </div>
       </div>
       :
-      null}
+      null} */}
     </div>
   )
 }

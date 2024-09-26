@@ -6,6 +6,7 @@ import axios from 'axios'
 import LedighedCalendar from '../components/calendars/LedighedCalendar'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
+import Modal from '../components/Modal.jsx'
 
 const Indstillinger = () => {
     const {user} = useAuthContext();
@@ -27,6 +28,7 @@ const Indstillinger = () => {
     const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
     const [opgaveBesøg, setOpgaveBesøg] = useState([])
     const [kalenderVisning, setKalenderVisning] = useState("")
+    const [test, setTest] = useState(false);
     
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -220,10 +222,7 @@ const Indstillinger = () => {
               </div>
             </div>
             <button className={Styles.button} onClick={() => setRedigerPersonligeOplysninger(true)}>Rediger dine personlige informationer</button>
-            {redigerPersonligeOplysninger ? 
-            <div className={Styles.overlay} onClick={() => setRedigerPersonligeOplysninger(false)}>
-              <div className={Styles.modal} onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => {setRedigerPersonligeOplysninger(false)}}className={Styles.lukModal}>-</button>
+            <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
                 <h2 className={Styles.modalHeading}>Personlige informationer</h2>
                 <form onSubmit={submitÆndringer}>
                   <label className={Styles.label}>Navn</label>
@@ -238,15 +237,9 @@ const Indstillinger = () => {
                   <input type="text" className={Styles.modalInput} value={redigerbarEmail} onChange={(e) => {setRedigerbarEmail(e.target.value)}}/>
                   <button className={Styles.buttonFullWidth}>Gem ændringer</button>
                 </form>
-              </div>
-            </div>
-          : 
-          null}
+            </Modal>
           <button className={Styles.button} onClick={() => setSkiftKodeord(true)}>Skift kodeord</button>
-            {skiftKodeord ? 
-            <div className={Styles.overlay} onClick={() => setSkiftKodeord(false)}>
-              <div className={Styles.modal} onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => {setSkiftKodeord(false)}}className={Styles.lukModal}>-</button>
+          <Modal trigger={skiftKodeord} setTrigger={setSkiftKodeord}>
                 <h2 className={Styles.modalHeading}>Skift kodeord</h2>
                 <p className={`${Styles.text} ${Styles.marginBottom10}`}>Tips til et stærkt kodeord:</p>
                 <ul>
@@ -264,10 +257,7 @@ const Indstillinger = () => {
                   <button className={Styles.buttonFullWidth}>Gem nyt kodeord</button>
                   {passwordError && <p>{passwordError}</p>}
                 </form>
-              </div>
-            </div>
-          : 
-          null}
+          </Modal>
           </div>
         </div>
         <div className={Styles.præferencer}>
@@ -282,11 +272,8 @@ const Indstillinger = () => {
             </div>
           </div>
           <button className={Styles.button} onClick={() => setRedigerLedigeTider(true)}>Fortæl hvornår du er ledig</button>
-          {redigerLedigeTider ? 
-            <div className={Styles.overlay} onClick={() => setRedigerLedigeTider(false)}>
-              <div className={Styles.modal} onClick={(e) => e.stopPropagation()}>
-                <button onClick={() => {setRedigerLedigeTider(false)}}className={Styles.lukModal}>-</button>
-                <h2 className={Styles.modalHeading}>Fortæl os hvornår du er ledig</h2>
+          <Modal trigger={redigerLedigeTider} setTrigger={setRedigerLedigeTider} >
+          <h2 className={Styles.modalHeading}>Fortæl os hvornår du er ledig</h2>
                 <form onSubmit={submitLedigeTider}>
                 <div>
                   <LedighedCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgaveBesøg={opgaveBesøg}/>
@@ -335,10 +322,7 @@ const Indstillinger = () => {
                 </div>
                 <button className={Styles.buttonFullWidth}>Registrer ledighed – {selectedDate.format("DD. MMMM")}</button>
                 </form>
-              </div>
-            </div>
-          : 
-          null}
+          </Modal>
         </div>
       </div>
     </PageAnimation>

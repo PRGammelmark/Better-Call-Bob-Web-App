@@ -20,7 +20,12 @@ const requireAuth = async (req, res, next) => {
 
     } catch (error) {
         console.log(error)
-        res.status(401).json({error: 'Anmodning er ikke autoriseret.'})
+        if (error.name === 'TokenExpiredError') {
+            // Handle expired token case
+            return res.status(401).json({ error: 'JWT-token er udløbet.' });
+          }
+      
+          res.status(401).json({ error: 'Anmodning er ikke autoriseret.' });
     }
 
 }

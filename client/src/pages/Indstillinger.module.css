@@ -121,7 +121,7 @@
     height: 100vh;
     width: 100vw;
     background: rgba(0, 0, 0, 0.8);
-    z-index: 29;
+    z-index: 99;
     animation: fade-in-no-movement 0.20s ease;
 }
 

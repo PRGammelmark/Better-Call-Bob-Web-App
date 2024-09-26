@@ -11,6 +11,7 @@ import DelegationCalendar from "../components/calendars/DelegationCalendar.jsx"
 import OpgavebesøgCalendar from "../components/calendars/OpgavebesøgCalendar.jsx"
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
+import Modal from '../components/Modal.jsx'
 
 const ÅbenOpgave = () => {
     const {user} = useAuthContext();
@@ -962,10 +963,7 @@ const ÅbenOpgave = () => {
                                                     })}
                                 </div>
                                 {færdiggjort ? null : selectedOpgaveDate && <button onClick={() => setOpenBesøgModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Planlæg besøg</button>}
-                                {openBesøgModal ? 
-                                <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenBesøgModal(false)}>
-                                    <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
-                                        <button onClick={() => {setOpenBesøgModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
+                                <Modal trigger={openBesøgModal} setTrigger={setOpenBesøgModal}>
                                         <h2 className={ÅbenOpgaveCSS.modalHeading}>Planlæg nyt besøg &nbsp; 🗓️</h2>
                                         <form className={ÅbenOpgaveCSS.modalForm} onSubmit={(e) => {
                                             e.preventDefault();
@@ -985,10 +983,7 @@ const ÅbenOpgave = () => {
                                             <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Planlæg besøg d. {dayjs(selectedOpgaveDate).format("DD. MMMM")}</button>
                                             <p>{opretBesøgError}</p>
                                         </form>
-                                    </div>
-                                </div>
-                                : 
-                                null}
+                                </Modal>
                             </div>
                         </div>
                     </div>
@@ -1040,11 +1035,8 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    {openModal ? 
-                    <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenModal(false)}>
-                        <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
-                            <button onClick={() => {setOpenModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
-                            <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
+                    <Modal trigger={openModal} setTrigger={setOpenModal}>
+                    <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
                             <form className={ÅbenOpgaveCSS.modalForm} onSubmit={(e) => {
                                 e.preventDefault();
                                 tilføjPostering();
@@ -1138,13 +1130,15 @@ const ÅbenOpgave = () => {
                                 </div>
                                 <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Registrér postering</button>
                             </form>
-                        </div>
-                    </div>
-                    : 
-                    null}
+                    </Modal>
                     <div>
                     {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret fakturakladde</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
-                    {bekræftIndsendelseModal && ( 
+                    <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
+                        <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Bekræft: Vil du lukke opgaven og oprette en fakturakladde i E-conomic?</h2>
+                        <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
+                    </Modal>
+                    
+                    {/* {bekræftIndsendelseModal && ( 
                                         <div className={ÅbenOpgaveCSS.overlay} onClick={() => setBekræftIndsendelseModal(false)}>
                                             <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
                                                 <button onClick={() => {setBekræftIndsendelseModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
@@ -1152,7 +1146,7 @@ const ÅbenOpgave = () => {
                                                 <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
                                             </div>
                                         </div>
-                                        )}
+                                        )} */}
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
@@ -1238,10 +1232,7 @@ const ÅbenOpgave = () => {
                                     </div>
                                     <div className={ÅbenOpgaveCSS.kommentarKnapper}>   
                                         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>}
-                                        {openCommentModalID === kommentar._id && ( 
-                                        <div className={ÅbenOpgaveCSS.overlay} onClick={() => setOpenCommentModalID(null)}>
-                                            <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
-                                                <button onClick={() => {setOpenCommentModalID(null)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
+                                        <Modal trigger={openCommentModalID === kommentar._id} setTrigger={setOpenCommentModalID}>
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kommentar</h2>
                                                 <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
                                                     e.preventDefault();
@@ -1250,9 +1241,7 @@ const ÅbenOpgave = () => {
                                                     <textarea className={ÅbenOpgaveCSS.redigerKommentarInput} type="text" value={editedComment} onChange={(e) => setEditedComment(e.target.value)} />
                                                     <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater kommentar</button>
                                                 </form>
-                                            </div>
-                                        </div>
-                                        )}
+                                        </Modal>
                                         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>}
                                         <span className={ÅbenOpgaveCSS.kommentarRegigeretMarkør}>{kommentar.createdAt === kommentar.updatedAt ? null : "Redigeret"}</span>
                                     </div>
