@@ -19,22 +19,6 @@ import NyBruger from './pages/NyBruger'
 import Login from './pages/Login'
 import Team from './pages/Team'
 
-// const router = createBrowserRouter(
-//   createRoutesFromElements(
-//     <Route path="/" element={user ? <Content /> : <Login />}>
-//       <Route index element={<Overblik />}/>
-//       <Route path="alle-opgaver" element={<AlleOpgaver />}/>
-//       <Route path="mine-opgaver" element={<MineOpgaver />}/>
-//       <Route path="dokumenter" element={<Dokumenter />}/>
-//       <Route path="indstillinger" element={<Indstillinger />}/>
-//       <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
-//       <Route path="ny-opgave" element={<NyOpgave />}/>
-//       <Route path="ny-bruger" element={<NyBruger />}/>
-//       <Route path="login" element={<Login />}/>
-//     </Route>
-//   )
-// )
-
 function App() {
 
   const { user } = useAuthContext();
