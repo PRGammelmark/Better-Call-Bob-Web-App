@@ -1,9 +1,11 @@
 import './App.css'
+import { useEffect } from 'react'
 import { createBrowserRouter, Route, Link, NavLink, createRoutesFromElements, RouterProvider, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Content from './components/Content'
 import { useAuthContext } from './hooks/useAuthContext'
+import FastClick from 'fastclick'
 
 // pages
 import Overblik from './pages/Overblik'
@@ -36,6 +38,10 @@ import Team from './pages/Team'
 function App() {
 
   const { user } = useAuthContext();
+
+  useEffect(() => {
+    FastClick(document.body);
+  }, [])
 
   const router = createBrowserRouter(
     createRoutesFromElements(
