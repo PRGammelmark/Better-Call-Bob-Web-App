@@ -17,6 +17,7 @@ const port = process.env.PORT;
 // middleware
 const allowedOrigins = [
     'https://bcb-pwa-app.onrender.com',  // Production
+    'https://app.bettercallbob.dk',      // Production
     'http://localhost:3000',             // Development
     'http://localhost:5173'              // Development
 ];
