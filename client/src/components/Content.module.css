@@ -63,8 +63,16 @@
     font-size: 1.2rem;
 }
 
-@media screen and (display-mode: standalone) {
+@media screen and (max-width: 750px) {
     .sidebar {
         display: none;
+    }
+
+    .main {
+        padding-top: 100px;
+    }
+
+    .content h1 {
+        text-align: center;
     }
 }
