@@ -11,13 +11,12 @@ const Content = () => {
 
   return (
     <>
-      {/* {!user ? <Login /> :  */}
         <div className={ContentCSS.main}>
+
           <div className={ContentCSS.sidebar}>
             <div className={ContentCSS.velkomst}>
               <p className={ContentCSS.velkomstBesked}>Hej {user.navn.split(" ")[0]}! 👋</p>
             </div>
-            
             <ul>
               <li><NavLink to="/">Overblik</NavLink></li>
               <li><NavLink to="alle-opgaver">Alle opgaver</NavLink></li>
@@ -31,9 +30,10 @@ const Content = () => {
           <div className={ContentCSS.content}>
             <Outlet />
           </div>
+
           <FloatingActionButton />
+          
         </div>
-      {/* } */}
     </>
   )
 }

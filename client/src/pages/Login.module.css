@@ -58,3 +58,18 @@
     padding-left: 10px;
     padding-right: 10px;
 }
+
+@media screen and (display-mode: standalone) {
+    .loginContainer {
+        height: 100vh;
+        margin-top: 0;
+    }
+
+    .loginForm {
+        padding: 0;
+    }
+
+    .button {
+        width: 100%;
+    }
+}

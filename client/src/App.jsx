@@ -47,7 +47,7 @@ function App() {
   return (
     <>
       <Header />
-      <main>
+      <main style={{ WebkitTapHighlightColor: "transparent"}}>
         <RouterProvider router={router} />
       </main>
       <Footer />

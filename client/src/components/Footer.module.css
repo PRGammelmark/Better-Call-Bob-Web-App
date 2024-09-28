@@ -16,3 +16,9 @@
 .footerSpan {
     display: flex;
 }
+
+@media screen and (display-mode: standalone) {
+    .footer {
+        display: none;
+    }
+}
