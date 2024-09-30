@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import PageAnimation from '../components/PageAnimation'
 import MyTasks from '../components/tables/MyTasks.jsx'
 import Styles from './Overblik.module.css'
@@ -33,8 +33,10 @@ const Overblik = () => {
   const [registrerLedighedError, setRegistrerLedighedError] = useState("")
   const [sletLedighedErrors, setSletLedighedErrors] = useState({})
   const [bruger, setBruger] = useState("")
-
-  
+  const [openDialog, setOpenDialog] = useState(false)
+  const [eventData, setEventData] = useState(null)
+  const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
+  const [aktueltBesøg, setAktueltBesøg] = useState(null)
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
@@ -93,36 +95,6 @@ const Overblik = () => {
     })
     .catch(error => console.log(error))
   }
-
-  // function submitLedigeTider (e) {
-  //   e.preventDefault()
-
-  //   const valgtDato = selectedOpgaveDate.format("YYYY-MM-DD")
-  //   const datoTidFra = new Date(valgtDato + "T" + fraTid + ":00")
-  //   const datoTidTil = new Date(valgtDato + "T" + tilTid + ":00")
-
-  //   const ledigTid = {
-  //     datoTidFra: datoTidFra,
-  //     datoTidTil: datoTidTil,
-  //     brugerID: userID
-  //   }
-
-  //   // if ledigTid overlaps with another ledigTid, patch old ledigTid to update and expand either datoTidFra/datoTidTil the new ledigTid boundaries
-  //   // ...
-  //   // ...
-  //   // ...
-
-  //   axios.post(`http://localhost:3000/api/ledige-tider/`, ledigTid, {
-  //       headers: {
-  //         'Authorization': `Bearer ${user.token}`
-  //       }
-  //     })
-  //     .then(res => {
-  //       console.log(res.data)
-  //       refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true);
-  //     })
-  //     .catch(error => console.log(error))
-  // }
 
   function submitLedigeTider(e) {
     e.preventDefault();
@@ -243,56 +215,81 @@ const Overblik = () => {
       .catch(error => console.log(error));
     }
   }
-  
-  
+
+  const openTableEvent = (besøg) => {
+    const besøgID = besøg.tættesteBesøgID;
+    const besøgTilÅbning = egneBesøg.find(besøg => besøg._id === besøgID);
+
+    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${besøgTilÅbning.opgaveID}`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(res => {
+        setTilknyttetOpgave(res.data)
+      })
+      .catch(error => console.log(error))
+
+    setEventData(besøgTilÅbning);
+    setOpenDialog(true);
+};
 
   return (
     <PageAnimation>
       <div>
         <h1 className='bold'>Overblik</h1>
-        <MyTasks />
+        <MyTasks openTableEvent={openTableEvent} />
         <div className={Styles.flex}>
-          <div className={Styles.næsteBesøgDiv}>
-            <b className={Styles.overskrift}>Dit næste besøg</b>
-          </div>
           {bruger.showTraditionalCalendar && bruger.showTraditionalCalendar 
           ? 
           <div className={Styles.traditionelBesøgsKalenderDiv}>
             <b className={Styles.overskrift}>Din kalender</b>
             <div>
-              <TraditionalCalendar user={user}/>
+              <TraditionalCalendar 
+                user={user} 
+                tilknyttetOpgave={tilknyttetOpgave}
+                setTilknyttetOpgave={setTilknyttetOpgave}
+                openDialog={openDialog}
+                setOpenDialog={setOpenDialog}
+                eventData={eventData}
+                setEventData={setEventData} 
+                aktueltBesøg={aktueltBesøg} />
             </div>
           </div>
           : 
-          <div className={Styles.moderneBesøgsKalenderDiv}>
-            <div className={Styles.flexSb}>
-              <b className={Styles.overskrift}>Din kalender</b>
-              {visLedighed ? <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Skjul din ledighed</button> : <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Vis din ledighed</button>}
+          <div>
+            <div className={Styles.næsteBesøgDiv}>
+              <b className={Styles.overskrift}>Dit næste besøg</b>
             </div>
-            <MineOpgaverCalendar selectedOpgaveDate={selectedOpgaveDate} setSelectedOpgaveDate={setSelectedOpgaveDate} egneLedigeTider={egneLedigeTider} egneBesøg={egneBesøg} userID={userID} visLedighed={visLedighed}/>
-            {(visLedighed && tilføjLedighed === false) ? <div className={Styles.redigerLedighed}>
-              <button className={`${Styles.visLedighedButton} ${Styles.tilføjLedighedButton}`} onClick={() => setTilføjLedighed(true)}>+ Tilføj ledighed</button>
-            </div> : null}
-            {(visLedighed && tilføjLedighed) ? 
-            <div className={Styles.opretLedigTidFormDiv}>
-              <button className={Styles.lukTilføjLedighed} onClick={() => setTilføjLedighed(false)}>Luk</button>
-              <form onSubmit={submitLedigeTider}>
-                <div className={Styles.timeSelectorDiv}>
-                  <div className={Styles.timeInputLabel}>
-                    <label className={Styles.label}>Fra kl.:</label>
-                    <input type="time" value={fraTid} onChange={(e) => setFraTid(e.target.value)} className={Styles.modalInput} />
+            <div className={Styles.moderneBesøgsKalenderDiv}>
+              <div className={Styles.flexSb}>
+                <b className={Styles.overskrift}>Din kalender</b>
+                {visLedighed ? <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Skjul din ledighed</button> : <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Vis din ledighed</button>}
+              </div>
+              <MineOpgaverCalendar selectedOpgaveDate={selectedOpgaveDate} setSelectedOpgaveDate={setSelectedOpgaveDate} egneLedigeTider={egneLedigeTider} egneBesøg={egneBesøg} userID={userID} visLedighed={visLedighed}/>
+              {(visLedighed && tilføjLedighed === false) ? <div className={Styles.redigerLedighed}>
+                <button className={`${Styles.visLedighedButton} ${Styles.tilføjLedighedButton}`} onClick={() => setTilføjLedighed(true)}>+ Tilføj ledighed</button>
+              </div> : null}
+              {(visLedighed && tilføjLedighed) ? 
+              <div className={Styles.opretLedigTidFormDiv}>
+                <button className={Styles.lukTilføjLedighed} onClick={() => setTilføjLedighed(false)}>Luk</button>
+                <form onSubmit={submitLedigeTider}>
+                  <div className={Styles.timeSelectorDiv}>
+                    <div className={Styles.timeInputLabel}>
+                      <label className={Styles.label}>Fra kl.:</label>
+                      <input type="time" value={fraTid} onChange={(e) => setFraTid(e.target.value)} className={Styles.modalInput} />
+                    </div>
+                    <div className={Styles.timeInputLabel}>
+                      <label className={Styles.label}>Til kl.:</label>
+                      <input type="time" value={tilTid} onChange={(e) => setTilTid(e.target.value)} className={Styles.modalInput} />
+                    </div>
                   </div>
-                  <div className={Styles.timeInputLabel}>
-                    <label className={Styles.label}>Til kl.:</label>
-                    <input type="time" value={tilTid} onChange={(e) => setTilTid(e.target.value)} className={Styles.modalInput} />
-                  </div>
-                </div>
-                <button className={Styles.buttonFullWidth}>Registrer ledighed – {selectedOpgaveDate.format("DD. MMMM")}</button>
-                {registrerLedighedError ? registrerLedighedError : null}
-                </form>
-            </div>
-            : null}
-            <div className={Styles.opgavebesøgDetaljer}>
+                  <button className={Styles.buttonFullWidth}>Registrer ledighed – {selectedOpgaveDate.format("DD. MMMM")}</button>
+                  {registrerLedighedError ? registrerLedighedError : null}
+                  </form>
+              </div>
+              : null}
+              <div className={Styles.opgavebesøgDetaljer}>
                             <b>{selectedOpgaveDate ? "Dine besøg d. " + dayjs(selectedOpgaveDate).format("D. MMMM") : "Vælg en dato i kalenderen ..."}</b>
                             <div>
                                 <div className={Styles.opgaveListevisning}>
@@ -362,6 +359,7 @@ const Overblik = () => {
                                 </div>
                             </div>
                         </div>
+            </div>
           </div>}
         </div>
       </div>

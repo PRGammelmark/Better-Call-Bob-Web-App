@@ -27,7 +27,7 @@ const lang = {
   }
 }
 
-const TraditionalCalendar = ({user}) => {
+const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
 
   const userID = user.id;
   
@@ -41,9 +41,6 @@ const TraditionalCalendar = ({user}) => {
 
     const [egneBesøg, setEgneBesøg] = useState([]);
     const [egneLedighedTider, setEgneLedighedTider] = useState([])
-    const [openDialog, setOpenDialog] = useState(false)
-    const [eventData, setEventData] = useState(null)
-    const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
 
     useEffect(() => {
       if(openDialog === false){
@@ -96,23 +93,22 @@ const TraditionalCalendar = ({user}) => {
       title: ledigTid.opgaveID
     }))
 
-   const openEvent = useCallback((callEvent) => {
-    const opgaveTilknyttetBesøg = callEvent.opgaveID;
-    
-    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(res => {
-        setTilknyttetOpgave(res.data)
-      })
-      .catch(error => console.log(error))
+   const openCalendarEvent = useCallback((callEvent) => {
+      const opgaveTilknyttetBesøg = callEvent.opgaveID;
 
-    console.log(callEvent);
-    setEventData(callEvent);
-    setOpenDialog(true); 
-   })
+      axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        })
+        .then(res => {
+          setTilknyttetOpgave(res.data)
+        })
+        .catch(error => console.log(error))
+
+      setEventData(callEvent);
+      setOpenDialog(true);
+}, [openDialog]);
 
   return (
     <div className={Styles.calendarContainer}>
@@ -121,7 +117,7 @@ const TraditionalCalendar = ({user}) => {
         localizer={localizer}
         events={egneBesøgFormateret}
         backgroundEvents={egneLedigeTiderFormateret}
-        onSelectEvent={openEvent}
+        onSelectEvent={openCalendarEvent}
         startAccessor="start"
         endAccessor="end"
         messages={messages}
@@ -131,7 +127,7 @@ const TraditionalCalendar = ({user}) => {
         formats={{dayHeaderFormat:(date)=>dayjs(date).format("dddd [d.] DD. MMMM YYYY")}}
       />
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
-        <h2 className={ModalStyles.modalHeading}>{tilknyttetOpgave ? "Planlagt besøg på " + tilknyttetOpgave.adresse : "Ingen data"}</h2>
+        <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave || aktueltBesøg) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
         <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>
         <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>
         <br />

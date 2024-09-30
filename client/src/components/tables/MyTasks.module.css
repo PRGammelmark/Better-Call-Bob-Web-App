@@ -1,3 +1,43 @@
 .container {
     margin-bottom: 50px;
 }
+
+.planlægBesøgButton {
+    padding: 5px 8px;
+    background: rgba(224, 227, 50, 0.25);
+    color: rgba(179, 116, 0, 0.85);
+    border: 1px solid rgba(179, 116, 0, 0.85);
+    border-radius: 5px;
+    cursor: pointer;
+    text-wrap: nowrap;
+}
+
+.planlagtBesøgButton {
+    padding: 5px 8px;
+    background: rgba(89, 191, 26, 0.25);
+    color: #3c5a3f;
+    border: 1px solid #3c5a3f;
+    border-radius: 5px;
+    cursor: pointer;
+    text-wrap: nowrap;
+}
+
+.myTasksHeader ul li:nth-child(1), .myTasksBody div ul li:nth-child(1) {
+    width: 6%;
+}
+
+.myTasksHeader ul li:nth-child(2), .myTasksBody div ul li:nth-child(2) {
+    width: 28%;
+}
+
+.myTasksHeader ul li:nth-child(3), .myTasksBody div ul li:nth-child(3) {
+    width: 22%;
+}
+
+.myTasksHeader ul li:nth-child(4), .myTasksBody div ul li:nth-child(4) {
+    width: 30%;
+}
+
+.myTasksHeader ul li:nth-child(5), .myTasksBody div ul li:nth-child(5) {
+    width: 18%;
+}

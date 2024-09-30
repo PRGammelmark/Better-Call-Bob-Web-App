@@ -7,6 +7,21 @@ const getAlleBesøg = async (req,res) => {
     res.status(200).json(besøg)
 }
 
+// GET alle besøg for en enkelt bruger
+const getAlleBesøgForEnBruger = async (req, res) => {
+    const { userID } = req.params; // Get brugerID from request params
+
+    try {
+        const besøg = await Besøg.find({ brugerID: userID }).sort({ createdAt: -1 });
+        if (besøg.length === 0) {
+            return res.status(404).json({ error: 'Ingen besøg fundet for denne bruger.' });
+        }
+        res.status(200).json(besøg);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
 // GET et enkelt besøg
 const getEtBesøg = async (req,res) => {
     const { id } = req.params;
@@ -73,6 +88,7 @@ const updateBesøg = async (req,res) => {
 
 export {
     getAlleBesøg,
+    getAlleBesøgForEnBruger,
     createBesøg,
     getEtBesøg,
     deleteBesøg,
