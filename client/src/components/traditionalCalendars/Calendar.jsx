@@ -8,6 +8,8 @@ import '../../extra-styles/styles.scss';
 import Modal from '../../components/Modal.jsx'
 import ModalStyles from '../../components/Modal.module.css';
 import { Link } from 'react-router-dom'
+import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
+import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
 
 const localizer = dayjsLocalizer(dayjs)
@@ -26,6 +28,8 @@ const lang = {
     showMore: (total) => `+${total} mere`,
   }
 }
+
+const TradCalendar = withDragAndDrop(Calendar);
 
 const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
 
@@ -110,9 +114,43 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       setOpenDialog(true);
 }, [openDialog]);
 
+const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
+  const newEventBorders = {
+    datoTidFra: start,
+    datoTidTil: end
+  }
+
+  setEgneBesøg(prevBesøg => 
+    prevBesøg.map(besøg => 
+      besøg._id === event._id 
+        ? { ...besøg, datoTidFra: start, datoTidTil: end }
+        : besøg
+    )
+  );
+
+  axios.patch(`${import.meta.env.VITE_API_URL}/besoeg/${event._id}`, newEventBorders, {
+    headers: {
+      'Authorization': `Bearer ${user.token}`
+    }
+  })
+  .then(res => {
+    // nothing yet ...
+  })
+  .catch(error => console.log(error))
+})
+
+// const resizeEvent = useCallback(({event, start, end}) => {
+//   const newEventBorders = {
+//     datoTidFra: start,
+//     datoTidTil: end
+//   }
+
+
+// })
+
   return (
     <div className={Styles.calendarContainer}>
-      <Calendar
+      <TradCalendar
         culture={'da'}
         localizer={localizer}
         events={egneBesøgFormateret}
@@ -125,6 +163,9 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
         defaultView={"month"}
         views={["month", "week", "day"]}
         formats={{dayHeaderFormat:(date)=>dayjs(date).format("dddd [d.] DD. MMMM YYYY")}}
+        draggableAccessor={(egneBesøgFormateret) => true}
+        onEventDrop={flytEllerÆndreEvent}
+        onEventResize={flytEllerÆndreEvent}
       />
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
         <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave || aktueltBesøg) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
