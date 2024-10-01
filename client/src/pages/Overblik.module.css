@@ -339,6 +339,10 @@
     .heading {
         display: none;
     }
+
+    .traditionelBesøgsKalenderDiv {
+        padding: 0px;
+    }
 }
 
 @media screen and (display-mode: standalone) {

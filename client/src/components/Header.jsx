@@ -21,15 +21,15 @@ const Header = () => {
 
   // Mapping of routes to titles
   const routeTitles = {
-    '/': "Overblik",
-    '/alle-opgaver': "Alle opgaver",
-    '/mine-opgaver': "Mine opgaver",
-    '/team': "Teamet",
-    '/dokumenter': "Dokumenter",
-    '/indstillinger': "Indstillinger",
+    '/': "🗓️ Overblik",
+    '/alle-opgaver': "🗂️ Alle opgaver",
+    '/mine-opgaver': "📌 Mine opgaver",
+    '/team': "🤝 Teamet",
+    '/dokumenter': "📄 Dokumenter",
+    '/indstillinger': "⚙️ Indstillinger",
     '/opgave/:opgaveID': "OpgaveID",
-    '/ny-opgave': "Opret ny opgave",
-    '/ny-bruger': "Opret ny bruger",
+    '/ny-opgave': "📋 Opret ny opgave",
+    '/ny-bruger': "👷🏼‍♂️ Opret ny bruger",
     '/login': "Log ind"
   }
 
@@ -40,7 +40,7 @@ const Header = () => {
     if (location.pathname.startsWith('/opgave/')) {
       const opgaveID = location.pathname.split('/').pop() || ""
       const lastThreeChars = opgaveID.slice(-3)
-      setNavTitle(`Opgave #${lastThreeChars}`)
+      setNavTitle(`📋 Opgave #${lastThreeChars}`)
       setShowBackIcon(true); // Show back icon for dynamic opgave route
     } else if (routesWithBackIcon.includes(location.pathname)) {
       const currentTitle = routeTitles[location.pathname] || 'Ingen titel'

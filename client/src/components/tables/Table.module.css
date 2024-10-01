@@ -88,3 +88,10 @@ button.button {
     flex: 7%;
     text-decoration: none;
 }
+
+@media screen and (max-width: 750px) {
+    .tabelHeader {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+}
