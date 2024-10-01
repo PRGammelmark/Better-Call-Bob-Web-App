@@ -40,7 +40,7 @@ const Team = () => {
     return (
         <PageAnimation>
     <div>
-        <h1 className="bold">Teamet</h1>
+        <h1 className={`bold ${styles.heading}`}>Teamet</h1>
         <div className={styles.adminDiv}>
             <h2 className={styles.subheading}>Admins</h2>
             <div className={styles.cardHolder}>

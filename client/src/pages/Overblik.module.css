@@ -334,3 +334,15 @@
     color: red;
     font-size: 0.8rem;
   }
+
+  @media screen and (max-width: 750px) {
+    .heading {
+        display: none;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .heading {
+        display: none;
+    }
+}

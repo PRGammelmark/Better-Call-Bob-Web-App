@@ -383,3 +383,15 @@
   .slider:before {
     border-radius: 50%;
   }
+
+@media screen and (max-width: 750px) {
+    .heading {
+        display: none;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .heading {
+        display: none;
+    }
+}

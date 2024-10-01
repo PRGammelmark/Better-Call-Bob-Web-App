@@ -237,7 +237,7 @@ const Overblik = () => {
   return (
     <PageAnimation>
       <div>
-        <h1 className='bold'>Overblik</h1>
+        <h1 className={`bold ${Styles.heading}`}>Overblik</h1>
         <MyTasks openTableEvent={openTableEvent} />
         <div className={Styles.flex}>
           {bruger.showTraditionalCalendar && bruger.showTraditionalCalendar 

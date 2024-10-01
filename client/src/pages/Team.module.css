@@ -50,3 +50,15 @@
 .links:hover {
     color: #59bf1a;
 }
+
+@media screen and (max-width: 750px) {
+    .heading {
+        display: none;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .heading {
+        display: none;
+    }
+}

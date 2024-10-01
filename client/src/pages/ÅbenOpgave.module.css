@@ -949,3 +949,13 @@
 .dateHeading {
     font-size: 1.4rem;
 }
+
+@media screen and (max-width: 750px) {
+    .tilbageKnap {
+        display: none;
+    }
+
+    .opgaveIDHeader {
+        display: none;
+    }
+}

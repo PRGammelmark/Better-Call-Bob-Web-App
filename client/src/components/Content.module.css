@@ -68,9 +68,9 @@
         display: none;
     }
 
-    .main {
+    /* .main {
         padding-top: 100px;
-    }
+    } */
 
     .content h1 {
         text-align: center;
@@ -78,5 +78,13 @@
 
     .content {
         max-height: 100vh;
+        padding-top: 50px;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+
+    .content {
+        padding-top: 80px;
     }
 }

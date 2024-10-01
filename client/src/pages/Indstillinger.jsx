@@ -200,7 +200,7 @@ const Indstillinger = () => {
   return (
     <PageAnimation>
       <div className={Styles.pageContent}>
-        <h1 className='bold'>Indstillinger</h1>
+        <h1 className={`bold ${Styles.heading}`}>Indstillinger</h1>
         <div className={Styles.personligInfo}>
           <p className={Styles.miniheading}>Personlig info:</p>
           <div className={Styles.infoListe}>

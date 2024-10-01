@@ -747,7 +747,7 @@ const ÅbenOpgave = () => {
             <div className={ÅbenOpgaveCSS.tilbageOpgaveSektion}>
                 <img src={BackIcon} alt="" onClick={() => navigate(-1)} className={ÅbenOpgaveCSS.tilbageKnap} />
                 <div>
-                    <b>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
+                    <b className={ÅbenOpgaveCSS.opgaveIDHeader}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
                     <h2 className={ÅbenOpgaveCSS.adresseHeading}>{opgave.adresse}</h2>
                     <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>🌍 Find på kort</a>
                 </div>

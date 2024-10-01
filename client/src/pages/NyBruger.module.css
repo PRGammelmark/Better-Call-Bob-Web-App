@@ -127,3 +127,15 @@
     gap: 20px;
     margin-top: 20px;
 }
+
+@media screen and (max-width: 750px) {
+    .overskrift {
+        display: none;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .overskrift {
+        display: none;
+    }
+}
