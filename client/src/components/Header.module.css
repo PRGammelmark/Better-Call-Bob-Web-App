@@ -30,6 +30,51 @@
     display: none;
 }
 
+@media screen and (max-width: 750px) {
+    .mobileHeader {
+        display: block;
+    }
+
+    .desktopHeader {
+        display: none;
+    }
+    
+    .header {
+        background: #3c5a3f;
+        max-height: 60px;
+        min-height: 60px;
+        display: flex;
+        position: fixed;
+        width: 100%;
+        z-index: 10000;
+    }
+
+    .mobileNavList {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
+    }
+
+    .mobileNavHeading {
+        color: #fff;
+    }
+    
+    .backIconMobile {
+        width: 20px;
+    }
+
+    .hamburgerMobile {
+        width: 32px;
+    }
+
+    .backIconContainer {
+        display: flex;
+        min-width: 32px;
+    }   
+}
+
 @media screen and (display-mode: standalone) {
     .mobileHeader {
         display: block;

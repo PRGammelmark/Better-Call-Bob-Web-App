@@ -2,7 +2,7 @@
     height: 60px;
     width: 60px;
     border-radius: 30px;
-    position: absolute;
+    position: fixed;
     bottom: 100px;
     right: 25px;
     z-index: 10;
@@ -30,7 +30,7 @@
     height: 60px;
     width: 60px;
     border-radius: 30px;
-    position: absolute;
+    position: fixed;
     bottom: 100px;
     right: 25px;
     z-index: 9;
@@ -51,7 +51,7 @@
     height: 60px;
     width: 60px;
     border-radius: 30px;
-    position: absolute;
+    position: fixed;
     bottom: 100px;
     right: 25px;
     z-index: 9;
@@ -70,4 +70,32 @@
 
 .icons {
     transform: scale(1.5)
+}
+
+@media screen and (max-width: 750px) {
+    .floatingActionButton {
+        bottom: 25px;
+    }
+
+    .addNewTaskButton {
+        bottom: 25px;
+    }
+
+    .addNewUserButton {
+        bottom: 25px;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .floatingActionButton {
+        bottom: 25px;
+    }
+
+    .addNewTaskButton {
+        bottom: 25px;
+    }
+
+    .addNewUserButton {
+        bottom: 25px;
+    }
 }

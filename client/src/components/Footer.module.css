@@ -17,6 +17,12 @@
     display: flex;
 }
 
+@media screen and (max-width: 750px) {
+    .footer {
+        display: none;
+    }
+}
+
 @media screen and (display-mode: standalone) {
     .footer {
         display: none;
