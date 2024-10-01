@@ -4,6 +4,8 @@ import FloatingActionButton from './FloatingActionButton'
 import Login from '../pages/Login'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { Navigate } from 'react-router-dom'
+import Header from './Header'
+import Footer from './Footer'
 
 const Content = () => {
 
@@ -11,6 +13,7 @@ const Content = () => {
 
   return (
     <>
+        <Header />
         <div className={ContentCSS.main}>
 
           <div className={ContentCSS.sidebar}>
@@ -34,6 +37,7 @@ const Content = () => {
           <FloatingActionButton />
           
         </div>
+        <Footer />
     </>
   )
 }

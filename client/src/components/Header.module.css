@@ -26,19 +26,51 @@
     font-size: clamp(1rem, 1.4vw, 1.6rem)
 }
 
+.mobileHeader {
+    display: none;
+}
+
 @media screen and (display-mode: standalone) {
+    .mobileHeader {
+        display: block;
+    }
+
+    .desktopHeader {
+        display: none;
+    }
+    
     .header {
-        background: linear-gradient(180deg, #edffe2, #c4ffa2);
+        background: #3c5a3f;
         min-height: 100px;
         max-height: 100px;
-        padding-top: 30px;
+        padding-top: 57px;
         position: fixed;
         width: 100%;
         z-index: 10000;
     }
 
-    .headerImg {
-        height: 50px;
-        width: auto;
+    .mobileNavList {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        color: #fff;
     }
+
+    .mobileNavHeading {
+        color: #fff;
+    }
+    
+    .backIconMobile {
+        width: 20px;
+    }
+
+    .hamburgerMobile {
+        width: 32px;
+    }
+
+    .backIconContainer {
+        display: flex;
+        min-width: 32px;
+    }   
 }

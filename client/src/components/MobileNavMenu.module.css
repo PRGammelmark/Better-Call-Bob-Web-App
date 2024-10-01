@@ -1,0 +1,57 @@
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-40%); /* Slightly offset for a subtle movement effect */
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(-50%);
+    }
+}
+
+@keyframes fade-in-no-movement {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: #3c5a3f;
+    z-index: 99;
+    animation: fade-in-no-movement 0.20s ease;
+}
+
+.mobileMenu {
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: end;
+    height: 100vh;
+    width: 100vw;
+    padding: 150px 50px;
+
+}
+
+.mobileNavItem {
+    color: #fff;
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    text-align: right;
+    border-bottom: 1px solid #ffffff20;
+    cursor: pointer;
+}
+
+.link {
+    width: 100%;
+}

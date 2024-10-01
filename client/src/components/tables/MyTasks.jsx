@@ -61,7 +61,7 @@ const findTættesteBesøg = (opgaveID) => {
 
   return (
         <div className={`${TableCSS.opgaveListe} ${Styles.container}`}>
-            <h2 className={TableCSS.tabelHeader}>Dine igangværende opgaver ({mineAktuelleOpgaver.length})</h2>
+            <h2 className={TableCSS.tabelHeader}>Du har {mineAktuelleOpgaver.length} åbne opgaver</h2>
             <div className={TableCSS.opgaveTabel}>
                 <div className={`${TableCSS.opgaveHeader} ${MyTasksCSS.myTasksHeader}`}>
                     <ul>
