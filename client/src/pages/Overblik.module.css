@@ -343,6 +343,14 @@
     .traditionelBesøgsKalenderDiv {
         padding: 0px;
     }
+
+    .overskrift {
+        font-size: 1.2rem;
+        text-align: center;
+        width: 100%;
+        display: block;
+        margin-bottom: 15px;
+    }
 }
 
 @media screen and (display-mode: standalone) {

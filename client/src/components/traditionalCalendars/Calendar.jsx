@@ -20,8 +20,8 @@ const lang = {
     work_week: 'Arbejdsuge',
     day: 'Dag',
     month: 'Måned',
-    previous: 'Forrige',
-    next: 'Næste',
+    previous: '<',
+    next: '>',
     today: 'I dag',
     agenda: 'Plan',
     noEventsInRange: 'Der er ingen begivenheder i dette tidsinterval.',
@@ -87,7 +87,7 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       ...besøg,
       start: new Date(besøg.datoTidFra),
       end: new Date(besøg.datoTidTil),
-      title: "Opg. #" + besøg.opgaveID.slice(-3)
+      title: "#" + besøg.opgaveID.slice(-3)
     }));
 
     const egneLedigeTiderFormateret = egneLedighedTider.map((ledigTid) => ({
@@ -139,12 +139,6 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   .catch(error => console.log(error))
 })
 
-// const resizeEvent = useCallback(({event, start, end}) => {
-//   const newEventBorders = {
-//     datoTidFra: start,
-//     datoTidTil: end
-//   }
-
 
 // })
 
@@ -162,7 +156,12 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
         style={{ height: 500 }}
         defaultView={"month"}
         views={["month", "week", "day"]}
-        formats={{dayHeaderFormat:(date)=>dayjs(date).format("dddd [d.] DD. MMMM YYYY")}}
+        formats={{
+          dayHeaderFormat:(date)=>dayjs(date).format("ddd, D. MMM"),
+          dayRangeHeaderFormat: ({ start, end }) => 
+    `${dayjs(start).format("D. MMM")} - ${dayjs(end).format("D. MMM")}`,
+          monthHeaderFormat:(date)=>dayjs(date).format("MMM YYYY")
+        }}
         draggableAccessor={(egneBesøgFormateret) => true}
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
