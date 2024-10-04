@@ -742,7 +742,7 @@ const ÅbenOpgave = () => {
 
     return (
     
-        <div>
+        <div className={ÅbenOpgaveCSS.primærContainer}>
             <PageAnimation>
             <div className={ÅbenOpgaveCSS.tilbageOpgaveSektion}>
                 <img src={BackIcon} alt="" onClick={() => navigate(-1)} className={ÅbenOpgaveCSS.tilbageKnap} />

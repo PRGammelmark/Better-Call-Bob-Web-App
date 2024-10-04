@@ -1,23 +1,53 @@
-.openTasksHeader ul li:nth-child(1), .openTasksBody div ul li:nth-child(1) {
-    width: 6%;
+/* ===== DESKTOP COLUMNS ===== */
+
+.openTasksHeaderDesktop ul li:nth-child(1), .openTasksBodyDesktop div ul li:nth-child(1) {
+    width: 10%;
 }
 
-.openTasksHeader ul li:nth-child(2), .openTasksBody div ul li:nth-child(2) {
-    width: 13%;
-}
-
-.openTasksHeader ul li:nth-child(3), .openTasksBody div ul li:nth-child(3) {
-    width: 11%;
-}
-
-.openTasksHeader ul li:nth-child(4), .openTasksBody div ul li:nth-child(4) {
+.openTasksHeaderDesktop ul li:nth-child(2), .openTasksBodyDesktop div ul li:nth-child(2) {
     width: 15%;
 }
 
-.openTasksHeader ul li:nth-child(5), .openTasksBody div ul li:nth-child(5) {
+.openTasksHeaderDesktop ul li:nth-child(3), .openTasksBodyDesktop div ul li:nth-child(3) {
+    width: 15%;
+}
+
+.openTasksHeaderDesktop ul li:nth-child(4), .openTasksBodyDesktop div ul li:nth-child(4) {
     width: 25%;
 }
 
-.openTasksHeader ul li:nth-child(6), .openTasksBody div ul li:nth-child(6) {
-    width: 18%;
+.openTasksHeaderDesktop ul li:nth-child(5), .openTasksBodyDesktop div ul li:nth-child(5) {
+    width: 35%;
+}
+
+/* ===== MOBILE COLUMNS ===== */
+
+.openTasksHeaderMobile ul li:nth-child(1), .openTasksBodyMobile div ul li:nth-child(1) {
+    width: 10%;
+}
+
+.openTasksHeaderMobile ul li:nth-child(2), .openTasksBodyMobile div ul li:nth-child(2) {
+    width: 25%;
+}
+
+.openTasksHeaderMobile ul li:nth-child(3), .openTasksBodyMobile div ul li:nth-child(3) {
+    width: 25%;
+}
+
+.openTasksHeaderMobile ul li:nth-child(4), .openTasksBodyMobile div ul li:nth-child(4) {
+    width: 40%;
+}
+
+.mobileTable {
+    display: none;
+}
+
+@media screen and (max-width: 750px) {
+    .mobileTable {
+        display: block;
+    }
+
+    .desktopTable {
+        display: none;
+    }
 }
