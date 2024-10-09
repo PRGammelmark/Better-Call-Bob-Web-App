@@ -767,18 +767,34 @@ const ÅbenOpgave = () => {
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>
                         <div>
-                            <b className={ÅbenOpgaveCSS.prefix}>Kunde:</b> <span className={ÅbenOpgaveCSS.postfix}>{opgave.navn}</span>
-                            <p className={ÅbenOpgaveCSS.marginTop10}>📞 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
-                            <p>✉️ <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
+                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>Kunde: <span className={ÅbenOpgaveCSS.postfix}>{opgave.navn}</span></b>
+                            <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
+                                <p className={`${ÅbenOpgaveCSS.marginTop10}`}>📞 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
+                                <p>✉️ <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>Ring op</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>Send en mail</a>
+                            </div>
                         </div>
-                        <div>
+                        <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
                             {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
                                 <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                    <option value="modtaget">Modtaget</option>
-                                    <option value="accepteret">Accepteret</option>
-                                    <option value="afventerSvar">Afventer svar</option>
-                                    <option value="afvist">Afvist</option>
+                                    <option value="modtaget">Opgave modtaget</option>
+                                    <option value="afventerSvar">Sendt tilbud</option>
+                                    <option value="accepteret">Tilbud accepteret</option>
+                                    <option value="afvist">Tilbud afvist</option>
+                                </select>
+                            </form>}
+                        </div>
+                        <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
+                            {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
+                                <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
+                                    <option value="modtaget">Opgave modtaget</option>
+                                    <option value="afventerSvar">Sendt tilbud</option>
+                                    <option value="accepteret">Tilbud accepteret</option>
+                                    <option value="afvist">Tilbud afvist</option>
                                 </select>
                             </form>}
                         </div>
@@ -786,7 +802,7 @@ const ÅbenOpgave = () => {
                 </div>
 
                 <div className={ÅbenOpgaveCSS.praktisk}>
-                    <div className={ÅbenOpgaveCSS.uddelegering}>
+                    <div className={`${ÅbenOpgaveCSS.uddelegeringDesktop}`}>
                         {færdiggjort ? null : user.isAdmin && <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
                             <b className={ÅbenOpgaveCSS.prefix}>Tildel ansvarlige:</b>
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Vælg Bob ..." name="vælgBob" onChange={tildelAnsvar}>
@@ -810,7 +826,31 @@ const ÅbenOpgave = () => {
                             </div>
                         </div>
                     </div>
-                    {user.isAdmin && visUddelegeringskalender && <div className={ÅbenOpgaveCSS.calendarDiv}>
+                    <div className={`${ÅbenOpgaveCSS.uddelegeringMobile}`}>
+                        {færdiggjort ? null : user.isAdmin && <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
+
+                            <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Tildel ansvarlig til opgaven ..." name="vælgBob" onChange={tildelAnsvar}>
+                                <option disabled>Tildel ansvarlig til opgaven ...</option>
+                                {ledigeAnsvarlige && ledigeAnsvarlige.map((ledigAnsvarlig) => {
+                                    return(
+                                        <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
+                                    )
+                                })}
+                            </select>
+                        </form>}
+                        
+                        <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
+                            <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
+                            <div className={ÅbenOpgaveCSS.ansvarlige}>
+                            {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
+                                return (
+                                    <p key={ansvarlig._id}>{ansvarlig.navn}{færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}>-</button>}</p>
+                                )
+                            })}
+                            </div>
+                        </div>
+                    </div>
+                    {/* {user.isAdmin && visUddelegeringskalender && <div className={ÅbenOpgaveCSS.calendarDiv}>
                         <DelegationCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
                         <div className={ÅbenOpgaveCSS.dayDetail}>
                             <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('D. MMMM YYYY') : 'Ingen valgt dato'}</p>
@@ -851,7 +891,7 @@ const ÅbenOpgave = () => {
                             )}
                         </div>
                     </div>}
-                    <button className={ÅbenOpgaveCSS.visUddelegeringskalender} onClick={() => {visUddelegeringskalender ? setVisUddelegeringskalender(false) : setVisUddelegeringskalender(true)}}>{visUddelegeringskalender ? "Luk " : "Åbn "} uddelegeringskalender</button>
+                    <button className={ÅbenOpgaveCSS.visUddelegeringskalender} onClick={() => {visUddelegeringskalender ? setVisUddelegeringskalender(false) : setVisUddelegeringskalender(true)}}>{visUddelegeringskalender ? "Luk " : "Åbn "} uddelegeringskalender</button> */}
                 </div>
                 <div className={ÅbenOpgaveCSS.planDiv}>
                     <b className={ÅbenOpgaveCSS.prefix}>Planlagte besøg ({planlagteOpgaver && planlagteOpgaver.length})</b>
