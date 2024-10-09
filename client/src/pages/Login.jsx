@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import styles from "./Login.module.css"
 import { useLogin } from "../hooks/useLogin.js"
 
@@ -12,6 +12,20 @@ const Login = () => {
 
         await login(email, password)
     }
+
+    useEffect(() => {
+        if (window.matchMedia('(display-mode: standalone)').matches) {
+            if (window.FaceID) {
+                window.FaceID.authenticate()
+                    .then(credentials => {
+                        login(credentials.email, credentials.password);
+                    })
+                    .catch(err => {
+                        console.error("FaceID authentication failed", err);
+                    });
+            }
+        }
+    }, [login]);
 
   return (
     <div className={styles.loginContainer}>
