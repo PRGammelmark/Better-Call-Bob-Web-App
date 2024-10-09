@@ -1,3 +1,15 @@
 input {
     -webkit-appearance: none;
 }
+
+input:focus {
+    -webkit-appearance: none;
+}
+
+textarea {
+    -webkit-appearance: none;
+}
+
+textarea:focus {
+    -webkit-appearance: none;
+}
