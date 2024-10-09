@@ -13,20 +13,6 @@ const Login = () => {
         await login(email, password)
     }
 
-    useEffect(() => {
-        if (window.matchMedia('(display-mode: standalone)').matches) {
-            if (window.FaceID) {
-                window.FaceID.authenticate()
-                    .then(credentials => {
-                        login(credentials.email, credentials.password);
-                    })
-                    .catch(err => {
-                        console.error("FaceID authentication failed", err);
-                    });
-            }
-        }
-    }, [login]);
-
   return (
     <div className={styles.loginContainer}>
       <form action="" className={styles.loginForm} onSubmit={handleSubmit}>
