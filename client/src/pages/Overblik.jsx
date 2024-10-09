@@ -232,7 +232,7 @@ const Overblik = () => {
 
     setEventData(besøgTilÅbning);
     setOpenDialog(true);
-};
+  };
 
   return (
     <PageAnimation>

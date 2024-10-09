@@ -12,6 +12,7 @@ import OpgavebesøgCalendar from "../components/calendars/OpgavebesøgCalendar.j
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 import Modal from '../components/Modal.jsx'
+import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 
 const ÅbenOpgave = () => {
     const {user} = useAuthContext();
@@ -72,6 +73,10 @@ const ÅbenOpgave = () => {
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
     const [selectedDate, setSelectedDate] = useState(initialDate);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
+    const [openDialog, setOpenDialog] = useState(false)
+    const [eventData, setEventData] = useState(null)
+    const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
+    const [aktueltBesøg, setAktueltBesøg] = useState(null)
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -721,6 +726,24 @@ const ÅbenOpgave = () => {
     function toggleVisKalender () {
         visKalender ? setVisKalender(false) : setVisKalender(true)
     }
+
+    const openTableEvent = (besøg) => {
+        const besøgID = besøg.tættesteBesøgID;
+        const besøgTilÅbning = egneBesøg.find(besøg => besøg._id === besøgID);
+    
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${besøgTilÅbning.opgaveID}`, {
+            headers: {
+              'Authorization': `Bearer ${user.token}`
+            }
+          })
+          .then(res => {
+            setTilknyttetOpgave(res.data)
+          })
+          .catch(error => console.log(error))
+    
+        setEventData(besøgTilÅbning);
+        setOpenDialog(true);
+      };
     
     // konstater til regnskabsopstillingen -- HONORARER --
     const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0);
@@ -894,8 +917,21 @@ const ÅbenOpgave = () => {
                     <button className={ÅbenOpgaveCSS.visUddelegeringskalender} onClick={() => {visUddelegeringskalender ? setVisUddelegeringskalender(false) : setVisUddelegeringskalender(true)}}>{visUddelegeringskalender ? "Luk " : "Åbn "} uddelegeringskalender</button> */}
                 </div>
                 <div className={ÅbenOpgaveCSS.planDiv}>
-                    <b className={ÅbenOpgaveCSS.prefix}>Planlagte besøg ({planlagteOpgaver && planlagteOpgaver.length})</b>
-                    <div className={ÅbenOpgaveCSS.opgaveBesøgDiv}>
+                    <b className={ÅbenOpgaveCSS.prefix}>{planlagteOpgaver && planlagteOpgaver.length} planlagt(e) besøg</b>
+                    <ÅbenOpgaveCalendar 
+                        user={user} 
+                        tilknyttetOpgave={tilknyttetOpgave}
+                        setTilknyttetOpgave={setTilknyttetOpgave}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        eventData={eventData}
+                        setEventData={setEventData} 
+                        aktueltBesøg={aktueltBesøg} />
+                    
+                    
+                    
+                    
+                    {/* <div className={ÅbenOpgaveCSS.opgaveBesøgDiv}>
                         <div className={ÅbenOpgaveCSS.opgavebesøgDates}>
                             <OpgavebesøgCalendar selectedOpgaveDate={selectedOpgaveDate} setSelectedOpgaveDate={setSelectedOpgaveDate} planlagteOpgaver={planlagteOpgaver} opgave={opgave} egneLedigeTider={egneLedigeTider} egneBesøg={egneBesøg} userID={userID} visKalender={visKalender}/> 
                             {visKalender ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Skjul din kalender</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Vis din kalender</button>}
@@ -1026,7 +1062,10 @@ const ÅbenOpgave = () => {
                                 </Modal>
                             </div>
                         </div>
-                    </div>
+                    </div> */}
+
+
+
                     
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>

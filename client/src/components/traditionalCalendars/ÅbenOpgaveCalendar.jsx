@@ -3,13 +3,14 @@ import { useMemo, useState, useEffect, useCallback } from 'react'
 import { Calendar, dayjsLocalizer } from 'react-big-calendar'
 import axios from 'axios'
 import dayjs from 'dayjs'
-import Styles from './Calendar.module.css'
+import Styles from './ÅbenOpgaveCalendar.module.css'
 import '../../extra-styles/styles.scss';
 import Modal from '../../components/Modal.jsx'
 import ModalStyles from '../../components/Modal.module.css';
 import { Link } from 'react-router-dom'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
+import ThreeDayView from './ThreeDayView.jsx'
 
 
 const localizer = dayjsLocalizer(dayjs)
@@ -18,6 +19,7 @@ const lang = {
   da: {
     week: 'Uge',
     work_week: 'Arbejdsuge',
+    threeDay: '3 dage',
     day: 'Dag',
     month: 'Måned',
     previous: '<',
@@ -31,7 +33,7 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
 
   const userID = user.id;
   
@@ -42,6 +44,13 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       }),
       []
   )
+
+  const views = useMemo(() => ({
+    month: true,
+    week: false,
+    threeDay: ThreeDayView,  // Adding the custom 3-day view
+    day: true,
+  }), []);
 
     const [egneBesøg, setEgneBesøg] = useState([]);
     const [egneLedighedTider, setEgneLedighedTider] = useState([])
@@ -155,11 +164,11 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
         messages={messages}
         style={{ height: 500 }}
         defaultView={"month"}
-        views={["month", "week", "day"]}
+        views={views}
         formats={{
           dayHeaderFormat:(date)=>dayjs(date).format("ddd, D. MMM"),
           dayRangeHeaderFormat: ({ start, end }) => 
-    `${dayjs(start).format("D.")}-${dayjs(end).format("D. MMM")}`,
+            `${dayjs(start).format("D.")}-${dayjs(end).format("D. MMM")}`,
           monthHeaderFormat:(date)=>dayjs(date).format("MMM YYYY")
         }}
         draggableAccessor={(egneBesøgFormateret) => true}
@@ -181,4 +190,4 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   )
 }
 
-export default TraditionalCalendar
+export default ÅbenOpgaveCalendar
