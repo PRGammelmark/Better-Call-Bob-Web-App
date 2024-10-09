@@ -1093,4 +1093,23 @@
     .uddelegeringDesktop {
         display: none;
     }
+
+    .ansvarshavendeListe {
+        padding: 0px 32px 20px 32px;
+        border: 1px solid #1f1f1f30;
+        border-radius: 15px;
+        margin-top: 40px;
+        width: 100%;
+        position: relative;
+    }
+
+    .ansvarshavendeHeading {
+        background: #fff;
+        display: inline-block;
+        position: absolute;
+        top: -10px;
+        left: 22px;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
 }

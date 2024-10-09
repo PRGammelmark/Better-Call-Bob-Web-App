@@ -840,13 +840,13 @@ const ÅbenOpgave = () => {
                         </form>}
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
-                            <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
+                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.ansvarshavendeHeading}`}>Ansvarshavende</b>
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
-                            {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
+                            {nuværendeAnsvarlige && nuværendeAnsvarlige.length > 0 ? nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
                                     <p key={ansvarlig._id}>{ansvarlig.navn}{færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}>-</button>}</p>
                                 )
-                            })}
+                            }) : <p>Der er ikke udpeget en ansvarlig til opgaven.</p>}
                             </div>
                         </div>
                     </div>
