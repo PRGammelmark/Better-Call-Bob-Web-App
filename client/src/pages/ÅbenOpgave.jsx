@@ -15,6 +15,7 @@ import Modal from '../components/Modal.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 
 const ÅbenOpgave = () => {
+    
     const {user} = useAuthContext();
     
     if (!user) {
@@ -926,7 +927,9 @@ const ÅbenOpgave = () => {
                         setOpenDialog={setOpenDialog}
                         eventData={eventData}
                         setEventData={setEventData} 
-                        aktueltBesøg={aktueltBesøg} />
+                        aktueltBesøg={aktueltBesøg} 
+                        opgaveID={opgaveID}
+                        />
                     
                     
                     

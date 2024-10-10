@@ -21,8 +21,11 @@
   /* Hide default HTML checkbox */
   .switch input {
     opacity: 0;
-    width: 0;
-    height: 0;
+    background: black;
+    width: 30px;
+    height: 18px;
+    z-index: 2;
+    position: relative;
   }
   
   /* The slider */
@@ -33,6 +36,7 @@
     left: 0;
     right: 0;
     bottom: 0;
+    z-index: 1;
     border-radius: 17px;
     background-color: #ccc;
     -webkit-transition: .4s;

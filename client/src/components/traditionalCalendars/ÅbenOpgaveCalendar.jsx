@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import ThreeDayView from './ThreeDayView.jsx'
-
+import { useBesøg } from '../../context/BesøgContext.jsx'
 
 const localizer = dayjsLocalizer(dayjs)
 
@@ -33,9 +33,21 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID}) => {
 
-  const userID = user.id;
+  
+
+  // const [egneBesøg, setEgneBesøg] = useState([]);
+  // const [egneLedighedTider, setEgneLedighedTider] = useState([])
+
+  const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
+  const [visEgneBesøg, setVisEgneBesøg] = useState(true)
+  const [visAlleBesøg, setVisAlleBesøg] = useState(false)
+  const [visAlt, setVisAlt] = useState(false)
+  
+  const filterEgneBesøgDenneOpgave = egneBesøg.filter(besøg => besøg.opgaveID === opgaveID)
+  const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
+
   
   const { defaultDate, messages } = useMemo(
       () => ({
@@ -52,9 +64,6 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
     day: true,
   }), []);
 
-    const [egneBesøg, setEgneBesøg] = useState([]);
-    const [egneLedighedTider, setEgneLedighedTider] = useState([])
-
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
@@ -62,44 +71,58 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       }
     }, [openDialog]);
 
-    useEffect(() => {
-      axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(res => {
-        const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
-        setEgneBesøg(filterEgneBesøg)
-        console.log("Egne besøg:")
-        console.log(filterEgneBesøg)
-      })
-      .catch(error => console.log(error))
-    }, [])
+    // useEffect(() => {
+    //   axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
+    //     headers: {
+    //       'Authorization': `Bearer ${user.token}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
+    //     setEgneBesøg(filterEgneBesøg)
+    //     console.log("Egne besøg:")
+    //     console.log(filterEgneBesøg)
+    //   })
+    //   .catch(error => console.log(error))
+    // }, [])
 
-    useEffect(() => {
-      axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(res => {
-        const filterEgneLedigeTider = res.data.filter(ledigTid => ledigTid.brugerID === userID)
-        setEgneLedighedTider(filterEgneLedigeTider)
-        console.log("Egne ledige tider:")
-        console.log(filterEgneLedigeTider)
-      })
-      .catch(error => console.log(error))
-    }, [])
+    // useEffect(() => {
+    //   axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
+    //     headers: {
+    //       'Authorization': `Bearer ${user.token}`
+    //     }
+    //   })
+    //   .then(res => {
+    //     const filterEgneLedigeTider = res.data.filter(ledigTid => ledigTid.brugerID === userID)
+    //     setEgneLedighedTider(filterEgneLedigeTider)
+    //     console.log("Egne ledige tider:")
+    //     console.log(filterEgneLedigeTider)
+    //   })
+    //   .catch(error => console.log(error))
+    // }, [])
 
-    const egneBesøgFormateret = egneBesøg.map((besøg) => ({
+    const egneBesøgFormateret = filterEgneBesøgDenneOpgave.map((besøg) => ({
       ...besøg,
       start: new Date(besøg.datoTidFra),
       end: new Date(besøg.datoTidTil),
       title: "#" + besøg.opgaveID.slice(-3)
     }));
 
-    const egneLedigeTiderFormateret = egneLedighedTider.map((ledigTid) => ({
+    const alleBesøgDenneOpgaveFormateret = filterAlleBesøgDenneOpgave.map((besøg) => ({
+      ...besøg,
+      start: new Date(besøg.datoTidFra),
+      end: new Date(besøg.datoTidTil),
+      title: "#" + besøg.opgaveID.slice(-3)
+    }));
+
+    const alleBesøgFormateret = alleBesøg.map((besøg) => ({
+      ...besøg,
+      start: new Date(besøg.datoTidFra),
+      end: new Date(besøg.datoTidTil),
+      title: "#" + besøg.opgaveID.slice(-3)
+    }));
+
+    const ledigeTiderFormateret =  alleLedigeTider.map((ledigTid) => ({
       ...ledigTid,
       start: new Date(ledigTid.datoTidFra),
       end: new Date(ledigTid.datoTidTil),
@@ -148,6 +171,24 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   .catch(error => console.log(error))
 })
 
+function kalenderVisningEgneBesøg(){
+  setVisAlleBesøg(false)
+  setVisAlt(false)
+  setVisEgneBesøg(true)
+}
+
+function kalenderVisningAlleBesøg(){
+  setVisEgneBesøg(false)
+  setVisAlt(false)
+  setVisAlleBesøg(true)
+}
+
+function kalenderVisningAlt(){
+  setVisEgneBesøg(false)
+  setVisAlleBesøg(false)
+  setVisAlt(true)
+}
+
 
 // })
 
@@ -156,8 +197,8 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
       <TradCalendar
         culture={'da'}
         localizer={localizer}
-        events={egneBesøgFormateret}
-        backgroundEvents={egneLedigeTiderFormateret}
+        events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : alleBesøgFormateret}
+        backgroundEvents={visAlt ? ledigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         startAccessor="start"
         endAccessor="end"
@@ -179,7 +220,7 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visEgneBesøg} onChange={kalenderVisningEgneBesøg} />
                 <span className={Styles.slider}></span>
               </label>
             </div>
@@ -188,7 +229,7 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visAlleBesøg} onChange={kalenderVisningAlleBesøg} />
                 <span className={Styles.slider}></span>
               </label>
             </div>
@@ -197,7 +238,7 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visAlt} onChange={kalenderVisningAlt} />
                 <span className={Styles.slider}></span>
               </label>
             </div>

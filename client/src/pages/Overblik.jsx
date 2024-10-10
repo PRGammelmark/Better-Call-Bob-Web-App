@@ -28,8 +28,8 @@ const Overblik = () => {
   // const [egneLedigeTider, setEgneLedigeTider] = useState(null)
   // const [egneBesøg, setEgneBesøg] = useState(null)
   const [visLedighed, setVisLedighed] = useState(false)
-  const [refetchBesøg, setRefetchBesøg] = useState(false)
-  const [refetchLedigeTider, setRefetchLedigeTider] = useState(false)
+  // const [refetchBesøg, setRefetchBesøg] = useState(false)
+  // const [refetchLedigeTider, setRefetchLedigeTider] = useState(false)
   const [tilføjLedighed, setTilføjLedighed] = useState(false)
   const [fraTid, setFraTid] = useState("08:00")
   const [tilTid, setTilTid] = useState("16:00")
@@ -40,7 +40,7 @@ const Overblik = () => {
   const [eventData, setEventData] = useState(null)
   const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
   const [aktueltBesøg, setAktueltBesøg] = useState(null)
-  const { egneLedigeTider, egneBesøg } = useBesøg();
+  const { egneLedigeTider, egneBesøg, refetchLedigeTider, refetchBesøg, alleLedigeTider, alleBesøg, setEgneLedigeTider, setEgneBesøg, setAlleLedigeTider, setAlleBesøg, setRefetchLedigeTider, setRefetchBesøg } = useBesøg();
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
