@@ -96,3 +96,13 @@ $active-border: $btn-border;
     margin-left: 10px;
   }
 }
+
+@media screen and (max-width: 750px) {
+.rbc-toolbar .rbc-btn-group:first-child button:first-child{
+  display: none;
+}
+
+.rbc-toolbar .rbc-btn-group:first-child button:nth-child(2){
+  border-radius: 5px 0 0 5px;
+}
+}
