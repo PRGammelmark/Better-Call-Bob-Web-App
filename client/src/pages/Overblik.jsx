@@ -8,6 +8,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import TraditionalCalendar from '../components/traditionalCalendars/Calendar.jsx'
+import { useBesøg } from '../context/BesøgContext.jsx'
 
 const Overblik = () => {
   const {user} = useAuthContext();
@@ -16,14 +17,16 @@ const Overblik = () => {
     return
   }
 
+
+
   const navigate = useNavigate()
 
   const userID = user.id;
   
   const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(dayjs())
   const [selectedDate, setSelectedDate] = useState(dayjs)
-  const [egneLedigeTider, setEgneLedigeTider] = useState(null)
-  const [egneBesøg, setEgneBesøg] = useState(null)
+  // const [egneLedigeTider, setEgneLedigeTider] = useState(null)
+  // const [egneBesøg, setEgneBesøg] = useState(null)
   const [visLedighed, setVisLedighed] = useState(false)
   const [refetchBesøg, setRefetchBesøg] = useState(false)
   const [refetchLedigeTider, setRefetchLedigeTider] = useState(false)
@@ -37,6 +40,7 @@ const Overblik = () => {
   const [eventData, setEventData] = useState(null)
   const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
   const [aktueltBesøg, setAktueltBesøg] = useState(null)
+  const { egneLedigeTider, egneBesøg } = useBesøg();
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
@@ -50,31 +54,31 @@ const Overblik = () => {
       .catch(error => console.log(error))
   }, [])
   
-  useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
-      headers: {
-        'Authorization': `Bearer ${user.token}`
-      }
-    })
-    .then(res => {
-      const filterEgneLedigeTider = res.data.filter((ledigTid) => ledigTid.brugerID === userID)
-      setEgneLedigeTider(filterEgneLedigeTider)
-    })
-    .catch(error => console.log(error))
-  }, [refetchLedigeTider])
+  // useEffect(() => {
+  //   axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${user.token}`
+  //     }
+  //   })
+  //   .then(res => {
+  //     const filterEgneLedigeTider = res.data.filter((ledigTid) => ledigTid.brugerID === userID)
+  //     setEgneLedigeTider(filterEgneLedigeTider)
+  //   })
+  //   .catch(error => console.log(error))
+  // }, [refetchLedigeTider])
 
-  useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
-      headers: {
-        'Authorization': `Bearer ${user.token}`
-      }
-    })
-    .then(res => {
-      const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
-      setEgneBesøg(filterEgneBesøg)
-    })
-    .catch(error => console.log(error))
-  }, [refetchBesøg])
+  // useEffect(() => {
+  //   axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${user.token}`
+  //     }
+  //   })
+  //   .then(res => {
+  //     const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
+  //     setEgneBesøg(filterEgneBesøg)
+  //   })
+  //   .catch(error => console.log(error))
+  // }, [refetchBesøg])
 
   function toggleVisLedighed(){
     visLedighed ? setVisLedighed(false) : setVisLedighed(true)

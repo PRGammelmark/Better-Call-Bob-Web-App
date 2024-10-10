@@ -175,6 +175,35 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
       />
+      <div className={Styles.besøgFilterDiv}>
+          <div className={Styles.besøgFilterDivItem}>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis dine besøg<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
+          </div>
+          <div className={Styles.besøgFilterDivItem}>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis alle besøg<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
+          </div>
+          <div className={Styles.besøgFilterDivItem}>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} /* checked={kalenderVisning} onChange={skiftKalendervisning} */ />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis alt<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (opgaver & ledighed)</span></b>
+          </div>
+      </div>
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
         <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave || aktueltBesøg) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
         <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>
