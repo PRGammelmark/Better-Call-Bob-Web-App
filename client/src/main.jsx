@@ -9,6 +9,7 @@ import 'dayjs/locale/da'; // Import Danish locale for dayjs
 import { daDK } from '@mui/x-date-pickers/locales';
 import updateLocale from 'dayjs/plugin/updateLocale'
 import { BesøgProvider } from './context/BesøgContext.jsx'
+import { TaskAndDateProvider } from './context/TaskAndDateContext.jsx'
 
 dayjs.extend(updateLocale)
 dayjs.locale('da'); // Set dayjs to use Danish locale globally
@@ -20,13 +21,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthContextProvider>
       <BesøgProvider>
-        <LocalizationProvider 
-          dateAdapter={AdapterDayjs} 
-          adapterLocale="da" // Set the locale for AdapterDayjs
-          localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
-        >
-          <App />
-        </LocalizationProvider>
+        <TaskAndDateProvider>
+          <LocalizationProvider 
+            dateAdapter={AdapterDayjs} 
+            adapterLocale="da" // Set the locale for AdapterDayjs
+            localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
+          >
+            <App />
+          </LocalizationProvider>
+        </TaskAndDateProvider>
       </BesøgProvider>
     </AuthContextProvider>
   </React.StrictMode>

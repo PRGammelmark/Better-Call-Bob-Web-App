@@ -12,6 +12,7 @@ import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import ThreeDayView from './ThreeDayView.jsx'
 import { useBesøg } from '../../context/BesøgContext.jsx'
+import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 
 const localizer = dayjsLocalizer(dayjs)
 
@@ -41,6 +42,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
   // const [egneLedighedTider, setEgneLedighedTider] = useState([])
 
   const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
+  const { chosenDate, setChosenDate } = useTaskAndDate();
   const [visEgneBesøg, setVisEgneBesøg] = useState(true)
   const [visAlleBesøg, setVisAlleBesøg] = useState(false)
   const [visAlt, setVisAlt] = useState(false)
@@ -189,6 +191,11 @@ function kalenderVisningAlt(){
   setVisAlt(true)
 }
 
+const handleDateChange = (date) => {
+  console.log(date)
+  setChosenDate(date);
+}
+
 
 // })
 
@@ -215,6 +222,7 @@ function kalenderVisningAlt(){
         draggableAccessor={(egneBesøgFormateret) => true}
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
+        onNavigate={handleDateChange}
       />
       <div className={Styles.besøgFilterDiv}>
           <div className={Styles.besøgFilterDivItem}>

@@ -13,6 +13,7 @@ import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 import Modal from '../components/Modal.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
+import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -70,7 +71,8 @@ const ÅbenOpgave = () => {
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
-    
+
+    const { chosenTask, setChosenTask } = useTaskAndDate();
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
     const [selectedDate, setSelectedDate] = useState(initialDate);
     const [, forceUpdate] = useReducer(x => x + 1, 0);
@@ -260,7 +262,17 @@ const ÅbenOpgave = () => {
         .catch(error => console.log(error))
     }, [])
 
-    
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setChosenTask(res.data);
+        })
+        .catch(error => console.log(error))
+    }, [nuværendeAnsvarlige])
 
     const getBrugerName = (brugerID) => {
         const bruger = ledigeAnsvarlige && ledigeAnsvarlige.find(user => user._id === brugerID);

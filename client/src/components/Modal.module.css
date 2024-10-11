@@ -12,6 +12,7 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
     border-radius: 20px;
     z-index: 30;
+    min-width: 500px;
 }
 
 @keyframes fade-in {
@@ -65,8 +66,20 @@
     padding-right: 30px;
 }
 
+.modalSubheadingContainer {
+    margin-bottom: 20px;
+}
+
+.modalSubheading {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
 .modalInput {
     width: 100%;
+    background: #fff;
+    color: #222222;
     border-radius: 15px;
     margin-bottom: 20px;
     padding: 8px 20px;
@@ -102,6 +115,42 @@
     background: #59bf1a;
 }
 
+.modalLabel {
+    font-family: OmnesBold;
+}
+
 .bold {
     font-family: OmnesBold;
+}
+
+.timeInputs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.timeInput {
+    width: 45%;
+}
+
+.timeSeparator {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    width: 20px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 750px) {
+    .modal {
+        width: 90vw;
+        min-width: 0;
+    }
+
+    .buttonFullWidth {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
 }

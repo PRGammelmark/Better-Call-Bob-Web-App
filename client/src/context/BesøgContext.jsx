@@ -42,11 +42,6 @@ export const BesøgProvider = ({ children }) => {
         }
     }, [user, refetchLedigeTider]);
 
-    // Return the provider with user-based logic
-    // if (!user) {
-    //     return null; // Don't render children if no user
-    // }
-
     const userID = user && user.id
 
     return (
