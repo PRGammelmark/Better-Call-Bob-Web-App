@@ -43,9 +43,11 @@ export const BesøgProvider = ({ children }) => {
     }, [user, refetchLedigeTider]);
 
     // Return the provider with user-based logic
-    if (!user) {
-        return null; // Don't render children if no user
-    }
+    // if (!user) {
+    //     return null; // Don't render children if no user
+    // }
+
+    const userID = user && user.id
 
     return (
         <BesøgContext.Provider value={{ 
@@ -61,7 +63,7 @@ export const BesøgProvider = ({ children }) => {
             setAlleBesøg,
             setRefetchBesøg,
             setRefetchLedigeTider,
-            userID: user.id
+            userID
          }}>
           {children}
         </BesøgContext.Provider>
