@@ -13,3 +13,11 @@ textarea {
 textarea:focus {
     -webkit-appearance: none;
 }
+
+select {
+    -webkit-appearance: none;
+}
+
+select:focus {
+    -webkit-appearance: none;
+}

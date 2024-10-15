@@ -89,6 +89,7 @@ const ÅbenOpgave = () => {
         })
         .then(res => {
             setLedigeAnsvarlige(res.data)
+            console.log(res.data)
         })
         .catch(error => console.log(error))
     }, [])
@@ -941,6 +942,8 @@ const ÅbenOpgave = () => {
                         setEventData={setEventData} 
                         aktueltBesøg={aktueltBesøg} 
                         opgaveID={opgaveID}
+                        getBrugerName={getBrugerName}
+                        ledigeAnsvarlige={ledigeAnsvarlige}
                         />
                     
                     

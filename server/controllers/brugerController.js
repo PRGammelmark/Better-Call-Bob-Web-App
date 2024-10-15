@@ -92,10 +92,10 @@ const loginBruger = async (req,res) => {
 
 const signupBruger = async (req,res) => {
 
-    const { navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar } = req.body;
+    const { navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar, eventColor } = req.body;
 
     try {
-        const bruger = await Bruger.signup(navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar);
+        const bruger = await Bruger.signup(navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar, eventColor);
         res.status(200).json({email, bruger})
     } catch (error) {
         res.status(400).json({error: error.message})

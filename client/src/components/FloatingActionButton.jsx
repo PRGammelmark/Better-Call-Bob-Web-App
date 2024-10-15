@@ -9,31 +9,36 @@ import Modal from "./Modal.jsx"
 import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
+import axios from 'axios'
+import { useBesøg } from '../context/BesøgContext.jsx'
 
 const FloatingActionButton = () => {
 
     const { user } = useAuthContext();
 
-    const { chosenDate, chosenTask } = useTaskAndDate();
+    const { chosenDate, setChosenDate, chosenTask } = useTaskAndDate();
+    const { refetchBesøg, setRefetchBesøg, medarbejdere } = useBesøg();
     const [menuOpen, setMenuOpen] = useState(false);
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(null);
+    const [selectedAnsvarligColor, setSelectedAnsvarligColor] = useState(""); 
+    const [selectedTimeFrom, setSelectedTimeFrom] = useState("09:00");
+    const [selectedTimeTo, setSelectedTimeTo] = useState("09:00");
+    const [comment, setComment] = useState("");
+    const [opretBesøgError, setOpretBesøgError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
         setIsOnTaskPage(window.location.pathname.includes("/opgave/"));
     }, [window.location.pathname]);
 
-    isOnTaskPage && console.log("isOnTaskPage");
-
     function toggleMenu(){
         menuOpen ? setMenuOpen(false) : setMenuOpen(true);
     }
 
     function addNewBesøg(){
-        
         setModalOpen(true);
-        console.log(modalOpen)
     }
 
     function redirectCreateTask() {
@@ -44,6 +49,41 @@ const FloatingActionButton = () => {
     function redirectCreateUser() {
         setMenuOpen(false)
         navigate("ny-bruger")
+    }
+
+    function submitNewBesøg(e){
+        e.preventDefault();
+        
+        const besøg = {
+            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
+            datoTidTil: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
+            brugerID: selectedAnsvarlig,
+            opgaveID: chosenTask._id,
+            kommentar: comment ? comment : "",
+            eventColor: selectedAnsvarligColor
+        }
+
+        if (besøg.datoTidFra >= besøg.datoTidTil) {
+            setOpretBesøgError("'Fra kl.' skal være før 'Til kl.'.")
+            setTimeout(() => {
+                setOpretBesøgError("")
+            }, 5000)
+            return
+        }
+
+        // console.log(besøg)
+        
+        axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
+        })
+        .catch(error => console.log(error))
+
+        setModalOpen(false);
     }
 
   return (
@@ -67,14 +107,14 @@ const FloatingActionButton = () => {
                 <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.navn : "Ingen person"}</h3>
                 <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.adresse : "Ingen adresse"}</h3>
             </div>
-            <form action="">
+            <form action="" onSubmit={submitNewBesøg}>
                 {user.isAdmin ? (
                     <>
                     <label className={ModalStyles.modalLabel} htmlFor="ansvarlige">Medarbejder</label>
-                    <select className={ModalStyles.modalInput} id="ansvarlige">
+                    <select className={ModalStyles.modalInput} id="ansvarlige" value={selectedAnsvarlig} onChange={(e) => {setSelectedAnsvarlig(e.target.value); console.log(e.target.value)}}>
                         {chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 ? (
                             chosenTask.ansvarlig.map((ansvarlig, index) => (
-                                <option key={index} value={ansvarlig.id}>{ansvarlig.navn}</option>
+                                <option key={index} value={ansvarlig._id}>{ansvarlig.navn}</option>
                             ))
                         ) : (
                             <option value="">Ingen ansvarlige</option>
@@ -85,20 +125,21 @@ const FloatingActionButton = () => {
                     <input className={ModalStyles.modalInput} type="text" id="ansvarlige" value={user.navn} readOnly />
                 )}
                 <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
-                <input className={ModalStyles.modalInput} type="date" id="besøg-dato" defaultValue={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : new Date().toISOString().split('T')[0]} />
+                <input className={ModalStyles.modalInput} type="date" id="besøg-dato" value={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")} onChange={(e) => setChosenDate(e.target.value)} />
                 <label className={ModalStyles.modalLabel} htmlFor="besøg-tid-fra">Tid</label>
                 <div className={ModalStyles.timeInputs}>
                     <div className={ModalStyles.timeInput}>
-                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" defaultValue={"09:00"}/>
+                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" value={selectedTimeFrom} onChange={(e) => setSelectedTimeFrom(e.target.value)} />
                     </div>
                     <div className={ModalStyles.timeSeparator}>–</div>
                     <div className={ModalStyles.timeInput}>
-                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" defaultValue={"09:00"}/>
+                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" value={selectedTimeTo} onChange={(e) => setSelectedTimeTo(e.target.value)} />
                     </div>
                 </div>
                 <label className={ModalStyles.modalLabel} htmlFor="besøg-kommentar">Evt. kommentar</label>
-                <textarea className={ModalStyles.modalInput} id="besøg-kommentar" rows="3"></textarea>
+                <textarea className={ModalStyles.modalInput} id="besøg-kommentar" rows="3" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
                 <button className={ModalStyles.buttonFullWidth}>Tilføj besøg</button>
+                {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
             </form>
         </Modal> }
     </>

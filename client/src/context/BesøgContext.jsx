@@ -13,7 +13,8 @@ export const BesøgProvider = ({ children }) => {
     const [egneLedigeTider, setEgneLedigeTider] = useState([]);
     const [refetchBesøg, setRefetchBesøg] = useState(false);
     const [refetchLedigeTider, setRefetchLedigeTider] = useState(false);
-
+    const [medarbejdere, setMedarbejdere] = useState([]);
+    const [refetchMedarbejdere, setRefetchMedarbejdere] = useState(false);
     // Conditionally execute side-effects but don't return early
     useEffect(() => {
         if (user) {
@@ -28,6 +29,18 @@ export const BesøgProvider = ({ children }) => {
             .catch(error => console.log(error));
         }
     }, [user, refetchBesøg]);
+
+    useEffect(() => {
+        if (user) {
+            axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
+                headers: { 'Authorization': `Bearer ${user.token}` }
+            })
+            .then(res => {
+                setMedarbejdere(res.data);
+            })
+            .catch(error => console.log(error));
+        }
+    }, [user, refetchMedarbejdere])
 
     useEffect(() => {
         if (user) {
@@ -52,12 +65,16 @@ export const BesøgProvider = ({ children }) => {
             alleLedigeTider,
             refetchBesøg,
             refetchLedigeTider,
+            medarbejdere,
+            refetchMedarbejdere,
             setEgneLedigeTider,
             setAlleLedigeTider,
             setEgneBesøg,
             setAlleBesøg,
             setRefetchBesøg,
             setRefetchLedigeTider,
+            setMedarbejdere,
+            setRefetchMedarbejdere,
             userID
          }}>
           {children}

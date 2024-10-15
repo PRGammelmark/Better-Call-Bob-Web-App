@@ -18,6 +18,14 @@ const besøgSchema = new Schema({
     opgaveID: {
         type: String,
         required: true
+    },
+    kommentar: {
+        type: String,
+        required: false
+    },
+    eventColor: {
+        type: String,
+        required: false
     }
 })
 

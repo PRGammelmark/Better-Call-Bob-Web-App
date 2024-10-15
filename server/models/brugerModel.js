@@ -37,6 +37,10 @@ const brugerSchema = new Schema({
     showTraditionalCalendar: {
         type: Boolean,
         default: false
+    },
+    eventColor: {
+        type: String,
+        required: false
     }
 })
 
@@ -62,11 +66,23 @@ brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, ema
         throw Error("Emailen findes allerede.")
     }
 
+    if (!eventColor) {
+        const getRandomDarkColor = () => {
+            const randomChannelValue = () => Math.floor(Math.random() * 220); // Limit RGB to low values for darkness
+            const r = randomChannelValue();
+            const g = randomChannelValue();
+            const b = randomChannelValue();
+            return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`; // Convert to hex
+          };
+
+        eventColor = getRandomDarkColor();
+    }
+
     // signup bruger
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
-    const bruger = await this.create({ navn, telefon, adresse, titel, email, password: hash, isAdmin, showTraditionalCalendar })
+    const bruger = await this.create({ navn, telefon, adresse, titel, email, password: hash, isAdmin, showTraditionalCalendar, eventColor })
 
     return bruger
 }
