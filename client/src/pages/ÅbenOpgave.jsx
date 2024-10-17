@@ -1127,7 +1127,7 @@ const ÅbenOpgave = () => {
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
                                 <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
-                                <textarea className={ÅbenOpgaveCSS.modalInput} type="text" required value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
+                                <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
                                 <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
                                     <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 200 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 200 ? 0 : 200)}/>
                                     <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 200,-)</label>
