@@ -526,7 +526,22 @@
     padding-left: 20px;
 }
 
+.posteringKnapper {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    padding-left: 20px;
+}
+
 .kommentarKnap {
+    font-size: 0.8rem;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: OmnesBold;
+}
+
+.posteringKnap {
     font-size: 0.8rem;
     border: none;
     background: none;

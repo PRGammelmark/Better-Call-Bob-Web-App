@@ -21,3 +21,11 @@ select {
 select:focus {
     -webkit-appearance: none;
 }
+
+input[type="checkbox"] {
+    -webkit-appearance: checkbox;
+}
+
+input[type="checkbox"]:focus {
+    -webkit-appearance: checkbox;
+}

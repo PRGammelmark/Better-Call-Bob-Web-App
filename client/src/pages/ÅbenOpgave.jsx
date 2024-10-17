@@ -43,7 +43,9 @@ const ÅbenOpgave = () => {
     const [timer, setTimer] = useState(null);
     const [openModal, setOpenModal] = useState(false);
     const [openCommentModalID, setOpenCommentModalID] = useState(null);
+    const [openPosteringModalID, setOpenPosteringModalID] = useState(null);
     const [editedComment, setEditedComment] = useState("");
+    const [editedPostering, setEditedPostering] = useState("");
     const [outlays, setOutlays] = useState([]);
     const [øvrige, setØvrige] = useState([]);
     const [handymantimer, setHandymantimer] = useState("");
@@ -51,6 +53,7 @@ const ÅbenOpgave = () => {
     const [posteringDato, setPosteringDato] = useState("");
     const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
     const [inkluderOpstart, setInkluderOpstart] = useState(200);
+    const [postering, setPostering] = useState("");
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
@@ -71,6 +74,7 @@ const ÅbenOpgave = () => {
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
+
 
     const { chosenTask, setChosenTask } = useTaskAndDate();
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
@@ -131,8 +135,6 @@ const ÅbenOpgave = () => {
             brugerID: userID,
             opgaveID: opgaveID
         }
-        
-        console.log(kommentarObject)
 
         axios.post(`${import.meta.env.VITE_API_URL}/kommentarer/`, kommentarObject, {
             headers: {
@@ -409,7 +411,6 @@ const ÅbenOpgave = () => {
             }
         })
         .then(response => {
-            // Assuming `setKommentarer` is a state update function that you've defined
             setKommentarer(prevKommentarer => 
                 prevKommentarer.filter(kommentar => kommentar._id !== kommentarID)
             );
@@ -420,19 +421,21 @@ const ÅbenOpgave = () => {
     }
 
     function sletPostering(posteringID){
-        axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(response => {
-            setPosteringer(prevPosteringer => 
-                prevPosteringer.filter(postering => postering._id !== posteringID)
-            );
-        })
-        .catch(error => {
-            console.error("Der opstod en fejl ved sletning af posteringen:", error);
-        });
+        if (window.confirm("Er du sikker på, at du vil slette denne postering?")) {
+            axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(response => {
+                setPosteringer(prevPosteringer => 
+                    prevPosteringer.filter(postering => postering._id !== posteringID)
+                );
+            })
+            .catch(error => {
+                console.error("Der opstod en fejl ved sletning af posteringen:", error);
+            });
+        }
     }
 
     function editKommentar(kommentarID) {
@@ -453,6 +456,29 @@ const ÅbenOpgave = () => {
         })
         .catch(error => {
             console.error("Der opstod en fejl ved opdatering af kommentaren:", error);
+        });
+    }
+
+    function editPostering (posteringID) {
+        const opdateretPostering = editedPostering;
+
+        axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, opdateretPostering, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log("Postering opdateret:", response.data);
+            setOpenPosteringModalID(null)
+            setEditedPostering("");
+            setPosteringer(prevPosteringer => 
+                prevPosteringer.map(postering => 
+                    postering._id === opdateretPostering._id ? opdateretPostering : postering
+                )
+            );
+        })
+        .catch(error => {
+            console.error("Der opstod en fejl ved opdatering af posteringen:", error);
         });
     }
 
@@ -758,13 +784,18 @@ const ÅbenOpgave = () => {
         setEventData(besøgTilÅbning);
         setOpenDialog(true);
       };
-    
     // konstater til regnskabsopstillingen -- HONORARER --
     const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0);
     const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 300;
     const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0) * 360);
-    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb || 0), 0); return akk + udlægSum;}, 0);
-    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (øvrig.beløb || 0), 0); return akk + øvrigSum;}, 0);
+    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {
+        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
+        return akk + udlægSum;
+    }, 0);
+    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {
+        const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
+        return akk + øvrigSum;
+    }, 0);
 
     const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
 
@@ -772,8 +803,14 @@ const ÅbenOpgave = () => {
     const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0)) / 200 * 319.2);
     const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 447.2);
     const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0)) * 480);
-    const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb || 0), 0); return akk + udlægSum;}, 0);
-    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (øvrig.beløb || 0), 0); return akk + øvrigSum;}, 0);
+    const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {
+        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
+        return akk + udlægSum;
+    }, 0);
+    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {
+        const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
+        return akk + øvrigSum;
+    }, 0);
 
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
@@ -887,48 +924,6 @@ const ÅbenOpgave = () => {
                             </div>
                         </div>
                     </div>
-                    {/* {user.isAdmin && visUddelegeringskalender && <div className={ÅbenOpgaveCSS.calendarDiv}>
-                        <DelegationCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgave={opgave}/>
-                        <div className={ÅbenOpgaveCSS.dayDetail}>
-                            <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>{selectedDate ? selectedDate.format('D. MMMM YYYY') : 'Ingen valgt dato'}</p>
-                            {(selectedDate && dayjs(selectedDate).isSame(opgave.onsketDato, 'day')) && <p style={{fontSize: '0.9rem'}}>Kunden ønsker opgaven udført fra kl. {dayjs(opgave.onsketDato).format('HH:mm')} denne dag.</p>}
-                            {selectedDate && (
-                                <div className={ÅbenOpgaveCSS.ledigeMedarbejdere}>
-                                    <p className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin20}`}>Ledige medarbejdere denne dag:</p>
-                                    {ledigeTider && ledigeTider
-                                        .filter(ledigTid => dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedDate).format("DD-MM-YYYY"))
-                                        .map(ledigTid => (
-                                            <div className={ÅbenOpgaveCSS.ledigTidDisplay} key={ledigTid.id}>
-                                                <p className={ÅbenOpgaveCSS.ledigTidBeskrivelse}>{dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
-                                                {alleBesøg && alleBesøg
-                                                    .filter(besøg => 
-                                                        dayjs(besøg.datoTidFra).format("YYYY-MM-DD") === dayjs(selectedDate).format("YYYY-MM-DD") &&
-                                                        besøg.brugerID === ledigTid.brugerID &&
-                                                        dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm") &&
-                                                        dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")
-                                                    )
-                                                    .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                                    .map(besøg => (
-                                                        <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
-                                                            <div className={ÅbenOpgaveCSS.opgaveCard}>
-                                                                <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
-                                                                    🛠️
-                                                                </div>
-                                                                <b className={ÅbenOpgaveCSS.opgaveCardName}>Opgave #{besøg.opgaveID.slice(-3)}</b>
-                                                                <div>
-                                                                    <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                <p className={ÅbenOpgaveCSS.ledigTidMedarbejder}>{getBrugerName(ledigTid.brugerID)}</p>
-                                            </div>
-                                        ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>}
-                    <button className={ÅbenOpgaveCSS.visUddelegeringskalender} onClick={() => {visUddelegeringskalender ? setVisUddelegeringskalender(false) : setVisUddelegeringskalender(true)}}>{visUddelegeringskalender ? "Luk " : "Åbn "} uddelegeringskalender</button> */}
                 </div>
                 <div className={ÅbenOpgaveCSS.planDiv}>
                     <b className={ÅbenOpgaveCSS.prefix}>{planlagteOpgaver && planlagteOpgaver.length} planlagt(e) besøg</b>
@@ -945,146 +940,6 @@ const ÅbenOpgave = () => {
                         getBrugerName={getBrugerName}
                         ledigeAnsvarlige={ledigeAnsvarlige}
                         />
-                    
-                    
-                    
-                    
-                    {/* <div className={ÅbenOpgaveCSS.opgaveBesøgDiv}>
-                        <div className={ÅbenOpgaveCSS.opgavebesøgDates}>
-                            <OpgavebesøgCalendar selectedOpgaveDate={selectedOpgaveDate} setSelectedOpgaveDate={setSelectedOpgaveDate} planlagteOpgaver={planlagteOpgaver} opgave={opgave} egneLedigeTider={egneLedigeTider} egneBesøg={egneBesøg} userID={userID} visKalender={visKalender}/> 
-                            {visKalender ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Skjul din kalender</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={toggleVisKalender}>Vis din kalender</button>}
-                        </div>
-                        <div className={ÅbenOpgaveCSS.opgavebesøgDetaljer}>
-                            <b>{selectedOpgaveDate ? <span className={ÅbenOpgaveCSS.dateHeading}>{dayjs(selectedOpgaveDate).format("D. MMMM")}</span> : "Vælg en dato i kalenderen ..."}</b>
-                            <div>
-                                <div className={ÅbenOpgaveCSS.opgaveListevisning}>
-                                    {egneBesøg && egneBesøg.some((besøg) => (dayjs(besøg.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedOpgaveDate).format("DD-MM-YYYY")) && besøg.opgaveID === opgaveID) && <b>Dine besøg på denne opgave</b>}
-                                    {visKalender ? (ledigeTider && ledigeTider.map((ledigTid) => {
-                                        if ((dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedOpgaveDate).format("DD-MM-YYYY")) && ledigTid.brugerID === userID) {
-                                            return (
-                                                <div key={ledigTid._id} className={ÅbenOpgaveCSS.ledigTidDisplay}>
-                                                    <p className={ÅbenOpgaveCSS.ledigTidBeskrivelse}>Din BCB-kalender d. {dayjs(selectedOpgaveDate).format("D. MMMM")}</p>
-                                                    {egneBesøg && egneBesøg
-                                                    .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                                    .map((besøg) => {
-                                                        // EGNE BESØG PÅ DENNE OPGAVE
-                                                        if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && besøg.opgaveID == opgaveID && ((dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm")) && (dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")))) {
-                                                            return (
-                                                                <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
-                                                                    <div className={ÅbenOpgaveCSS.opgaveCard}>
-                                                                        <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
-                                                                            🛠️
-                                                                        </div>
-                                                                        <b className={ÅbenOpgaveCSS.opgaveCardName}>Denne opg. (#{besøg.opgaveID.slice((besøg.opgaveID.length - 3), besøg.opgaveID.length)})</b>
-                                                                        <div>
-                                                                            <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <button onClick={() => sletBesøg(besøg._id)} className={ÅbenOpgaveCSS.sletBesøg}>Slet</button>
-                                                                </div>
-                                                                )
-                                                        // EGNE BESØG PÅ ANDRE OPGAVER
-                                                        } else if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && besøg.opgaveID !== opgaveID && ((dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm")) && (dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")))) {
-                                                            return (
-                                                                <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
-                                                                    <div className={ÅbenOpgaveCSS.greyedOpgaveCard} onClick={() => navigateToOpgave(besøg.opgaveID)}>
-                                                                        <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
-                                                                            🛠️
-                                                                        </div>
-                                                                        <b className={ÅbenOpgaveCSS.opgaveCardName}>Anden opg. (#{besøg.opgaveID.slice((besøg.opgaveID.length - 3), besøg.opgaveID.length)})</b>
-                                                                        <div>
-                                                                            <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            )
-                                                        } else {
-                                                            return null
-                                                        }
-                                                    })}
-                                                    <p className={ÅbenOpgaveCSS.ledigTidMedarbejder}>Du er ledig fra {dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
-                                                </div>
-                                            )
-                                        } else {
-                                            return null
-                                        }
-                                    })) : (egneBesøg && egneBesøg
-                                        .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                        .map((besøg) => {
-                                        // EGNE BESØG PÅ DENNE OPGAVE
-                                        if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && besøg.opgaveID == opgaveID) {
-                                            return (
-                                                <div key={besøg._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
-                                                    <div className={ÅbenOpgaveCSS.opgaveCard}>
-                                                        <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
-                                                            🛠️
-                                                        </div>
-                                                        <b className={ÅbenOpgaveCSS.opgaveCardName}>{getBrugerName(besøg.brugerID)}</b>
-                                                        <div>
-                                                            <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                        </div>
-                                                    </div>
-                                                    <button onClick={() => sletBesøg(besøg._id)} className={ÅbenOpgaveCSS.sletBesøg}>Slet</button>
-                                                </div>
-                                                )
-                                        } else {
-                                            return null
-                                        }
-                                    }))}
-                                    {planlagteOpgaver && planlagteOpgaver.some(opgave => (dayjs(opgave.datoTidFra).isSame(selectedOpgaveDate, 'day')) && opgave.brugerID !== userID) ? <b>Andres besøg på denne opgave:</b> : null}
-                                    {planlagteOpgaver && planlagteOpgaver
-                                        .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                        .map((planlagtOpgave) => {
-                                                        // ANDRES BESØG PÅ DENNE OGPAVE
-                                                        if ((dayjs(planlagtOpgave.datoTidFra).isSame(selectedOpgaveDate, 'day')) && planlagtOpgave.brugerID !== userID) {
-                                                            return (
-                                                                <div key={planlagtOpgave._id} className={ÅbenOpgaveCSS.opgaveCardContainer}>
-                                                                    <div className={ÅbenOpgaveCSS.opgaveCard}>
-                                                                        <div className={ÅbenOpgaveCSS.opgaveCardIkon}>
-                                                                            🛠️
-                                                                        </div>
-                                                                        <b className={ÅbenOpgaveCSS.opgaveCardName}>{getBrugerName(planlagtOpgave.brugerID)}</b>
-                                                                        <div>
-                                                                            <span className={ÅbenOpgaveCSS.opgaveCardTime}>{dayjs(planlagtOpgave.datoTidFra).format("HH:mm")} - {dayjs(planlagtOpgave.datoTidTil).format("HH:mm")}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    {user.isAdmin && <button onClick={() => sletBesøg(planlagtOpgave._id)} className={ÅbenOpgaveCSS.sletBesøg}>Slet</button>}
-                                                                </div>
-                                                                )
-                                                        } else {
-                                                            return null
-                                                        }
-                                                    })}
-                                </div>
-                                {færdiggjort ? null : selectedOpgaveDate && <button onClick={() => setOpenBesøgModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Planlæg besøg</button>}
-                                <Modal trigger={openBesøgModal} setTrigger={setOpenBesøgModal}>
-                                        <h2 className={ÅbenOpgaveCSS.modalHeading}>Planlæg nyt besøg &nbsp; 🗓️</h2>
-                                        <form className={ÅbenOpgaveCSS.modalForm} onSubmit={(e) => {
-                                            e.preventDefault();
-                                            tilføjBesøg();
-                                        }}>
-                                            <p>Både fra- og til-tidspunkt er påkrævet.</p><p className={ÅbenOpgaveCSS.bottomMargin20}>Estimér ud fra forventet tidsforbrug denne dag.</p>
-                                            <div className={ÅbenOpgaveCSS.formFlex}>
-                                                <div>
-                                                    <label htmlFor="" className={ÅbenOpgaveCSS.prefix}>Fra kl.: </label>
-                                                    <input required type="time" className={ÅbenOpgaveCSS.modalInput} value={planlægBesøgFraTidspunkt} onChange={(e) => setPlanlægBesøgFraTidspunkt(e.target.value)}/>
-                                                </div>
-                                                <div>
-                                                    <label htmlFor="" className={ÅbenOpgaveCSS.prefix}>Til kl.: </label>
-                                                    <input required type="time" className={ÅbenOpgaveCSS.modalInput} value={planlægBesøgTilTidspunkt} onChange={(e) => setPlanlægBesøgTilTidspunkt(e.target.value)}/>
-                                                </div>
-                                            </div>
-                                            <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Planlæg besøg d. {dayjs(selectedOpgaveDate).format("DD. MMMM")}</button>
-                                            <p>{opretBesøgError}</p>
-                                        </form>
-                                </Modal>
-                            </div>
-                        </div>
-                    </div> */}
-
-
-
-                    
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
                     <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
@@ -1126,7 +981,138 @@ const ÅbenOpgave = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    {færdiggjort ? null : <button className={ÅbenOpgaveCSS.sletPosteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
+                                    <div className={ÅbenOpgaveCSS.posteringKnapper}>
+                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id), setEditedPostering(postering)}}>Rediger</button>}
+                                        <Modal trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID}>
+                                                <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger {getBrugerName(editedPostering.brugerID).split(" ")[0]}s postering</h2>
+                                                <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
+                                                    e.preventDefault();
+                                                    // console.log(editedPostering)
+                                                    editPostering(postering._id);
+                                                }}>
+                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Dato</label>
+                                                    <input className={ÅbenOpgaveCSS.modalInput} type="date" value={dayjs(editedPostering.dato).format("YYYY-MM-DD")} onChange={(e) => setEditedPostering({...editedPostering, dato: e.target.value})} />
+                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
+                                                    <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={editedPostering.beskrivelse} onChange={(e) => setEditedPostering({...editedPostering, beskrivelse: e.target.value})} />
+                                                    <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
+                                                        <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={editedPostering.opstart === 200} onChange={(e) => setEditedPostering({...editedPostering, opstart: editedPostering.opstart === 200 ? 0 : 200})}/>
+                                                        <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 200,-)</label>
+                                                    </div>
+                                                    <div className={ÅbenOpgaveCSS.modalKolonner}>
+                                                        <div>
+                                                            <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal handymantimer:</label>
+                                                            <input className={ÅbenOpgaveCSS.modalInput} value={editedPostering.handymanTimer || ""} onChange={(e) => setEditedPostering({...editedPostering, handymanTimer: e.target.value})} type="number" />
+                                                        </div>
+                                                        <div>
+                                                            <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal tømrertimer:</label>
+                                                            <input className={ÅbenOpgaveCSS.modalInput} value={editedPostering.tømrerTimer || ""} onChange={(e) => setEditedPostering({...editedPostering, tømrerTimer: e.target.value})} type="number" />
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div className={ÅbenOpgaveCSS.udlæg}>
+                                                        <h3 className={ÅbenOpgaveCSS.modalHeading3}>Udlæg</h3>
+                                                        <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
+                                                        {(editedPostering.udlæg || []).map((outlay, index) => (
+                                                            <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                                                <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
+                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className={ÅbenOpgaveCSS.udlægInput}
+                                                                        name="beskrivelse"
+                                                                        id={`beskrivelse-${index}`}
+                                                                        value={outlay.beskrivelse}
+                                                                        onChange={(e) => {
+                                                                            const newUdlæg = [...editedPostering.udlæg];
+                                                                            newUdlæg[index].beskrivelse = e.target.value;
+                                                                            setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div className={ÅbenOpgaveCSS.udlægBeløb}>
+                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        className={ÅbenOpgaveCSS.udlægInput}
+                                                                        name="beløb"
+                                                                        id={`beløb-${index}`}
+                                                                        value={outlay.beløb}
+                                                                        onChange={(e) => {
+                                                                            const newUdlæg = [...editedPostering.udlæg];
+                                                                            newUdlæg[index].beløb = e.target.value;
+                                                                            setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    const newUdlæg = editedPostering.udlæg.filter((_, i) => i !== index);
+                                                                    setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                                }}>-</button>
+                                                            </div>
+                                                        ))}
+                                                        <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const newUdlæg = [...editedPostering.udlæg, { beskrivelse: "", beløb: "" }];
+                                                            setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                        }}>+ Nyt udlæg</button>
+                                                        </div>
+                                                        
+                                                    </div>
+                                                    <div className={ÅbenOpgaveCSS.udlæg}>
+                                                        <h3 className={ÅbenOpgaveCSS.modalHeading3}>Øvrige</h3>
+                                                        <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
+                                                        {(editedPostering.øvrigt || []).map((øvrig, index) => (
+                                                            <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                                                <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
+                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
+                                                                    <input
+                                                                        type="text"
+                                                                        className={ÅbenOpgaveCSS.udlægInput}
+                                                                        name="beskrivelse"
+                                                                        id={`beskrivelse-${index}`}
+                                                                        value={øvrig.beskrivelse}
+                                                                        onChange={(e) => {
+                                                                            const newØvrigt = [...editedPostering.øvrigt];
+                                                                            newØvrigt[index].beskrivelse = e.target.value;
+                                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <div className={ÅbenOpgaveCSS.udlægBeløb}>
+                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                                                    <input
+                                                                        type="number"
+                                                                        className={ÅbenOpgaveCSS.udlægInput}
+                                                                        name="beløb"
+                                                                        id={`beløb-${index}`}
+                                                                        value={øvrig.beløb}
+                                                                        onChange={(e) => {
+                                                                            const newØvrigt = [...editedPostering.øvrigt];
+                                                                            newØvrigt[index].beløb = e.target.value;
+                                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                                        }}
+                                                                    />
+                                                                </div>
+                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    const newØvrigt = editedPostering.øvrigt.filter((_, i) => i !== index);
+                                                                    setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                                }}>-</button>
+                                                            </div>
+                                                        ))}
+                                                        <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={(e) => {
+                                                            e.preventDefault();
+                                                            const newØvrigt = [...editedPostering.øvrigt, { beskrivelse: "", beløb: "" }];
+                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                        }}>+ Ny øvrig</button>
+                                                        </div>
+                                                    </div>
+                                                    <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater postering</button>
+                                                </form>
+                                        </Modal>
+                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
+                                    </div>
                                 </div>
                             )
                         })}
@@ -1234,16 +1220,6 @@ const ÅbenOpgave = () => {
                         <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Bekræft: Vil du lukke opgaven og oprette en fakturakladde i E-conomic?</h2>
                         <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
                     </Modal>
-                    
-                    {/* {bekræftIndsendelseModal && ( 
-                                        <div className={ÅbenOpgaveCSS.overlay} onClick={() => setBekræftIndsendelseModal(false)}>
-                                            <div className={ÅbenOpgaveCSS.modal} onClick={(e) => e.stopPropagation()}>
-                                                <button onClick={() => {setBekræftIndsendelseModal(false)}}className={ÅbenOpgaveCSS.lukModal}>-</button>
-                                                <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Bekræft: Vil du lukke opgaven og oprette en fakturakladde i E-conomic?</h2>
-                                                <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
-                                            </div>
-                                        </div>
-                                        )} */}
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
