@@ -140,11 +140,35 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
     datoTidTil: end
   }
 
-  setEgneBesøg(prevBesøg => 
+  setAlleBesøg(prevBesøg => 
     prevBesøg.map(besøg => 
-      besøg._id === event._id 
+      String(besøg._id) === String(event._id)  // Ensuring both IDs are strings for comparison
         ? { ...besøg, datoTidFra: start, datoTidTil: end }
         : besøg
+    )
+  );
+
+  setEgneBesøg(prevBesøg => 
+    prevBesøg.map(besøg => 
+      String(besøg._id) === String(event._id)  // Ensuring both IDs are strings for comparison
+        ? { ...besøg, datoTidFra: start, datoTidTil: end }
+        : besøg
+    )
+  );
+
+  setEgneLedigeTider(prevLedigeTider => 
+    prevLedigeTider.map(ledigTid => 
+      String(ledigTid._id) === String(event._id)  // Ensuring both IDs are strings for comparison
+        ? { ...ledigTid, datoTidFra: start, datoTidTil: end }
+        : ledigTid
+    )
+  );
+
+  setAlleLedigeTider(prevLedigeTider => 
+    prevLedigeTider.map(ledigTid => 
+      String(ledigTid._id) === String(event._id)  // Ensuring both IDs are strings for comparison
+        ? { ...ledigTid, datoTidFra: start, datoTidTil: end }
+        : ledigTid
     )
   );
 

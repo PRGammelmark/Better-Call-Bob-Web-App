@@ -21,7 +21,7 @@ const FloatingActionButton = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(null);
+    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
     const [selectedAnsvarligColor, setSelectedAnsvarligColor] = useState(""); 
     const [selectedTimeFrom, setSelectedTimeFrom] = useState("09:00");
     const [selectedTimeTo, setSelectedTimeTo] = useState("09:00");
@@ -70,8 +70,6 @@ const FloatingActionButton = () => {
             }, 5000)
             return
         }
-
-        // console.log(besøg)
         
         axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
             headers: {

@@ -31,19 +31,20 @@ ThreeDayView.propTypes = {
 }
 
 ThreeDayView.range = (date, { localizer }) => {
-  const start = date
-  const end = dates.add(start, 2, 'day')
-
-  let current = start
-  const range = []
-
+  const start = localizer.startOf(date, 'day'); // Ensure time is normalized to midnight
+  const end = localizer.endOf(dates.add(start, 2, 'day'), 'day'); // Include full third day
+  
+  let current = start;
+  const range = [];
+  
   while (localizer.lte(current, end, 'day')) {
-    range.push(current)
-    current = localizer.add(current, 1, 'day')
+    range.push(current);
+    current = localizer.add(current, 1, 'day');
   }
-
-  return range
+  
+  return range;
 }
+
 
 ThreeDayView.navigate = (date, action, { localizer }) => {
   switch (action) {
