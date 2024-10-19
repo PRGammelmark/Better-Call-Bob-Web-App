@@ -1176,4 +1176,19 @@
         border-radius: 15px;
         box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 16px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     }
+
+    .aktuellePosteringer {
+        margin-top: 20px;
+        display: flex;
+        gap: 25px 10px;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        padding: 25px 36px;
+        width: 100vw;
+        margin-left: -20px;
+    }
+
+    .aktuellePosteringer::-webkit-scrollbar {
+        display: none;
+    }
 }
