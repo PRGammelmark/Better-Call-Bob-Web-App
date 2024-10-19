@@ -200,6 +200,10 @@
     .modal {
         width: 90vw;
         min-width: 0;
+        max-width: 90vw;
+        max-height: 75vh;
+        overflow-y: auto;
+        margin-top: 5vh;
     }
 
     .buttonFullWidth {

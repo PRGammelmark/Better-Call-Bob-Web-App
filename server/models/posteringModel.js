@@ -10,11 +10,13 @@ const posteringSchema = new Schema({
     tømrerTimer: Number,
     udlæg: [{
         beskrivelse: String,
-        beløb: Number
+        beløb: Number,
+        kvittering: String // Added field to store image
     }],
     øvrigt: [{
         beskrivelse: String,
-        beløb: Number
+        beløb: Number,
+        kvittering: String // Added field to store image
     }],
     opgaveID: String,
     brugerID: String,

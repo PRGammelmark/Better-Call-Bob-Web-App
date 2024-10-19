@@ -74,6 +74,7 @@ const ÅbenOpgave = () => {
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
+    const [kvitteringBillede, setKvitteringBillede] = useState(null)
 
 
     const { chosenTask, setChosenTask } = useTaskAndDate();
@@ -85,6 +86,10 @@ const ÅbenOpgave = () => {
     const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
     const [aktueltBesøg, setAktueltBesøg] = useState(null)
 
+    useEffect(() => {
+        console.log(outlays);
+    }, [outlays]);
+    
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
             headers: {
@@ -176,11 +181,11 @@ const ÅbenOpgave = () => {
         }
       }, [opgave]);
     
-    const handleOutlayChange = (index, event) => {
+      const handleOutlayChange = (index, event) => {
         const newOutlays = [...outlays];
         newOutlays[index][event.target.name] = event.target.value;
         setOutlays(newOutlays);
-    }
+    };
 
     const handleØvrigeChange = (index, event) => {
         const newØvrige = [...øvrige];
@@ -190,7 +195,7 @@ const ÅbenOpgave = () => {
 
     const addOutlay = (e) => {
         e.preventDefault();
-        setOutlays([...outlays, { description: '', amount: '' }]);
+        setOutlays([...outlays, { beskrivelse: '', beløb: '', kvittering: '' }]);
     }
 
     const addØvrig = (e) => {
@@ -200,14 +205,32 @@ const ÅbenOpgave = () => {
 
     const deleteOutlay = (index) => {
         const newOutlays = [...outlays];
-        newOutlays.splice(index, 1);
+        const deletedOutlay = newOutlays.splice(index, 1)[0];
         setOutlays(newOutlays);
+
+        if (deletedOutlay.kvittering) {
+            axios.delete(`${import.meta.env.VITE_API_URL}${deletedOutlay.kvittering}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .catch(error => console.log(error));
+        }
     };
 
     const deleteØvrig = (index) => {
         const newØvrige = [...øvrige];
-        newØvrige.splice(index, 1);
+        const deletedØvrig = newØvrige.splice(index, 1)[0];
         setØvrige(newØvrige);
+
+        if (deletedØvrig.kvittering) {
+            axios.delete(`${import.meta.env.VITE_API_URL}${deletedØvrig.kvittering}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .catch(error => console.log(error));
+        }
     };
 
     function tilføjPostering (e) {
@@ -422,12 +445,39 @@ const ÅbenOpgave = () => {
 
     function sletPostering(posteringID){
         if (window.confirm("Er du sikker på, at du vil slette denne postering?")) {
+            const postering = posteringer.find(postering => postering._id === posteringID);
+
+            // Delete files associated with udlæg
+            postering.udlæg.forEach(udlæg => {
+                if (udlæg.kvittering) {
+                    axios.delete(`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`, {
+                                               headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .catch(error => console.error("Der opstod en fejl ved sletning af kvittering:", error));
+                }
+            });
+
+            // Delete files associated with øvrigt
+            postering.øvrigt.forEach(øvrigt => {
+                if (øvrigt.kvittering) {
+                    axios.delete(`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .catch(error => console.error("Der opstod en fejl ved sletning af kvittering:", error));
+                }
+            });
+
+            // Delete the postering itself
             axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
             })
-            .then(response => {
+            .then(() => {
                 setPosteringer(prevPosteringer => 
                     prevPosteringer.filter(postering => postering._id !== posteringID)
                 );
@@ -814,6 +864,10 @@ const ÅbenOpgave = () => {
 
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
+    // useEffect(() => {
+    //     console.log(outlays);
+    // }, [outlays]);
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -942,6 +996,10 @@ const ÅbenOpgave = () => {
                         />
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
+                <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
+                    <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>
+                    <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                </Modal>
                     <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
@@ -953,6 +1011,34 @@ const ÅbenOpgave = () => {
                                             <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
                                             <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
                                             <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
+                                            <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
+                                                {postering.udlæg.map((udlæg, index) => {
+                                                    return udlæg.kvittering ? 
+                                                    <img 
+                                                    key={`udlæg-${index}`}
+                                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                                    src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                                    alt={udlæg.beskrivelse} 
+                                                    onClick={() => {
+                                                        setKvitteringBillede(udlæg.kvittering);
+                                                    }}/> 
+                                                    : 
+                                                    null;
+                                                })}
+                                                {postering.øvrigt.map((øvrigt, index) => {
+                                                    return øvrigt.kvittering ? 
+                                                    <img 
+                                                    key={`øvrigt-${index}`}
+                                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                                    src={`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`} 
+                                                    alt={øvrigt.beskrivelse} 
+                                                    onClick={() => {
+                                                        setKvitteringBillede(øvrigt.kvittering);
+                                                    }}/> 
+                                                    : 
+                                                    null;
+                                                })}
+                                            </div>
                                         </div>
                                         <div className={ÅbenOpgaveCSS.posteringListe}>
                                             <div className={ÅbenOpgaveCSS.posteringRække}>
@@ -1014,6 +1100,40 @@ const ÅbenOpgave = () => {
                                                         <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
                                                         {(editedPostering.udlæg || []).map((outlay, index) => (
                                                             <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                                                <div className={ÅbenOpgaveCSS.udlægKvittering}>
+                                                                    {outlay.kvittering ? (
+                                                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${outlay.kvittering}`} alt={outlay.beskrivelse} />
+                                                                    ) : (
+                                                                        <label>
+                                                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`udlæg-file-input-${index}`).click()}>
+                                                                            </div>
+                                                                            <input
+                                                                                id={`udlæg-file-input-${index}`}
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                className={ÅbenOpgaveCSS.udlægKvitteringInput}
+                                                                                onChange={(e) => {
+                                                                                    const formData = new FormData();
+                                                                                    formData.append('file', e.target.files[0]);
+                                                                                    axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
+                                                                                        headers: {
+                                                                                            'Content-Type': 'multipart/form-data',
+                                                                                            'Authorization': `Bearer ${user.token}`
+                                                                                        }
+                                                                                    })
+                                                                                    .then(res => {
+                                                                                        console.log(res.data)
+                                                                                        const updatedOutlay = { ...editedPostering.udlæg[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
+                                                                                        const newUdlæg = [...editedPostering.udlæg];
+                                                                                        newUdlæg[index] = updatedOutlay; // Replace the outlay at index
+                                                                                        setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                                                    })
+                                                                                    .catch(error => console.log(error));
+                                                                                }}
+                                                                            />
+                                                                        </label>
+                                                                    )}
+                                                                </div>
                                                                 <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
                                                                     <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
                                                                     <input
@@ -1044,10 +1164,23 @@ const ÅbenOpgave = () => {
                                                                         }}
                                                                     />
                                                                 </div>
-                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {
+                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={async (e) => {
                                                                     e.preventDefault();
+                                                                    const deletedUdlæg = editedPostering.udlæg[index];
                                                                     const newUdlæg = editedPostering.udlæg.filter((_, i) => i !== index);
                                                                     setEditedPostering({...editedPostering, udlæg: newUdlæg});
+                                                                    
+                                                                    if (deletedUdlæg.kvittering) {
+                                                                        try {
+                                                                            await axios.delete(`${import.meta.env.VITE_API_URL}${deletedUdlæg.kvittering}`, {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${user.token}`
+                                                                                }
+                                                                            });
+                                                                        } catch (error) {
+                                                                            console.log(error);
+                                                                        }
+                                                                    }
                                                                 }}>-</button>
                                                             </div>
                                                         ))}
@@ -1064,6 +1197,40 @@ const ÅbenOpgave = () => {
                                                         <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
                                                         {(editedPostering.øvrigt || []).map((øvrig, index) => (
                                                             <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                                                <div className={ÅbenOpgaveCSS.udlægKvittering}>
+                                                                    {øvrig.kvittering ? (
+                                                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${øvrig.kvittering}`} alt={øvrig.beskrivelse} />
+                                                                    ) : (
+                                                                        <label>
+                                                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`øvrig-file-input-${index}`).click()}>
+                                                                            </div>
+                                                                            <input
+                                                                                type="file"
+                                                                                accept="image/*"
+                                                                                className={ÅbenOpgaveCSS.udlægKvitteringInput}
+                                                                                id={`øvrig-file-input-${index}`}
+                                                                                onChange={(e) => {
+                                                                                    const formData = new FormData();
+                                                                                    formData.append('file', e.target.files[0]);
+                                                                                    axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
+                                                                                        headers: {
+                                                                                            'Content-Type': 'multipart/form-data',
+                                                                                            'Authorization': `Bearer ${user.token}`
+                                                                                        }
+                                                                                    })
+                                                                                    .then(res => {
+                                                                                        console.log(res.data)
+                                                                                        const updatedØvrig = { ...editedPostering.øvrigt[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
+                                                                                        const newØvrigt = [...editedPostering.øvrigt];
+                                                                                        newØvrigt[index] = updatedØvrig; // Replace the øvrig at index
+                                                                                        setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                                                    })
+                                                                                    .catch(error => console.log(error));
+                                                                                }}
+                                                                            />
+                                                                        </label>
+                                                                    )}
+                                                                </div>
                                                                 <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
                                                                     <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
                                                                     <input
@@ -1094,10 +1261,23 @@ const ÅbenOpgave = () => {
                                                                         }}
                                                                     />
                                                                 </div>
-                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {
+                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={async (e) => {
                                                                     e.preventDefault();
+                                                                    const deletedØvrig = editedPostering.øvrigt[index];
                                                                     const newØvrigt = editedPostering.øvrigt.filter((_, i) => i !== index);
                                                                     setEditedPostering({...editedPostering, øvrigt: newØvrigt});
+                                                                    
+                                                                    if (deletedØvrig.kvittering) {
+                                                                        try {
+                                                                            await axios.delete(`${import.meta.env.VITE_API_URL}${deletedØvrig.kvittering}`, {
+                                                                                headers: {
+                                                                                    'Authorization': `Bearer ${user.token}`
+                                                                                }
+                                                                            });
+                                                                        } catch (error) {
+                                                                            console.log(error);
+                                                                        }
+                                                                    }
                                                                 }}>-</button>
                                                             </div>
                                                         ))}
@@ -1148,6 +1328,40 @@ const ÅbenOpgave = () => {
                                     <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
                                     {outlays.map((outlay, index) => (
                                         <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                            <div className={ÅbenOpgaveCSS.udlægKvittering}>
+                                                {outlay.kvittering ? (
+                                                    <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${outlay.kvittering}`} alt={outlay.beskrivelse} />
+                                                ) : (
+                                                    <label>
+                                                        <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-udlæg-file-input-${index}`).click()}>
+                                                        </div>
+                                                        <input
+                                                            id={`ny-udlæg-file-input-${index}`}
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className={ÅbenOpgaveCSS.udlægKvitteringInput}
+                                                            onChange={(e) => {
+                                                                const formData = new FormData();
+                                                                formData.append('file', e.target.files[0]);
+                                                                axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
+                                                                    headers: {
+                                                                        'Content-Type': 'multipart/form-data',
+                                                                        'Authorization': `Bearer ${user.token}`
+                                                                    }
+                                                                })
+                                                                .then(res => {
+                                                                    console.log(res.data)
+                                                                    const updatedOutlay = { ...outlays[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
+                                                                    const newOutlays = [...outlays];
+                                                                    newOutlays[index] = updatedOutlay; // Replace the outlay at index
+                                                                    setOutlays(newOutlays);
+                                                                })
+                                                                .catch(error => console.log(error));
+                                                            }}
+                                                        />
+                                                    </label>
+                                                )}
+                                            </div>
                                             <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
                                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
                                                 <input
@@ -1182,6 +1396,40 @@ const ÅbenOpgave = () => {
                                     <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
                                     {øvrige.map((øvrig, index) => (
                                         <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
+                                            <div className={ÅbenOpgaveCSS.udlægKvittering}>
+                                                {øvrig.kvittering ? (
+                                                    <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${øvrig.kvittering}`} alt={øvrig.beskrivelse} />
+                                                ) : (
+                                                    <label>
+                                                        <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-øvrig-file-input-${index}`).click()}>
+                                                        </div>
+                                                        <input
+                                                            type="file"
+                                                            accept="image/*"
+                                                            className={ÅbenOpgaveCSS.udlægKvitteringInput}
+                                                            id={`ny-øvrig-file-input-${index}`}
+                                                            onChange={(e) => {
+                                                                const formData = new FormData();
+                                                                formData.append('file', e.target.files[0]);
+                                                                axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
+                                                                    headers: {
+                                                                        'Content-Type': 'multipart/form-data',
+                                                                        'Authorization': `Bearer ${user.token}`
+                                                                    }
+                                                                })
+                                                                .then(res => {
+                                                                    console.log(res.data)
+                                                                    const updatedØvrige = { ...øvrige[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
+                                                                    const newØvrige = [...øvrige];
+                                                                    newØvrige[index] = updatedØvrige; // Replace the outlay at index
+                                                                    setØvrige(newØvrige);
+                                                                })
+                                                                .catch(error => console.log(error));
+                                                            }}
+                                                        />
+                                                    </label>
+                                                )}
+                                            </div>
                                             <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
                                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
                                                 <input

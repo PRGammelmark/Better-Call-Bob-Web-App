@@ -355,6 +355,7 @@
     display: flex;
     gap: 15px;
     padding-top: 10px;
+    align-items: center;
 }
 
 .udlægBeskrivelse {
@@ -981,6 +982,48 @@
     display: none;
 }
 
+.udlægKvitteringInputContainer {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>') no-repeat center center;
+    background-size: 50%;
+    background-color: #59bf1a;
+    z-index: 10;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.udlægKvitteringInput {
+    display: none;
+}
+
+.udlægKvitteringImg {
+    width: 35px;
+    height: 55px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.8) 0px 0px 0px 1px;
+}
+
+.kvitteringBillederListe {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 5px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding: 1px;
+}
+
+.kvitteringBillede {
+    width: 35px;
+    height: 55px;
+    border-radius: 3px;
+    object-fit: cover;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+}
+
 @media screen and (max-width: 750px) {
     .tilbageKnap {
         display: none;
@@ -1126,5 +1169,11 @@
         left: 22px;
         padding-left: 10px;
         padding-right: 10px;
+    }
+
+    .kvitteringBilledeStort {
+        width: 100%;
+        border-radius: 15px;
+        box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 16px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
     }
 }
