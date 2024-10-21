@@ -72,8 +72,34 @@
     box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
 }
 
+.addLedighedButton {
+    height: 60px;
+    width: 60px;
+    border-radius: 30px;
+    position: fixed;
+    bottom: 100px;
+    right: 25px;
+    z-index: 9;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addLedighedButton:hover {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+}
+
 .icons {
     transform: scale(1.5)
+}
+
+.modalLink {
+    cursor: pointer;
+    color: #59bf1a;
 }
 
 @media screen and (max-width: 750px) {
@@ -88,6 +114,10 @@
     .addNewUserButton {
         bottom: 25px;
     }
+
+    .addLedighedButton {
+        bottom: 25px;
+    }
 }
 
 @media screen and (display-mode: standalone) {
@@ -100,6 +130,10 @@
     }
 
     .addNewUserButton {
+        bottom: 25px;
+    }
+
+    .addLedighedButton {
         bottom: 25px;
     }
 }

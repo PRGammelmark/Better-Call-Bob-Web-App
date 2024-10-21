@@ -290,7 +290,7 @@ const onRedigerBesøg = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis alt<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (opgaver & ledighed)</span></b>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (alle medarbejdere)</span></b>
           </div>
       </div>
       

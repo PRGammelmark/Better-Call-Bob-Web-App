@@ -1,10 +1,11 @@
 import React, { createContext, useState, useEffect } from 'react';
+import dayjs from 'dayjs';
 const TaskAndDateContext = createContext();
 
 export const TaskAndDateProvider = ({ children }) => {
 
     const [chosenTask, setChosenTask] = useState(null);
-    const [chosenDate, setChosenDate] = useState(null);
+    const [chosenDate, setChosenDate] = useState(dayjs());
 
     return (
         <TaskAndDateContext.Provider value={{ 

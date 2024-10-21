@@ -196,6 +196,13 @@
     cursor: pointer;
 }
 
+.modalLink {
+    cursor: pointer;
+    color: #59bf1a;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
 @media screen and (max-width: 750px) {
     .modal {
         width: 90vw;

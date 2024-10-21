@@ -16,7 +16,7 @@ const getLedigTid = async (req,res) => {
 
     const ledigTid = await LedigTid.findById(id)
 
-    if(!kommentar) {
+    if(!ledigTid) {
         return res.status(404).json({error: 'Ingen ledige tider fundet med et matchende ID.'})
     }
 
@@ -25,12 +25,22 @@ const getLedigTid = async (req,res) => {
 
 // CREATE en ledig tid
 const createLedigTid = async (req, res) => {
-    const { datoTidFra, datoTidTil, brugerID } = req.body;
+    const data = req.body;
+
     try {
-        const ledigTid = await LedigTid.create({datoTidFra, datoTidTil, brugerID})
-        res.status(200).json(ledigTid)
+        // Check if data is an array
+        if (Array.isArray(data)) {
+            // Handle multiple LedigTid entries
+            const createdLedigeTider = await LedigTid.insertMany(data);
+            return res.status(200).json(createdLedigeTider);
+        } else {
+            // Handle a single LedigTid entry
+            const { datoTidFra, datoTidTil, brugerID } = data;
+            const newLedigTid = await LedigTid.create({ datoTidFra, datoTidTil, brugerID });
+            return res.status(200).json(newLedigTid);
+        }
     } catch (error) {
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message });
     }
 }
 
@@ -39,7 +49,7 @@ const deleteLedigTid = async (req, res) => {
     const { id } = req.params
 
     if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({error: 'Ingen kommentarer fundet med et matchende ID.'})
+        return res.status(400).json({error: 'Ingen ledige tider fundet med et matchende ID.'})
     }
 
     const ledigTid = await LedigTid.findOneAndDelete({_id: id})
