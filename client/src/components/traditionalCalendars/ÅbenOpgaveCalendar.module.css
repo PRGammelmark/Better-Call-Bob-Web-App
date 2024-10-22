@@ -115,3 +115,10 @@
     font-weight: 400;
     color: #1f1f1f;
   }
+
+  .calendarHeadingDivPLink {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #59bf1a;
+    cursor: pointer;
+  }
