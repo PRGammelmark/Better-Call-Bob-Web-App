@@ -179,6 +179,10 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   if (!user.isAdmin && user.id !== event.brugerID) {
     return;
   }
+
+  if(fratrækBesøgFraLedigeTider){
+    return;
+  }
   
   if(event.objectIsLedigTid){
 
@@ -186,6 +190,8 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
       datoTidFra: start,
       datoTidTil: end
     }
+
+    console.log(newEventBorders)
 
     setAlleLedigeTider(prevLedigeTider => 
       prevLedigeTider.map(ledigTid => 
@@ -195,11 +201,18 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
       )
     );
 
+
+
     const tempEgneLedigeTider = egneLedigeTider;
 
     const overlappingTider = tempEgneLedigeTider.filter(tid => 
+        tid._id !== event._id && 
         (dayjs(newEventBorders.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(newEventBorders.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
     );
+
+    console.log("Overlapping tider length")
+    console.log(overlappingTider.length)
+    console.log(overlappingTider)
 
     if (overlappingTider.length > 0) {
         const minDatoTidFra = dayjs.min(overlappingTider.map(tid => dayjs(tid.datoTidFra)));
@@ -227,6 +240,8 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
             }
         });
     }
+
+    console.log(newEventBorders)
 
     axios.patch(`${import.meta.env.VITE_API_URL}/ledige-tider/${event._id}`, newEventBorders, {
       headers: {
@@ -347,6 +362,7 @@ const onRedigerLedigTid = (e) => {
   const tempEgneLedigeTider = egneLedigeTider;
 
   const overlappingTider = tempEgneLedigeTider.filter(tid => 
+    tid._id !== eventData._id && 
     (dayjs(ledigTid.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(ledigTid.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
   );
 
@@ -391,13 +407,12 @@ const onRedigerLedigTid = (e) => {
       <div className={Styles.calendarHeadingDiv}>
         {visEgneBesøg && <><b className={Styles.bold}>{egneBesøgFormateret.length > 0 ? egneBesøgFormateret.length > 1 ? "Du har " + egneBesøgFormateret.length + " planlagte besøg" : "Du har " + egneBesøgFormateret.length + " planlagt besøg" : "Du har ingen planlagte besøg"}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg)</p></>}
         {visAlleBesøg && <><b className={Styles.bold}>{alleBesøgDenneOpgaveFormateret.length > 0 ? alleBesøgDenneOpgaveFormateret.length > 1 ? alleBesøgDenneOpgaveFormateret.length + " planlagte besøg på denne opgave" : alleBesøgDenneOpgaveFormateret.length + " planlagt besøg på denne opgave" : "Der er ingen planlagte besøg på denne opgave"}</b><p className={Styles.calendarHeadingDivP}>(Viser alle besøg på denne opgave)</p></>}
-        {visLedighed && (fratrækBesøgFraLedigeTider ? <><b className={Styles.bold}>Ledige tider minus planlagte besøg</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(false)}>Se registrerede ledighedsblokke</p></> : <><b className={Styles.bold}>Registrerede ledighedsblokke</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(true)}>Vis ledighed minus besøg</p></>)}
+        {visLedighed && (fratrækBesøgFraLedigeTider ? <><b className={Styles.bold}>Viser ledighed minus planlagte besøg</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(false)}>Se registrerede ledighedsblokke</p></> : <><b className={Styles.bold}>Viser registrerede ledighedsblokke</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(true)}>Vis ledighed minus besøg</p></>)}
       </div>
       <TradCalendar
         culture={'da'}
         localizer={localizer}
         events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : fratrækBesøgFraLedigeTider ? ledigeTiderMinusBesøg : ledigeTiderFormateret}
-        // events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : ledigeTiderMinusBesøg}
         // backgroundEvents={visAlt ? ledigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         startAccessor="start"
@@ -412,7 +427,7 @@ const onRedigerLedigTid = (e) => {
             `${dayjs(start).format("D.")}-${dayjs(end).format("D. MMM")}`,
           monthHeaderFormat:(date)=>dayjs(date).format("MMM YYYY")
         }}
-        draggableAccessor={(egneBesøgFormateret) => true}
+        draggableAccessor={fratrækBesøgFraLedigeTider ? false : (egneBesøgFormateret) => true}
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
         onNavigate={handleDateChange}
@@ -518,7 +533,7 @@ const onRedigerLedigTid = (e) => {
           <button className={ModalStyles.buttonFullWidth}>Gå til opgave {tilknyttetOpgave ? "#" + tilknyttetOpgave._id.slice(-3) : null}</button>
         </Link>}
         {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
-        (
+        fratrækBesøgFraLedigeTider === false && (
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons}>
             {eventData && (
