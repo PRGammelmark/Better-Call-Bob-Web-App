@@ -35,8 +35,8 @@ const createLedigTid = async (req, res) => {
             return res.status(200).json(createdLedigeTider);
         } else {
             // Handle a single LedigTid entry
-            const { datoTidFra, datoTidTil, brugerID } = data;
-            const newLedigTid = await LedigTid.create({ datoTidFra, datoTidTil, brugerID });
+            const { datoTidFra, datoTidTil, brugerID, kommentar, objectIsLedigTid } = data;
+            const newLedigTid = await LedigTid.create({ datoTidFra, datoTidTil, brugerID, kommentar, objectIsLedigTid });
             return res.status(200).json(newLedigTid);
         }
     } catch (error) {

@@ -5,15 +5,13 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useReducer } from 'react'
 import BackIcon from "../assets/back.svg"
 import Paperclip from "../assets/paperclip.svg"
-import VisLedighed from "../components/VisLedighed.jsx"
 import axios from "axios"
-import DelegationCalendar from "../components/calendars/DelegationCalendar.jsx"
-import OpgavebesøgCalendar from "../components/calendars/OpgavebesøgCalendar.jsx"
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 import Modal from '../components/Modal.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
+import { useBesøg } from '../context/BesøgContext.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -24,10 +22,11 @@ const ÅbenOpgave = () => {
     }
 
     const { opgaveID } = useParams();
-    const userID = user.id;
+    // const userID = user.id;
     const navigate = useNavigate();
 
     // state managers
+    const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
     const [opgave, setOpgave] = useState(null);
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
@@ -66,11 +65,11 @@ const ÅbenOpgave = () => {
     const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(null)
     const [planlægBesøgFraTidspunkt, setPlanlægBesøgFraTidspunkt] = useState("08:00")
     const [planlægBesøgTilTidspunkt, setPlanlægBesøgTilTidspunkt] = useState("12:00")
-    const [alleBesøg, setAlleBesøg] = useState([])
+    // const [alleBesøg, setAlleBesøg] = useState([])
     const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
     const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
-    const [egneBesøg, setEgneBesøg] = useState([])
-    const [egneLedigeTider, setEgneLedigeTider] = useState([])
+    // const [egneBesøg, setEgneBesøg] = useState([])
+    // const [egneLedigeTider, setEgneLedigeTider] = useState([])
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
@@ -980,7 +979,6 @@ const ÅbenOpgave = () => {
                     </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.planDiv}>
-                    <b className={ÅbenOpgaveCSS.prefix}>{planlagteOpgaver && planlagteOpgaver.length} planlagt(e) besøg</b>
                     <ÅbenOpgaveCalendar 
                         user={user} 
                         tilknyttetOpgave={tilknyttetOpgave}
@@ -993,6 +991,19 @@ const ÅbenOpgave = () => {
                         opgaveID={opgaveID}
                         getBrugerName={getBrugerName}
                         ledigeAnsvarlige={ledigeAnsvarlige}
+                        egneLedigeTider={egneLedigeTider}
+                        alleLedigeTider={alleLedigeTider}
+                        egneBesøg={egneBesøg}
+                        alleBesøg={alleBesøg}
+                        setEgneLedigeTider={setEgneLedigeTider}
+                        setEgneBesøg={setEgneBesøg}
+                        refetchLedigeTider={refetchLedigeTider}
+                        refetchBesøg={refetchBesøg}
+                        setRefetchLedigeTider={setRefetchLedigeTider}
+                        setRefetchBesøg={setRefetchBesøg}
+                        setAlleLedigeTider={setAlleLedigeTider}
+                        setAlleBesøg={setAlleBesøg}
+                        userID={userID}
                         />
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>

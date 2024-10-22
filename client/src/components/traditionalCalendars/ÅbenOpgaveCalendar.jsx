@@ -11,7 +11,6 @@ import { Link } from 'react-router-dom'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import ThreeDayView from './ThreeDayView.jsx'
-import { useBesøg } from '../../context/BesøgContext.jsx'
 import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 
@@ -35,12 +34,12 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, ledigeAnsvarlige}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, ledigeAnsvarlige, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
 
-  const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
   const { chosenDate, setChosenDate } = useTaskAndDate();
   const [visEgneBesøg, setVisEgneBesøg] = useState(true)
   const [visAlleBesøg, setVisAlleBesøg] = useState(false)
+  const [visLedighed, setVisLedighed] = useState(false)
   const [visAlt, setVisAlt] = useState(false)
   const [editBesøg, setEditBesøg] = useState(false)
   const [selectedTimeFrom, setSelectedTimeFrom] = useState("");
@@ -112,13 +111,15 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       ...ledigTid,
       start: new Date(ledigTid.datoTidFra),
       end: new Date(ledigTid.datoTidTil),
-      eventColor: ledigTid.eventColor ? ledigTid.eventColor + '80' : '#00000080', // Adding '80' to make it half transparent
-      title: ledigTid.opgaveID
+      eventColor: ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '80' || '#3c5a3f80',
+      title: getBrugerName(ledigTid.brugerID)
     }))
 
    const openCalendarEvent = useCallback((callEvent) => {
-      const opgaveTilknyttetBesøg = callEvent.opgaveID;
+      const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
+      const ledighedTilknyttetBesøg = callEvent._id || "";
 
+      if(opgaveTilknyttetBesøg !== ""){
       axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
           headers: {
             'Authorization': `Bearer ${user.token}`
@@ -128,13 +129,76 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
           setTilknyttetOpgave(res.data)
         })
         .catch(error => console.log(error))
-
+      } else {
+        setTilknyttetOpgave(callEvent)
+      }
       setEventData(callEvent);
       editBesøg && setEditBesøg(false);
       setOpenDialog(true);
 }, [openDialog]);
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
+  if(event.objectIsLedigTid){
+
+    const newEventBorders = {
+      datoTidFra: start,
+      datoTidTil: end
+    }
+
+    setAlleLedigeTider(prevLedigeTider => 
+      prevLedigeTider.map(ledigTid => 
+        String(ledigTid._id) === String(event._id)  // Ensuring both IDs are strings for comparison
+          ? { ...ledigTid, datoTidFra: start, datoTidTil: end }
+          : ledigTid
+      )
+    );
+
+    const tempEgneLedigeTider = egneLedigeTider;
+
+    const overlappingTider = tempEgneLedigeTider.filter(tid => 
+        (dayjs(newEventBorders.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(newEventBorders.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
+    );
+
+    if (overlappingTider.length > 0) {
+        const minDatoTidFra = dayjs.min(overlappingTider.map(tid => dayjs(tid.datoTidFra)));
+        const maxDatoTidTil = dayjs.max(overlappingTider.map(tid => dayjs(tid.datoTidTil)));
+
+        if (dayjs(newEventBorders.datoTidFra).isAfter(minDatoTidFra)) {
+            newEventBorders.datoTidFra = minDatoTidFra.format("YYYY-MM-DDTHH:mm:ss.SSS");
+        }
+
+        if (dayjs(newEventBorders.datoTidTil).isBefore(maxDatoTidTil)) {
+            newEventBorders.datoTidTil = maxDatoTidTil.format("YYYY-MM-DDTHH:mm:ss.SSS");
+        }
+
+        overlappingTider.forEach(tid => {
+            if (tid._id !== event._id) {
+                axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${tid._id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(res => {
+                    console.log("Overlapping ledig tid slettet", res.data)
+                })
+                .catch(error => console.log(error))
+            }
+        });
+    }
+
+    axios.patch(`${import.meta.env.VITE_API_URL}/ledige-tider/${event._id}`, newEventBorders, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true)
+    })
+    .catch(error => console.log(error))
+
+
+  } else {
+
   const newEventBorders = {
     datoTidFra: start,
     datoTidTil: end
@@ -164,14 +228,6 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
     )
   );
 
-  setAlleLedigeTider(prevLedigeTider => 
-    prevLedigeTider.map(ledigTid => 
-      String(ledigTid._id) === String(event._id)  // Ensuring both IDs are strings for comparison
-        ? { ...ledigTid, datoTidFra: start, datoTidTil: end }
-        : ledigTid
-    )
-  );
-
   axios.patch(`${import.meta.env.VITE_API_URL}/besoeg/${event._id}`, newEventBorders, {
     headers: {
       'Authorization': `Bearer ${user.token}`
@@ -181,24 +237,24 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
     // nothing yet ...
   })
   .catch(error => console.log(error))
-})
+}})
 
 function kalenderVisningEgneBesøg(){
   setVisAlleBesøg(false)
-  setVisAlt(false)
+  setVisLedighed(false)
   setVisEgneBesøg(true)
 }
 
 function kalenderVisningAlleBesøg(){
   setVisEgneBesøg(false)
-  setVisAlt(false)
+  setVisLedighed(false)
   setVisAlleBesøg(true)
 }
 
-function kalenderVisningAlt(){
+function kalenderVisningLedighed(){
   setVisEgneBesøg(false)
   setVisAlleBesøg(false)
-  setVisAlt(true)
+  setVisLedighed(true)
 }
 
 const handleDateChange = (date) => {
@@ -236,15 +292,70 @@ const onRedigerBesøg = (e) => {
   .catch(error => console.log(error))
 }
 
+const onRedigerLedigTid = (e) => {
+  e.preventDefault()
+
+  const ledigTid = {
+    datoTidFra: `${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
+    datoTidTil: `${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`
+  }
+
+  // ===== TJEKKER FOR OVERLAPPING TIDER =====
+  
+  const tempEgneLedigeTider = egneLedigeTider;
+
+  const overlappingTider = tempEgneLedigeTider.filter(tid => 
+    (dayjs(ledigTid.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(ledigTid.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
+  );
+
+  if (overlappingTider.length > 0) {
+    ledigTid.datoTidFra = dayjs.min(overlappingTider.map(tid => dayjs(tid.datoTidFra))).format("YYYY-MM-DDTHH:mm:ss.SSS");
+    ledigTid.datoTidTil = dayjs.max(overlappingTider.map(tid => dayjs(tid.datoTidTil))).format("YYYY-MM-DDTHH:mm:ss.SSS");
+
+    overlappingTider.forEach(tid => {
+      if (tid._id !== eventData._id) {
+        axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${tid._id}`, {
+          headers: {
+            'Authorization': `Bearer ${user.token}`
+          }
+        })
+        .then(res => {
+          console.log("Overlapping ledig tid slettet", res.data)
+        })
+        .catch(error => console.log(error))
+      }
+    });
+  }
+  
+  // ===== ===== ===== ===== =====
+
+  axios.patch(`${import.meta.env.VITE_API_URL}/ledige-tider/${eventData._id}`, ledigTid, {
+    headers: {
+      'Authorization': `Bearer ${user.token}`
+    }
+  })
+  .then(res => {
+    console.log("Ledig tid opdateret", res.data)
+    setOpenDialog(false)
+    refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true)
+  })
+  .catch(error => console.log(error))
+}
+
 // })
 
   return (
     <div className={Styles.calendarContainer}>
+      <div className={Styles.calendarHeadingDiv}>
+        {visEgneBesøg && <><b className={Styles.bold}>{egneBesøgFormateret.length > 0 ? egneBesøgFormateret.length > 1 ? "Du har " + egneBesøgFormateret.length + " planlagte besøg" : "Du har " + egneBesøgFormateret.length + " planlagt besøg" : "Du har ingen planlagte besøg"}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg)</p></>}
+        {visAlleBesøg && <><b className={Styles.bold}>{alleBesøgDenneOpgaveFormateret.length > 0 ? alleBesøgDenneOpgaveFormateret.length > 1 ? alleBesøgDenneOpgaveFormateret.length + " planlagte besøg på denne opgave" : alleBesøgDenneOpgaveFormateret.length + " planlagt besøg på denne opgave" : "Der er ingen planlagte besøg på denne opgave"}</b><p className={Styles.calendarHeadingDivP}>(Viser alle besøg på denne opgave)</p></>}
+        {visLedighed && <><b className={Styles.bold}>Viser alle ledige tider</b><p className={Styles.calendarHeadingDivP}>(For alle medarbejdere)</p></>}
+      </div>
       <TradCalendar
         culture={'da'}
         localizer={localizer}
-        events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : alleBesøgFormateret}
-        backgroundEvents={visAlt ? ledigeTiderFormateret : []}
+        events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : ledigeTiderFormateret}
+        // backgroundEvents={visAlt ? ledigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         startAccessor="start"
         endAccessor="end"
@@ -286,7 +397,7 @@ const onRedigerBesøg = (e) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} checked={visAlt} onChange={kalenderVisningAlt} />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visLedighed} onChange={kalenderVisningLedighed} />
                 <span className={Styles.slider}></span>
               </label>
             </div>
@@ -295,48 +406,113 @@ const onRedigerBesøg = (e) => {
       </div>
       
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
-        {editBesøg ? 
-        <DivSlideAnimation>
-        <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : ""} besøg</h2>
-            <div className={ModalStyles.modalSubheadingContainer}>
-              <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.navn : "Ingen person"}</h3>
-              <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.adresse : "Ingen adresse"}</h3>
-            </div>
-            <form action="" onSubmit={onRedigerBesøg}>
-                <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
-                <input className={ModalStyles.modalInput} type="date" id="besøg-dato" value={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")} onChange={(e) => setChosenDate(e.target.value)} />
-                <label className={ModalStyles.modalLabel} htmlFor="besøg-tid-fra">Tid</label>
-                <div className={ModalStyles.timeInputs}>
-                    <div className={ModalStyles.timeInput}>
-                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" value={selectedTimeFrom} onChange={(e) => setSelectedTimeFrom(e.target.value)} />
-                    </div>
-                    <div className={ModalStyles.timeSeparator}>–</div>
-                    <div className={ModalStyles.timeInput}>
-                        <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" value={selectedTimeTo} onChange={(e) => setSelectedTimeTo(e.target.value)} />
-                    </div>
+        {editBesøg ? (
+          tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
+          (
+            // Rediger ledig tid
+            <DivSlideAnimation>
+              <h2 className={ModalStyles.modalHeading}>Rediger ledig tid for {getBrugerName(eventData.brugerID)}</h2>
+                  <form action="" onSubmit={onRedigerLedigTid}>
+                      <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
+                      <input className={ModalStyles.modalInput} type="date" id="besøg-dato" value={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")} onChange={(e) => setChosenDate(e.target.value)} />
+                      <label className={ModalStyles.modalLabel} htmlFor="besøg-tid-fra">Tid</label>
+                      <div className={ModalStyles.timeInputs}>
+                          <div className={ModalStyles.timeInput}>
+                              <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" value={selectedTimeFrom} onChange={(e) => setSelectedTimeFrom(e.target.value)} />
+                          </div>
+                          <div className={ModalStyles.timeSeparator}>–</div>
+                          <div className={ModalStyles.timeInput}>
+                              <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" value={selectedTimeTo} onChange={(e) => setSelectedTimeTo(e.target.value)} />
+                          </div>
+                      </div>
+                      <button className={ModalStyles.buttonFullWidth}>Opdatér ledighed</button>
+                      {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
+                  </form>
+              </DivSlideAnimation>
+          )
+          :
+          (
+            // Rediger planlagt besøg
+            <DivSlideAnimation>
+            <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : ""} besøg</h2>
+                <div className={ModalStyles.modalSubheadingContainer}>
+                  <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.navn : "Ingen person"}</h3>
+                  {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid === false && <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.adresse : "Ingen adresse"}</h3>}
                 </div>
-                <label className={ModalStyles.modalLabel} htmlFor="besøg-kommentar">Evt. kommentar</label>
-                <textarea className={ModalStyles.modalInput} id="besøg-kommentar" rows="3" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
-                <button className={ModalStyles.buttonFullWidth}>Opdatér besøg</button>
-                {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
-            </form>
-        </DivSlideAnimation>
-        
+                <form action="" onSubmit={onRedigerBesøg}>
+                    <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
+                    <input className={ModalStyles.modalInput} type="date" id="besøg-dato" value={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")} onChange={(e) => setChosenDate(e.target.value)} />
+                    <label className={ModalStyles.modalLabel} htmlFor="besøg-tid-fra">Tid</label>
+                    <div className={ModalStyles.timeInputs}>
+                        <div className={ModalStyles.timeInput}>
+                            <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" value={selectedTimeFrom} onChange={(e) => setSelectedTimeFrom(e.target.value)} />
+                        </div>
+                        <div className={ModalStyles.timeSeparator}>–</div>
+                        <div className={ModalStyles.timeInput}>
+                            <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" value={selectedTimeTo} onChange={(e) => setSelectedTimeTo(e.target.value)} />
+                        </div>
+                    </div>
+                    <label className={ModalStyles.modalLabel} htmlFor="besøg-kommentar">Evt. kommentar</label>
+                    <textarea className={ModalStyles.modalInput} id="besøg-kommentar" rows="3" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
+                    <button className={ModalStyles.buttonFullWidth}>Opdatér besøg</button>
+                    {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
+                </form>
+            </DivSlideAnimation>
+          )
+        )
         : 
         <>
-        <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave || aktueltBesøg) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
-        <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>
-        <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(tilknyttetOpgave.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave && tilknyttetOpgave.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>}
+        {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
         <br />
-        <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>
-        <p>{eventData ? eventData.kommentar : null}</p>
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
         <br />
-        <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>
-        <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>
-        <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
           <button className={ModalStyles.buttonFullWidth}>Gå til opgave {tilknyttetOpgave ? "#" + tilknyttetOpgave._id.slice(-3) : null}</button>
-        </Link>
-        {(user.isAdmin || (eventData && eventData._id === user.id)) && (
+        </Link>}
+        {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
+        (
+          // Knapper til ledig tid
+          <div className={ModalStyles.deleteEditButtons}>
+            {eventData && (
+              <>
+                <button 
+                  className={ModalStyles.deleteButton} 
+                  onClick={() => {
+                    if (window.confirm("Er du sikker på, at du vil slette denne ledige tid?")) {
+                      axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${eventData._id}`, {
+                        headers: {
+                          'Authorization': `Bearer ${user.token}`
+                        }
+                      })
+                      .then(res => {
+                        setOpenDialog(false);
+                        refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true);
+                      })
+                      .catch(error => console.log(error));
+                    }
+                  }}
+                >
+                  Slet ledig tid
+                </button>
+                <button 
+                  className={ModalStyles.editButton} 
+                  onClick={() => {
+                    openEditDialog();
+                  }}
+                >
+                  Rediger ledig tid
+                </button>
+              </>
+            )}
+          </div>
+        )
+        : (
+          // Knapper til planlagt besøg
           <div className={ModalStyles.deleteEditButtons}>
             {eventData && (
               <>

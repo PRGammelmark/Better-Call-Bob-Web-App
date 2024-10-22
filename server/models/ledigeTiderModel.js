@@ -14,6 +14,14 @@ const ledigeTiderSchema = new Schema({
     brugerID: {
         type: String,
         required: true
+    },
+    kommentar: {
+        type: String,
+        required: false
+    },
+    objectIsLedigTid: {
+        type: Boolean,
+        required: true
     }
 })
 

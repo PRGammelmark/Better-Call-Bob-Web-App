@@ -17,7 +17,7 @@ const FloatingActionButton = () => {
     const { user } = useAuthContext();
 
     const { chosenDate, setChosenDate, chosenTask } = useTaskAndDate();
-    const { refetchBesøg, setRefetchBesøg, refetchLedigeTider, setRefetchLedigeTider, medarbejdere } = useBesøg();
+    const { refetchBesøg, setRefetchBesøg, refetchLedigeTider, setRefetchLedigeTider, egneLedigeTider, medarbejdere } = useBesøg();
     const [menuOpen, setMenuOpen] = useState(false);
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -79,8 +79,7 @@ const FloatingActionButton = () => {
             datoTidTil: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
             brugerID: selectedAnsvarlig,
             opgaveID: chosenTask._id,
-            kommentar: comment ? comment : "",
-            eventColor: selectedAnsvarligColor
+            kommentar: comment ? comment : ""
         }
 
         if (besøg.datoTidFra >= besøg.datoTidTil) {
@@ -118,7 +117,9 @@ const FloatingActionButton = () => {
         const ledighedsDage = weekdays.map(day => ({
             datoTidFra: `${day}${tidFra}`,
             datoTidTil: `${day}${tidTil}`,
-            brugerID: user.id
+            brugerID: user.id,
+            kommentar: selectedTimeFrom + " - " + selectedTimeTo,
+            objectIsLedigTid: true
         }));
 
         if (ledighedsDage.length === 0) {
@@ -136,6 +137,39 @@ const FloatingActionButton = () => {
             }, 5000)
             return
         }
+
+        const tempEgneLedigeTider = egneLedigeTider;
+
+        ledighedsDage.forEach(ledigTid => {
+            const overlappingTider = tempEgneLedigeTider.filter(tid => 
+                (dayjs(ledigTid.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(ledigTid.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
+            );
+
+            if (overlappingTider.length > 0) {
+                const minDatoTidFra = dayjs.min(overlappingTider.map(tid => dayjs(tid.datoTidFra)));
+                const maxDatoTidTil = dayjs.max(overlappingTider.map(tid => dayjs(tid.datoTidTil)));
+
+                if (dayjs(ledigTid.datoTidFra).isAfter(minDatoTidFra)) {
+                    ledigTid.datoTidFra = minDatoTidFra.format("YYYY-MM-DDTHH:mm:ss.SSS");
+                }
+
+                if (dayjs(ledigTid.datoTidTil).isBefore(maxDatoTidTil)) {
+                    ledigTid.datoTidTil = maxDatoTidTil.format("YYYY-MM-DDTHH:mm:ss.SSS");
+                }
+
+                overlappingTider.forEach(tid => {
+                        axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${tid._id}`, {
+                            headers: {
+                                'Authorization': `Bearer ${user.token}`
+                            }
+                        })
+                        .then(res => {
+                            console.log("Overlapping ledig tid slettet", res.data)
+                        })
+                        .catch(error => console.log(error))
+                });
+            }
+        });
         
         axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider`, ledighedsDage, {
             headers: {
@@ -156,7 +190,9 @@ const FloatingActionButton = () => {
         const enkeltLedighed = {
             datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
             datoTidTil: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
-            brugerID: user.id
+            brugerID: user.id,
+            kommentar: selectedTimeFrom + " - " + selectedTimeTo,
+            objectIsLedigTid: true
         }
 
         if (selectedTimeFrom >= selectedTimeTo) {
@@ -165,6 +201,37 @@ const FloatingActionButton = () => {
                 setOpretLedighedError("")
             }, 5000)
             return
+        }
+
+        const tempEgneLedigeTider = egneLedigeTider;
+
+        const overlappingTider = tempEgneLedigeTider.filter(tid => 
+            (dayjs(enkeltLedighed.datoTidFra).isBefore(dayjs(tid.datoTidTil)) && dayjs(enkeltLedighed.datoTidTil).isAfter(dayjs(tid.datoTidFra)))
+        );
+
+        if (overlappingTider.length > 0) {
+            const minDatoTidFra = dayjs.min(overlappingTider.map(tid => dayjs(tid.datoTidFra)));
+                       const maxDatoTidTil = dayjs.max(overlappingTider.map(tid => dayjs(tid.datoTidTil)));
+
+                       if (dayjs(enkeltLedighed.datoTidFra).isAfter(minDatoTidFra)) {
+                enkeltLedighed.datoTidFra = minDatoTidFra.format("YYYY-MM-DDTHH:mm:ss.SSS");
+            }
+
+            if (dayjs(enkeltLedighed.datoTidTil).isBefore(maxDatoTidTil)) {
+                enkeltLedighed.datoTidTil = maxDatoTidTil.format("YYYY-MM-DDTHH:mm:ss.SSS");
+            }
+
+            overlappingTider.forEach(tid => {
+                    axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${tid._id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(res => {
+                        console.log("Overlapping ledig tid slettet", res.data)
+                    })
+                    .catch(error => console.log(error))
+            });
         }
 
         axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider`, enkeltLedighed, {

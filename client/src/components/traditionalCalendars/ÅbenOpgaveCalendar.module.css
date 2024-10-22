@@ -100,3 +100,18 @@
     font-weight: 400;
     color: #1f1f1f;
   }
+
+  .bold {
+    font-family: "OmnesBold"
+  }
+
+  .calendarHeadingDiv {
+    margin-bottom: 20px;
+  }
+
+
+  .calendarHeadingDivP {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: #1f1f1f;
+  }
