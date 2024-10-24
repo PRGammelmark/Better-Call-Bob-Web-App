@@ -12,6 +12,8 @@ import Modal from '../components/Modal.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
 import { useBesøg } from '../context/BesøgContext.jsx'
+import { Base64 } from 'js-base64';
+import SwitcherStyles from './Switcher.module.css'
 
 const ÅbenOpgave = () => {
     
@@ -31,7 +33,7 @@ const ÅbenOpgave = () => {
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
     const [status, setStatus] = useState("");
-    const [ledigeAnsvarlige, setLedigeAnsvarlige] = useState(null);
+    const [brugere, setBrugere] = useState(null);
     const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(null);
     const [navn, setNavn] = useState("");
     const [adresse, setAdresse] = useState("");
@@ -49,7 +51,7 @@ const ÅbenOpgave = () => {
     const [øvrige, setØvrige] = useState([]);
     const [handymantimer, setHandymantimer] = useState("");
     const [tømrertimer, setTømrertimer] = useState("");
-    const [posteringDato, setPosteringDato] = useState("");
+    const [posteringDato, setPosteringDato] = useState(dayjs().format('YYYY-MM-DD'));
     const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
     const [inkluderOpstart, setInkluderOpstart] = useState(200);
     const [postering, setPostering] = useState("");
@@ -74,7 +76,10 @@ const ÅbenOpgave = () => {
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
-
+    const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
+    const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
+    const [vilBetaleMedMobilePay, setVilBetaleMedMobilePay] = useState(false)
+    const [invoiceImage, setInvoiceImage] = useState(null)
 
     const { chosenTask, setChosenTask } = useTaskAndDate();
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
@@ -96,7 +101,7 @@ const ÅbenOpgave = () => {
             }
         })
         .then(res => {
-            setLedigeAnsvarlige(res.data)
+            setBrugere(res.data)
             console.log(res.data)
         })
         .catch(error => console.log(error))
@@ -300,7 +305,7 @@ const ÅbenOpgave = () => {
     }, [nuværendeAnsvarlige])
 
     const getBrugerName = (brugerID) => {
-        const bruger = ledigeAnsvarlige && ledigeAnsvarlige.find(user => user._id === brugerID);
+        const bruger = brugere && brugere.find(user => user._id === brugerID);
         return bruger ? bruger.navn : 'Unknown User';
     };
 
@@ -381,7 +386,7 @@ const ÅbenOpgave = () => {
         e.preventDefault();
 
         const nyAnsvarligId = e.target.value;
-        const nyAnsvarlig = ledigeAnsvarlige && ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === nyAnsvarligId);
+        const nyAnsvarlig = brugere && brugere.find(ansvarlig => ansvarlig._id === nyAnsvarligId);
     
         if (nyAnsvarlig) {
             
@@ -549,20 +554,36 @@ const ÅbenOpgave = () => {
     }
 
     function åbnForÆndringer () {
-        const færdiggør = {
-            markeretSomFærdig: false
+        const genåbn = {
+            markeretSomFærdig: false,
+            opgaveAfsluttet: false
         }
 
-        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
+        if (opgave.opgaveAfsluttet) {
+            if (window.confirm("Der er allerede en faktura oprettet for denne opgave. Hvis du genåbner opgaven for at foretage ændringer i posteringerne skal du huske manuelt at kreditere den tidligere faktura i dit regnskabssystem, og gøre kunden opmærksom på dette.")) {
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbn, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(response => {
+                    setFærdiggjort(false);
+                })
+                .catch(error => console.log(error))
+            } 
+        } else {
+            if (window.confirm("Der er endnu ikke oprettet en faktura eller modtaget betaling for denne opgave. Du kan frit genåbne og ændre.")) {
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbn, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(response => {
+                        setFærdiggjort(false);
+                    })
+                    .catch(error => console.log(error))
             }
-        })
-        .then(response => {
-            setFærdiggjort(false);
-        })
-        .catch(error => console.log(error))
-
+        }  
     }
 
     function bekræftIndsendelseTilEconomic () {
@@ -570,6 +591,16 @@ const ÅbenOpgave = () => {
     }
 
     function opretFakturakladde () {
+        
+        const authHeaders = {
+            'Authorization': `Bearer ${user.token}`
+        }
+        
+        const economicHeaders = {
+            'Content-Type': 'application/json',
+            'X-AppSecretToken': import.meta.env.VITE_BCBSECRETTOKEN,
+            'X-AgreementGrantToken': import.meta.env.VITE_BCBAGREEMENTGRANTTOKEN
+        }
         
         // definer linjestrukturen for hver postering
         const lines = []; 
@@ -643,58 +674,249 @@ const ÅbenOpgave = () => {
                     })
                 })
             }
+
+            if (!vilBetaleMedMobilePay) {
+                lines.push({
+                    lineNumber: lineNumber++,
+                    description: "Administrationsgebyr",
+                    product: {
+                        productNumber: "4"
+                    },
+                    quantity: 1,
+                    unitNetPrice: 50,
+                    discountPercentage: 0.00
+                })
+            }
         })
-        
-        axios.post('https://restapi.e-conomic.com/invoices/drafts', {
-            date: "2024-08-23",
+
+        // OPRET NY KUNDE
+        axios.post('https://restapi.e-conomic.com/customers', {
+            name: opgave.navn ? opgave.navn : "Intet navn oplyst",
+            address: opgave.adresse ? opgave.adresse : "Ingen adresse oplyst",
+            email: opgave.email ? opgave.email : null,
+            vatZone: {
+                vatZoneNumber: 1
+            },
             currency: "DKK",
-            customer: {
-                customerNumber: 100
+            customerGroup: {
+                customerGroupNumber: 1
             },
             paymentTerms: {
                 paymentTermsNumber: 1,
                 daysOfCredit: 8,
                 name: "Netto 8 dage",
                 paymentTermsType: "net"
-            },
-            layout: {
-                layoutNumber: 3
-            },
-            recipient: {
-                name: `${opgave.navn}`,
-                address: `${opgave.adresse}`,
-                city: "1000 København",
-                country: "Danmark",
-                vatZone: {
-                    name: "Domestic",
-                    vatZoneNumber: 1,
-                    enabledForCustomer: true,
-                    enabledForSupplier: true
-                }
-            },
-            lines: lines
-        },{
-            headers: {
-                'Content-Type': 'application/json',
-                'X-AppSecretToken': import.meta.env.VITE_BCBSECRETTOKEN,
-                'X-AgreementGrantToken': import.meta.env.VITE_BCBAGREEMENTGRANTTOKEN
             }
+        },{
+            headers: economicHeaders
         })
+        // OPRET FAKTURAKLADDE
         .then(response => {
-            console.log(response.data);
-            setOpgaveAfsluttet(true);
+            console.log("Kunde oprettet.");
+            axios.post('https://restapi.e-conomic.com/invoices/drafts', {
+                date: dayjs().format("YYYY-MM-DD"),
+                currency: "DKK",
+                customer: {
+                    customerNumber: response.data.customerNumber
+                },
+                paymentTerms: {
+                    paymentTermsNumber: 1,
+                    daysOfCredit: 8,
+                    name: "Netto 8 dage",
+                    paymentTermsType: "net"
+                },
+                layout: {
+                    layoutNumber: 3
+                },
+                recipient: {
+                    name: `${opgave.navn}`,
+                    address: `${opgave.adresse}`,
+                    city: `${opgave.postnummerOgBy ? opgave.postnummerOgBy : "1000 København"}`,
+                    country: "Danmark",
+                    vatZone: {
+                        name: "Domestic",
+                        vatZoneNumber: 1,
+                        enabledForCustomer: true,
+                        enabledForSupplier: true
+                    }
+                },
+                lines: lines
+            },{
+                headers: economicHeaders
+            })
+            // BOOK FAKTURA
+            .then(response => {
+                console.log("Fakturakladde oprettet.");
 
-            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                opgaveAfsluttet: true
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
+                const draftInvoiceNumber = response.data.draftInvoiceNumber;
+
+                axios.post('https://restapi.e-conomic.com/invoices/booked', {
+                    draftInvoice: {
+                        draftInvoiceNumber: draftInvoiceNumber
+                    }
+                }, {
+                    headers: economicHeaders
+                })
+                // MARKER OPGAVE SOM AFSLUTTET & LAGR FAKTURA I DB
+                .then(response => {
+                    console.log("Faktura booket.");
+                    console.log(response.data);
+
+                    axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                        opgaveAfsluttet: true
+                    }, {
+                        headers: authHeaders
+                    })
+                    .then(res => {
+                        setOpgaveAfsluttet(true);
+                        console.log("Opgaven er afsluttet.")
+                        
+                    })
+                    .catch(error => {
+                        console.log("Fejl: Opgaven blev ikke markeret som afsluttet.")
+                        console.log(error)
+                    })
+                    // ============== LAGR FAKTURA I DB ==============
+                    axios.get(response.data.pdf.download, {
+                        responseType: 'blob',
+                        headers: economicHeaders
+                    })
+                    .then(fakturaPDF => {
+                        const reader = new FileReader();
+                        reader.readAsDataURL(new Blob([fakturaPDF.data]));
+                        reader.onloadend = function() {
+                            const base64data = reader.result;
+                            
+                            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                                fakturaPDF: base64data
+                            }, {
+                                headers: authHeaders
+                            })
+                            .then(response => {
+                                console.log("Faktura-PDF'en gemt i databasen i base64-format.");
+                            })
+                            .catch(error => {
+                                console.log("Fejl: Kunne ikke lagre faktura PDF i databasen.");
+                                console.log(error);
+                            });
+
+                        // Store fakturaPDF in the server fakturaer-folder
+                        const fakturaBlob = new Blob([fakturaPDF.data], { type: 'application/pdf' });
+                        const formData = new FormData();
+                        formData.append('file', fakturaBlob, `faktura_${opgaveID}.pdf`);
+
+                        axios.post(`${import.meta.env.VITE_API_URL}/fakturaer`, formData, {
+                            headers: {
+                                'Authorization': `Bearer ${user.token}`,
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                        .then(response => {
+                            console.log("Faktura PDF uploadet til server-mappen.");
+                            console.log(response.data);
+                            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                                fakturaPDFUrl: response.data.filePath
+                            }, {
+                                headers: authHeaders
+                            })
+                            .then(response => {
+                                console.log("Faktura PDF-URL'en gemt i databasen.");
+                                console.log(response.data);
+                                opgave.fakturaPDFUrl = response.data.filePath;
+
+                                // OG HER SKAL DER SENDES EN SMS MED LINK TIL FAKTURA
+                                if (opgave.telefon && String(opgave.telefon).length === 8) {
+                                    const smsData = {
+                                        "messages": [
+                                            {
+                                                "to": opgave.telefon,
+                                                "countryHint": "45",
+                                                "respectBlacklist": true,
+                                                "sendTime": dayjs().format("YYYY-MM-DDTHH:mm:ssZ"),
+                                                "text": `Kære ${opgave.navn},<br /><br />Tusind tak fordi du valgte at være kunde hos Better Call Bob.<br /><br />Du kan se din regning på dette link: ${opgave.fakturaPDFUrl}`,
+                                                "from": "Bob",
+                                                "flash": false,
+                                                "encoding": "gsm7"
+                                            }
+                                        ]
+                                    }
+
+                                    axios.post('https://api.inmobile.com/v4/sms/outgoing', smsData, {
+                                        headers: {
+                                            'Authorization': `${import.meta.env.VITE_INMOBILE_API_KEY}`,
+                                            'Content-Type': 'application/json'
+                                        }
+                                    })
+                                    .then(response => {
+                                        console.log("SMS sendt til kunden.")
+                                        console.log(response.data)
+                                    })
+                                    .catch(error => {
+                                        console.log("Fejl: Kunne ikke sende SMS til kunden.")
+                                        console.log(error)
+                                    })
+                                } else {
+                                    console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
+                                }
+                                // ==================================================
+                            })
+                            .catch(error => {
+                                console.log("Fejl: Kunne ikke lagre faktura PDF URL i databasen.");
+                                console.log(error);
+                            });
+                        })
+                        .catch(error => {
+                            console.log("Fejl: Kunne ikke uploade faktura PDF til server-mappen.");
+                            console.log(error);
+                        });
+                        }
+                    })
+                    .catch(error => {
+                        console.log("Fejl: Faktura-PDF er ikke blevet gemt i databasen.");
+                        console.log(error);
+                    });
+                    // ============== LAGR FAKTURA I DB ==============
+                })
+                .catch(error => {
+                    console.log("Fejl: Faktura blev ikke booket.")
+                    console.log(error)
+                });
             })
-            .then(res => console.log(res.data))
-            .catch(error => console.log(error))
-            })
-        .catch(error => console.log(error))
+            .catch(error => {
+                console.log("Fejl: Fakturakladde blev ikke oprettet.")
+                console.log(error)
+            });
+        })
+        .catch(error => {
+            console.log("Fejl: Kunde blev ikke oprettet.")
+            console.log(error)
+        });
+        //     axios.get(response.data.pdf.download, {
+        //         responseType: 'blob',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //             'X-AppSecretToken': import.meta.env.VITE_BCBSECRETTOKEN,
+        //             'X-AgreementGrantToken': import.meta.env.VITE_BCBAGREEMENTGRANTTOKEN
+        //         }
+        //     })
+        //     .then(res => {
+        //         const reader = new FileReader();
+        //         reader.readAsDataURL(new Blob([res.data]));
+        //         reader.onloadend = function() {
+        //             const base64data = reader.result;
+        //             axios.post(`${import.meta.env.VITE_API_URL}/storeFile`, {
+        //                 fileName: 'invoice.pdf',
+        //                 fileData: base64data,
+        //                 opgaveID: opgaveID
+        //             }, {
+        //                 headers: {
+        //                     'Authorization': `Bearer ${user.token}`
+        //                 }
+        //             })
+        //             .then(response => {
+        //                 console.log("File stored successfully in the database.");
+        //             })
+        //             .catch(error => console.log(error));
     }
 
     function tilføjBesøg () {
@@ -860,12 +1082,26 @@ const ÅbenOpgave = () => {
         const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
         return akk + øvrigSum;
     }, 0);
+    const administrationsgebyr = vilBetaleMedMobilePay ? 0 : 50;
 
-    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
+    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura + administrationsgebyr;
 
-    // useEffect(() => {
-    //     console.log(outlays);
-    // }, [outlays]);
+    function openOrDownloadPDF(base64PDF, fileName = 'faktura.pdf') {
+        const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
+        const byteCharacters = atob(base64String);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+    
+        // Create a blob and download the PDF
+        const blob = new Blob([byteArray], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+
+        // Open the PDF in a new tab
+        window.open(url, '_blank');
+    }
 
     return (
     
@@ -934,7 +1170,7 @@ const ÅbenOpgave = () => {
                             <b className={ÅbenOpgaveCSS.prefix}>Tildel ansvarlige:</b>
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Vælg Bob ..." name="vælgBob" onChange={tildelAnsvar}>
                                 <option disabled>Vælg Bob ...</option>
-                                {ledigeAnsvarlige && ledigeAnsvarlige.map((ledigAnsvarlig) => {
+                                {brugere && brugere.map((ledigAnsvarlig) => {
                                     return(
                                         <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
                                     )
@@ -958,7 +1194,7 @@ const ÅbenOpgave = () => {
 
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Tildel ansvarlig til opgaven ..." name="vælgBob" onChange={tildelAnsvar}>
                                 <option disabled>Tildel ansvarlig til opgaven ...</option>
-                                {ledigeAnsvarlige && ledigeAnsvarlige.map((ledigAnsvarlig) => {
+                                {brugere && brugere.map((ledigAnsvarlig) => {
                                     return(
                                         <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
                                     )
@@ -990,7 +1226,7 @@ const ÅbenOpgave = () => {
                         aktueltBesøg={aktueltBesøg} 
                         opgaveID={opgaveID}
                         getBrugerName={getBrugerName}
-                        ledigeAnsvarlige={ledigeAnsvarlige}
+                        brugere={brugere}
                         egneLedigeTider={egneLedigeTider}
                         alleLedigeTider={alleLedigeTider}
                         egneBesøg={egneBesøg}
@@ -1474,14 +1710,49 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret fakturakladde</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
                     <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
-                        <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Bekræft: Vil du lukke opgaven og oprette en fakturakladde i E-conomic?</h2>
-                        <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret fakturakladde</button>
+                        <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
+                        <form action="">
+                            <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{(totalFaktura * 1.25).toLocaleString('da-DK')} kr.</b> inkl. moms ({totalFaktura.toLocaleString('da-DK')} kr. ekskl. moms).</p>
+                            <p>Når regningen er oprettet vil den automatisk blive sendt til kundens e-mail.</p>
+                        <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
+                            <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
+                            <div className={SwitcherStyles.checkboxContainer}>
+                                <label className={SwitcherStyles.switch} htmlFor="vilBetaleMedDetSamme">
+                                    <input type="checkbox" id="vilBetaleMedDetSamme" name="vilBetaleMedDetSamme" className={SwitcherStyles.checkboxInput} required checked={vilBetaleMedMobilePay} onChange={(e) => setVilBetaleMedMobilePay(e.target.checked)} />
+                                    <span className={SwitcherStyles.slider}></span>
+                                </label>
+                                <b>Vil kunden betale med det samme via Mobile Pay?<br /><span className={ÅbenOpgaveCSS.spar50KrTekst}>(Kunden sparer 50 kr. i administrationsgebyr)</span></b>
+                            </div>
+                            <div className={SwitcherStyles.checkboxContainer}>
+                                <label className={SwitcherStyles.switch} htmlFor="opgaveLøst">
+                                    <input type="checkbox" id="opgaveLøst" name="opgaveLøst" className={SwitcherStyles.checkboxInput} required checked={opgaveLøstTilfredsstillende} onChange={(e) => setOpgaveLøstTilfredsstillende(e.target.checked)} />
+                                    <span className={SwitcherStyles.slider}></span>
+                                </label>
+                                <b>Er kundens opgave blevet løst tilfredsstillende?</b>
+                            </div>
+                            <div className={SwitcherStyles.checkboxContainer}>
+                                <label className={SwitcherStyles.switch} htmlFor="posteringerUdfyldt">
+                                    <input type="checkbox" id="posteringerUdfyldt" name="posteringerUdfyldt" className={SwitcherStyles.checkboxInput} required checked={allePosteringerUdfyldt} onChange={(e) => setAllePosteringerUdfyldt(e.target.checked)} />
+                                    <span className={SwitcherStyles.slider}></span>
+                                </label>
+                                <b>Er alle posteringer tilknyttet denne opgave blevet oprettet og udfyldt?</b>
+                            </div>
+                        </div>
+                        </form>
+                        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret og send regning</button>}
                     </Modal>
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
+                    {opgave.fakturaPDF 
+                    ? 
+                    <div className={ÅbenOpgaveCSS.fakturaPDFDiv}>
+                        <button className={ÅbenOpgaveCSS.fakturaPDFLink} onClick={() => openOrDownloadPDF(opgave.fakturaPDF)}>Se faktura</button>
+                    </div> 
+                    : 
+                    null}
                     <b className={ÅbenOpgaveCSS.prefix}>Økonomisk overblik</b>
                     <div className={ÅbenOpgaveCSS.regnskabContainer}>
                         <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
@@ -1504,6 +1775,10 @@ const ÅbenOpgave = () => {
                         {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura} kr.</span>
+                        </div>}
+                        {administrationsgebyr > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Administrationsgebyr:</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{administrationsgebyr} kr.</span>
                         </div>}
                         <div className={ÅbenOpgaveCSS.subtotalRække}>
                             <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>

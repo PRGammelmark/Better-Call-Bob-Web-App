@@ -34,20 +34,23 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, ledigeAnsvarlige, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
-  const [visEgneBesøg, setVisEgneBesøg] = useState(true)
+  const [visEgneBesøg, setVisEgneBesøg] = useState(opgaveID ? true : false)
   const [visAlleBesøg, setVisAlleBesøg] = useState(false)
   const [visLedighed, setVisLedighed] = useState(false)
-  const [visAlt, setVisAlt] = useState(false)
+  const [visKunBesøgOverblik, setVisKunBesøgOverblik] = useState(false)
+  const [visOgsåLedighedOverblik, setVisOgsåLedighedOverblik] = useState(opgaveID ? false : true)
+  // const [visAlt, setVisAlt] = useState(false)
   const [editBesøg, setEditBesøg] = useState(false)
   const [selectedTimeFrom, setSelectedTimeFrom] = useState("");
   const [selectedTimeTo, setSelectedTimeTo] = useState("");
   const [comment, setComment] = useState("");
   const [opretBesøgError, setOpretBesøgError] = useState("");
   const [fratrækBesøgFraLedigeTider, setFratrækBesøgFraLedigeTider] = useState(true)
-  
+  const [alleOpgaver, setAlleOpgaver] = useState([])
+  const [besøgDenneMåned, setBesøgDenneMåned] = useState(0)
   const filterEgneBesøgDenneOpgave = egneBesøg.filter(besøg => besøg.opgaveID === opgaveID)
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
@@ -61,10 +64,25 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
     };
   };
 
-  
-  const { defaultDate, messages } = useMemo(
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
+      headers: { 'Authorization': `Bearer ${user.token}` }
+    })
+    .then(res => {
+      setAlleOpgaver(res.data)
+    })
+    .catch(error => console.log(error))
+  }, [])
+
+  // Find how many besøg in the current month
+  useEffect(() => {
+    const currentMonth = dayjs(chosenDate).format("YYYY-MM")
+    const calculateBesøgDenneMåned = egneBesøg.filter(besøg => dayjs(besøg.datoTidFra).format("YYYY-MM") === currentMonth)
+    setBesøgDenneMåned(calculateBesøgDenneMåned.length)
+  }, [chosenDate, egneBesøg])
+
+  const { messages } = useMemo(
       () => ({
-        defaultDate: new Date(2015, 3, 1),
         messages: lang['da'],
       }),
       []
@@ -73,7 +91,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
   const views = useMemo(() => ({
     month: true,
     week: false,
-    threeDay: ThreeDayView,  // Adding the custom 3-day view
+    threeDay: ThreeDayView, // custom 3-day view
     day: true,
   }), []);
 
@@ -89,8 +107,17 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       start: new Date(besøg.datoTidFra),
       end: new Date(besøg.datoTidTil),
       brugerID: besøg.brugerID,
-      eventColor: ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
       title: <span style={{color: 'white', fontSize: 10}}><b style={{fontFamily: "OmnesBold", fontSize: "12px"}}>Dig</b> (ca. {dayjs(besøg.datoTidFra).format("HH")}-{dayjs(besøg.datoTidTil).format("HH")})</span>
+    }));
+
+    const egneBesøgAlleOpgaverFormateret = egneBesøg.map((besøg) => ({
+      ...besøg,
+      start: new Date(besøg.datoTidFra),
+      end: new Date(besøg.datoTidTil),
+      brugerID: besøg.brugerID,
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
+      title: alleOpgaver.find(opgave => opgave._id === besøg.opgaveID)?.adresse || besøg.opgaveID
     }));
 
     const alleBesøgDenneOpgaveFormateret = filterAlleBesøgDenneOpgave.map((besøg) => ({
@@ -98,7 +125,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       start: new Date(besøg.datoTidFra),
       end: new Date(besøg.datoTidTil),
       brugerID: besøg.brugerID,
-      eventColor: ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
       title: <span style={{color: 'white'}}><b style={{fontFamily: "OmnesBold"}}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b></span>
     }));
 
@@ -107,16 +134,25 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       start: new Date(besøg.datoTidFra),
       end: new Date(besøg.datoTidTil),
       brugerID: besøg.brugerID,
-      eventColor: ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
       title: "#" + besøg.opgaveID.slice(-3)
     }));
+
+    const egneLedigeTiderFormateret =  egneLedigeTider.map((ledigTid) => ({
+      ...ledigTid,
+      start: new Date(ledigTid.datoTidFra),
+      end: new Date(ledigTid.datoTidTil),
+      brugerID: ledigTid.brugerID,
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '80' || '#3c5a3f80',
+      title: getBrugerName(ledigTid.brugerID)
+    }))
 
     const ledigeTiderFormateret =  alleLedigeTider.map((ledigTid) => ({
       ...ledigTid,
       start: new Date(ledigTid.datoTidFra),
       end: new Date(ledigTid.datoTidTil),
       brugerID: ledigTid.brugerID,
-      eventColor: ledigeAnsvarlige.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '80' || '#3c5a3f80',
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '80' || '#3c5a3f80',
       title: getBrugerName(ledigTid.brugerID)
     }))
 
@@ -180,7 +216,7 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
     return;
   }
 
-  if(fratrækBesøgFraLedigeTider){
+  if(fratrækBesøgFraLedigeTider && opgaveID){
     return;
   }
   
@@ -314,6 +350,16 @@ function kalenderVisningLedighed(){
   setVisLedighed(true)
 }
 
+function kalenderVisningOgsåLedighedOverblik(){
+  setVisKunBesøgOverblik(false)
+  setVisOgsåLedighedOverblik(true)
+}
+
+function kalenderVisningKunBesøgOverblik(){
+  setVisOgsåLedighedOverblik(false)
+  setVisKunBesøgOverblik(true)
+}
+
 const handleDateChange = (date) => {
   console.log(date)
   setChosenDate(date);
@@ -400,20 +446,33 @@ const onRedigerLedigTid = (e) => {
   .catch(error => console.log(error))
 }
 
-// })
-
   return (
     <div className={Styles.calendarContainer}>
+      {opgaveID 
+      ? 
+      // Vis dette på opgavesider
       <div className={Styles.calendarHeadingDiv}>
-        {visEgneBesøg && <><b className={Styles.bold}>{egneBesøgFormateret.length > 0 ? egneBesøgFormateret.length > 1 ? "Du har " + egneBesøgFormateret.length + " planlagte besøg" : "Du har " + egneBesøgFormateret.length + " planlagt besøg" : "Du har ingen planlagte besøg"}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg)</p></>}
+        {visEgneBesøg && <><b className={Styles.bold}>{egneBesøgFormateret.length > 0 ? egneBesøgFormateret.length > 1 ? "Du har " + egneBesøgFormateret.length + " planlagte besøg" : "Du har " + egneBesøgFormateret.length + " planlagt besøg" : "Du har ingen planlagte besøg"}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg på denne opgave)</p></>}
         {visAlleBesøg && <><b className={Styles.bold}>{alleBesøgDenneOpgaveFormateret.length > 0 ? alleBesøgDenneOpgaveFormateret.length > 1 ? alleBesøgDenneOpgaveFormateret.length + " planlagte besøg på denne opgave" : alleBesøgDenneOpgaveFormateret.length + " planlagt besøg på denne opgave" : "Der er ingen planlagte besøg på denne opgave"}</b><p className={Styles.calendarHeadingDivP}>(Viser alle besøg på denne opgave)</p></>}
         {visLedighed && (fratrækBesøgFraLedigeTider ? <><b className={Styles.bold}>Viser ledighed minus planlagte besøg</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(false)}>Se registrerede ledighedsblokke</p></> : <><b className={Styles.bold}>Viser registrerede ledighedsblokke</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(true)}>Vis ledighed minus besøg</p></>)}
       </div>
+      :
+      // Vis dette på overblikssiden
+      <div className={Styles.calendarHeadingDiv}>
+        {visKunBesøgOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg)</p></>}
+        {visOgsåLedighedOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg og hvornår du er registreret ledig)</p></>}
+      </div> }
       <TradCalendar
         culture={'da'}
         localizer={localizer}
-        events={visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : fratrækBesøgFraLedigeTider ? ledigeTiderMinusBesøg : ledigeTiderFormateret}
-        // backgroundEvents={visAlt ? ledigeTiderFormateret : []}
+        events={
+          opgaveID
+          ?
+          (visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : fratrækBesøgFraLedigeTider ? ledigeTiderMinusBesøg : ledigeTiderFormateret)
+          :
+          egneBesøgAlleOpgaverFormateret
+          }
+        backgroundEvents={visOgsåLedighedOverblik ? egneLedigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         startAccessor="start"
         endAccessor="end"
@@ -433,7 +492,7 @@ const onRedigerLedigTid = (e) => {
         onNavigate={handleDateChange}
         eventPropGetter={eventStyleGetter}
       />
-      <div className={Styles.besøgFilterDiv}>
+      {opgaveID ? <div className={Styles.besøgFilterDiv}>
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
@@ -462,6 +521,28 @@ const onRedigerLedigTid = (e) => {
             <b className={Styles.besøgFilterDivItemHeading}>Vis ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (alle medarbejdere)</span></b>
           </div>
       </div>
+      :
+      <div className={Styles.besøgFilterDiv}>
+          <div className={Styles.besøgFilterDivItem}>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visOgsåLedighedOverblik} onChange={kalenderVisningOgsåLedighedOverblik} />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis besøg & ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (ledighed synlig i dagsvisning)</span></b>
+          </div>
+          <div className={Styles.besøgFilterDivItem}>
+            <div className={Styles.switcherDiv}>
+              <label className={Styles.switch}>
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visKunBesøgOverblik} onChange={kalenderVisningKunBesøgOverblik} />
+                <span className={Styles.slider}></span>
+              </label>
+            </div>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis kun besøg</b>
+          </div>
+      </div>
+      }
       
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
         {editBesøg ? (
@@ -530,7 +611,7 @@ const onRedigerLedigTid = (e) => {
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
-          <button className={ModalStyles.buttonFullWidth}>Gå til opgave {tilknyttetOpgave ? "#" + tilknyttetOpgave._id.slice(-3) : null}</button>
+          <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
         </Link>}
         {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
         fratrækBesøgFraLedigeTider === false && (

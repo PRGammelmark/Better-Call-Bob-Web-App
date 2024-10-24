@@ -9,8 +9,10 @@ import kommentarerRoutes from "./routes/kommentarer.js"
 import ledigeTiderRoutes from "./routes/ledigeTider.js"
 import besøgRoutes from "./routes/besøg.js"
 import uploadsRoutes from "./routes/uploads.js"
+import fakturaerRoutes from "./routes/fakturaer.js"
 import mongoose from "mongoose"
 import cors from "cors"
+import { sendEmail } from './emailService.js';
 
 dotenv.config();
 
@@ -42,10 +44,25 @@ app.use(cors(corsOptions));
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '2mb' })); // Adjust the limit as needed
+app.use(express.urlencoded({ limit: '2mb', extended: true }));
 
 // Serve static files from the uploads directory
 app.use('/api/uploads', express.static('uploads'));
+app.use('/api/fakturaer', express.static('fakturaer'));
+
+// Define email sending route
+app.post('/api/send-email', async (req, res) => {
+    const { to, subject, body } = req.body; // Destructure the email details from the request body
+
+    try {
+        await sendEmail(to, subject, body); // Call the sendEmail function
+        res.status(200).json({ message: 'Email sent successfully' }); // Respond with success
+    } catch (error) {
+        console.error('Error sending email:', error); // Log any errors
+        res.status(500).json({ error: 'Error sending email' }); // Respond with error
+    }
+});
 
 // routes
 app.use('/api/opgaver', opgaverRoutes);
@@ -55,7 +72,7 @@ app.use('/api/kommentarer', kommentarerRoutes);
 app.use('/api/ledige-tider', ledigeTiderRoutes);
 app.use('/api/besoeg', besøgRoutes);
 app.use('/api/uploads', uploadsRoutes);
-
+app.use('/api/fakturaer', fakturaerRoutes);
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {

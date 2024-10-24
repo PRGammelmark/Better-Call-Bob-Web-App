@@ -1024,6 +1024,25 @@
     box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
 }
 
+.bold {
+    font-family: OmnesBold;
+}
+
+.bekræftIndsendelseDiv {
+    margin-bottom: 20px;
+    padding-top: 16px;
+    padding-bottom: 20px;
+    margin-top: 20px;
+    border-top: 1px solid #1f1f1f30;
+    border-bottom: 1px solid #1f1f1f30;
+}
+
+.spar50KrTekst {
+    font-family: Omnes;
+    font-weight: 300;
+    font-size: 0.9rem;
+}
+
 @media screen and (max-width: 750px) {
     .tilbageKnap {
         display: none;

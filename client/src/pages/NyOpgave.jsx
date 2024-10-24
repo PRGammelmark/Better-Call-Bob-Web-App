@@ -16,6 +16,7 @@ const NyOpgave = () => {
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("");
     const [navn, setNavn] = useState("");
     const [adresse, setAdresse] = useState("");
+    const [postnummerOgBy, setPostnummerOgBy] = useState("");
     const [onsketDato, setOnsketDato] = useState("");
     const [harStige, setHarStige] = useState(true);
     const [telefon, setTelefon] = useState("");
@@ -36,6 +37,7 @@ const NyOpgave = () => {
             opgaveBeskrivelse,
             navn,
             adresse,
+            postnummerOgBy,
             onsketDato,
             harStige,
             telefon,
@@ -70,6 +72,7 @@ const NyOpgave = () => {
         setOpgaveBeskrivelse("");
         setNavn("");
         setAdresse("");
+        setPostnummerOgBy("");
         setOnsketDato("");
         setHarStige(false);
         setTelefon("");
@@ -96,6 +99,8 @@ const NyOpgave = () => {
                         <input type="text" name="navn" placeholder="Navn" className={NyOpgaveCSS.input} onChange={(e) => setNavn(e.target.value)} value={navn} required/>
                         <label className={NyOpgaveCSS.label}>Adresse</label>
                         <input type="text" name="adresse" placeholder="Adresse" className={NyOpgaveCSS.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
+                        <label className={NyOpgaveCSS.label}>Postnummer og by</label>
+                        <input type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={NyOpgaveCSS.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required/>
                         <label className={NyOpgaveCSS.label}>Hvornår ønskes opgaven udført?</label>
                         <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} required/>
                         <div className={NyOpgaveCSS.checkboxContainer}>

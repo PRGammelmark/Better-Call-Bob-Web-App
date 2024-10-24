@@ -9,6 +9,7 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import TraditionalCalendar from '../components/traditionalCalendars/Calendar.jsx'
 import { useBesøg } from '../context/BesøgContext.jsx'
+import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 
 const Overblik = () => {
   const {user} = useAuthContext();
@@ -17,12 +18,11 @@ const Overblik = () => {
     return
   }
 
-
-
   const navigate = useNavigate()
 
   const userID = user.id;
   
+  const [brugere, setBrugere] = useState(null);
   const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(dayjs())
   const [selectedDate, setSelectedDate] = useState(dayjs)
   // const [egneLedigeTider, setEgneLedigeTider] = useState(null)
@@ -53,6 +53,19 @@ const Overblik = () => {
       })
       .catch(error => console.log(error))
   }, [])
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
+        headers: {
+            'Authorization': `Bearer ${user.token}`
+        }
+    })
+    .then(res => {
+        setBrugere(res.data)
+        console.log(res.data)
+    })
+    .catch(error => console.log(error))
+}, [])
   
   // useEffect(() => {
   //   axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
@@ -79,6 +92,11 @@ const Overblik = () => {
   //   })
   //   .catch(error => console.log(error))
   // }, [refetchBesøg])
+
+  const getBrugerName = (brugerID) => {
+    const bruger = brugere && brugere.find(user => user._id === brugerID);
+    return bruger ? bruger.navn : 'Unknown User';
+};
 
   function toggleVisLedighed(){
     visLedighed ? setVisLedighed(false) : setVisLedighed(true)
@@ -243,129 +261,33 @@ const Overblik = () => {
       <div>
         <h1 className={`bold ${Styles.heading}`}>Overblik</h1>
         <MyTasks openTableEvent={openTableEvent} />
-        <div className={Styles.flex}>
-          {bruger.showTraditionalCalendar && bruger.showTraditionalCalendar 
-          ? 
-          <div className={Styles.traditionelBesøgsKalenderDiv}>
-            <b className={Styles.overskrift}>Din kalender</b>
-            <div>
-              <TraditionalCalendar 
-                user={user} 
-                tilknyttetOpgave={tilknyttetOpgave}
-                setTilknyttetOpgave={setTilknyttetOpgave}
-                openDialog={openDialog}
-                setOpenDialog={setOpenDialog}
-                eventData={eventData}
-                setEventData={setEventData} 
-                aktueltBesøg={aktueltBesøg} />
-            </div>
-          </div>
-          : 
-          <div>
-            <div className={Styles.næsteBesøgDiv}>
-              <b className={Styles.overskrift}>Dit næste besøg</b>
-            </div>
-            <div className={Styles.moderneBesøgsKalenderDiv}>
-              <div className={Styles.flexSb}>
-                <b className={Styles.overskrift}>Din kalender</b>
-                {visLedighed ? <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Skjul din ledighed</button> : <button className={Styles.visLedighedButton} onClick={toggleVisLedighed}>Vis din ledighed</button>}
-              </div>
-              <MineOpgaverCalendar selectedOpgaveDate={selectedOpgaveDate} setSelectedOpgaveDate={setSelectedOpgaveDate} egneLedigeTider={egneLedigeTider} egneBesøg={egneBesøg} userID={userID} visLedighed={visLedighed}/>
-              {(visLedighed && tilføjLedighed === false) ? <div className={Styles.redigerLedighed}>
-                <button className={`${Styles.visLedighedButton} ${Styles.tilføjLedighedButton}`} onClick={() => setTilføjLedighed(true)}>+ Tilføj ledighed</button>
-              </div> : null}
-              {(visLedighed && tilføjLedighed) ? 
-              <div className={Styles.opretLedigTidFormDiv}>
-                <button className={Styles.lukTilføjLedighed} onClick={() => setTilføjLedighed(false)}>Luk</button>
-                <form onSubmit={submitLedigeTider}>
-                  <div className={Styles.timeSelectorDiv}>
-                    <div className={Styles.timeInputLabel}>
-                      <label className={Styles.label}>Fra kl.:</label>
-                      <input type="time" value={fraTid} onChange={(e) => setFraTid(e.target.value)} className={Styles.modalInput} />
-                    </div>
-                    <div className={Styles.timeInputLabel}>
-                      <label className={Styles.label}>Til kl.:</label>
-                      <input type="time" value={tilTid} onChange={(e) => setTilTid(e.target.value)} className={Styles.modalInput} />
-                    </div>
-                  </div>
-                  <button className={Styles.buttonFullWidth}>Registrer ledighed – {selectedOpgaveDate.format("DD. MMMM")}</button>
-                  {registrerLedighedError ? registrerLedighedError : null}
-                  </form>
-              </div>
-              : null}
-              <div className={Styles.opgavebesøgDetaljer}>
-                            <b>{selectedOpgaveDate ? "Dine besøg d. " + dayjs(selectedOpgaveDate).format("D. MMMM") : "Vælg en dato i kalenderen ..."}</b>
-                            <div>
-                                <div className={Styles.opgaveListevisning}>
-                                    {visLedighed ? (egneLedigeTider && egneLedigeTider.map((ledigTid) => {
-                                        if ((dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === dayjs(selectedOpgaveDate).format("DD-MM-YYYY")) && ledigTid.brugerID === userID) {
-                                            return (
-                                                <div key={ledigTid._id} className={Styles.ledigTidDisplay}>
-                                                    {egneBesøg && egneBesøg
-                                                      .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                                      .map((besøg) => {
-                                                        // EGNE BESØG PÅ DENNE OPGAVE
-                                                        if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day')) && ((dayjs(besøg.datoTidFra).format("HH:mm") >= dayjs(ledigTid.datoTidFra).format("HH:mm")) && (dayjs(besøg.datoTidTil).format("HH:mm") <= dayjs(ledigTid.datoTidTil).format("HH:mm")))) {
-                                                            return (
-                                                                <div key={besøg._id} className={Styles.opgaveCardContainer}>
-                                                                    <div className={Styles.opgaveCard} onClick={() => navigateToOpgave(besøg.opgaveID)}>
-                                                                        <div className={Styles.opgaveCardIkon}>
-                                                                            🛠️
-                                                                        </div>
-                                                                        <b className={Styles.opgaveCardName}>Opgave #{besøg.opgaveID.slice((besøg.opgaveID.length - 3), besøg.opgaveID.length)}</b>
-                                                                        <div>
-                                                                            <span className={Styles.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                    <button onClick={() => sletBesøg(besøg._id)} className={Styles.sletBesøg}>Slet</button>
-                                                                </div>
-                                                                )
-                                                        } else {
-                                                            return null
-                                                        }
-                                                    })}
-                                                    {sletLedighedErrors[ledigTid._id] && (
-                                                      <div className={Styles.error}>
-                                                        {sletLedighedErrors[ledigTid._id]}
-                                                      </div>
-                                                    )}
-                                                    <p className={Styles.ledigTidMedarbejder}>Du er ledig fra {dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
-                                                    <p className={Styles.ledigTidSlet} onClick={() => sletLedighed(ledigTid._id)}>Slet</p>
-                                                </div>
-                                            )
-                                        } else {
-                                            return null
-                                        }
-                                    })) : (egneBesøg && egneBesøg
-                                      .sort((a, b) => dayjs(a.datoTidFra).isAfter(dayjs(b.datoTidFra)) ? 1 : -1)
-                                      .map((besøg) => {
-                                        // EGNE BESØG PÅ DENNE OPGAVE
-                                        if ((dayjs(besøg.datoTidFra).isSame(selectedOpgaveDate, 'day'))) {
-                                            return (
-                                                <div key={besøg._id} className={Styles.opgaveCardContainer}>
-                                                    <div className={Styles.opgaveCard} onClick={() => navigateToOpgave(besøg.opgaveID)}>
-                                                        <div className={Styles.opgaveCardIkon}>
-                                                            🛠️
-                                                        </div>
-                                                        <b className={Styles.opgaveCardName}>Opgave #{besøg.opgaveID.slice(-3)}</b>
-                                                        <div>
-                                                            <span className={Styles.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                                        </div>
-                                                    </div>
-                                                    <button onClick={() => sletBesøg(besøg._id)} className={Styles.sletBesøg}>Slet</button>
-                                                </div>
-                                                )
-                                        } else {
-                                            return null
-                                        }
-                                    }))}
-                                    
-                                </div>
-                            </div>
-                        </div>
-            </div>
-          </div>}
-        </div>
+        {/* <div className={Styles.flex}> */}
+        <ÅbenOpgaveCalendar 
+                        user={user} 
+                        tilknyttetOpgave={tilknyttetOpgave}
+                        setTilknyttetOpgave={setTilknyttetOpgave}
+                        openDialog={openDialog}
+                        setOpenDialog={setOpenDialog}
+                        eventData={eventData}
+                        setEventData={setEventData} 
+                        aktueltBesøg={aktueltBesøg} 
+                        brugere={brugere}
+                        getBrugerName={getBrugerName}
+                        egneLedigeTider={egneLedigeTider}
+                        alleLedigeTider={alleLedigeTider}
+                        egneBesøg={egneBesøg}
+                        alleBesøg={alleBesøg}
+                        setEgneLedigeTider={setEgneLedigeTider}
+                        setEgneBesøg={setEgneBesøg}
+                        refetchLedigeTider={refetchLedigeTider}
+                        refetchBesøg={refetchBesøg}
+                        setRefetchLedigeTider={setRefetchLedigeTider}
+                        setRefetchBesøg={setRefetchBesøg}
+                        setAlleLedigeTider={setAlleLedigeTider}
+                        setAlleBesøg={setAlleBesøg}
+                        userID={userID}
+                        />
+
       </div>
     </PageAnimation>
   )

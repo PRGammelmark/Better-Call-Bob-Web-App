@@ -1,33 +1,83 @@
 import Opgave from '../models/opgaveModel.js'
 import mongoose from "mongoose"
+import Counter from '../models/counterModel.js';
 
-// GET alle opgaver
-const getOpgaver = async (req,res) => {
-    const opgaver = await Opgave.find({}).sort({createdAt: -1})
-    res.status(200).json(opgaver)
-}
+// // GET alle opgaver
+// const getOpgaver = async (req,res) => {
+//     const opgaver = await Opgave.find({}).sort({createdAt: -1})
+//     res.status(200).json(opgaver)
+// }
 
-// GET en enkelt opgave
-const getOpgave = async (req,res) => {
+// // GET en enkelt opgave
+// const getOpgave = async (req,res) => {
+//     const { id } = req.params;
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     const opgave = await Opgave.findById(id)
+
+//     if(!opgave) {
+//         return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     res.status(200).json(opgave)
+// }
+
+const getOpgaver = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({}).sort({ createdAt: -1 });
+
+        // Convert fakturaPDF buffer to base64 for each opgave
+        const opgaverWithBase64PDF = opgaver.map(opgave => ({
+            ...opgave.toObject(),
+            fakturaPDF: opgave.fakturaPDF ? opgave.fakturaPDF.toString('base64') : null
+        }));
+
+        res.status(200).json(opgaverWithBase64PDF);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+const getOpgave = async (req, res) => {
     const { id } = req.params;
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+    
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(404).json({ error: 'Ingen opgaver fundet med et matchende ID.' });
     }
 
-    const opgave = await Opgave.findById(id)
+    try {
+        const opgave = await Opgave.findById(id);
 
-    if(!opgave) {
-        return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+        if (!opgave) {
+            return res.status(404).json({ error: 'Ingen opgaver fundet med et matchende ID.' });
+        }
+
+        // Convert fakturaPDF buffer to base64
+        const opgaveWithBase64PDF = {
+            ...opgave.toObject(),
+            fakturaPDF: opgave.fakturaPDF ? opgave.fakturaPDF.toString('base64') : null
+        };
+
+        res.status(200).json(opgaveWithBase64PDF);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    res.status(200).json(opgave)
-}
+};
 
 // CREATE en opgave
 const createOpgave = async (req, res) => {
-    const { opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet } = req.body;
+
+    const counter = await Counter.findOneAndUpdate(
+        { name: 'opgaveID' },
+        { $inc: { value: 1 } },
+        { new: true, upsert: true }
+    );
+
+    const { opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl } = req.body;
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet})
+        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl})
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -52,23 +102,59 @@ const deleteOpgave = async (req, res) => {
 }
 
 // OPDATER en opgave
-const updateOpgave = async (req,res) => {
-    const { id } = req.params
+// const updateOpgave = async (req,res) => {
+//     const { id } = req.params
 
-    if(!mongoose.Types.ObjectId.isValid(id)){
-        return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     if(!mongoose.Types.ObjectId.isValid(id)){
+//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     const opgave = await Opgave.findOneAndUpdate({_id: id}, {
+//         ...req.body
+//     })
+
+//     if(!opgave) {
+//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+//     }
+
+//     res.status(200).json(opgave)
+// }
+
+const updateOpgave = async (req, res) => {
+    const { id } = req.params;
+    const { fakturaPDF, ...rest } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'Ingen opgaver fundet med et matchende ID.' });
     }
 
-    const opgave = await Opgave.findOneAndUpdate({_id: id}, {
-        ...req.body
-    })
+    try {
+        // Prepare the update data
+        const updateData = {
+            ...rest
+        };
 
-    if(!opgave) {
-        return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+        // If fakturaPDF is provided as base64, convert it to Buffer
+        if (fakturaPDF) {
+            updateData.fakturaPDF = Buffer.from(fakturaPDF, 'base64');
+        }
+
+        // Update the document
+        const opgave = await Opgave.findOneAndUpdate(
+            { _id: id },
+            updateData,
+            { new: true }
+        );
+
+        if (!opgave) {
+            return res.status(400).json({ error: 'Ingen opgaver fundet med et matchende ID.' });
+        }
+
+        res.status(200).json(opgave);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
     }
-
-    res.status(200).json(opgave)
-}
+};
 
 
 export {

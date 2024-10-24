@@ -15,6 +15,10 @@ const opgaverSchema = new Schema({
         type: String,
         required: true
     },
+    postnummerOgBy: {
+        type: String,
+        required: true
+    },
     telefon: {
         type: Number,
         required: true
@@ -60,6 +64,23 @@ const opgaverSchema = new Schema({
         type: Boolean,
         default: false,
         required: false
+    },
+    opgaveBetalt: {
+        type: Boolean,
+        default: false,
+        required: false
+    },
+    fakturaPDF: {
+        type: Buffer,
+        required: false
+    },
+    fakturaPDFUrl: {
+        type: String,
+        required: false
+    },
+    incrementalID: {
+        type: Number,
+        unique: true
     }
 }, { timestamps: true })
 
