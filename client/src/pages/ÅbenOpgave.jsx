@@ -822,18 +822,18 @@ const ÅbenOpgave = () => {
                             .then(response => {
                                 console.log("Faktura PDF-URL'en gemt i databasen.");
                                 console.log(response.data);
-                                opgave.fakturaPDFUrl = response.data.filePath;
+                                opgave.fakturaPDFUrl = response.data.fakturaPDFUrl;
+                                const fullFakturaPDFUrl = `${import.meta.env.VITE_API_URL}${opgave.fakturaPDFUrl}`;
 
                                 // OG HER SKAL DER SENDES EN SMS MED LINK TIL FAKTURA
                                 if (opgave.telefon && String(opgave.telefon).length === 8) {
                                     const smsData = {
                                         "messages": [
                                             {
-                                                "to": opgave.telefon,
+                                                "to": `${opgave.telefon}`,
                                                 "countryHint": "45",
                                                 "respectBlacklist": true,
-                                                "sendTime": dayjs().format("YYYY-MM-DDTHH:mm:ssZ"),
-                                                "text": `Kære ${opgave.navn},<br /><br />Tusind tak fordi du valgte at være kunde hos Better Call Bob.<br /><br />Du kan se din regning på dette link: ${opgave.fakturaPDFUrl}`,
+                                                "text": `Kære ${opgave.navn},\n\nTusind tak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning på dette link: ${fullFakturaPDFUrl}`,
                                                 "from": "Bob",
                                                 "flash": false,
                                                 "encoding": "gsm7"
@@ -841,20 +841,21 @@ const ÅbenOpgave = () => {
                                         ]
                                     }
 
-                                    axios.post('https://api.inmobile.com/v4/sms/outgoing', smsData, {
+                                    // "sendTime": `${dayjs().format("YYYY-MM-DDTHH:mm:ssZ")}`,
+
+                                    axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
                                         headers: {
-                                            'Authorization': `${import.meta.env.VITE_INMOBILE_API_KEY}`,
-                                            'Content-Type': 'application/json'
+                                            'Authorization': `Bearer ${user.token}` // If needed for your server authentication
                                         }
                                     })
                                     .then(response => {
-                                        console.log("SMS sendt til kunden.")
-                                        console.log(response.data)
+                                        console.log("SMS sent to customer.");
+                                        console.log(response.data);
                                     })
                                     .catch(error => {
-                                        console.log("Fejl: Kunne ikke sende SMS til kunden.")
-                                        console.log(error)
-                                    })
+                                        console.log("Error: Could not send SMS to customer.");
+                                        console.log(error);
+                                    });
                                 } else {
                                     console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
                                 }
