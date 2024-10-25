@@ -833,7 +833,7 @@ const ÅbenOpgave = () => {
                                                 "to": `${opgave.telefon}`,
                                                 "countryHint": "45",
                                                 "respectBlacklist": true,
-                                                "text": `Kære ${opgave.navn},\n\nTusind tak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning på dette link: ${fullFakturaPDFUrl}`,
+                                                "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\n\nBob`,
                                                 "from": "Bob",
                                                 "flash": false,
                                                 "encoding": "gsm7"
