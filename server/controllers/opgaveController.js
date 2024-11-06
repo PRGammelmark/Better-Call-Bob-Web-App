@@ -75,9 +75,9 @@ const createOpgave = async (req, res) => {
         { new: true, upsert: true }
     );
 
-    const { opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl } = req.body;
+    const { opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted } = req.body;
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, fremskridt, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl})
+        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted})
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})

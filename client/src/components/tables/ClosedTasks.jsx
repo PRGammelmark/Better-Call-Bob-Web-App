@@ -1,12 +1,12 @@
 import TableCSS from './Table.module.css'
-import DelegatedTasksCSS from './DelegatedTasks.module.css'
+import ClosedTasksCSS from './ClosedTasks.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
 
-const DelegatedTasks = () => {
+const ClosedTasks = () => {
 
-  const [uddelegeredeOpgaver, setUddelegeredeOpgaver] = useState(null)
+  const [afsluttedeOpgaver, setAfsluttedeOpgaver] = useState(null)
   const {user} = useAuthContext()
 
   useEffect(()=>{
@@ -19,9 +19,9 @@ const DelegatedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const opgaverMedAnsvarlige = json.filter(opgave => opgave.ansvarlig.length > 0 && !opgave.isDeleted);
-        const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false)
-        setUddelegeredeOpgaver(ufærdigeOpgaverMedAnsvarlige);
+        const færdigeOpgaver = json.filter(opgave => opgave.markeretSomFærdig && !opgave.isDeleted);
+        const betalteOpgaver = færdigeOpgaver.filter(opgave => opgave.opgaveBetalt);
+        setAfsluttedeOpgaver(betalteOpgaver);
       }
     }
 
@@ -32,19 +32,19 @@ const DelegatedTasks = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Uddelegerede opgaver</h2>
+          <h2 className={TableCSS.tabelHeader}>Afsluttede opgaver</h2>
           <div className={TableCSS.opgaveTabel}>
-          <div className={`${TableCSS.opgaveHeader} ${DelegatedTasksCSS.delegatedTasksHeader}`}>
+            <div className={`${TableCSS.opgaveHeader} ${ClosedTasksCSS.closedTasksHeader}`}>
               <ul>
-                <li>ID</li>
+              <li>ID</li>
                 <li>Udføres</li>
                 <li>Kunde</li>
                 <li>Adresse</li>
                 <li>Ansvarlig</li>
               </ul>
             </div>
-            <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
-              {uddelegeredeOpgaver && uddelegeredeOpgaver.map((opgave) => {
+            <div className={`${TableCSS.opgaveBody} ${ClosedTasksCSS.closedTasksBody}`}>
+              {afsluttedeOpgaver && afsluttedeOpgaver.map((opgave) => {
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
@@ -60,7 +60,6 @@ const DelegatedTasks = () => {
                   </div>
                 )
               })}
-              
             </div>
           </div>
         </div>
@@ -68,4 +67,4 @@ const DelegatedTasks = () => {
   )
 }
 
-export default DelegatedTasks
+export default ClosedTasks

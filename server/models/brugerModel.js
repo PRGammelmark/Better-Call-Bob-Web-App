@@ -45,7 +45,7 @@ const brugerSchema = new Schema({
 })
 
 // static signup method
-brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar ) {
+brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar, eventColor ) {
     
     // validation
     if (!email || !password) {

@@ -19,9 +19,9 @@ const OpenTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const filteredOpgaverForAnsvarlige = json.filter(opgave => opgave.ansvarlig.length === 0);
-        const filteredOpgaverForIkkeFærdiggjorte = filteredOpgaverForAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false)
-        setOpgaver(filteredOpgaverForIkkeFærdiggjorte);
+        const opgaverUdenAnsvarlige = json.filter(opgave => opgave.ansvarlig.length === 0);
+        const ufærdigeOpgaverUdenAnsvarlige = opgaverUdenAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
+        setOpgaver(ufærdigeOpgaverUdenAnsvarlige);
       }
     }
 

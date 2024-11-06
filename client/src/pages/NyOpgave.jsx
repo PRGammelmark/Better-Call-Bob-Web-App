@@ -22,7 +22,6 @@ const NyOpgave = () => {
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState("");
-    const [fremskridt, setFremskridt] = useState("");
     const [error, setError] = useState(null);
     const [ansvarlig, setAnsvarlig] = useState("");
     const [succes, setSucces] = useState(false);

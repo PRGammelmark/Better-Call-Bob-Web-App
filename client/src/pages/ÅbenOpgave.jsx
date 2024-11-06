@@ -14,7 +14,7 @@ import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
 import { useBesøg } from '../context/BesøgContext.jsx'
 import { Base64 } from 'js-base64';
 import SwitcherStyles from './Switcher.module.css'
-
+import ModalCSS from '../components/Modal.module.css'
 const ÅbenOpgave = () => {
     
     const {user} = useAuthContext();
@@ -89,6 +89,12 @@ const ÅbenOpgave = () => {
     const [eventData, setEventData] = useState(null)
     const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
     const [aktueltBesøg, setAktueltBesøg] = useState(null)
+    const [sletOpgaveModal, setSletOpgaveModal] = useState(false)
+    const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
+    const [sletOpgaveInput, setSletOpgaveInput] = useState("")
+
+
+
 
     useEffect(() => {
         console.log(outlays);
@@ -834,15 +840,13 @@ const ÅbenOpgave = () => {
                                                 "to": `${opgave.telefon}`,
                                                 "countryHint": "45",
                                                 "respectBlacklist": true,
-                                                "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\n\nBob`,
+                                                "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
                                                 "from": "Bob",
                                                 "flash": false,
                                                 "encoding": "gsm7"
                                             }
                                         ]
                                     }
-
-                                    // "sendTime": `${dayjs().format("YYYY-MM-DDTHH:mm:ssZ")}`,
 
                                     axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
                                         headers: {
@@ -1142,6 +1146,42 @@ const ÅbenOpgave = () => {
         // });
     }
 
+    function sletOpgave() {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            isDeleted: dayjs().toISOString(),
+            markeretSomFærdig: true
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Opgave slettet:', response.data);
+            navigate(-1)
+        })
+        .catch(error => {
+            console.error('Error deleting opgave:', error);
+        });
+    }
+
+    function genåbnOpgave() {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            isDeleted: null,
+            markeretSomFærdig: false
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Opgave genåbnet:', response.data);
+            navigate(-1)
+        })
+        .catch(error => {
+            console.error('Error reopening opgave:', error);
+        });
+    }
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1149,10 +1189,41 @@ const ÅbenOpgave = () => {
             <div className={ÅbenOpgaveCSS.tilbageOpgaveSektion}>
                 <img src={BackIcon} alt="" onClick={() => navigate(-1)} className={ÅbenOpgaveCSS.tilbageKnap} />
                 <div>
-                    <b className={ÅbenOpgaveCSS.opgaveIDHeader}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
-                    <h2 className={ÅbenOpgaveCSS.adresseHeading}>{opgave.adresse}</h2>
+                    <b className={`${ÅbenOpgaveCSS.opgaveIDHeader} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
+                    <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{opgave.adresse}</h2>
                     <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>🌍 Find på kort</a>
                 </div>
+                {user.isAdmin && (
+                    <>
+                        <div className={ÅbenOpgaveCSS.sletOpgaveKnap}>
+                            {!opgave.isDeleted && !opgave.markeretSomFærdig && <button className={ÅbenOpgaveCSS.sletOpgave} onClick={() => setSletOpgaveModal(true)}>Slet opgave</button>}
+                            {opgave.isDeleted && <button className={ÅbenOpgaveCSS.genåbnOpgave} onClick={() => setGenåbnOpgaveModal(true)}>Genåbn opgave</button>}
+                        </div>
+                        <Modal trigger={sletOpgaveModal} setTrigger={setSletOpgaveModal}>
+                            <h2 className={ÅbenOpgaveCSS.modalHeading}>ADVARSEL!</h2>
+                            <p className={ÅbenOpgaveCSS.modalTekst}>
+                                <b className={ÅbenOpgaveCSS.bold}>Du er ved at slette denne opgave.</b><br /><br />
+                                Alle posteringer, besøg og kommentarer, som er tilknyttet denne opgave, vil blive permanent slettet i processen. Dette kan have konsekvenser for dem, der er tilknyttet som ansvarlige for opgaven.
+                                <br />
+                                <br />
+                                Vil du fortsætte?
+                                <br />
+                                <br />
+                                <b className={ÅbenOpgaveCSS.prefix}>Skriv "SLET" i feltet herunder for at bekræfte handlingen.</b>
+                            </p>
+                            <input type="text" className={ÅbenOpgaveCSS.modalInput} onChange={(e) => setSletOpgaveInput(e.target.value)}/>
+                            {sletOpgaveInput === "SLET" ? <button className={ModalCSS.buttonFullWidth} onClick={sletOpgave}>Slet opgave</button> : null}
+                        </Modal>
+                        <Modal trigger={genåbnOpgaveModal} setTrigger={setGenåbnOpgaveModal}>
+                            <h2 className={ÅbenOpgaveCSS.modalHeading}>Vil du genåbne opgaven?</h2>
+                            <p className={ÅbenOpgaveCSS.modalTekst}>
+                                Genåbning af opgaven vil gendanne opgaven til den status, den havde, før den blev slettet.
+                            </p>
+                            <button className={ModalCSS.buttonFullWidth} onClick={genåbnOpgave}>Genåbn opgave</button>
+                        </Modal>
+                    </>
+                )}
+
             </div>
             
             <div className={ÅbenOpgaveCSS.opgaveContainer}>
@@ -1749,7 +1820,7 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgave.opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button>: <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button>}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    {!opgave.isDeleted && (færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgave.opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button>: <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button>}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>)}
                     <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
                         <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
                         <form action="">

@@ -18,6 +18,8 @@ import NyOpgave from './pages/NyOpgave'
 import NyBruger from './pages/NyBruger'
 import Login from './pages/Login'
 import Team from './pages/Team'
+import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
+import SlettedeOpgaver from './pages/SlettedeOpgaver'
 
 function App() {
 
@@ -32,6 +34,8 @@ function App() {
       <Route path="/" element={user ? <Content /> : <Login />}>
         <Route index element={<Overblik />}/>
         <Route path="alle-opgaver" element={<AlleOpgaver />}/>
+        <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />}/>
+        <Route path="slettede-opgaver" element={<SlettedeOpgaver />}/>
         <Route path="mine-opgaver" element={<MineOpgaver />}/>
         <Route path="team" element={<Team />}/>
         <Route path="dokumenter" element={<Dokumenter />}/>

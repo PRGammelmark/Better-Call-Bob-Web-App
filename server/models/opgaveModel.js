@@ -40,11 +40,6 @@ const opgaverSchema = new Schema({
         required: true,
         default: "Modtaget"
     },
-    fremskridt: {
-        type: String,
-        required: true,
-        default: "Åben opgave"
-    },
     ansvarlig: [{
         type: Object,
         required: false
@@ -57,8 +52,7 @@ const opgaverSchema = new Schema({
     }],
     markeretSomFærdig: {
         type: Boolean,
-        default: false,
-        required: false
+        default: false
     },
     opgaveAfsluttet: {
         type: Boolean,
@@ -81,6 +75,10 @@ const opgaverSchema = new Schema({
     incrementalID: {
         type: Number,
         unique: true
+    },
+    isDeleted: {
+        type: Date,
+        default: false
     }
 }, { timestamps: true })
 

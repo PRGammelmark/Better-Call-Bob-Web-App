@@ -1,0 +1,19 @@
+.slettedeOpgaverHeader ul li:nth-child(1), .slettedeOpgaverBody div ul li:nth-child(1) {
+    width: 6%;
+}
+
+.slettedeOpgaverHeader ul li:nth-child(2), .slettedeOpgaverBody div ul li:nth-child(2) {
+    width: 13%;
+}
+
+.slettedeOpgaverHeader ul li:nth-child(3), .slettedeOpgaverBody div ul li:nth-child(3) {
+    width: 18%;
+}
+
+.slettedeOpgaverHeader ul li:nth-child(4), .slettedeOpgaverBody div ul li:nth-child(4) {
+    width: 25%;
+}
+
+.slettedeOpgaverHeader ul li:nth-child(5), .slettedeOpgaverBody div ul li:nth-child(5) {
+    width: 20%;
+}

@@ -262,67 +262,7 @@ const Indstillinger = () => {
         </div>
         <div className={Styles.præferencer}>
           <p className={Styles.miniheading}>Præferencer:</p>
-          <div>
-            <b >Vis traditionel kalender</b>
-            <div className={Styles.switcherDiv}>
-              <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} checked={kalenderVisning} onChange={skiftKalendervisning} />
-                <span className={Styles.slider}></span>
-              </label>
-            </div>
-          </div>
-          <button className={Styles.button} onClick={() => setRedigerLedigeTider(true)}>Fortæl hvornår du er ledig</button>
-          <Modal trigger={redigerLedigeTider} setTrigger={setRedigerLedigeTider} >
-          <h2 className={Styles.modalHeading}>Fortæl os hvornår du er ledig</h2>
-                <form onSubmit={submitLedigeTider}>
-                <div>
-                  <LedighedCalendar ledigeTider={ledigeTider} selectedDate={selectedDate} setSelectedDate={setSelectedDate} opgaveBesøg={opgaveBesøg}/>
-                </div>
-                <div className={Styles.nuvLedigeTiderOverblik}>
-                  {ledigeTider && ledigeTider.map((ledigTid) => {
-                    if (dayjs(ledigTid.datoTidFra).format("DD-MM-YYYY") === selectedDate.format("DD-MM-YYYY")) {
-                      return (
-                        <div className={Styles.ledigTidDisplay} key={ledigTid._id}>
-                          <p className={Styles.ledigTidBeskrivelse}>{dayjs(ledigTid.datoTidFra).format("HH:mm")} – {dayjs(ledigTid.datoTidTil).format("HH:mm")}</p>
-                          {opgaveBesøg && opgaveBesøg.map(besøg => {
-                            if (dayjs(besøg.datoTidFra).isSame(selectedDate, 'day')) {
-                              return (
-                                <div key={opgaveBesøg._id} className={Styles.opgaveCardContainer} onClick={() => navigateToOpgave(besøg.opgaveID)}>
-                                  <div className={Styles.opgaveCard}>
-                                    <div className={Styles.opgaveCardIkon}>
-                                      🛠️
-                                    </div>
-                                    <b className={Styles.opgaveCardName}>Opgave #{besøg.opgaveID.slice((besøg.opgaveID.length - 3), besøg.opgaveID.length)}</b>
-                                    <div>
-                                      <span className={Styles.opgaveCardTime}>{dayjs(besøg.datoTidFra).format("HH:mm")} - {dayjs(besøg.datoTidTil).format("HH:mm")}</span>
-                                    </div>
-                                  </div>
-                                </div>
-                              )
-                            } else return null
-                          })}
-                          <p className={Styles.ledigTidSlet} onClick={() => sletLedighed(ledigTid._id)}>Slet</p>
-                        </div>
-                      )
-                    } else {
-                      return null
-                    }
-                  })}
-                </div>
-                {ledigeTider && console.log(ledigeTider)}
-                <div className={Styles.timeSelectorDiv}>
-                  <div className={Styles.timeInputLabel}>
-                    <label className={Styles.label}>Fra kl.:</label>
-                    <input type="time" value={fraTid} onChange={(e) => setFraTid(e.target.value)} className={Styles.modalInput} />
-                  </div>
-                  <div className={Styles.timeInputLabel}>
-                    <label className={Styles.label}>Til kl.:</label>
-                    <input type="time" value={tilTid} onChange={(e) => setTilTid(e.target.value)} className={Styles.modalInput} />
-                  </div>
-                </div>
-                <button className={Styles.buttonFullWidth}>Registrer ledighed – {selectedDate.format("DD. MMMM")}</button>
-                </form>
-          </Modal>
+          <p>Ingen præferenceindstillinger i øjeblikket.</p>
         </div>
       </div>
     </PageAnimation>

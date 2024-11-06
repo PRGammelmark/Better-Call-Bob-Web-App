@@ -20,6 +20,8 @@
     display: flex;
     align-items: center;
     gap: 10px;
+    position: relative;
+    max-width: 600px;
 }
 
 .opgaveContainer {
@@ -1041,6 +1043,50 @@
     font-family: Omnes;
     font-weight: 300;
     font-size: 0.9rem;
+}
+
+.sletOpgave {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px 20px;
+    color: #FF0000;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+    border: 1px solid transparent;
+    background: none;
+    background-color: #FF000030;
+    cursor: pointer;
+}
+
+.sletOpgave:hover {
+    border: 1px solid #FF0000;
+}
+
+.slettetOverstregning {
+    text-decoration: line-through;
+}
+
+.genåbnOpgave {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 10px 20px;
+    color: #59bf1a;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+    border: 1px solid transparent;
+    background: none;
+    background-color: #59bf1a40;
+    cursor: pointer;
+}
+
+.genåbnOpgave:hover {
+    border: 1px solid #59bf1a;
 }
 
 @media screen and (max-width: 750px) {

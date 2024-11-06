@@ -1,0 +1,65 @@
+.opgaverLinkBjælke {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 40px;
+}
+
+.aktuelleOpgaverLink {
+  text-decoration: none;
+  font-weight: 700;
+  font-family: "OmnesBold";
+  color: #3c5a3f;
+  background: #59bf1a20;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #59bf1a00;
+  transition: 0.2s ease;
+}
+
+.aktuelleOpgaverLink:hover {
+  border: 1px solid #59bf1a;
+}
+
+.aktuelleOpgaverLink.active {
+    border: 1px solid #59bf1a;
+  }
+
+.afsluttedeOpgaverLink {
+    text-decoration: none;
+    font-weight: 700;
+    font-family: "OmnesBold";
+    color: #444444;
+    background: #d3d3d380;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #44444400;
+    transition: 0.2s ease;
+  }
+
+.afsluttedeOpgaverLink:hover {
+  border: 1px solid #444444;
+}
+
+.afsluttedeOpgaverLink.active {
+    border: 1px solid #444444;
+  }
+
+.slettedeOpgaverLink {
+    text-decoration: none;
+    font-weight: 700;
+    font-family: "OmnesBold";
+    color: #ff0000;
+    background: #ff000020;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ff000000;
+    transition: 0.2s ease;
+  }
+
+.slettedeOpgaverLink:hover {
+  border: 1px solid #ff0000;
+}
+
+.slettedeOpgaverLink.active {
+    border: 1px solid #ff0000;
+  }

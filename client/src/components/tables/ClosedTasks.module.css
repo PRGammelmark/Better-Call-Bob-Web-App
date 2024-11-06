@@ -1,0 +1,19 @@
+.closedTasksHeader ul li:nth-child(1), .closedTasksBody div ul li:nth-child(1) {
+    width: 6%;
+}
+
+.closedTasksHeader ul li:nth-child(2), .closedTasksBody div ul li:nth-child(2) {
+    width: 13%;
+}
+
+.closedTasksHeader ul li:nth-child(3), .closedTasksBody div ul li:nth-child(3) {
+    width: 18%;
+}
+
+.closedTasksHeader ul li:nth-child(4), .closedTasksBody div ul li:nth-child(4) {
+    width: 25%;
+}
+
+.closedTasksHeader ul li:nth-child(5), .closedTasksBody div ul li:nth-child(5) {
+    width: 20%;
+}

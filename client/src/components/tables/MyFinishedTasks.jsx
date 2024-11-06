@@ -9,7 +9,7 @@ import dayjs from 'dayjs'
 
 const MyTasks = ({openTableEvent}) => {
 
-  const [mineAktuelleOpgaver, setMineAktuelleOpgaver] = useState([])
+  const [mineFærdigeOpgaver, setMineFærdigeOpgaver] = useState([])
   const [mineBesøg, setMineBesøg] = useState([])
   const {user} = useAuthContext()
 
@@ -25,11 +25,10 @@ const MyTasks = ({openTableEvent}) => {
         const filterMineOpgaver = res.data.filter((opgave) => 
             opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID)
         );
-        const filterAktuelleOpgaver = filterMineOpgaver.filter((opgave) => 
-            opgave.markeretSomFærdig === false
+        const filterFærdigeOpgaver = filterMineOpgaver.filter((opgave) => 
+            opgave.markeretSomFærdig === true
         );
-        console.log(filterMineOpgaver)
-        setMineAktuelleOpgaver(filterMineOpgaver)
+        setMineFærdigeOpgaver(filterFærdigeOpgaver)
     })
     .catch(error => console.log(error))
   }, [])

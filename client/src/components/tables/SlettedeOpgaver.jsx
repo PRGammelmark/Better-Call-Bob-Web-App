@@ -1,12 +1,12 @@
 import TableCSS from './Table.module.css'
-import DelegatedTasksCSS from './DelegatedTasks.module.css'
+import SlettedeOpgaverCSS from './SlettedeOpgaver.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
 
-const DelegatedTasks = () => {
+const SlettedeOpgaver = () => {
 
-  const [uddelegeredeOpgaver, setUddelegeredeOpgaver] = useState(null)
+  const [slettedeOpgaver, setSlettedeOpgaver] = useState(null)
   const {user} = useAuthContext()
 
   useEffect(()=>{
@@ -19,9 +19,8 @@ const DelegatedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const opgaverMedAnsvarlige = json.filter(opgave => opgave.ansvarlig.length > 0 && !opgave.isDeleted);
-        const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false)
-        setUddelegeredeOpgaver(ufærdigeOpgaverMedAnsvarlige);
+        const opgaverDerErSlettet = json.filter(opgave => opgave.isDeleted != null);
+        setSlettedeOpgaver(opgaverDerErSlettet);
       }
     }
 
@@ -32,19 +31,19 @@ const DelegatedTasks = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Uddelegerede opgaver</h2>
+          <h2 className={TableCSS.tabelHeader}>Slettede opgaver</h2>
           <div className={TableCSS.opgaveTabel}>
-          <div className={`${TableCSS.opgaveHeader} ${DelegatedTasksCSS.delegatedTasksHeader}`}>
+            <div className={`${TableCSS.opgaveHeader} ${SlettedeOpgaverCSS.slettedeOpgaverHeader}`}>
               <ul>
-                <li>ID</li>
+              <li>ID</li>
                 <li>Udføres</li>
                 <li>Kunde</li>
                 <li>Adresse</li>
                 <li>Ansvarlig</li>
               </ul>
             </div>
-            <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
-              {uddelegeredeOpgaver && uddelegeredeOpgaver.map((opgave) => {
+            <div className={`${TableCSS.opgaveBody} ${SlettedeOpgaverCSS.slettedeOpgaverBody}`}>
+              {slettedeOpgaver && slettedeOpgaver.map((opgave) => {
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
@@ -60,7 +59,6 @@ const DelegatedTasks = () => {
                   </div>
                 )
               })}
-              
             </div>
           </div>
         </div>
@@ -68,4 +66,4 @@ const DelegatedTasks = () => {
   )
 }
 
-export default DelegatedTasks
+export default SlettedeOpgaver

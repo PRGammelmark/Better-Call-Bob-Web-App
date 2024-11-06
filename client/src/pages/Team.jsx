@@ -42,7 +42,7 @@ const Team = () => {
     <div>
         <h1 className={`bold ${styles.heading}`}>Teamet</h1>
         <div className={styles.adminDiv}>
-            <h2 className={styles.subheading}>Admins</h2>
+            <h2 className={styles.subheading}>Administratorer   </h2>
             <div className={styles.cardHolder}>
                 {admins && admins.map((bruger)=>{
                     return (
