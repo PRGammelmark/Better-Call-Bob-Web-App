@@ -40,8 +40,8 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
   const [visEgneBesøg, setVisEgneBesøg] = useState(opgaveID ? true : false)
   const [visAlleBesøg, setVisAlleBesøg] = useState(false)
   const [visLedighed, setVisLedighed] = useState(false)
-  const [visKunBesøgOverblik, setVisKunBesøgOverblik] = useState(false)
-  const [visOgsåLedighedOverblik, setVisOgsåLedighedOverblik] = useState(opgaveID ? false : true)
+  const [visKunLedighedOverblik, setVisKunLedighedOverblik] = useState(false)
+  const [visOgsåBesøgOverblik, setVisOgsåBesøgOverblik] = useState(opgaveID ? false : true)
   // const [visAlt, setVisAlt] = useState(false)
   const [editBesøg, setEditBesøg] = useState(false)
   const [selectedTimeFrom, setSelectedTimeFrom] = useState("");
@@ -351,13 +351,13 @@ function kalenderVisningLedighed(){
 }
 
 function kalenderVisningOgsåLedighedOverblik(){
-  setVisKunBesøgOverblik(false)
-  setVisOgsåLedighedOverblik(true)
+  setVisKunLedighedOverblik(false)
+  setVisOgsåBesøgOverblik(true)
 }
 
-function kalenderVisningKunBesøgOverblik(){
-  setVisOgsåLedighedOverblik(false)
-  setVisKunBesøgOverblik(true)
+function kalenderVisningKunLedighedOverblik(){
+  setVisOgsåBesøgOverblik(false)
+  setVisKunLedighedOverblik(true)
 }
 
 const handleDateChange = (date) => {
@@ -459,8 +459,8 @@ const onRedigerLedigTid = (e) => {
       :
       // Vis dette på overblikssiden
       <div className={Styles.calendarHeadingDiv}>
-        {visKunBesøgOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg)</p></>}
-        {visOgsåLedighedOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg og hvornår du er registreret ledig)</p></>}
+        {visKunLedighedOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine ledighedsblokke)</p></>}
+        {visOgsåBesøgOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg og hvornår du er registreret ledig)</p></>}
       </div> }
       <TradCalendar
         culture={'da'}
@@ -470,9 +470,9 @@ const onRedigerLedigTid = (e) => {
           ?
           (visEgneBesøg ? egneBesøgFormateret : visAlleBesøg ? alleBesøgDenneOpgaveFormateret : fratrækBesøgFraLedigeTider ? ledigeTiderMinusBesøg : ledigeTiderFormateret)
           :
-          egneBesøgAlleOpgaverFormateret
+          (visOgsåBesøgOverblik ? egneBesøgAlleOpgaverFormateret : egneLedigeTiderFormateret)
           }
-        backgroundEvents={visOgsåLedighedOverblik ? egneLedigeTiderFormateret : []}
+        backgroundEvents={visOgsåBesøgOverblik ? egneLedigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         startAccessor="start"
         endAccessor="end"
@@ -526,7 +526,7 @@ const onRedigerLedigTid = (e) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} checked={visOgsåLedighedOverblik} onChange={kalenderVisningOgsåLedighedOverblik} />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visOgsåBesøgOverblik} onChange={kalenderVisningOgsåLedighedOverblik} />
                 <span className={Styles.slider}></span>
               </label>
             </div>
@@ -535,11 +535,11 @@ const onRedigerLedigTid = (e) => {
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
-                <input type="checkbox" className={Styles.checkboxSwitch} checked={visKunBesøgOverblik} onChange={kalenderVisningKunBesøgOverblik} />
+                <input type="checkbox" className={Styles.checkboxSwitch} checked={visKunLedighedOverblik} onChange={kalenderVisningKunLedighedOverblik} />
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis kun besøg</b>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis kun ledighed</b>
           </div>
       </div>
       }

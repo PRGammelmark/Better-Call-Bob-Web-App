@@ -5,7 +5,6 @@ import path from 'path';
 import multer from "multer";
 
 const router = express.Router();
-router.use(requireAuth);
 
 // Ensure the uploads directory exists
 const fakturaerDir = path.resolve('fakturaer');
@@ -13,7 +12,11 @@ if (!fs.existsSync(fakturaerDir)) {
     fs.mkdirSync(fakturaerDir, { recursive: true });
 }
 
+// Serve static files from the fakturaer directory without authentication
 router.use('/fakturaer', express.static(fakturaerDir));
+
+// Apply authentication middleware only to the routes that require it
+router.use(requireAuth);
 
 // Set up multer for file uploads with disk storage
 const storage = multer.diskStorage({

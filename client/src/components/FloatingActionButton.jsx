@@ -28,6 +28,7 @@ const FloatingActionButton = () => {
     const [comment, setComment] = useState("");
     const [opretBesøgError, setOpretBesøgError] = useState("");
     const [opretLedighedError, setOpretLedighedError] = useState("");
+    const [opretLedighedSuccess, setOpretLedighedSuccess] = useState(false);
     const [addLedighed, setAddLedighed] = useState(false);
     const [tilføjRegelmæssigLedighed, setTilføjRegelmæssigLedighed] = useState(false);
     const [selectedWeekday, setSelectedWeekday] = useState("1");
@@ -178,6 +179,11 @@ const FloatingActionButton = () => {
         })
         .then(res => {
             refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true)
+            setOpretLedighedSuccess("Ledighed tilføjet!")
+            setTimeout(() => {
+                setOpretLedighedSuccess("")
+            }, 5000)
+            
         })
         .catch(error => console.log(error))
 
@@ -242,6 +248,10 @@ const FloatingActionButton = () => {
         .then(res => {
             console.log(res.data)
             refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true)
+            setOpretLedighedSuccess("Ledighed tilføjet!")
+            setTimeout(() => {
+                setOpretLedighedSuccess("")
+            }, 5000)
         })
         .catch(error => console.log(error))
     }
@@ -300,6 +310,7 @@ const FloatingActionButton = () => {
                 <p><b className={ModalStyles.bold}>{weekdays.length > 0 ? weekdays.length : "Ingen dage"} {weekdays.length > 0 ? (selectedWeekday === "1" ? "mandag" : selectedWeekday === "2" ? "tirsdag" : selectedWeekday === "3" ? "onsdag" : selectedWeekday === "4" ? "torsdag" : selectedWeekday === "5" ? "fredag" : selectedWeekday === "6" ? "lørdag" : "søndag") : ""}{weekdays.length > 1 ? "e" : ""}</b> i markeret interval.</p>
                 <button className={ModalStyles.buttonFullWidth}>Tilføj ledighed</button>
                 {opretLedighedError && <p className={ModalStyles.errorMessage}>{opretLedighedError}</p>}
+                {opretLedighedSuccess && <p className={ModalStyles.successMessage}>Ledighed tilføjet!</p>}
             </form>
             :
             <form action="" onSubmit={submitNewEnkeltLedighed}>
@@ -317,6 +328,7 @@ const FloatingActionButton = () => {
                 </div>
                 <button className={ModalStyles.buttonFullWidth}>Tilføj ledighed</button>
                 {opretLedighedError && <p className={ModalStyles.errorMessage}>{opretLedighedError}</p>}
+                {opretLedighedSuccess && <p className={ModalStyles.successMessage}>{opretLedighedSuccess}</p>}
             </form>}
         </Modal>
 

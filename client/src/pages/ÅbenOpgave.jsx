@@ -568,6 +568,7 @@ const ÅbenOpgave = () => {
                 })
                 .then(response => {
                     setFærdiggjort(false);
+                    setOpgaveAfsluttet(false);
                 })
                 .catch(error => console.log(error))
             } 
@@ -1087,7 +1088,7 @@ const ÅbenOpgave = () => {
 
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura + administrationsgebyr;
 
-    function openOrDownloadPDF(base64PDF, fileName = 'faktura.pdf') {
+    function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
         const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
         const byteCharacters = atob(base64String);
         const byteNumbers = new Array(byteCharacters.length);
@@ -1102,6 +1103,43 @@ const ÅbenOpgave = () => {
 
         // Open the PDF in a new tab
         window.open(url, '_blank');
+    }
+
+    function mobilePay() {
+        
+        // REQUEST SERVER TO GET ACCESS TOKEN
+        axios.post(`${import.meta.env.VITE_API_URL}/mobilepay/get-qr-code`, {}, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('QR-code received from server:', response.data);
+        })
+        .catch(error => {
+            console.error('Error fetching QR-code from server:', error);
+        });
+
+        // GET ACCESS TOKEN
+        // axios.post('https://apitest.vipps.no/accesstoken/get', {}, {
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //         'client_id': `${import.meta.env.VITE_MP_CLIENT_ID}`,
+        //         'client_secret': `${import.meta.env.VITE_MP_CLIENT_SECRET}`,
+        //         'Ocp-Apim-Subscription-Key': `${import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
+        //         'Merchant-Serial-Number': `${import.meta.env.VITE_MSN}`,
+        //         'Vipps-System-Name': 'YOUR-SYSTEM-NAME',
+        //         'Vipps-System-Version': 'YOUR-SYSTEM-VERSION',
+        //         'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
+        //         'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
+        //     }
+        // })
+        // .then(response => {
+        //     console.log('Access token received:', response.data);
+        // })
+        // .catch(error => {
+        //     console.error('Error fetching access token:', error);
+        // });
     }
 
     return (
@@ -1711,7 +1749,7 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p><button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button><button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button></div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
+                    {færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgave.opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button>: <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button>}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>}
                     <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
                         <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
                         <form action="">
@@ -1747,13 +1785,6 @@ const ÅbenOpgave = () => {
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
-                    {opgave.fakturaPDF 
-                    ? 
-                    <div className={ÅbenOpgaveCSS.fakturaPDFDiv}>
-                        <button className={ÅbenOpgaveCSS.fakturaPDFLink} onClick={() => openOrDownloadPDF(opgave.fakturaPDF)}>Se faktura</button>
-                    </div> 
-                    : 
-                    null}
                     <b className={ÅbenOpgaveCSS.prefix}>Økonomisk overblik</b>
                     <div className={ÅbenOpgaveCSS.regnskabContainer}>
                         <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
@@ -1873,6 +1904,8 @@ const ÅbenOpgave = () => {
                         />
                     </form>}
                 </div>
+                <button onClick={() => mobilePay()}>Mobile Pay test</button>
+
             </div>
             </PageAnimation>
         </div>

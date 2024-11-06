@@ -11,6 +11,7 @@ import besøgRoutes from "./routes/besøg.js"
 import uploadsRoutes from "./routes/uploads.js"
 import fakturaerRoutes from "./routes/fakturaer.js"
 import smsRoutes from "./routes/sms.js"
+import mobilePayRoutes from "./routes/mobilePay.js"
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
@@ -75,6 +76,7 @@ app.use('/api/besoeg', besøgRoutes);
 app.use('/api/uploads', uploadsRoutes);
 app.use('/api/fakturaer', fakturaerRoutes);
 app.use('/api/sms', smsRoutes);
+app.use('/api/mobilepay', mobilePayRoutes);
 
 
 

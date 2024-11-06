@@ -170,6 +170,10 @@
     color: red;
 }
 
+.successMessage {
+    color: #59bf1a;
+}
+
 .deleteEditButtons {
     display: flex;
     flex-direction: row;
