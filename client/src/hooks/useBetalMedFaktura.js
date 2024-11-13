@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
 
-const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet) => {
+const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingSubmission, setSuccessSubmission) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -32,7 +32,7 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
     axios.post('https://restapi.e-conomic.com/customers', {
         name: opgave.navn ? opgave.navn : "Intet navn oplyst",
         address: opgave.adresse ? opgave.adresse : "Ingen adresse oplyst",
-        email: opgave.email ? opgave.email : null,
+        email: alternativEmail ? alternativEmail : opgave.email ? opgave.email : null,
         vatZone: {
             vatZoneNumber: 1
         },
@@ -183,6 +183,8 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                                 })
                                 .then(response => {
                                     console.log("SMS sendt til kunden.");
+                                    setLoadingSubmission(false);
+                                    setSuccessSubmission(true);
                                 })
                                 .catch(error => {
                                     console.log("Error: Could not send SMS to customer.");
@@ -191,11 +193,21 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             } else {
                                 console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
                             }
-                            // ==================================================
-                        })
-                        .catch(error => {
-                            console.log("Fejl: Kunne ikke lagre faktura PDF URL i databasen.");
-                            console.log(error);
+                            // 7) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
+                            axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                                to: alternativEmail ? alternativEmail : opgave.email,
+                                subject: `Faktura fra Better Call Bob`,
+                                body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
+                            })
+                            .then(response => {
+                                console.log("Email sendt til kunden.");
+                                setLoadingSubmission(false);
+                                setSuccessSubmission(true);
+                            })
+                            .catch(error => {
+                                console.log("Fejl: Kunne ikke sende email til kunden.");
+                                console.log(error);
+                            })
                         });
                     })
                     .catch(error => {

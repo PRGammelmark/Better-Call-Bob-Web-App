@@ -3,9 +3,14 @@ import Modal from '../Modal.jsx'
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import SwitcherStyles from '../../pages/Switcher.module.css'
 
-const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, bekræftIndsendelseModal, setBekræftIndsendelseModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, useBetalMedFaktura, totalFaktura}) => {
+const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, useBetalMedFaktura, totalFaktura}) => {
+
+    åbnOpretRegningModal && {
+        
+    }
+
   return (
-    <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
+    <Modal trigger={åbnOpretRegningModal} setTrigger={setÅbnOpretRegningModal}>
         <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
         <form action="">
             <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p>
