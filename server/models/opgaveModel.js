@@ -11,6 +11,14 @@ const opgaverSchema = new Schema({
         type: String,
         required: true
     },
+    CVR: {
+        type: String,
+        required: false
+    },
+    virksomhed: {
+        type: String,
+        required: false
+    },
     adresse: {
         type: String,
         required: true

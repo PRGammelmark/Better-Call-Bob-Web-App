@@ -75,9 +75,9 @@ const createOpgave = async (req, res) => {
         { new: true, upsert: true }
     );
 
-    const { opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted } = req.body;
+    const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted } = req.body;
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, navn, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted})
+        const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted})
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -100,25 +100,6 @@ const deleteOpgave = async (req, res) => {
 
     res.status(200).json(opgave)
 }
-
-// OPDATER en opgave
-// const updateOpgave = async (req,res) => {
-//     const { id } = req.params
-
-//     if(!mongoose.Types.ObjectId.isValid(id)){
-//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
-
-//     const opgave = await Opgave.findOneAndUpdate({_id: id}, {
-//         ...req.body
-//     })
-
-//     if(!opgave) {
-//         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
-
-//     res.status(200).json(opgave)
-// }
 
 const updateOpgave = async (req, res) => {
     const { id } = req.params;

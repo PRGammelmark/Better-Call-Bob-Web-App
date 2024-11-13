@@ -15,6 +15,8 @@ const NyOpgave = () => {
     // State managers
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("");
     const [navn, setNavn] = useState("");
+    const [CVR, setCVR] = useState("");
+    const [virksomhed, setVirksomhed] = useState("");
     const [adresse, setAdresse] = useState("");
     const [postnummerOgBy, setPostnummerOgBy] = useState("");
     const [onsketDato, setOnsketDato] = useState("");
@@ -35,6 +37,8 @@ const NyOpgave = () => {
         const opgave = {
             opgaveBeskrivelse,
             navn,
+            CVR,
+            virksomhed,
             adresse,
             postnummerOgBy,
             onsketDato,
@@ -70,6 +74,8 @@ const NyOpgave = () => {
     function startForfra(){
         setOpgaveBeskrivelse("");
         setNavn("");
+        setCVR("");
+        setVirksomhed("");
         setAdresse("");
         setPostnummerOgBy("");
         setOnsketDato("");
@@ -103,12 +109,16 @@ const NyOpgave = () => {
                         <label className={NyOpgaveCSS.label}>Hvornår ønskes opgaven udført?</label>
                         <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} required/>
                         <div className={NyOpgaveCSS.checkboxContainer}>
-                            <input type="checkbox" name="harStige" className={NyOpgaveCSS.checkbox} onChange={(e) => setHarStige(e.target.value)} checked={harStige}/>  
+                            <input type="checkbox" name="harStige" className={NyOpgaveCSS.checkbox} onChange={(e) => setHarStige(e.target.checked)} checked={harStige}/>  
                             <label className={NyOpgaveCSS.label}>Har kunden en stige?</label>
                         </div>
                         
                     </div>
                     <div className={NyOpgaveCSS.kolonneTo}>
+                        <label className={NyOpgaveCSS.label}>Evt. CVR</label>
+                        <input type="text" name="CVR" className={NyOpgaveCSS.input} onChange={(e) => setCVR(e.target.value)} value={CVR}/>
+                        <label className={NyOpgaveCSS.label}>Evt. virksomhed</label>
+                        <input type="text" name="virksomhed" className={NyOpgaveCSS.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed}/>
                         <label className={NyOpgaveCSS.label}>Telefon</label>
                         <input type="tel" name="telefon" className={NyOpgaveCSS.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} required/>
                         <label className={NyOpgaveCSS.label}>Email</label>

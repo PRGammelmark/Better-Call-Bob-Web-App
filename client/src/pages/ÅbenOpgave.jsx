@@ -15,6 +15,9 @@ import { useBesøg } from '../context/BesøgContext.jsx'
 import { Base64 } from 'js-base64';
 import SwitcherStyles from './Switcher.module.css'
 import ModalCSS from '../components/Modal.module.css'
+import OpretRegningModal from '../components/modals/OpretRegningModal.jsx'
+import useBetalMedFaktura from '../hooks/useBetalMedFaktura.js'
+
 const ÅbenOpgave = () => {
     
     const {user} = useAuthContext();
@@ -59,7 +62,7 @@ const ÅbenOpgave = () => {
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
     const [færdiggjort, setFærdiggjort] = useState(false);
-    const [opgaveAfsluttet, setOpgaveAfsluttet] = useState(false)
+    const [opgaveAfsluttet, setOpgaveAfsluttet] = useState(opgave && opgave.opgaveAfsluttet)
     const [bekræftIndsendelseModal, setBekræftIndsendelseModal] = useState(false);
     const [ledigeTider, setLedigeTider] = useState(null)
     const [visUddelegeringskalender, setVisUddelegeringskalender] = useState(false)
@@ -591,10 +594,6 @@ const ÅbenOpgave = () => {
                     .catch(error => console.log(error))
             }
         }  
-    }
-
-    function bekræftIndsendelseTilEconomic () {
-        setBekræftIndsendelseModal(true);
     }
 
     function opretFakturakladde () {
@@ -1241,6 +1240,8 @@ const ÅbenOpgave = () => {
                     <div className={ÅbenOpgaveCSS.kolonner}>
                         <div>
                             <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>Kunde: <span className={ÅbenOpgaveCSS.postfix}>{opgave.navn}</span></b>
+                            {opgave.CVR ? <><br /><b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>CVR: <span className={ÅbenOpgaveCSS.postfix}>{opgave.CVR}</span></b></> : null}
+                            {opgave.virksomhed ? <><br /><b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>Virksomhed: <span className={ÅbenOpgaveCSS.postfix}>{opgave.virksomhed}</span></b></> : null}
                             <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
                                 <p className={`${ÅbenOpgaveCSS.marginTop10}`}>📞 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
                                 <p>✉️ <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
@@ -1820,39 +1821,8 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                    {!opgave.isDeleted && (færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgave.opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button>: <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => bekræftIndsendelseTilEconomic()}>Opret regning</button>}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>)}
-                    <Modal trigger={bekræftIndsendelseModal} setTrigger={setBekræftIndsendelseModal}>
-                        <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
-                        <form action="">
-                            <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{(totalFaktura * 1.25).toLocaleString('da-DK')} kr.</b> inkl. moms ({totalFaktura.toLocaleString('da-DK')} kr. ekskl. moms).</p>
-                            <p>Når regningen er oprettet vil den automatisk blive sendt til kundens e-mail.</p>
-                        <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
-                            <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
-                            <div className={SwitcherStyles.checkboxContainer}>
-                                <label className={SwitcherStyles.switch} htmlFor="vilBetaleMedDetSamme">
-                                    <input type="checkbox" id="vilBetaleMedDetSamme" name="vilBetaleMedDetSamme" className={SwitcherStyles.checkboxInput} required checked={vilBetaleMedMobilePay} onChange={(e) => setVilBetaleMedMobilePay(e.target.checked)} />
-                                    <span className={SwitcherStyles.slider}></span>
-                                </label>
-                                <b>Vil kunden betale med det samme via Mobile Pay?<br /><span className={ÅbenOpgaveCSS.spar50KrTekst}>(Kunden sparer 50 kr. i administrationsgebyr)</span></b>
-                            </div>
-                            <div className={SwitcherStyles.checkboxContainer}>
-                                <label className={SwitcherStyles.switch} htmlFor="opgaveLøst">
-                                    <input type="checkbox" id="opgaveLøst" name="opgaveLøst" className={SwitcherStyles.checkboxInput} required checked={opgaveLøstTilfredsstillende} onChange={(e) => setOpgaveLøstTilfredsstillende(e.target.checked)} />
-                                    <span className={SwitcherStyles.slider}></span>
-                                </label>
-                                <b>Er kundens opgave blevet løst tilfredsstillende?</b>
-                            </div>
-                            <div className={SwitcherStyles.checkboxContainer}>
-                                <label className={SwitcherStyles.switch} htmlFor="posteringerUdfyldt">
-                                    <input type="checkbox" id="posteringerUdfyldt" name="posteringerUdfyldt" className={SwitcherStyles.checkboxInput} required checked={allePosteringerUdfyldt} onChange={(e) => setAllePosteringerUdfyldt(e.target.checked)} />
-                                    <span className={SwitcherStyles.slider}></span>
-                                </label>
-                                <b>Er alle posteringer tilknyttet denne opgave blevet oprettet og udfyldt?</b>
-                            </div>
-                        </div>
-                        </form>
-                        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={ÅbenOpgaveCSS.opretFaktura} onClick={() => opretFakturakladde()}>Opret og send regning</button>}
-                    </Modal>
+                    {!opgave.isDeleted && (færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setBekræftIndsendelseModal(true)}>Opret regning</button>}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>)}
+                    <OpretRegningModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} bekræftIndsendelseModal={bekræftIndsendelseModal} setBekræftIndsendelseModal={setBekræftIndsendelseModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
