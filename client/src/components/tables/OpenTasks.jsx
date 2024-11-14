@@ -3,9 +3,10 @@ import OpenTasksCSS from './OpenTasks.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
+import BarLoader from '../loaders/BarLoader.js'
 
 const OpenTasks = () => {
-
+  const [isLoading, setIsLoading] = useState(true)
   const [opgaver, setOpgaver] = useState(null)
   const {user} = useAuthContext()
 
@@ -22,6 +23,7 @@ const OpenTasks = () => {
         const opgaverUdenAnsvarlige = json.filter(opgave => opgave.ansvarlig.length === 0);
         const ufærdigeOpgaverUdenAnsvarlige = opgaverUdenAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
         setOpgaver(ufærdigeOpgaverUdenAnsvarlige);
+        setIsLoading(false)
       }
     }
 
@@ -46,7 +48,7 @@ const OpenTasks = () => {
                   </ul>
                 </div>
                 <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyDesktop}`}>
-                  {opgaver && opgaver.map((opgave) => {
+                  {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
                     return (
                       <div className={TableCSS.opgaveListing} key={opgave._id}>
                         <ul>
@@ -61,7 +63,7 @@ const OpenTasks = () => {
                         </Link>
                       </div>
                     )
-                  })}
+                  }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
                 </div>
               </div>
             </div>
@@ -86,7 +88,7 @@ const OpenTasks = () => {
                           <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                           <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
                           <li>{opgave.status}</li>
-                          <li>{opgave.navn}</li>
+                          <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
                         </ul>
                         <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
                           <button className={TableCSS.button}>Åbn</button>

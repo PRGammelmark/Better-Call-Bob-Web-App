@@ -3,10 +3,12 @@ import DelegatedTasksCSS from './DelegatedTasks.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
+import BarLoader from '../loaders/BarLoader.js'
 
 const DelegatedTasks = () => {
 
   const [uddelegeredeOpgaver, setUddelegeredeOpgaver] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
 
   useEffect(()=>{
@@ -22,6 +24,7 @@ const DelegatedTasks = () => {
         const opgaverMedAnsvarlige = json.filter(opgave => opgave.ansvarlig.length > 0 && !opgave.isDeleted);
         const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false)
         setUddelegeredeOpgaver(ufærdigeOpgaverMedAnsvarlige);
+        setIsLoading(false)
       }
     }
 
@@ -44,13 +47,13 @@ const DelegatedTasks = () => {
               </ul>
             </div>
             <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
-              {uddelegeredeOpgaver && uddelegeredeOpgaver.map((opgave) => {
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : uddelegeredeOpgaver.length > 0 ? uddelegeredeOpgaver.map((opgave) => {
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                       <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
-                      <li>{opgave.navn}</li>
+                      <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
                       <li>{opgave.adresse}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
@@ -59,8 +62,7 @@ const DelegatedTasks = () => {
                     </Link>
                   </div>
                 )
-              })}
-              
+              }) : <div className={TableCSS.noResults}><p>Ingen uddelegerede opgaver fundet.</p></div>}
             </div>
           </div>
         </div>

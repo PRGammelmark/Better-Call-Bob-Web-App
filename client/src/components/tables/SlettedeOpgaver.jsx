@@ -3,10 +3,12 @@ import SlettedeOpgaverCSS from './SlettedeOpgaver.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
+import BarLoader from '../loaders/BarLoader.js'
 
 const SlettedeOpgaver = () => {
 
   const [slettedeOpgaver, setSlettedeOpgaver] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
 
   useEffect(()=>{
@@ -21,6 +23,7 @@ const SlettedeOpgaver = () => {
       if (response.ok) {
         const opgaverDerErSlettet = json.filter(opgave => opgave.isDeleted != null);
         setSlettedeOpgaver(opgaverDerErSlettet);
+        setIsLoading(false)
       }
     }
 
@@ -43,13 +46,13 @@ const SlettedeOpgaver = () => {
               </ul>
             </div>
             <div className={`${TableCSS.opgaveBody} ${SlettedeOpgaverCSS.slettedeOpgaverBody}`}>
-              {slettedeOpgaver && slettedeOpgaver.map((opgave) => {
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : slettedeOpgaver.length > 0 ? slettedeOpgaver.map((opgave) => {
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                       <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
-                      <li>{opgave.navn}</li>
+                      <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
                       <li>{opgave.adresse}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
@@ -58,7 +61,7 @@ const SlettedeOpgaver = () => {
                     </Link>
                   </div>
                 )
-              })}
+              }) : <div className={TableCSS.noResults}><p>Ingen slettede opgaver fundet.</p></div>}
             </div>
           </div>
         </div>

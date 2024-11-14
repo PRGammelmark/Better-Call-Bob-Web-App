@@ -4,6 +4,7 @@ import MyTasksCSS from './MyTasks.module.css'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
+import BarLoader from '../loaders/BarLoader.js'
 import axios from 'axios'
 import dayjs from 'dayjs'
 
@@ -11,6 +12,7 @@ const MyTasks = ({openTableEvent}) => {
 
   const [mineFærdigeOpgaver, setMineFærdigeOpgaver] = useState([])
   const [mineBesøg, setMineBesøg] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
 
   const userID = user.id;
@@ -29,6 +31,7 @@ const MyTasks = ({openTableEvent}) => {
             opgave.markeretSomFærdig === true
         );
         setMineFærdigeOpgaver(filterFærdigeOpgaver)
+        setIsLoading(false)
     })
     .catch(error => console.log(error))
   }, [])
@@ -81,7 +84,7 @@ const findTættesteBesøg = (opgaveID) => {
                             <ul>
                             <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                             <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
-                            <li>{opgave.navn}</li>
+                            <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
                             <li>{opgave.adresse}</li>
                             </ul>
                             <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>

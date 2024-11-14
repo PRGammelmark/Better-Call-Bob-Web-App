@@ -4,19 +4,19 @@ import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Styles from './OpretFakturaModal.module.css'
 import SwitcherStyles from '../../pages/Switcher.module.css'
 import useBetalMedFaktura from '../../hooks/useBetalMedFaktura.js'
-import { BarLoader } from 'react-spinners'
+import BarLoader from '../loaders/BarLoader.js'
 
 const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura}) => {
   const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
   const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
   const [cvrKorrekt, setCvrKorrekt] = useState(false)
   const [alternativEmail, setAlternativEmail] = useState('')
-  const [loadingSubmission, setLoadingSubmission] = useState(false)
-  const [successSubmission, setSuccessSubmission] = useState(false)
+  const [loadingFakturaSubmission, setLoadingFakturaSubmission] = useState(false)
+  const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
 
     return (
     <Modal trigger={åbnOpretFakturaModal} setTrigger={setÅbnOpretFakturaModal}>
-        {loadingSubmission && 
+        {loadingFakturaSubmission && 
         <div className={Styles.loadingSubmission}>
             <h2>Sender faktura – vent venligst ... </h2>
             <BarLoader
@@ -27,12 +27,12 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 wrapperClass=""
             />
         </div>}
-        {!loadingSubmission && successSubmission && 
+        {!loadingFakturaSubmission && successFakturaSubmission && 
         <div className={Styles.successSubmission}>
             <h2>Faktura sendt! 🎉</h2>
             <p>Fakturaen er blevet oprettet, og sendt til kundens e-mail.</p>
         </div>}
-        {!loadingSubmission && !successSubmission && <>
+        {!loadingFakturaSubmission && !successFakturaSubmission && <>
         <div>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret faktura</h2>
                 <form action="">
@@ -80,8 +80,8 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             onClick={(e) => {
                                 e.preventDefault();
                                 if (alternativEmail.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) || alternativEmail === '') {
-                                    setLoadingSubmission(true);
-                                    useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingSubmission, setSuccessSubmission);
+                                    setLoadingFakturaSubmission(true);
+                                    useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission);
                                 } else {
                                     alert("Indtast en gyldig e-mailadresse, eller efterlad feltet tomt.");
                                 }

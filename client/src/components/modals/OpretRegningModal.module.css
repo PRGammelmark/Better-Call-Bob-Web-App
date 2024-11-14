@@ -1,0 +1,42 @@
+.betalNuKnap {
+    background-color: #5978ff;
+    width: 100%;
+    border-radius: 15px;
+    border: none;
+    padding: 20px;
+    font-weight: bold;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.mobilePayLogo {
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+}
+
+.betalSenereKnap {
+    background-color: #00000000;
+    color: #59bf1a;
+    width: 50%;
+    border-radius: 15px;
+    border: 1px solid #59bf1a;
+    padding: 10px;
+    font-weight: bold;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    margin-top: 20px;
+    margin-left: 25%;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.betalSenereKnap:hover {
+    background-color: #59bf1a;
+    color: white;
+}

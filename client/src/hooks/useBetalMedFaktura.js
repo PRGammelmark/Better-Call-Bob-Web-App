@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
 
-const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingSubmission, setSuccessSubmission) => {
+const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -183,8 +183,8 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                                 })
                                 .then(response => {
                                     console.log("SMS sendt til kunden.");
-                                    setLoadingSubmission(false);
-                                    setSuccessSubmission(true);
+                                    setLoadingFakturaSubmission(false);
+                                    setSuccessFakturaSubmission(true);
                                 })
                                 .catch(error => {
                                     console.log("Error: Could not send SMS to customer.");
@@ -201,8 +201,8 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             })
                             .then(response => {
                                 console.log("Email sendt til kunden.");
-                                setLoadingSubmission(false);
-                                setSuccessSubmission(true);
+                                setLoadingFakturaSubmission(false);
+                                setSuccessFakturaSubmission(true);
                             })
                             .catch(error => {
                                 console.log("Fejl: Kunne ikke sende email til kunden.");

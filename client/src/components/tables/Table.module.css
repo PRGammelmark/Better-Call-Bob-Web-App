@@ -89,6 +89,19 @@ button.button {
     text-decoration: none;
 }
 
+.loadingSubmission {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.noResults {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
 @media screen and (max-width: 750px) {
     .tabelHeader {
         font-size: 1.2rem;
