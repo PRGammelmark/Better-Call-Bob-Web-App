@@ -1,4 +1,4 @@
-const useEconomicLines = (posteringer, vilBetaleMedMobilePay) => {
+const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
 
     const lines = []; 
 
@@ -72,17 +72,18 @@ const useEconomicLines = (posteringer, vilBetaleMedMobilePay) => {
             })
         }
 
-
-        lines.push({
-            lineNumber: lineNumber++,
-            description: "Administrationsgebyr",
-            product: {
+        if (bekræftAdmGebyr) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: "Administrationsgebyr",
+                product: {
                 productNumber: "4"
             },
             quantity: 1,
-            unitNetPrice: 49.95,
-            discountPercentage: 0.00
-        })
+            unitNetPrice: 49,
+                discountPercentage: 0.00
+            })
+        }
 
     })
 

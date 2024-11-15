@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
 
-const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission) => {
+const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -15,7 +15,7 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
     }
     
     // Importer linjer til faktura fra posteringer
-    const economicLines = useEconomicLines(posteringer);
+    const economicLines = useEconomicLines(posteringer, bekræftAdmGebyr);
 
 
     // ===== BETALINGSFLOW =====
@@ -193,11 +193,16 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             } else {
                                 console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
                             }
+
                             // 7) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
                             axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                                 to: alternativEmail ? alternativEmail : opgave.email,
                                 subject: `Faktura fra Better Call Bob`,
                                 body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${user.token}`
+                                }
                             })
                             .then(response => {
                                 console.log("Email sendt til kunden.");

@@ -1086,7 +1086,7 @@ const ÅbenOpgave = () => {
     }, 0);
     const administrationsgebyr = vilBetaleMedMobilePay ? 0 : 50;
 
-    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura + administrationsgebyr;
+    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
         const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
@@ -1861,7 +1861,7 @@ const ÅbenOpgave = () => {
                     <div>
                     {!opgave.isDeleted && (færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button> : ((opgave.virksomhed || opgave.CVR) ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning</button>)}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>)}
                     {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />}
-                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />}
+                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} />}
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
@@ -1887,10 +1887,6 @@ const ÅbenOpgave = () => {
                         {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura} kr.</span>
-                        </div>}
-                        {administrationsgebyr > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Administrationsgebyr:</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{administrationsgebyr} kr.</span>
                         </div>}
                         <div className={ÅbenOpgaveCSS.subtotalRække}>
                             <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>

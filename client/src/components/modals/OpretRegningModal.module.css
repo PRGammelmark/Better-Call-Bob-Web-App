@@ -40,3 +40,46 @@
     background-color: #59bf1a;
     color: white;
 }
+
+.betalSenereModalHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.backButton {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    border-radius: 50%;
+    border: 1px solid #222222;
+    background-color: none;
+    padding: 4px 0px 4px 4px;
+    margin-right: 10px;
+}
+
+.betalMedFakturaKnap {
+    background-color: #3c5a40;
+    color: white;
+    width: 100%;
+    border-radius: 15px;
+    border: none;
+    padding: 20px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    font-family: OmnesBold;
+}
+
+.betalMedFakturaKnap:hover {
+    background-color: #59bf1a;
+    color: white;
+}
+
+.loadingSubmission {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 30px;
+    padding-bottom: 20px;
+}

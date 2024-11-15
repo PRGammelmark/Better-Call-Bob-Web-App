@@ -6,13 +6,18 @@ import SwitcherStyles from '../../pages/Switcher.module.css'
 import useBetalMedFaktura from '../../hooks/useBetalMedFaktura.js'
 import BarLoader from '../loaders/BarLoader.js'
 
-const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura}) => {
+const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura, redigerKundeModal, setRedigerKundeModal}) => {
   const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
   const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
   const [cvrKorrekt, setCvrKorrekt] = useState(false)
   const [alternativEmail, setAlternativEmail] = useState('')
   const [loadingFakturaSubmission, setLoadingFakturaSubmission] = useState(false)
   const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
+
+  function åbnRedigerKundeModal() {
+    setÅbnOpretFakturaModal(false)
+    setRedigerKundeModal(true)
+  }
 
     return (
     <Modal trigger={åbnOpretFakturaModal} setTrigger={setÅbnOpretFakturaModal}>
@@ -54,6 +59,7 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             </label>
                             <b>Er alle posteringer tilknyttet denne opgave blevet oprettet og udfyldt?</b>
                         </div>
+                        {opgave.CVR ? 
                         <div className={SwitcherStyles.checkboxContainer}>
                             <label className={SwitcherStyles.switch} htmlFor="cvrKorrekt">
                                 <input type="checkbox" id="cvrKorrekt" name="cvrKorrekt" className={SwitcherStyles.checkboxInput} required checked={cvrKorrekt} onChange={(e) => setCvrKorrekt(e.target.checked)} />
@@ -61,6 +67,8 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                             </label>
                             <b>Er kundens CVR-nummer – <b className={ÅbenOpgaveCSS.bold}>{opgave.CVR}</b> – korrekt?</b>
                         </div>
+                        :
+                        <p className={ÅbenOpgaveCSS.marginTop10}>Kunden er registreret som erhvervskunde, men intet CVR-nummer er oplyst. <span className={ÅbenOpgaveCSS.inlineButton} onClick={() => åbnRedigerKundeModal()}>Registrer CVR-nummer her.</span></p>}
                     </div>
 
                     {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && cvrKorrekt && 
@@ -81,7 +89,8 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                                 e.preventDefault();
                                 if (alternativEmail.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) || alternativEmail === '') {
                                     setLoadingFakturaSubmission(true);
-                                    useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission);
+                                    const bekræftAdmGebyr = false;
+                                    useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr);
                                 } else {
                                     alert("Indtast en gyldig e-mailadresse, eller efterlad feltet tomt.");
                                 }

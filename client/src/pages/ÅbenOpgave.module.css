@@ -443,13 +443,21 @@
     margin-top: 26px;
 }
 
+.inlineButton {
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #59bf1a;
+    font-family: OmnesBold;
+}
+
 .redigerKundeButton {
     border: none;
     background: none;
     cursor: pointer;
-    font-family: OmnesBold;
+    font-family: Omnes;
     color: #59bf1a;
     transition: 0.2s ease;
+    transform: translateY(-4px);
 }
 
 .kommentarListe {
