@@ -41,7 +41,6 @@ const ÅbenOpgave = () => {
     const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(null);
     const [navn, setNavn] = useState("");
     const [adresse, setAdresse] = useState("");
-    const [onsketDato, setOnsketDato] = useState("");
     const [harStige, setHarStige] = useState(false);
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
@@ -58,7 +57,6 @@ const ÅbenOpgave = () => {
     const [posteringDato, setPosteringDato] = useState(dayjs().format('YYYY-MM-DD'));
     const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
     const [inkluderOpstart, setInkluderOpstart] = useState(200);
-    const [postering, setPostering] = useState("");
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
@@ -67,16 +65,11 @@ const ÅbenOpgave = () => {
     const [åbnOpretRegningModal, setÅbnOpretRegningModal] = useState(false);
     const [åbnOpretFakturaModal, setÅbnOpretFakturaModal] = useState(false);
     const [ledigeTider, setLedigeTider] = useState(null)
-    const [visUddelegeringskalender, setVisUddelegeringskalender] = useState(false)
-    const [openBesøgModal, setOpenBesøgModal] = useState(false)
     const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(null)
     const [planlægBesøgFraTidspunkt, setPlanlægBesøgFraTidspunkt] = useState("08:00")
     const [planlægBesøgTilTidspunkt, setPlanlægBesøgTilTidspunkt] = useState("12:00")
-    // const [alleBesøg, setAlleBesøg] = useState([])
     const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
     const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
-    // const [egneBesøg, setEgneBesøg] = useState([])
-    // const [egneLedigeTider, setEgneLedigeTider] = useState([])
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
@@ -97,6 +90,7 @@ const ÅbenOpgave = () => {
     const [sletOpgaveModal, setSletOpgaveModal] = useState(false)
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
+    const [redigerKundeModal, setRedigerKundeModal] = useState(false)
 
 
 
@@ -525,6 +519,7 @@ const ÅbenOpgave = () => {
     }
 
     function editPostering (posteringID) {
+        // const editedPosteringNyTotal = opdateretPostering.opstart || 0 + opdateretPostering.handymanTimer || 0 + opdateretPostering.tømrerTimer || 0;
         const opdateretPostering = editedPostering;
 
         axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, opdateretPostering, {
@@ -1183,6 +1178,29 @@ const ÅbenOpgave = () => {
         });
     }
 
+    function redigerKunde(e) {
+        e.preventDefault()
+
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            navn: opgave.navn,
+            telefon: opgave.telefon,
+            email: opgave.email,
+            virksomhed: opgave.virksomhed,
+            CVR: opgave.CVR
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Kunde opdateret:', response.data);
+            setRedigerKundeModal(false)
+        })
+        .catch(error => {
+            console.error('Error updating customer:', error);
+        });
+    }
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1242,6 +1260,23 @@ const ÅbenOpgave = () => {
                     <div className={ÅbenOpgaveCSS.kolonner}>
                         <div>
                             <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>Kunde: <span className={ÅbenOpgaveCSS.postfix}>{opgave.navn}</span></b>
+                            {!opgave.CVR && !opgave.virksomhed && <p className={ÅbenOpgaveCSS.postfix}>(Privatkunde)</p>}
+                            <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
+                                <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>
+                                <form>
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Navn</label>
+                                    <input type="text" name="navn" className={ÅbenOpgaveCSS.modalInput} value={opgave.navn} onChange={(e) => setOpgave({...opgave, navn: e.target.value})} />
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
+                                    <input type="text" name="telefon" className={ÅbenOpgaveCSS.modalInput} value={opgave.telefon} onChange={(e) => setOpgave({...opgave, telefon: e.target.value})} />
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="email">E-mail</label>
+                                    <input type="text" name="email" className={ÅbenOpgaveCSS.modalInput} value={opgave.email} onChange={(e) => setOpgave({...opgave, email: e.target.value})} />
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="virksomhed">Virksomhed</label>
+                                    <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={opgave.virksomhed} onChange={(e) => setOpgave({...opgave, virksomhed: e.target.value})} />
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
+                                    <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={opgave.CVR} onChange={(e) => setOpgave({...opgave, CVR: e.target.value})} />
+                                    <button className={ModalCSS.buttonFullWidth} onClick={(e) => redigerKunde(e)}>Opdater kunde</button>
+                                </form>
+                            </Modal>
                             {opgave.CVR ? <><br /><b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>CVR: <span className={ÅbenOpgaveCSS.postfix}>{opgave.CVR}</span></b></> : null}
                             {opgave.virksomhed ? <><br /><b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>Virksomhed: <span className={ÅbenOpgaveCSS.postfix}>{opgave.virksomhed}</span></b></> : null}
                             <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
@@ -1252,6 +1287,7 @@ const ÅbenOpgave = () => {
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>Ring op</a>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>Send en mail</a>
                             </div>
+                            <br /><button className={ÅbenOpgaveCSS.redigerKundeButton} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>
                         </div>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}

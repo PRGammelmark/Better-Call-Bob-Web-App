@@ -443,6 +443,15 @@
     margin-top: 26px;
 }
 
+.redigerKundeButton {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-family: OmnesBold;
+    color: #59bf1a;
+    transition: 0.2s ease;
+}
+
 .kommentarListe {
     margin-top: 20px;
     display: flex;
