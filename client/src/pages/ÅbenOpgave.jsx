@@ -18,6 +18,7 @@ import ModalCSS from '../components/Modal.module.css'
 import OpretRegningModal from '../components/modals/OpretRegningModal.jsx'
 import OpretFakturaModal from '../components/modals/OpretFakturaModal.jsx'
 import useBetalMedFaktura from '../hooks/useBetalMedFaktura.js'
+import RegistrerBetalFakturaModal from '../components/modals/RegistrerBetalFakturaModal.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -78,7 +79,7 @@ const ÅbenOpgave = () => {
     const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
     const [vilBetaleMedMobilePay, setVilBetaleMedMobilePay] = useState(false)
     const [invoiceImage, setInvoiceImage] = useState(null)
-
+    const [åbnBetalFakturaModal, setÅbnBetalFakturaModal] = useState(false)
     const { chosenTask, setChosenTask } = useTaskAndDate();
     const initialDate = opgave && opgave.onsketDato ? dayjs(opgave.onsketDato) : null;
     const [selectedDate, setSelectedDate] = useState(initialDate);
@@ -560,14 +561,18 @@ const ÅbenOpgave = () => {
     }
 
     function åbnForÆndringer () {
-        const genåbn = {
+        const genåbnOpgaveOgSletFaktura = {
             markeretSomFærdig: false,
-            opgaveAfsluttet: false
+            opgaveAfsluttet: false,
+            fakturaSendt: null,
+            fakturaPDF: null,
+            fakturaPDFUrl: null,
+            fakturaBetalt: null
         }
 
-        if (opgave.opgaveAfsluttet) {
-            if (window.confirm("Der er allerede en faktura oprettet for denne opgave. Hvis du genåbner opgaven for at foretage ændringer i posteringerne skal du huske manuelt at kreditere den tidligere faktura i dit regnskabssystem, og gøre kunden opmærksom på dette.")) {
-                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbn, {
+        if (opgave.fakturaSendt) {
+            if (window.confirm("En faktura for denne opgave er allerede oprettet og sendt til kunden. Betaling for fakturaen er endnu ikke registreret. Hvis du genåbner opgaven for at foretage ændringer i posteringerne slettes den gamle faktura fra app'en her, men ikke fra dit regnskabssystem. Du skal huske manuelt at kreditere den tidligere faktura i dit regnskabssystem, og gøre kunden opmærksom på, at den gamle faktura ikke skal betales.")) {
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbnOpgaveOgSletFaktura, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
                     }
@@ -575,6 +580,16 @@ const ÅbenOpgave = () => {
                 .then(response => {
                     setFærdiggjort(false);
                     setOpgaveAfsluttet(false);
+
+                    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(res => {
+                        setOpgave(res.data);
+                    })
+                    .catch(error => console.log(error))
                 })
                 .catch(error => console.log(error))
             } 
@@ -1089,20 +1104,25 @@ const ÅbenOpgave = () => {
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
-        const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
-        const byteCharacters = atob(base64String);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
+        // const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
+        // const byteCharacters = atob(base64String);
+        // const byteNumbers = new Array(byteCharacters.length);
+        // for (let i = 0; i < byteCharacters.length; i++) {
+        //     byteNumbers[i] = byteCharacters.charCodeAt(i);
+        // }
+        // const byteArray = new Uint8Array(byteNumbers);
     
-        // Create a blob and download the PDF
-        const blob = new Blob([byteArray], { type: 'application/pdf' });
-        const url = URL.createObjectURL(blob);
+        // // Create a blob and download the PDF
+        // const blob = new Blob([byteArray], { type: 'application/pdf' });
+        // const url = URL.createObjectURL(blob);
 
-        // Open the PDF in a new tab
-        window.open(url, '_blank');
+        // // Open the PDF in a new tab
+        // window.open(url, '_blank');
+
+        if (opgave && opgave.fakturaPDFUrl) {
+            const baseURL = import.meta.env.VITE_API_URL;
+            window.open(`${baseURL}${opgave.fakturaPDFUrl}`, '_blank');
+        }
     }
 
     function mobilePay() {
@@ -1199,6 +1219,10 @@ const ÅbenOpgave = () => {
         .catch(error => {
             console.error('Error updating customer:', error);
         });
+    }
+
+    function registrerFakturaBetaling() {
+        console.log('Faktura betalt')
     }
 
     return (
@@ -1859,9 +1883,47 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                    {!opgave.isDeleted && (færdiggjort ? <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}><p className={ÅbenOpgaveCSS.prefix}>Opgaven er markeret som færdig og låst.</p>{opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}>Faktura er genereret og sendt til kunden.</p>}<button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>{opgaveAfsluttet ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}>Åbn faktura</button> : ((opgave.virksomhed || opgave.CVR) ? <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura</button> : <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning</button>)}</div> : posteringer.length > 0 && <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>)}
-                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />}
-                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} />}
+                        {console.log(opgave)}
+                    {!opgave.isDeleted && 
+                        (færdiggjort
+                            ? 
+                            <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
+                                <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>
+                                {opgave.fakturaSendt && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
+                                {opgave.fakturaSendt 
+                                    ? 
+                                        <div className={ÅbenOpgaveCSS.fakturaDiv}>
+                                            <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Se faktura</button>
+                                            <button className={ÅbenOpgaveCSS.betalFakturaButton} onClick={() => setÅbnBetalFakturaModal(true)}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Registrer fakturabetaling</button>
+                                            <RegistrerBetalFakturaModal åbnBetalFakturaModal={åbnBetalFakturaModal} setÅbnBetalFakturaModal={setÅbnBetalFakturaModal} />
+                                        </div>
+                                    : 
+                                        ((opgave.virksomhed || opgave.CVR) && 
+                                            <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura</button> 
+                                        )
+                                    } 
+                                {opgave.opgaveBetaltMedMobilePay 
+                                    ? 
+                                        <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p> 
+                                    : 
+                                        (!opgave.virksomhed || !opgave.CVR) && <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning</button>
+                                }
+                                {opgave.fakturaBetalt 
+                                    ? <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+                                    : null
+                                }
+                                {opgave.opgaveAfsluttet 
+                                    ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p>
+                                    : <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>
+                                }
+                            </div> 
+                            : 
+                            posteringer.length > 0 && 
+                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
+                        )
+                    }
+                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />}
+                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} />}
                     </div>
                 </div>
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
@@ -1980,7 +2042,6 @@ const ÅbenOpgave = () => {
                         />
                     </form>}
                 </div>
-                <button onClick={() => mobilePay()}>Mobile Pay test</button>
 
             </div>
             </PageAnimation>

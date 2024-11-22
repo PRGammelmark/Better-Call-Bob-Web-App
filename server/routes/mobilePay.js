@@ -1,46 +1,51 @@
-// server/routes/sms.js
 import express from 'express';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 const router = express.Router();
+import dotenv from 'dotenv';
 
-router.post('/get-qr-code', async (req, res) => {
-    // GET ACCESS TOKEN
-    axios.post('https://apitest.vipps.no/accesstoken/get', {}, {
-        headers: {
-            'Content-Type': 'application/json',
-            'client_id': `${process.env.VITE_MP_CLIENT_ID}`,
-            'client_secret': `${process.env.VITE_MP_CLIENT_SECRET}`,
-            'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
-            'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
-            'Vipps-System-Name': 'YOUR-SYSTEM-NAME',
-            'Vipps-System-Version': 'YOUR-SYSTEM-VERSION',
-            'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
-            'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
-        }
+router.use(express.json());
+dotenv.config();
+
+const mpHeadersForAccessToken = {
+    'Content-Type': 'application/json',
+    'client_id': process.env.VITE_MP_CLIENT_ID,
+    'client_secret': process.env.VITE_MP_CLIENT_SECRET,
+    'Ocp-Apim-Subscription-Key': process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY,
+    'Merchant-Serial-Number': process.env.VITE_MSN,
+    'Vipps-System-Name': 'YOUR-SYSTEM-NAME',
+    'Vipps-System-Version': 'YOUR-SYSTEM-VERSION',
+    'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
+    'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
+}
+
+router.post('/initiate-mobilepay-payment', async (req, res) => {
+    console.log("Initiating MobilePay payment.");
+    
+    // STEP 1: GET ACCESS TOKEN
+    console.log("Getting access token from MobilePay.")
+    axios.post('https://api.vipps.no/accesstoken/get', {}, {
+        headers: mpHeadersForAccessToken
     })
     .then(response => {
         const accessToken = response.data.access_token;
-        console.log(accessToken);
-        // res.status(200).json(response.data);
-        
-        // GET QR-CODE
-        axios.post('https://apitest.vipps.no/epayment/v1/payments', {
+        console.log("Access token received from MobilePay.");
+
+        // STEP 2: INITIATE PAYMENT
+        axios.post('https://api.vipps.no/epayment/v1/payments', {
             "amount": {
-                "currency": "DKK",
-                "value": 3
+                "currency":"DKK",
+                "value":100
+            },
+            "customer": {
+                "phoneNumber":"004542377567"
             },
             "paymentMethod": {
-                "type": "WALLET"
+                "type":"WALLET"
             },
-            "reference": "acme-shop-123-order123abc",
-            "returnUrl": "https://app.bettercallbob.dk",
-            "userFlow": "QR",
-            "paymentDescription": "Two pairs of socks, paid with a QR code",
-            "qrFormat": {
-                "format": "IMAGE/SVG+XML",
-                "size": 1024
-            }
+            "reference": `bcb-${uuidv4()}`,
+            "paymentDescription": "Handymanarbejde i flere timer, mand",
+            "userFlow": "PUSH_MESSAGE"
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -55,40 +60,126 @@ router.post('/get-qr-code', async (req, res) => {
             }
         })
         .then(response => {
-            console.log('QR-code received:', response.data);
+            console.log('Payment initiated successfully:', response.data);
             res.status(200).json(response.data);
         })
         .catch(error => {
-            console.error('Error fetching QR-code:', error);
-            res.status(500).json({ error: 'Error fetching QR-code' });
+            console.error('Error initiating payment:', error);
+            console.log(error.response.data.extraDetails)
+            res.status(500).json({ error: 'Error initiating payment' });
         });
     })
     .catch(error => {
-        console.error('Error fetching access token:', error);
-        res.status(500).json({ error: 'Error fetching access token' });
+        console.error('Error getting access token from MobilePay: ', error);
+        res.status(500).json({ error: 'Error getting access token from MobilePay' });
     });
+})
+
+router.post('/get-qr-code', async (req, res) => {
+    console.log("Initiating MobilePay payment.");
+
+    const paymentInformationObject = req.body;
+    console.log(paymentInformationObject);
     
-    
-    // try {
-    //     const response = await axios.post('https://apitest.vipps.no/accesstoken/get', {}, {
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'client_id': `${process.env.VITE_MP_CLIENT_ID}`,
-    //             'client_secret': `${process.env.VITE_MP_CLIENT_SECRET}`,
-    //             'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
-    //             'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
-    //             'Vipps-System-Name': 'YOUR-SYSTEM-NAME',
-    //             'Vipps-System-Version': 'YOUR-SYSTEM-VERSION',
-    //             'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
-    //             'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
-    //         }
-    //     });
-    //     console.log("Access token received from MobilePay.");
-    //     res.status(200).json(response.data);
-    // } catch (error) {
-    //     console.error("Fejl: Kunne ikke hente access token fra MobilePay.", error);
-    //     res.status(500).json({ error: "Fejl: Kunne ikke hente access token fra MobilePay." });
-    // }
+    // STEP 1: GET ACCESS TOKEN
+    console.log("Getting access token from MobilePay.")
+    axios.post('https://api.vipps.no/accesstoken/get', {}, {
+        headers: mpHeadersForAccessToken
+    })
+    .then(response => {
+        const accessToken = response.data.access_token;
+        console.log("Access token received from MobilePay.");
+
+        // STEP 2: INITIATE PAYMENT
+        axios.post('https://api.vipps.no/epayment/v1/payments', {
+            "amount": {
+                "currency":"DKK",
+                "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
+            },
+            "customer": {
+                "phoneNumber":"004542377567"
+            },
+            "paymentMethod": {
+                "type":"WALLET"
+            },
+            "reference": `bcb-${uuidv4()}`,
+            "paymentDescription": "Handymanarbejde i flere timer, mand",
+            "userFlow": "QR"
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
+                'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
+                'Idempotency-Key': `${uuidv4()}`,
+                'Vipps-System-Name': 'Better Call Bob',
+                'Vipps-System-Version': '1.0',
+                'Vipps-System-Plugin-Name': 'No plugin',
+                'Vipps-System-Plugin-Version': '1.0'
+            }
+        })
+        .then(response => {
+            console.log('Payment initiated successfully:', response.data);
+            res.status(200).json(response.data);
+        })
+        .catch(error => {
+            console.error('Error initiating payment:', error);
+            console.log(error.response.data.extraDetails)
+            res.status(500).json({ error: 'Error initiating payment' });
+        });
+    })
+    .catch(error => {
+        console.error('Error getting access token from MobilePay: ', error);
+        res.status(500).json({ error: 'Error getting access token from MobilePay' });
+    });
+});
+
+router.post('/listen-for-payment-status/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    console.log(orderId);
+
+    const startTime = Date.now();
+
+    const pollPaymentStatus = (orderId) => {
+        if (Date.now() - startTime >= 10 * 60 * 1000) {
+            console.log('Polling stopped after 10 minutes.');
+            return res.status(408).json({ error: 'Polling timed out after 10 minutes' });
+        }
+
+        axios.post('https://api.vipps.no/accesstoken/get', {}, {
+            headers: mpHeadersForAccessToken
+        })
+        .then(response => { 
+            const accessToken = response.data.access_token;
+            console.log(`https://api.vipps.no/ecomm/v2/payments/${orderId}/details`);
+            axios.get(`https://api.vipps.no/epayment/v1/payments/${orderId}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
+                    'Merchant-Serial-Number': `${process.env.VITE_MSN}`
+                }
+            })
+            .then(response => {
+                console.log(response.data.state);
+                if (response.data.state === 'AUTHORIZED') {
+                    return res.status(200).json(response.data.state);
+                } else {
+                    setTimeout(() => pollPaymentStatus(orderId), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error polling payment status: ', error);
+                res.status(500).json({ error: `Error polling payment status for orderId: ${orderId}` });
+            });
+        })
+        .catch(error => {
+            console.error('Error getting access token from MobilePay: ', error);
+            res.status(500).json({ error: 'Error getting access token from MobilePay' });
+        });
+    }
+
+    pollPaymentStatus(orderId);
 });
 
 export default router;

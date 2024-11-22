@@ -6,7 +6,7 @@ import SwitcherStyles from '../../pages/Switcher.module.css'
 import useBetalMedFaktura from '../../hooks/useBetalMedFaktura.js'
 import BarLoader from '../loaders/BarLoader.js'
 
-const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura, redigerKundeModal, setRedigerKundeModal}) => {
+const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura, redigerKundeModal, setRedigerKundeModal}) => {
   const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
   const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
   const [cvrKorrekt, setCvrKorrekt] = useState(false)
@@ -90,7 +90,7 @@ const OpretFakturaModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                                 if (alternativEmail.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) || alternativEmail === '') {
                                     setLoadingFakturaSubmission(true);
                                     const bekræftAdmGebyr = false;
-                                    useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr);
+                                    useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr);
                                 } else {
                                     alert("Indtast en gyldig e-mailadresse, eller efterlad feltet tomt.");
                                 }

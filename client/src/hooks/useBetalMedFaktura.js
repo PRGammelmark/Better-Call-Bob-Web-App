@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
 
-const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
+const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -98,18 +98,17 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
             .then(response => {
                 console.log("Faktura booket.");
 
-                // 4) -> MARKER OPGAVE SOM AFSLUTTET ================================
+                // 4) -> MARKER FAKTURA SOM SENDT ================================
                 axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                    opgaveAfsluttet: true
+                    fakturaSendt: new Date().toISOString()
                 }, {
                     headers: authHeaders
                 })
                 .then(res => {
-                    setOpgaveAfsluttet(true);
-                    console.log("Opgaven markeret som afsluttet.")
+                    console.log("Faktura markeret som sendt.")
                 })
                 .catch(error => {
-                    console.log("Fejl: Opgaven blev ikke markeret som afsluttet.")
+                    console.log("Fejl: Faktura blev ikke markeret som sendt.")
                     console.log(error)
                 })
                 
@@ -185,6 +184,18 @@ const useBetalMedFaktura = (user, opgave, opgaveID, posteringer, setOpgaveAfslut
                                     console.log("SMS sendt til kunden.");
                                     setLoadingFakturaSubmission(false);
                                     setSuccessFakturaSubmission(true);
+
+                                    // 7) -> RELOAD OPGAVE ================================
+                                    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                                        headers: authHeaders
+                                    })
+                                    .then(response => {
+                                        setOpgave(response.data);
+                                    })
+                                    .catch(error => {
+                                        console.log("Fejl: Kunne ikke genindlæse opgaven.");
+                                        console.log(error);
+                                    });
                                 })
                                 .catch(error => {
                                     console.log("Error: Could not send SMS to customer.");

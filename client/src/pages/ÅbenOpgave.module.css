@@ -654,7 +654,7 @@
     border: 2px solid #3c5a3f;
     cursor: pointer;
     color: #333333;
-    transition: 0.2s ease
+    transition: 0.2s ease;
 }
 
 .genåbnButton:hover {
@@ -682,10 +682,31 @@
     cursor: pointer;
     color: #fff;
     transition: 0.2s ease;
-    margin-left: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .indsendTilEconomicButton:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
+}
+
+.betalFakturaButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    margin-top: 20px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+}
+
+.betalFakturaButton:hover {
     background: #59bf1a;
     color: #fff;
     border: 2px solid #59bf1a;
@@ -1104,6 +1125,12 @@
 
 .genåbnOpgave:hover {
     border: 1px solid #59bf1a;
+}
+
+.fakturaDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 
 @media screen and (max-width: 750px) {

@@ -48,14 +48,15 @@
 }
 
 .backButton {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
     border-radius: 50%;
     border: 1px solid #222222;
     background-color: none;
-    padding: 4px 0px 4px 4px;
+    padding: 5px 0px 5px 5px;
     margin-right: 10px;
+    margin-top: -20px;
 }
 
 .betalMedFakturaKnap {
@@ -82,4 +83,30 @@
     flex-direction: column;
     gap: 30px;
     padding-bottom: 20px;
+}
+
+.qrTimer {
+    text-align: center;
+}
+
+.qrTimerUdløbet {
+    text-align: center;
+    color: red;
+}
+
+.generérNyQRKnap {
+    text-align: center;
+    cursor: pointer;
+    color: #59bf1a;
+    padding: 10px 25px;
+    border-radius: 15px;
+}
+
+.successHeading {
+    font-family: OmnesBold;
+    margin-bottom: 10px;
+}
+
+.successText {
+    font-family: Omnes;
 }

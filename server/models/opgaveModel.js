@@ -67,9 +67,12 @@ const opgaverSchema = new Schema({
         default: false,
         required: false
     },
-    opgaveBetalt: {
-        type: Boolean,
-        default: false,
+    opgaveBetaltMedMobilePay: {
+        type: String,
+        required: false
+    },
+    fakturaSendt: {
+        type: String,
         required: false
     },
     fakturaPDF: {
@@ -77,6 +80,10 @@ const opgaverSchema = new Schema({
         required: false
     },
     fakturaPDFUrl: {
+        type: String,
+        required: false
+    },
+    fakturaBetalt: {
         type: String,
         required: false
     },

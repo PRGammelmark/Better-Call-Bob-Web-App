@@ -20,7 +20,7 @@ const FinishedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const færdigeOpgaver = json.filter(opgave => opgave.markeretSomFærdig && !opgave.isDeleted);
+        const færdigeOpgaver = json.filter(opgave => opgave.markeretSomFærdig && !opgave.isDeleted && !opgave.opgaveAfsluttet && !opgave.opgaveBetaltMedMobilePay);
         const færdigeOpgavermanglerBetaling = færdigeOpgaver.filter(opgave => !opgave.opgaveBetalt);
         setFærdiggjorteOpgaver(færdigeOpgavermanglerBetaling);
         setIsLoading(false)
@@ -34,7 +34,7 @@ const FinishedTasks = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Færdige opgaver, mangler betaling</h2>
+          <h2 className={TableCSS.tabelHeader}>Færdige, ubetalte opgaver</h2>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${FinishedTasksCSS.finishedTasksHeader}`}>
               <ul>

@@ -102,6 +102,45 @@
     color: #59bf1a;
 }
 
+.addXText {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    font-size: 0.8rem;
+    font-family: OmnesBold;
+    background-color: #fff;
+    padding: 3px 5px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border: 1px solid #59bf1a;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+}
+
+.addLedighedButton:hover > .addXText {
+    opacity: 1;
+    pointer-events: auto;
+    top: 0;
+    left: 0;
+}
+
+.addNewTaskButton:hover > .addXText {
+    opacity: 1;
+    pointer-events: auto;
+    top: 0;
+    left: 0;
+}
+
+.addNewUserButton:hover > .addXText {
+    opacity: 1;
+    pointer-events: auto;
+    top: 0;
+    left: 0;
+}
+
 @media screen and (max-width: 750px) {
     .floatingActionButton {
         bottom: 25px;
@@ -117,6 +156,13 @@
 
     .addLedighedButton {
         bottom: 25px;
+    }
+
+    .addXText {
+        opacity: 1;
+        pointer-events: none;
+        top: 0;
+        left: 0;
     }
 }
 
@@ -135,5 +181,12 @@
 
     .addLedighedButton {
         bottom: 25px;
+    }
+
+    .addXText {
+        opacity: 1;
+        pointer-events: none;
+        top: 0;
+        left: 0;
     }
 }

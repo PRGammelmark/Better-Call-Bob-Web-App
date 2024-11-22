@@ -21,9 +21,8 @@ const ClosedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const færdigeOpgaver = json.filter(opgave => opgave.markeretSomFærdig && !opgave.isDeleted);
-        const betalteOpgaver = færdigeOpgaver.filter(opgave => opgave.opgaveBetalt);
-        setAfsluttedeOpgaver(betalteOpgaver);
+        const afsluttedeOpgaver = json.filter(opgave => (opgave.opgaveAfsluttet || opgave.opgaveBetaltMedMobilePay) && !opgave.isDeleted);
+        setAfsluttedeOpgaver(afsluttedeOpgaver);
       }
       setIsLoading(false)
     }
