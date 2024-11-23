@@ -12,8 +12,6 @@ import Modal from '../components/Modal.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 import { useTaskAndDate } from '../context/TaskAndDateContext.jsx'
 import { useBesøg } from '../context/BesøgContext.jsx'
-import { Base64 } from 'js-base64';
-import SwitcherStyles from './Switcher.module.css'
 import ModalCSS from '../components/Modal.module.css'
 import OpretRegningModal from '../components/modals/OpretRegningModal.jsx'
 import OpretFakturaModal from '../components/modals/OpretFakturaModal.jsx'
@@ -22,15 +20,13 @@ import RegistrerBetalFakturaModal from '../components/modals/RegistrerBetalFaktu
 
 const ÅbenOpgave = () => {
     
+    const navigate = useNavigate();
+    const { opgaveID } = useParams();
     const {user} = useAuthContext();
     
     if (!user) {
         return
     }
-
-    const { opgaveID } = useParams();
-    // const userID = user.id;
-    const navigate = useNavigate();
 
     // state managers
     const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
@@ -1225,6 +1221,25 @@ const ÅbenOpgave = () => {
         console.log('Faktura betalt')
     }
 
+    function afslutOpgave() {
+        if (window.confirm("Du er ved at afslutte opgaven. Har du oprettet fakturaen for denne opgave, og modtaget betaling?")) {
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+                opgaveAfsluttet: true
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(response => {
+                console.log('Opgave afsluttet:', response.data);
+                navigate(-1)
+            })
+            .catch(error => {
+                console.error('Fejl ved afslutning af opgave:', error);
+            });
+        }
+    }
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1884,7 +1899,19 @@ const ÅbenOpgave = () => {
                     </Modal>
                     <div>
                         {console.log(opgave)}
-                    {!opgave.isDeleted && 
+                    {!opgave.isDeleted && opgave.fakturaOprettesManuelt && færdiggjort ? 
+                        <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
+                            <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>
+                            {!user.isAdmin && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Faktura oprettes og administreres separat. Du skal ikke foretage dig yderligere.</p>}
+                            {user.isAdmin && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Faktura oprettes og administreres separat. {opgave.tilbudAfgivet ? ` Oprindeligt tilbud afgivet: ${opgave.tilbudAfgivet} kr.` : "Intet konkret tilbud afgivet."}</p>}
+                            {user.isAdmin && <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>}
+                            {user.isAdmin && <button className={ÅbenOpgaveCSS.afslutButton} onClick={() => afslutOpgave()}>Afslut opgave</button>}
+                        </div>
+                        :
+                        posteringer.length > 0 && 
+                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
+                    }
+                    {!opgave.isDeleted && !opgave.fakturaOprettesManuelt && 
                         (færdiggjort
                             ? 
                             <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
@@ -1929,31 +1956,54 @@ const ÅbenOpgave = () => {
                 {posteringer.length > 0 && <div className={ÅbenOpgaveCSS.økonomiDiv}>
                     <b className={ÅbenOpgaveCSS.prefix}>Økonomisk overblik</b>
                     <div className={ÅbenOpgaveCSS.regnskabContainer}>
-                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
-                        {opstartTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalFaktura} kr.</span>
-                        </div>}
-                        {handymanTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalFaktura} kr.</span>
-                        </div>}
-                        {tømrerTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalFaktura} kr.</span>
-                        </div>}
-                        {udlægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalFaktura} kr.</span>
-                        </div>}
-                        {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura} kr.</span>
-                        </div>}
-                        <div className={ÅbenOpgaveCSS.subtotalRække}>
-                            <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>
-                            <span className={ÅbenOpgaveCSS.subtotalFaktura}>{totalFaktura} kr.</span>
-                        </div>
+                        {user.isAdmin && <>
+                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
+                            {opgave.fakturaOprettesManuelt ? 
+                            <>
+                                {opgave.tilbudAfgivet 
+                                ? 
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Oprindeligt tilbud afgivet:</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{opgave.tilbudAfgivet} kr.</span>
+                                </div>
+                                :
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Intet oprindeligt tilbud afgivet</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>0 kr.</span>
+                                </div>}
+                                <div className={ÅbenOpgaveCSS.subtotalRække}>
+                                    <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>
+                                    <span className={ÅbenOpgaveCSS.subtotalFaktura}>{opgave.tilbudAfgivet ? opgave.tilbudAfgivet : 0} kr.</span>
+                                </div>
+                            </>
+                            : 
+                            <>
+                                {opstartTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalFaktura} kr.</span>
+                                </div>}
+                                {handymanTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalFaktura} kr.</span>
+                                </div>}
+                                {tømrerTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalFaktura} kr.</span>
+                                </div>}
+                                {udlægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalFaktura} kr.</span>
+                                </div>}
+                                {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura} kr.</span>
+                                </div>}
+                                <div className={ÅbenOpgaveCSS.subtotalRække}>
+                                    <span className={ÅbenOpgaveCSS.subtotalFaktura}>Total, fakturabeløb:</span>
+                                    <span className={ÅbenOpgaveCSS.subtotalFaktura}>{totalFaktura} kr.</span>
+                                </div>
+                            </>}
+                        </>}
                         <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Honorar-udgifter</b>
                         {opstartTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
@@ -1979,19 +2029,39 @@ const ÅbenOpgave = () => {
                             <span className={ÅbenOpgaveCSS.subtotalHonorar}>Total, honorarbeløb:</span>
                             <span className={ÅbenOpgaveCSS.subtotalHonorar}>{totalHonorar} kr.</span>
                         </div>
-                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Opgørelse</b>
-                        <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>Fakturabeløb:</span>
-                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{totalFaktura} kr.</span>
-                        </div>
-                        <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Honorarbeløb:</span>
-                            <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar} kr.</span>
-                        </div>
-                        <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
-                            <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
-                            <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{totalFaktura - totalHonorar} kr.</span>
-                        </div>
+                        {user.isAdmin && <>
+                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Opgørelse</b>
+                            {opgave.fakturaOprettesManuelt ? 
+                            <>
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>Fakturabeløb:</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{opgave.tilbudAfgivet ? opgave.tilbudAfgivet : "Intet tilbud afgivet."} kr.</span>
+                                </div>
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Honorarbeløb:</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar} kr.</span>
+                                </div>
+                                <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{opgave.tilbudAfgivet ? opgave.tilbudAfgivet - totalHonorar : -{totalHonorar}} kr.</span>
+                                </div>
+                            </>
+                            :
+                            <>
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>Fakturabeløb:</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{totalFaktura} kr.</span>
+                                </div>
+                                <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Honorarbeløb:</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar} kr.</span>
+                                </div>
+                                <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{totalFaktura - totalHonorar} kr.</span>
+                                </div>
+                            </>}
+                        </>}
                     </div>
                 </div>}
                 <div className={ÅbenOpgaveCSS.kommentarer}>

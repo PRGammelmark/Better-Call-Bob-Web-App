@@ -663,6 +663,25 @@
     border: 2px solid #59bf1a;
 }
 
+.afslutButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    margin-top: 20px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    margin-left: 10px;
+}
+
+.afslutButton:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
+}
+
 .statusTekstVedFærdiggjort {
     font-family: Omnes;
     font-size: 0.9rem;

@@ -58,6 +58,14 @@ const opgaverSchema = new Schema({
         tidTil: String,
         ansvarlig: String
     }],
+    fakturaOprettesManuelt: {
+        type: Boolean,
+        default: false
+    },
+    tilbudAfgivet: {
+        type: String,
+        required: false
+    },
     markeretSomFærdig: {
         type: Boolean,
         default: false

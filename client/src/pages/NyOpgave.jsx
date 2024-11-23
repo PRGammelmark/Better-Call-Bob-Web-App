@@ -4,6 +4,8 @@ import PageAnimation from '../components/PageAnimation'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
+import SwitcherStyles from './Switcher.module.css'
+
 
 const NyOpgave = () => {
 
@@ -24,6 +26,8 @@ const NyOpgave = () => {
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState("");
+    const [fakturaOprettesManuelt, setFakturaOprettesManuelt] = useState(false);
+    const [tilbudAfgivet, setTilbudAfgivet] = useState("");
     const [error, setError] = useState(null);
     const [ansvarlig, setAnsvarlig] = useState("");
     const [succes, setSucces] = useState(false);
@@ -44,7 +48,9 @@ const NyOpgave = () => {
             onsketDato,
             harStige,
             telefon,
-            email
+            email,
+            tilbudAfgivet,
+            fakturaOprettesManuelt
         }
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -124,6 +130,21 @@ const NyOpgave = () => {
                         <label className={NyOpgaveCSS.label}>Email</label>
                         <input type="email" name="email" className={NyOpgaveCSS.input} onChange={(e) => setEmail(e.target.value)} value={email} required/>
                     </div>
+                </div>
+                <div className={NyOpgaveCSS.manuelFakturaOprettelseDiv}>
+                    <div className={SwitcherStyles.checkboxContainer}>
+                        <label className={SwitcherStyles.switch} htmlFor="fakturaOprettesManuelt">
+                            <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} required checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
+                            <span className={SwitcherStyles.slider}></span>
+                        </label>
+                        <b>Skal fakturaen oprettes manuelt efter opgaven er løst?</b>
+                    </div>
+                    <p style={{marginTop: 10, fontSize: 13}}>(Hvis du fx har talt med kunden om rammer for prisen på forhånd.)</p>
+                    {fakturaOprettesManuelt && 
+                    <div style={{marginTop: 20}}>
+                        <label className={NyOpgaveCSS.label}>Indtast evt. aftalt tilbudspris i kr.</label>
+                        <input style={{marginTop: 5}} type="number" name="tilbudAfgivet" className={NyOpgaveCSS.input} onChange={(e) => setTilbudAfgivet(e.target.value)} value={tilbudAfgivet} required/>
+                    </div>}
                 </div>
                 <div className={NyOpgaveCSS.submitMeddelelser}>
                     {succes ? <div>
