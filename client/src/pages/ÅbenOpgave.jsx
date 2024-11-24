@@ -67,6 +67,7 @@ const ÅbenOpgave = () => {
     const [planlægBesøgTilTidspunkt, setPlanlægBesøgTilTidspunkt] = useState("12:00")
     const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
     const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
+    const [smsSendtTilKundenOmPåVej, setSmsSendtTilKundenOmPåVej] = useState("")
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
@@ -519,6 +520,11 @@ const ÅbenOpgave = () => {
         // const editedPosteringNyTotal = opdateretPostering.opstart || 0 + opdateretPostering.handymanTimer || 0 + opdateretPostering.tømrerTimer || 0;
         const opdateretPostering = editedPostering;
 
+        console.log(opdateretPostering);
+
+        const opdateretPosteringTotal = ((opdateretPostering.handymanTimer || 0) * 300) + ((opdateretPostering.tømrerTimer || 0) * 360) + (opdateretPostering.opstart || 0) + (opdateretPostering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) || 0) + (opdateretPostering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) || 0);
+        opdateretPostering.total = opdateretPosteringTotal;
+
         axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, opdateretPostering, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -566,42 +572,29 @@ const ÅbenOpgave = () => {
             fakturaBetalt: null
         }
 
-        if (opgave.fakturaSendt) {
-            if (window.confirm("En faktura for denne opgave er allerede oprettet og sendt til kunden. Betaling for fakturaen er endnu ikke registreret. Hvis du genåbner opgaven for at foretage ændringer i posteringerne slettes den gamle faktura fra app'en her, men ikke fra dit regnskabssystem. Du skal huske manuelt at kreditere den tidligere faktura i dit regnskabssystem, og gøre kunden opmærksom på, at den gamle faktura ikke skal betales.")) {
-                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbnOpgaveOgSletFaktura, {
+
+        if (window.confirm(opgave.fakturaSendt ? "En faktura for denne opgave er allerede oprettet og sendt til kunden. Betaling for fakturaen er endnu ikke registreret. Hvis du genåbner opgaven for at foretage ændringer i posteringerne slettes den gamle faktura fra app'en her, men ikke fra dit regnskabssystem. Du skal huske manuelt at kreditere den tidligere faktura i dit regnskabssystem, og gøre kunden opmærksom på, at den gamle faktura ikke skal betales." : "Der er endnu ikke oprettet en faktura eller modtaget betaling for denne opgave. Du kan frit genåbne og ændre.")) {
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbnOpgaveOgSletFaktura, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(response => {
+                setFærdiggjort(false);
+                setOpgaveAfsluttet(false);
+
+                axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
                     }
                 })
-                .then(response => {
-                    setFærdiggjort(false);
-                    setOpgaveAfsluttet(false);
-
-                    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
-                    })
-                    .then(res => {
-                        setOpgave(res.data);
-                    })
-                    .catch(error => console.log(error))
+                .then(res => {
+                    setOpgave(res.data);
                 })
                 .catch(error => console.log(error))
-            } 
-        } else {
-            if (window.confirm("Der er endnu ikke oprettet en faktura eller modtaget betaling for denne opgave. Du kan frit genåbne og ændre.")) {
-                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, genåbn, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
-                    })
-                    .then(response => {
-                        setFærdiggjort(false);
-                    })
-                    .catch(error => console.log(error))
-            }
-        }  
+            })
+            .catch(error => console.log(error))
+        }
     }
 
     function opretFakturakladde () {
@@ -1240,6 +1233,45 @@ const ÅbenOpgave = () => {
         }
     }
 
+    function informerKundenOmPåVej() {
+        const smsData = {
+            "messages": [
+                {
+                    "to": `${opgave.telefon}`,
+                    "countryHint": "45",
+                    "respectBlacklist": true,
+                    "text": `Kære ${opgave.navn},\n\nVi vil blot informere dig om, at vores medarbejder ${getBrugerName(userID)} nu er på vej ud til dig for at løse din opgave. Vi er hos dig inden længe.\n\nVi glæder os til at hjælpe dig! \n\nDbh.,\nBetter Call Bob`,
+                    "from": "Bob",
+                    "flash": false,
+                    "encoding": "gsm7"
+                }
+            ]
+        }
+
+        // REGISTRER HVORNÅR SIDSTE SMS ER SENDT
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            sidsteSMSSendtTilKundenOmPåVej: dayjs().toISOString()
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+
+        // SEND SMS
+        axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}` // If needed for your server authentication
+            }
+        })
+        .then(response => {
+            setSmsSendtTilKundenOmPåVej("SMS sendt til kunden kl. " + dayjs().format("HH:mm"))
+        })
+        .catch(error => {
+            setSmsSendtTilKundenOmPåVej("Fejl: Kunne ikke sende SMS til kunden.");
+            console.log(error);
+        });
+    }
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1429,6 +1461,11 @@ const ÅbenOpgave = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
+                        
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
+                        <p>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt til kunden kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
+                        <button className={ÅbenOpgaveCSS.informerKundenOmPåVej} onClick={() => {informerKundenOmPåVej()}}>Lad kunden vide, at du er på vej <span style={{fontSize: "1.2rem"}}>💬</span></button>}
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
                 <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>

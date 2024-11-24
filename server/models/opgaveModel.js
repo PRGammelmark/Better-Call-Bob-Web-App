@@ -99,6 +99,10 @@ const opgaverSchema = new Schema({
         type: Number,
         unique: true
     },
+    sidsteSMSSendtTilKundenOmPåVej: {
+        type: Date,
+        required: false
+    },
     isDeleted: {
         type: Date,
         default: false

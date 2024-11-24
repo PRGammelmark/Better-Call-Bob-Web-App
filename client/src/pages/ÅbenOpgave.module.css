@@ -663,6 +663,25 @@
     border: 2px solid #59bf1a;
 }
 
+.informerKundenOmPåVej {
+    padding: 10px 20px;
+    border-radius: 15px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    font-family: OmnesBold;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.informerKundenOmPåVej:hover {
+    background: #59bf1a;
+    border: 2px solid #59bf1a;
+}
+
 .afslutButton {
     padding: 10px 20px;
     border-radius: 15px;
