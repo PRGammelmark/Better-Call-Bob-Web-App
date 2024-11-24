@@ -517,10 +517,7 @@ const ÅbenOpgave = () => {
     }
 
     function editPostering (posteringID) {
-        // const editedPosteringNyTotal = opdateretPostering.opstart || 0 + opdateretPostering.handymanTimer || 0 + opdateretPostering.tømrerTimer || 0;
         const opdateretPostering = editedPostering;
-
-        console.log(opdateretPostering);
 
         const opdateretPosteringTotal = ((opdateretPostering.handymanTimer || 0) * 300) + ((opdateretPostering.tømrerTimer || 0) * 360) + (opdateretPostering.opstart || 0) + (opdateretPostering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) || 0) + (opdateretPostering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) || 0);
         opdateretPostering.total = opdateretPosteringTotal;
