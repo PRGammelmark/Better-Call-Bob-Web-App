@@ -1933,7 +1933,7 @@ const ÅbenOpgave = () => {
                     </Modal>
                     <div>
                         {console.log(opgave)}
-                    {!opgave.isDeleted && opgave.fakturaOprettesManuelt && færdiggjort ? 
+                    {!opgave.isDeleted && opgave.fakturaOprettesManuelt && (færdiggjort ? 
                         <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
                             <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>
                             {!user.isAdmin && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Faktura oprettes og administreres separat. Du skal ikke foretage dig yderligere.</p>}
@@ -1944,7 +1944,7 @@ const ÅbenOpgave = () => {
                         :
                         posteringer.length > 0 && 
                                 <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
-                    }
+                    )}
                     {!opgave.isDeleted && !opgave.fakturaOprettesManuelt && 
                         (færdiggjort
                             ? 
