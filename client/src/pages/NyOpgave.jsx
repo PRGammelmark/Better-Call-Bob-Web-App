@@ -134,7 +134,7 @@ const NyOpgave = () => {
                 <div className={NyOpgaveCSS.manuelFakturaOprettelseDiv}>
                     <div className={SwitcherStyles.checkboxContainer}>
                         <label className={SwitcherStyles.switch} htmlFor="fakturaOprettesManuelt">
-                            <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} required checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
+                            <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
                             <span className={SwitcherStyles.slider}></span>
                         </label>
                         <b>Skal fakturaen oprettes manuelt efter opgaven er løst?</b>
