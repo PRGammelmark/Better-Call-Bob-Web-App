@@ -79,7 +79,7 @@ router.post('/get-qr-code', async (req, res) => {
     console.log("Initiating MobilePay payment.");
 
     const paymentInformationObject = req.body;
-    console.log(paymentInformationObject);
+    const opgave = paymentInformationObject.opgave;
     
     // STEP 1: GET ACCESS TOKEN
     console.log("Getting access token from MobilePay.")
@@ -97,13 +97,13 @@ router.post('/get-qr-code', async (req, res) => {
                 "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
             },
             "customer": {
-                "phoneNumber":"004542377567"
+                "phoneNumber":`0045${opgave.telefon}`
             },
             "paymentMethod": {
                 "type":"WALLET"
             },
             "reference": `bcb-${uuidv4()}`,
-            "paymentDescription": "Handymanarbejde i flere timer, mand",
+            "paymentDescription": `Opgavebeskrivelse: ${opgave.opgaveBeskrivelse}`,
             "userFlow": "QR"
         }, {
             headers: {
