@@ -21,7 +21,7 @@ router.post('/send-sms', async (req, res) => {
         console.log("SMS sendt til kunden.");
         res.status(200).json(response.data);
     } catch (error) {
-        console.error("Fejl: Kunne ikke sende SMS til kunden.", error);
+        console.error("Fejl: Kunne ikke sende SMS til kunden.", error.response.data);
         res.status(500).json({ error: "Fejl: Kunne ikke sende SMS til kunden." });
     }
 });

@@ -68,6 +68,8 @@ const ÅbenOpgave = () => {
     const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
     const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
     const [smsSendtTilKundenOmPåVej, setSmsSendtTilKundenOmPåVej] = useState("")
+    const [sætPåmindelseSMS, setSætPåmindelseSMS] = useState(false)
+    const [smsPåmindelseIndstillet, setSmsPåmindelseIndstillet] = useState("")
     const [visKalender, setVisKalender] = useState(false)
     const [opretBesøgError, setOpretBesøgError] = useState("")
     const [triggerLedigeTiderRefetch, setTriggerLedigeTiderRefetch] = useState(false)
@@ -365,7 +367,12 @@ const ÅbenOpgave = () => {
 
     function opdaterOpgavestatus (e) {
         e.preventDefault();
-        setStatus(e.target.value); 
+        setStatus(e.target.value);
+        if(e.target.value === "Afventer svar"){
+            setSætPåmindelseSMS(true);
+        } else {
+            setSætPåmindelseSMS(false);
+        }
 
         const syncOpgavestatus = e.target.value;
         
@@ -381,8 +388,8 @@ const ÅbenOpgave = () => {
     }
 
     const conditionalStyles = {
-        backgroundColor: status === "accepteret" ? 'rgba(89, 191, 26, 0.25)' : status === "afventerSvar" ? 'rgba(224, 227, 50, 0.25)' : status === "afvist" ? 'rgba(193, 26, 57, 0.25)' : 'white',
-        color: status === "accepteret" ? 'rgba(89, 191, 26, 1)' : status === "afventerSvar" ? 'rgba(179, 116, 0, 0.85)' : status === "afvist" ? 'rgba(193, 26, 57, 1)' : '#333333'
+        backgroundColor: status === "Dato aftalt" ? 'rgba(89, 191, 26, 0.25)' : status === "Afventer svar" ? 'rgba(224, 227, 50, 0.25)' : status === "afvist" ? 'rgba(193, 26, 57, 0.25)' : 'white',
+        color: status === "Dato aftalt" ? 'rgba(89, 191, 26, 1)' : status === "Afventer svar" ? 'rgba(179, 116, 0, 0.85)' : status === "afvist" ? 'rgba(193, 26, 57, 1)' : '#333333'
     }
 
     function tildelAnsvar(e){
@@ -1261,10 +1268,41 @@ const ÅbenOpgave = () => {
             }
         })
         .then(response => {
-            setSmsSendtTilKundenOmPåVej("SMS sendt til kunden kl. " + dayjs().format("HH:mm"))
+            setSmsSendtTilKundenOmPåVej("SMS sendt kl. " + dayjs().format("HH:mm"))
         })
         .catch(error => {
             setSmsSendtTilKundenOmPåVej("Fejl: Kunne ikke sende SMS til kunden.");
+            console.log(error);
+        });
+    }
+
+    function indstilPåmindelseSMS(timer) {
+        const smsData = {
+            "messages": [
+                {
+                    "to": `${user.telefon}`,
+                    "countryHint": "45",
+                    "respectBlacklist": true,
+                    "text": `Automatisk ${timer} timers reminder: Følg op på kontakt til kunde ${opgave.navn}.\n\nKontaktinfo:\n\nTelefon: ${opgave.telefon}\nE-mail: ${opgave.email}${opgave.virksomhed && "\nVirksomhed: " + opgave.virksomhed}\n\nDbh.,\nBetter Call Bob`,
+                    "from": "BobReminders",
+                    "sendTime": `${dayjs().add(timer - 1, 'hour').format('YYYY-MM-DDTHH:mm:ss') + "Z"}`,
+                    "flash": false,
+                    "encoding": "gsm7"
+                }
+            ]
+        }
+
+        // SEND SMS
+        axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}` // If needed for your server authentication
+            }
+        })
+        .then(response => {
+            setSmsPåmindelseIndstillet("Du får en påmindelse om " + timer + " timer ⏱️")
+        })
+        .catch(error => {
+            setSmsPåmindelseIndstillet("Fejl: Kunne ikke indstille påmindelsen. Prøv igen.");
             console.log(error);
         });
     }
@@ -1278,7 +1316,13 @@ const ÅbenOpgave = () => {
                 <div>
                     <b className={`${ÅbenOpgaveCSS.opgaveIDHeader} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
                     <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{opgave.adresse}</h2>
-                    <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>🌍 Find på kort</a>
+                    <div className={ÅbenOpgaveCSS.kortLinkContainer}>
+                        <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>🌍 Find på kort</a>
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
+                        <p className={ÅbenOpgaveCSS.smsSendtTekst}>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
+                        <button className={ÅbenOpgaveCSS.informerKundenOmPåVej} onClick={() => {informerKundenOmPåVej()}}>Fortæl kunden du er på vej 💬 </button>}
+                    </div>
                 </div>
                 {user.isAdmin && (
                     <>
@@ -1361,23 +1405,41 @@ const ÅbenOpgave = () => {
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
                             {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
                                 <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                    <option value="modtaget">Opgave modtaget</option>
-                                    <option value="afventerSvar">Sendt tilbud</option>
-                                    <option value="accepteret">Tilbud accepteret</option>
-                                    <option value="afvist">Tilbud afvist</option>
+                                    <option value="Modtaget">Opgave modtaget</option>
+                                    <option value="Afventer svar">Kunde kontaktet – afventer</option>
+                                    <option value="Dato aftalt">Dato aftalt</option>
                                 </select>
                             </form>}
-                        </div>
+                            {sætPåmindelseSMS && 
+                            <div className={ÅbenOpgaveCSS.påmindOmOpgave}>
+                                {smsPåmindelseIndstillet ? 
+                                <div className={ÅbenOpgaveCSS.påmindOmOpgaveKnapper}>
+                                    <p className={ÅbenOpgaveCSS.smsPåmindelseIndstillet}>{smsPåmindelseIndstillet}</p>
+                                </div>
+                                :
+                                <PageAnimation>
+                                    <>
+                                        <b style={{fontSize: "0.9rem"}}>- indstil SMS-påmindelse?</b>
+                                        <div className={ÅbenOpgaveCSS.påmindOmOpgaveKnapper}>
+                                            <button className={ÅbenOpgaveCSS.påmindOmOpgaveKnap} onClick={() => indstilPåmindelseSMS(24)}>24 timer</button>
+                                            <button className={ÅbenOpgaveCSS.påmindOmOpgaveKnap} onClick={() => indstilPåmindelseSMS(48)}>48 timer</button>
+                                        </div>
+                                    </>
+                                </PageAnimation>
+                                }
+                            </div>}
+                        </div>  
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
                             {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
                                 <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                    <option value="modtaget">Opgave modtaget</option>
-                                    <option value="afventerSvar">Sendt tilbud</option>
-                                    <option value="accepteret">Tilbud accepteret</option>
-                                    <option value="afvist">Tilbud afvist</option>
+                                    <option value="Modtaget">Opgave modtaget</option>
+                                    <option value="Afventer svar">Kunde kontaktet – afventer</option>
+                                    <option value="Dato aftalt">Dato aftalt</option>
                                 </select>
                             </form>}
+                            
                         </div>
+                        
                     </div>
                 </div>
 
@@ -1458,11 +1520,6 @@ const ÅbenOpgave = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
-                        
-                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
-                        <p>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt til kunden kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
-                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
-                        <button className={ÅbenOpgaveCSS.informerKundenOmPåVej} onClick={() => {informerKundenOmPåVej()}}>Lad kunden vide, at du er på vej <span style={{fontSize: "1.2rem"}}>💬</span></button>}
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
                 <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
@@ -1932,7 +1989,6 @@ const ÅbenOpgave = () => {
                             </form>
                     </Modal>
                     <div>
-                        {console.log(opgave)}
                     {!opgave.isDeleted && opgave.fakturaOprettesManuelt && (færdiggjort ? 
                         <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
                             <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>
@@ -1967,7 +2023,7 @@ const ÅbenOpgave = () => {
                                     ? 
                                         <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p> 
                                     : 
-                                        (!opgave.virksomhed || !opgave.CVR) && <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning</button>
+                                        !(opgave.virksomhed || opgave.CVR) && <button className={ÅbenOpgaveCSS.indsendTilEconomicButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning</button>
                                 }
                                 {opgave.fakturaBetalt 
                                     ? <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
@@ -2112,7 +2168,7 @@ const ÅbenOpgave = () => {
                                         <p className={ÅbenOpgaveCSS.kommentarIndhold}>{kommentar.kommentarIndhold}</p>
                                     </div>
                                     <div className={ÅbenOpgaveCSS.kommentarKnapper}>   
-                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>}
+                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>
                                         <Modal trigger={openCommentModalID === kommentar._id} setTrigger={setOpenCommentModalID}>
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kommentar</h2>
                                                 <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
@@ -2123,14 +2179,14 @@ const ÅbenOpgave = () => {
                                                     <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater kommentar</button>
                                                 </form>
                                         </Modal>
-                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>}
+                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>
                                         <span className={ÅbenOpgaveCSS.kommentarRegigeretMarkør}>{kommentar.createdAt === kommentar.updatedAt ? null : "Redigeret"}</span>
                                     </div>
                                 </div>
                             )
                         })}
                     </div>
-                    {færdiggjort ? null : <form>
+                    <form>
                         <textarea 
                             type="text" 
                             className={ÅbenOpgaveCSS.nyKommentar} 
@@ -2144,7 +2200,7 @@ const ÅbenOpgave = () => {
                                 }
                               }}
                         />
-                    </form>}
+                    </form>
                 </div>
 
             </div>

@@ -645,6 +645,12 @@
     font-family: OmnesBold;
 }
 
+.kortLinkContainer {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
 .genåbnButton {
     padding: 10px 20px;
     border-radius: 15px;
@@ -663,7 +669,7 @@
     border: 2px solid #59bf1a;
 }
 
-.informerKundenOmPåVej {
+/* .informerKundenOmPåVej {
     padding: 10px 20px;
     border-radius: 15px;
     background: #3c5a3f;
@@ -675,11 +681,53 @@
     display: flex;
     align-items: center;
     gap: 10px;
+} */
+
+.informerKundenOmPåVej {
+    display: block;
+    margin-top: 5px;
+    text-decoration: none;
+    color: #59bf1a;
+    font-size: 1rem;
+    background: none;
+    padding-left: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border: none;
+    border-left: 1px solid #22222240;
+    cursor: pointer;
 }
 
-.informerKundenOmPåVej:hover {
+.smsSendtTekst {
+    font-size: 1rem;
+    margin-top: 5px;
+    padding-left: 10px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    border: none;
+    border-left: 1px solid #22222240;
+}
+
+.påmindOmOpgave {
+    margin-top: 10px;
+}
+
+.påmindOmOpgaveKnapper {
+    padding-top: 5px;
+    display: flex;
+    gap: 10px;
+}
+
+.påmindOmOpgaveKnap {
+    padding: 2px 6px;
+    border-radius: 15px;
+    font-family: Omnes;
     background: #59bf1a;
-    border: 2px solid #59bf1a;
+    color: #fff;
+    border: 1px solid #59bf1a;
+    cursor: pointer;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
 }
 
 .afslutButton {
