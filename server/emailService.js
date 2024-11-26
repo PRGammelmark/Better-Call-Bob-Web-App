@@ -17,12 +17,13 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-export const sendEmail = async (to, subject, text) => {
+export const sendEmail = async (to, subject, body, html) => {
     const mailOptions = {
         from: `"Better Call Bob" <${process.env.EMAIL_USER}>`,
         to,
         subject,
-        text
+        text: body,
+        html
     };
 
     try {

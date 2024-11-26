@@ -55,10 +55,10 @@ app.use('/api/fakturaer', express.static('fakturaer'));
 
 // Define email sending route
 app.post('/api/send-email', async (req, res) => {
-    const { to, subject, body } = req.body; // Destructure the email details from the request body
+    const { to, subject, body, html } = req.body; // Destructure the email details from the request body
 
     try {
-        await sendEmail(to, subject, body); // Call the sendEmail function
+        await sendEmail(to, subject, body, html); // Call the sendEmail function
         res.status(200).json({ message: 'Email sent successfully' }); // Respond with success
     } catch (error) {
         console.error('Error sending email:', error); // Log any errors
