@@ -418,7 +418,35 @@ const ÅbenOpgave = () => {
             })
             .then(res => {
                 setNuværendeAnsvarlige(opdateretAnsvarlige);
-                console.log(res.data);
+                console.log(nyAnsvarlig)
+
+                // ===== SEND EMAIL-NOTIFIKATION =====
+                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                    to: nyAnsvarlig.email,
+                    subject: `Ny opgave: ${opgave.adresse}, ${opgave.postnummerOgBy}`,
+                    html: `<p style="font-size: 1.2rem"><b>Hej ${nyAnsvarlig.navn.split(' ')[0]},</b></p>
+                        <p>Du er blevet tildelt ansvar for en ny opgave hos Better Call Bob.</p>
+                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                        <p><b>Opgavebeskrivelse:</b><br />${opgave.opgaveBeskrivelse}</p>
+                        <p><b>Navn:</b><br />${opgave.navn}</p>
+                        <p><b>Adresse:</b><br />${opgave.adresse}, ${opgave.postnummerOgBy}</p>
+                        <p><b>Ønsket tidspunkt for udførelse:</b><br />${dayjs(opgave.onsketDato).format('DD. MMMM YYYY, [kl.] HH:mm')}</p>
+                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                        <p><a href="https://app.bettercallbob.dk">Åbn Better Call Bob-app'en her</a>, og opret et besøg på opgaven.</p>
+                        <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(response => {
+                    console.log("Email-notifikation sendt til medarbejderen.");
+                })
+                .catch(error => {
+                    console.log("Fejl: Kunne ikke sende email-notifikation til medarbejderen.");
+                    console.log(error);
+                })
+                
             })
             .catch(error => console.log(error));
         }
