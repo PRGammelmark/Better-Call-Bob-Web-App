@@ -3,28 +3,6 @@ import Dokument from '../models/dokumenterModel.js'
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-// import fs from 'fs';
-// import path from 'path';
-// import multer from "multer"
-
-// // Ensure the uploads directory exists
-// const uploadsDir = path.resolve('dokumenter-uploads');
-// if (!fs.existsSync(uploadsDir)) {
-//     fs.mkdirSync(uploadsDir, { recursive: true });
-// }
-
-// // Set up multer for file uploads with disk storage
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         cb(null, uploadsDir);
-//     },
-//     filename: (req, file, cb) => {
-//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-//         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-//     }
-// });
-
-// const upload = multer({ storage: storage });
 
 // GET alle dokumenter
 const getDokumenter = async (req,res) => {

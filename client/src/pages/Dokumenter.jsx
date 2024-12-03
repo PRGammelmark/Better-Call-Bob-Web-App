@@ -60,7 +60,7 @@ const Dokumenter = () => {
                   </div>
                   <div className={DokumenterCSS.dokumentLowerHalf}>
                     <img className={DokumenterCSS.dokumentBrugerAdgangIcon} src={UserSymbol} alt="user symbol" />
-                    <p className={DokumenterCSS.dokumentBrugerAdgang}>{dokument.begraensAdgang ? (dokument.brugerAdgang.length > 1 ? dokument.brugerAdgang.length - 1 : 'Admins') : 'Alle'}</p>
+                    <p className={DokumenterCSS.dokumentBrugerAdgang}>{dokument.begraensAdgang ? (dokument.brugerAdgang.length > 0 ? dokument.brugerAdgang.length : 'Admins') : 'Alle'}</p>
                   </div>
                 </div>
                 <p className={DokumenterCSS.dokumentTimestamp}>{dayjs(dokument.createdAt).format('D. MMMM YYYY')}</p>

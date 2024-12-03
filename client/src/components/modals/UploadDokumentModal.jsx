@@ -37,8 +37,12 @@ function uploadDokument(e){
   formData.append('titel', titel || '');
   formData.append('beskrivelse', beskrivelse || '');
   formData.append('kraevSamtykke', kraevSamtykke);
-  formData.append('brugerAdgang', brugerAdgang || []);
   formData.append('begraensAdgang', begrænsBrugerAdgang);
+  brugerAdgang.forEach(id => {
+    formData.append('brugerAdgang[]', id);
+  });
+
+  console.log(brugerAdgang)
 
   axios.post(`${import.meta.env.VITE_API_URL}/dokumenter-uploads`, formData, {
     headers: {
