@@ -71,10 +71,13 @@ function sletDokument(){
             }
         })
         .then(res => {
-            setRefetchDokumenter(!refetchDokumenter)
+            setRefetchDocuments(!refetchDocuments)
             setRedigerDokumentModal(false)
         })
-        .catch(error => console.log(error))
+        .catch(error => {
+            console.log(error);
+            setRedigerDokumentModal(false);
+        })
     }
 }
 
