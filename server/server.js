@@ -12,6 +12,7 @@ import uploadsRoutes from "./routes/uploads.js"
 import fakturaerRoutes from "./routes/fakturaer.js"
 import smsRoutes from "./routes/sms.js"
 import mobilePayRoutes from "./routes/mobilePay.js"
+import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
@@ -46,12 +47,13 @@ app.use(cors(corsOptions));
 
 // Handle preflight requests
 app.options('*', cors(corsOptions));
-app.use(express.json({ limit: '2mb' })); // Adjust the limit as needed
-app.use(express.urlencoded({ limit: '2mb', extended: true }));
+app.use(express.json({ limit: '5mb' })); // Adjust the limit as needed
+app.use(express.urlencoded({ limit: '5mb', extended: true }));
 
 // Serve static files from the uploads directory
 app.use('/api/uploads', express.static('uploads'));
 app.use('/api/fakturaer', express.static('fakturaer'));
+app.use('/api/dokumenter-uploads', express.static('dokumenter-uploads'));
 
 // Define email sending route
 app.post('/api/send-email', async (req, res) => {
@@ -77,7 +79,7 @@ app.use('/api/uploads', uploadsRoutes);
 app.use('/api/fakturaer', fakturaerRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/mobilepay', mobilePayRoutes);
-
+app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 
 
 // connect to db

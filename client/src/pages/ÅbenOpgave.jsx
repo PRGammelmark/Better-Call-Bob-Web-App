@@ -90,10 +90,7 @@ const ÅbenOpgave = () => {
     const [sletOpgaveModal, setSletOpgaveModal] = useState(false)
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
-    const [redigerKundeModal, setRedigerKundeModal] = useState(false)
-
-
-
+    const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
 
     useEffect(() => {
         console.log(outlays);

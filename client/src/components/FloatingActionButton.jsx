@@ -3,6 +3,8 @@ import FloatingActionButtonCSS from "./FloatingActionButton.module.css"
 import ModalStyles from "./Modal.module.css"
 import AddNewIcon from "../assets/add-new.svg"
 import AddNewBesøgIcon from "../assets/add-besøg.svg"
+import AddNewDocumentIcon from "../assets/add-document.svg"
+import UploadDokumentModal from './modals/UploadDokumentModal.jsx'
 import { useState, useEffect } from 'react'
 import { useNavigate } from "react-router-dom"
 import Modal from "./Modal.jsx"
@@ -15,12 +17,13 @@ import { useBesøg } from '../context/BesøgContext.jsx'
 const FloatingActionButton = () => {
 
     const { user } = useAuthContext();
-
     const { chosenDate, setChosenDate, chosenTask } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg, refetchLedigeTider, setRefetchLedigeTider, egneLedigeTider, medarbejdere } = useBesøg();
     const [menuOpen, setMenuOpen] = useState(false);
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
+    const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [åbnUploadDokumentModal, setÅbnUploadDokumentModal] = useState(false);
     const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
     const [selectedAnsvarligColor, setSelectedAnsvarligColor] = useState(""); 
     const [selectedTimeFrom, setSelectedTimeFrom] = useState("08:00");
@@ -38,6 +41,7 @@ const FloatingActionButton = () => {
 
     useEffect(() => {
         setIsOnTaskPage(window.location.pathname.includes("/opgave/"));
+        setIsOnDocumentsPage(window.location.pathname.includes("/dokumenter"));
     }, [window.location.pathname]);
 
     useEffect(() => {
@@ -278,7 +282,6 @@ const FloatingActionButton = () => {
             }
         })
         .then(res => {
-            console.log(res.data)
             refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true)
             setOpretLedighedSuccess("Ledighed tilføjet!")
             setTimeout(() => {
@@ -288,14 +291,17 @@ const FloatingActionButton = () => {
         .catch(error => console.log(error))
     }
 
+    function addNewDocument(){
+        setÅbnUploadDokumentModal(true)
+    }
 
 
   return (
     <>
-        <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : toggleMenu}>
-            <img src={isOnTaskPage ? AddNewBesøgIcon : AddNewIcon} draggable="false" alt="" className={FloatingActionButtonCSS.addNewIcon} style={isOnTaskPage ? {} : {transform: menuOpen ? "rotate(0deg) scale(0.8)" : "rotate(135deg) scale(1)"}}/>
+        <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : isOnDocumentsPage ? addNewDocument : toggleMenu}>
+            <img src={isOnTaskPage ? AddNewBesøgIcon : isOnDocumentsPage ? AddNewDocumentIcon : AddNewIcon} draggable="false" alt="" className={FloatingActionButtonCSS.addNewIcon} style={isOnTaskPage ? {} : isOnDocumentsPage ? {} : {transform: menuOpen ? "rotate(0deg) scale(0.8)" : "rotate(135deg) scale(1)"}}/>
         </div>
-        {!isOnTaskPage && 
+        {!isOnTaskPage && !isOnDocumentsPage && 
             <>
                 <div className={FloatingActionButtonCSS.addLedighedButton} onClick={tilføjLedighedFunction} style={{transform: menuOpen ? "translate(-75px, -75px) scale(1)" : "translate(0px, 0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
                     <span className={FloatingActionButtonCSS.icons}>🙋🏽</span>
@@ -311,6 +317,8 @@ const FloatingActionButton = () => {
                 </div>
             </>
         }
+
+        <UploadDokumentModal åbnUploadDokumentModal={åbnUploadDokumentModal} setÅbnUploadDokumentModal={setÅbnUploadDokumentModal} />
 
         <Modal trigger={addLedighed} setTrigger={setAddLedighed}>
             <h2 className={ModalStyles.modalHeading}>Tilføj ledighed</h2>

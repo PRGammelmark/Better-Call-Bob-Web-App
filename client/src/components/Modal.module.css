@@ -12,7 +12,9 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
     border-radius: 20px;
     z-index: 30;
-    min-width: 500px;
+    min-width: 400px;
+    width: 80vw;
+    max-width: 700px;
     overflow: hidden;
 }
 

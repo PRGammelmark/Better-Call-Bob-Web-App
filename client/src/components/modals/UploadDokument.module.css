@@ -1,0 +1,154 @@
+.heading {
+    font-family: OmnesBold;
+}
+
+.fileInput {
+    margin-bottom: 15px;
+    padding: 40px;
+    border: 2px dashed #3c5a40;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-family: Omnes;
+    font-size: 1rem;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+}
+
+.fileInput:hover {
+    border-color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.2);
+}
+
+.fileInput:focus {
+    border-color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.4);
+    outline: none;
+}
+
+.fileInput.dragover {
+    border-color: #59bf1a;
+    background-color: #e6ffe6;
+}
+
+.checkbox {
+    margin-bottom: 10px;
+}
+
+.fullWidthButton {
+    width: 100%;
+    padding: 10px 25px;
+    border-radius: 15px;
+    cursor: pointer;
+    background-color: #3c5a40;
+    color: white;
+    font-family: OmnesBold;
+    border: none;
+    transition: 0.2s;
+}
+
+.fullWidthButton:hover {
+    background-color: #59bf1a;
+}
+
+.dropdownContainer {
+    margin-bottom: 15px;
+    font-family: OmnesBold;
+    margin-top: 10px;
+}
+
+.dropdownContainer select {
+    overflow: auto;
+}
+
+.dropdown {
+    background: none;
+    border: none;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.dropdown:focus {
+    outline: none;
+}
+
+.option {
+    background-color: #f0f0f0;
+    border: 1px solid #f0f0f0;
+    color: grey;
+    padding: 5px 12px;
+    border-radius: 20px;
+    margin: 5px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: 0.2s ease;
+    user-select: none;
+}
+
+.option:hover {
+    border: 1px solid #59bf1a;
+}
+
+.option.selected {
+    background-color: #59bf1a;
+    border: 1px solid #59bf1a;
+    color: white;
+}
+
+.redigerDokumentImage {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.redigerDokumentImage:hover {
+    box-shadow: rgba(89, 191, 26, 0.25) 0px 6px 24px 0px, rgba(89, 191, 26, 0.70) 0px 0px 0px 1px;
+    transform: translateY(-3px);
+}
+
+.redigerDokumentPDFIcon {
+    height: 400px;
+    margin: 0 auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.redigerDokumentPDFIcon:hover {
+    box-shadow: rgba(89, 191, 26, 0.25) 0px 6px 24px 0px, rgba(89, 191, 26, 0.70) 0px 0px 0px 1px;
+    transform: translateY(-3px);
+}
+
+.dokumenterButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.sletDokumentButton {
+    background-color: none;
+    background: none;
+    box-shadow: none;
+    padding: 10px 20px;
+    border: none;
+    color: red;
+    font-family: OmnesBold;
+    cursor: pointer;
+}

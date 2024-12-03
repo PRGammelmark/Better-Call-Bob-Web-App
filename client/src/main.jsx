@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { AuthContextProvider } from './context/AuthContext.jsx'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { NewDocumentProvider } from './context/NewDocumentContext.jsx'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'; // Import Danish locale for dayjs
@@ -22,13 +23,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <AuthContextProvider>
       <BesøgProvider>
         <TaskAndDateProvider>
-          <LocalizationProvider 
-            dateAdapter={AdapterDayjs} 
-            adapterLocale="da" // Set the locale for AdapterDayjs
-            localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
+          <NewDocumentProvider>
+            <LocalizationProvider 
+              dateAdapter={AdapterDayjs} 
+              adapterLocale="da" // Set the locale for AdapterDayjs
+              localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
           >
             <App />
-          </LocalizationProvider>
+            </LocalizationProvider>
+          </NewDocumentProvider>
         </TaskAndDateProvider>
       </BesøgProvider>
     </AuthContextProvider>
