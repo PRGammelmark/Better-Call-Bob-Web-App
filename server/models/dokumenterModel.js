@@ -30,6 +30,19 @@ const dokumenterSchema = new Schema({
     filSti: {
         type: String,
         required: true
+    },
+    samtykkeListe: {
+        type: [{
+            bruger: {
+                type: Object,
+                required: true
+            },
+            samtykkeDato: {
+                type: Date,
+                required: true
+            }
+        }],
+        required: false
     }
 }, { timestamps: true })
 

@@ -298,9 +298,12 @@ const FloatingActionButton = () => {
 
   return (
     <>
-        <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : isOnDocumentsPage ? addNewDocument : toggleMenu}>
+        {user.isAdmin && <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : (isOnDocumentsPage ? addNewDocument : toggleMenu)}>
             <img src={isOnTaskPage ? AddNewBesøgIcon : isOnDocumentsPage ? AddNewDocumentIcon : AddNewIcon} draggable="false" alt="" className={FloatingActionButtonCSS.addNewIcon} style={isOnTaskPage ? {} : isOnDocumentsPage ? {} : {transform: menuOpen ? "rotate(0deg) scale(0.8)" : "rotate(135deg) scale(1)"}}/>
-        </div>
+        </div>}
+        {!user.isAdmin && !isOnDocumentsPage && <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : toggleMenu}>
+            <img src={isOnTaskPage ? AddNewBesøgIcon : isOnDocumentsPage ? AddNewDocumentIcon : AddNewIcon} draggable="false" alt="" className={FloatingActionButtonCSS.addNewIcon} style={isOnTaskPage ? {} : isOnDocumentsPage ? {} : {transform: menuOpen ? "rotate(0deg) scale(0.8)" : "rotate(135deg) scale(1)"}}/>
+        </div>}
         {!isOnTaskPage && !isOnDocumentsPage && 
             <>
                 <div className={FloatingActionButtonCSS.addLedighedButton} onClick={tilføjLedighedFunction} style={{transform: menuOpen ? "translate(-75px, -75px) scale(1)" : "translate(0px, 0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>

@@ -152,3 +152,15 @@
     font-family: OmnesBold;
     cursor: pointer;
 }
+
+.samtykkeListe {
+    background-color: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.samtykkeBrugereListe {
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
