@@ -41,6 +41,23 @@
     border-color: #59bf1a
 }
 
+.transparentButton {
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    background: #3c5a3f00;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #3c5a3f;
+    transition: 0.2s ease;
+}
+
+.transparentButton:hover {
+    background: #3c5a3f;
+    border-color: #3c5a3f;
+    color: #fff;
+}
+
 .redigerLedighed {
     display: flex;
     justify-content: end;
@@ -334,9 +351,15 @@
 .error {
     color: red;
     font-size: 0.8rem;
-  }
+}
 
-  @media screen and (max-width: 750px) {
+.overblikHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@media screen and (max-width: 750px) {
     .heading {
         display: none;
     }

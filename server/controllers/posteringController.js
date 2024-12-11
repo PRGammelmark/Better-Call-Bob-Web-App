@@ -23,6 +23,13 @@ const getPostering = async (req,res) => {
     res.status(200).json(postering)
 }
 
+// GET alle posteringer for en bruger
+const getPosteringerForBruger = async (req,res) => {
+    const { userID } = req.params;
+    const posteringer = await Postering.find({ brugerID: userID }).sort({createdAt: -1})
+    res.status(200).json(posteringer)
+}
+
 // CREATE en postering
 const createPostering = async (req, res) => {
     const { dato, beskrivelse, opstart, handymanTimer, tømrerTimer, udlæg, øvrigt, total, opgaveID, brugerID } = req.body;
@@ -76,5 +83,6 @@ export {
     createPostering,
     getPostering,
     deletePostering,
-    updatePostering
+    updatePostering,
+    getPosteringerForBruger
 }

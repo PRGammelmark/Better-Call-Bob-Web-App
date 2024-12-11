@@ -34,7 +34,7 @@ const ClosedTasks = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Afsluttede opgaver</h2>
+          <h2 className={TableCSS.tabelHeader}>Afsluttede opgaver ({afsluttedeOpgaver ? afsluttedeOpgaver.length : 0})</h2>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${ClosedTasksCSS.closedTasksHeader}`}>
               <ul>

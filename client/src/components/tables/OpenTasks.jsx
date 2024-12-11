@@ -36,7 +36,7 @@ const OpenTasks = () => {
         <>
           <div className={OpenTasksCSS.desktopTable}>
             <div className={TableCSS.opgaveListe}>
-              <h2 className={TableCSS.tabelHeader}>Åbne opgaver</h2>
+              <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
               <div className={TableCSS.opgaveTabel}>
                 <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderDesktop}`}>
                   <ul>

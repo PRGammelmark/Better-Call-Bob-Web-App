@@ -34,7 +34,7 @@ const SlettedeOpgaver = () => {
 
   return (
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Slettede opgaver</h2>
+          <h2 className={TableCSS.tabelHeader}>Slettede opgaver ({slettedeOpgaver ? slettedeOpgaver.length : 0})</h2>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${SlettedeOpgaverCSS.slettedeOpgaverHeader}`}>
               <ul>
