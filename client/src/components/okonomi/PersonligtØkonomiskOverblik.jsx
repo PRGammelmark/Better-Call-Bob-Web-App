@@ -2,78 +2,77 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Styles from './PersonligtØkonomiskOverblik.module.css'
 import dayjs from 'dayjs'
+import ØkonomiOverblikModal from '../modals/ØkonomiOverblikModal'
 import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
 
 const PersonligtØkonomiskOverblik = (props) => {
 
-const [posteringer, setPosteringer] = useState([])
-const [tjentDenneMåned, setTjentDenneMåned] = useState(0)
-const [udlægDenneMåned, setUdlægDenneMåned] = useState(0)
-const [tjentForrigeMåned, setTjentForrigeMåned] = useState(0)
-const [udlægForrigeMåned, setUdlægForrigeMåned] = useState(0)
-const denneMåned = dayjs().format('MMMM')
-const forrigeMåned = dayjs().subtract(1, 'month').format('MMMM')
+    const [posteringer, setPosteringer] = useState([])
+    const [tjentDenneMåned, setTjentDenneMåned] = useState(0)
+    const [udlægDenneMåned, setUdlægDenneMåned] = useState(0)
+    const [månedOffset, setMånedOffset] = useState(0)
+    const [åbnØkonomiOverblikModal, setÅbnØkonomiOverblikModal] = useState(false)
 
-// HENT ALLE MEDARBEJDERENS POSTERINGER
-useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/posteringer/bruger/${props.user.id}`, {
-        headers: {
-            'Authorization': `Bearer ${props.user.token}`
-        }
-    })
-    .then(res => {
-        setPosteringer(res.data)
-    })
-    .catch(error => console.log(error))
-}, [])
+    const startOfDenneMåned = dayjs().date() >= 20 ? dayjs().date(20) : dayjs().subtract(1, 'month').date(20);
+    const endOfDenneMåned = startOfDenneMåned.add(1, 'month').date(19);
 
-// FILTRER POSTERINGER OG BEREGN TJENT + UDLÆG FOR DENNE OG SIDSTE MÅNED
-useEffect(() => {
-    const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).format('MMMM') === denneMåned)
+    const customMåned = {
+        start: startOfDenneMåned.subtract(månedOffset, 'month'),
+        end: endOfDenneMåned.subtract(månedOffset, 'month')
+    }
 
-    const denneMånedsOpstartsgebyrer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-    const denneMånedsHandymantimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-    const denneMånedsTømrertimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
-    const denneMånedsUdlæg = denneMånedsPosteringer.reduce((sum, postering) => {
-        const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
-        return sum + udlægSum;
-    }, 0);
-    const denneMånedsØvrigt = denneMånedsPosteringer.reduce((sum, postering) => {
-        const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
-        return sum + øvrigtSum;
-    }, 0);
+    // HENT ALLE MEDARBEJDERENS POSTERINGER
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/posteringer/bruger/${props.user.id}`, {
+            headers: {
+                'Authorization': `Bearer ${props.user.token}`
+            }
+        })
+        .then(res => {
+            setPosteringer(res.data)
+        })
+        .catch(error => console.log(error))
+    }, [])
 
-    const sumUdlægDenneMåned = denneMånedsUdlæg + denneMånedsØvrigt
-    const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * handymanTimerHonorar) + (denneMånedsTømrertimer * tømrerTimerHonorar)
+    // FILTRER POSTERINGER OG BEREGN TJENT + UDLÆG FOR VALGT MÅNED
+    useEffect(() => {
+        const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+        const denneMånedsOpstartsgebyrer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+        const denneMånedsHandymantimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
+        const denneMånedsTømrertimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+        const denneMånedsUdlæg = denneMånedsPosteringer.reduce((sum, postering) => {
+            const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
+            return sum + udlægSum;
+        }, 0);
+        const denneMånedsØvrigt = denneMånedsPosteringer.reduce((sum, postering) => {
+            const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
+            return sum + øvrigtSum;
+        }, 0);
 
-    const sidsteMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).format('MMMM') === forrigeMåned)
+        const sumUdlægDenneMåned = denneMånedsUdlæg + denneMånedsØvrigt
+        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * handymanTimerHonorar) + (denneMånedsTømrertimer * tømrerTimerHonorar)
+        
+        setTjentDenneMåned(sumTjentDenneMåned)
+        setUdlægDenneMåned(sumUdlægDenneMåned)
 
-    const sidsteMånedsOpstartsgebyrer = sidsteMånedsPosteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-    const sidsteMånedsHandymantimer = sidsteMånedsPosteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-    const sidsteMånedsTømrertimer = sidsteMånedsPosteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
-    const sidsteMånedsUdlæg = sidsteMånedsPosteringer.reduce((sum, postering) => {
-        const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
-        return sum + udlægSum;
-    }, 0);
-    const sidsteMånedsØvrigt = sidsteMånedsPosteringer.reduce((sum, postering) => {
-        const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
-        return sum + øvrigtSum;
-    }, 0);
-
-    const sumUdlægForrigeMåned = sidsteMånedsUdlæg + sidsteMånedsØvrigt
-    const sumTjentForrigeMåned = sidsteMånedsOpstartsgebyrer + (sidsteMånedsHandymantimer * handymanTimerHonorar) + (sidsteMånedsTømrertimer * tømrerTimerHonorar)
-    
-    setTjentDenneMåned(sumTjentDenneMåned)
-    setUdlægDenneMåned(sumUdlægDenneMåned)
-    setTjentForrigeMåned(sumTjentForrigeMåned)
-    setUdlægForrigeMåned(sumUdlægForrigeMåned)
-
-}, [posteringer])
+    }, [posteringer, månedOffset])
 
   return (
     <div className={Styles.personligtØkonomiskOverblikContainer}>
       <div className={Styles.tjentContainer}>
-        <h2 className={`bold ${Styles.heading}`}>Tjent i {denneMåned}</h2>
+        <div className={Styles.okonomiHeadingContainer}>
+            <h2 style={{width: "400px"}} className={`bold ${Styles.heading}`}>Din økonomi for {customMåned.end.format('MMMM YYYY')}</h2>
+            <div className={Styles.chooseMonthButtonsContainer}>
+                <button className={Styles.moveBackButton} onClick={() => setMånedOffset(månedOffset + 1)}>
+                    &lt;
+                </button>
+                <button className={Styles.moveForwardButton} onClick={() => setMånedOffset(månedOffset - 1)}>
+                    &gt;
+                </button>
+                <button className={Styles.åbnModalButton} onClick={() => setÅbnØkonomiOverblikModal(true)}>Detaljer</button>
+            </div>
+        </div>
+        <p>({dayjs(customMåned.start).format('DD. MMM')} – {dayjs(customMåned.end).format('DD. MMM')})</p>
         <div className={Styles.økonomiDetaljer}>
             <div className={Styles.økonomiDetaljerDiv}>
                 <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Optjent</h3>
@@ -89,6 +88,7 @@ useEffect(() => {
             </div>
         </div>
       </div>
+      <ØkonomiOverblikModal trigger={åbnØkonomiOverblikModal} setTrigger={setÅbnØkonomiOverblikModal} posteringer={posteringer}/>
     </div>
   )
 }

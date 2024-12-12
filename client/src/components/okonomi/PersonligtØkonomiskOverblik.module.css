@@ -35,3 +35,66 @@
     font-weight: 800;
     font-family: OmnesBold;
 }
+
+.okonomiHeadingContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: center;
+    gap: 20px;
+    align-items: center;
+}
+
+.moveBackButton {
+    background: #3c5a3f;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 10px;
+    height: 25px;
+    width: 25px;
+    transition: 0.2s ease;
+}
+
+.moveBackButton:hover {
+    background: #59bf1a;
+}
+
+.moveForwardButton {
+    background: #3c5a3f;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 10px;
+    height: 25px;
+    width: 25px;
+    transition: 0.2s ease;
+}
+
+.moveForwardButton:hover {
+    background: #59bf1a;
+}
+
+.åbnModalButton {
+    background: #3c5a3f;
+    border: none;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    line-height: 10px;
+    height: 25px;
+    padding: 0 10px;
+    transition: 0.2s ease;
+}
+
+.åbnModalButton:hover {
+    background: #59bf1a;
+}
+
+.chooseMonthButtonsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
