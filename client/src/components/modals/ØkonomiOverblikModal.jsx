@@ -1,12 +1,19 @@
 import React, { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Modal from '../Modal.jsx'
 import Styles from './ØkonomiOverblikModal.module.css'
 import ModalStyles from '../Modal.module.css'
 import dayjs from 'dayjs'
+import PageAnimation from '../PageAnimation'
+import BackIcon from "../../assets/back.svg"
+import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
+import Paperclip from "../../assets/paperclip.svg"
 import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+import axios from 'axios'
 
 const ØkonomiOverblikModal = (props) => {
 
+    const navigate = useNavigate()
     const [år, setÅr] = useState(dayjs().year())
     const [tjentJanuar, setTjentJanuar] = useState(0)
     const [udlagtJanuar, setUdlagtJanuar] = useState(0)
@@ -44,8 +51,47 @@ const ØkonomiOverblikModal = (props) => {
     const [oktoberPosteringer, setOktoberPosteringer] = useState([])
     const [novemberPosteringer, setNovemberPosteringer] = useState([])
     const [decemberPosteringer, setDecemberPosteringer] = useState([])
+    const [valgtMåned, setValgtMåned] = useState(null)
     const [posteringerDetaljer, setPosteringerDetaljer] = useState([])
+    const [brugere, setBrugere] = useState([])
+    const [opgaver, setOpgaver] = useState([])
+    
+    const user = props.user
+    
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setBrugere(res.data);
+        })
+        .catch(error => console.log(error))
+    }, [])
 
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setOpgaver(res.data);
+        })
+        .catch(error => console.log(error))
+    }, [])
+    
+    const getBrugerName = (brugerID) => {
+        const bruger = brugere && brugere.find(user => user._id === brugerID);
+        return bruger ? bruger.navn : 'Unknown User';
+    };
+
+    const getOpgaveAdresse = (opgaveID) => {
+        const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
+        return opgave ? opgave.adresse : 'Adresse utilgængelig';
+    };
+    
     function beregnTjent(posteringer) {
         const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
         const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
@@ -138,127 +184,229 @@ const ØkonomiOverblikModal = (props) => {
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
-        <h2 className={ModalStyles.modalHeading}>Økonomisk overblik</h2>
-        <p className={Styles.modalText}>Se hvad du har optjent, udlagt og fået udbetalt i de forskellige måneder.</p>
-        <div className={Styles.vælgÅr}>
-            <h3>{år}</h3>
-            <button className={Styles.moveBackButton} onClick={() => setÅr(år - 1)}>
-                &lt;
-            </button>
-            <button className={Styles.moveForwardButton} onClick={() => setÅr(år + 1)}>
-                &gt;
-            </button>
-        </div>
-        <div className={Styles.måneder}>
-            <div className={Styles.månedHeadings}>
-                <div>
-                    <b>Måned</b>
+        {!posteringerDetaljer.length > 0 
+        ? <PageAnimation>
+            <h2 className={ModalStyles.modalHeading}>Økonomisk overblik</h2>
+            <p className={Styles.modalText}>Se hvad du har optjent, udlagt og fået udbetalt i de forskellige måneder.</p>
+            <div className={Styles.vælgÅr}>
+                <h3>{år}</h3>
+                <button className={Styles.moveBackButton} onClick={() => setÅr(år - 1)}>
+                    &lt;
+                </button>
+                <button className={Styles.moveForwardButton} onClick={() => setÅr(år + 1)}>
+                    &gt;
+                </button>
+            </div>
+            <div className={Styles.måneder}>
+                <div className={Styles.månedHeadings}>
+                    <div>
+                        <b>Måned</b>
+                    </div>
+                    <div>
+                        <b>Optjent</b>
+                    </div>
+                    <div>
+                        <b>Udlæg</b>
+                    </div>
+                    <div>
+                        <b>Udbetaling</b>
+                    </div>
+                    <div>
+                        <b>Grundlag</b>
+                    </div>
                 </div>
-                <div>
-                    <b>Optjent</b>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>Januar</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentJanuar + udlagtJanuar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {januarPosteringer && januarPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(januarPosteringer); setValgtMåned("januar")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
-                <div>
-                    <b>Udlæg</b>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>Februar</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentFebruar + udlagtFebruar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {februarPosteringer && februarPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(februarPosteringer); setValgtMåned("februar")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
-                <div>
-                    <b>Udbetaling</b>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>Marts</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentMarts + udlagtMarts).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {martsPosteringer && martsPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(martsPosteringer); setValgtMåned("marts")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
-                <div>
-                    <b>Grundlag</b>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>April</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentApril + udlagtApril).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {aprilPosteringer && aprilPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(aprilPosteringer); setValgtMåned("april")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>Maj</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentMaj + udlagtMaj).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {majPosteringer && majPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(majPosteringer); setValgtMåned("maj")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>Juni</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentJuni + udlagtJuni).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {juniPosteringer && juniPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(juniPosteringer); setValgtMåned("juni")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>Juli</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentJuli + udlagtJuli).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {juliPosteringer && juliPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(juliPosteringer); setValgtMåned("juli")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>August</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentAugust + udlagtAugust).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {augustPosteringer && augustPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(augustPosteringer); setValgtMåned("august")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>September</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentSeptember + udlagtSeptember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {septemberPosteringer && septemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(septemberPosteringer); setValgtMåned("september")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>Oktober</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentOktober + udlagtOktober).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {oktoberPosteringer && oktoberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(oktoberPosteringer); setValgtMåned("oktober")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                    <p>November</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentNovember + udlagtNovember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {novemberPosteringer && novemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(novemberPosteringer); setValgtMåned("november")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                    <p>December</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    {decemberPosteringer && decemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(decemberPosteringer); setValgtMåned("december")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+                </div>
+                <div className={`${Styles.totalRække}`}>
+                    <b>I alt, {år}</b>
+                    <b>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
                 </div>
             </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>Januar</p>
-                <p>{tjentJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentJanuar + udlagtJanuar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {januarPosteringer && januarPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(januarPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+        </PageAnimation>
+        :
+        <>
+        <PageAnimation>
+            <div className={Styles.modalHeaderContainer}>
+                <img className={Styles.backIcon} src={BackIcon} alt="Tilbage" onClick={() => setPosteringerDetaljer([])}/>
+                <h2 className={ModalStyles.modalHeading}>Dine posteringer for {valgtMåned + " " + år}</h2>
             </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>Februar</p>
-                <p>{tjentFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentFebruar + udlagtFebruar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {februarPosteringer && februarPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(februarPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+            <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={Styles.månedHeadings}>
+                    <div>
+                        <b>Måned</b>
+                    </div>
+                    <div>
+                        <b>Optjent</b>
+                    </div>
+                    <div>
+                        <b>Udlæg</b>
+                    </div>
+                    <div>
+                        <b>Udbetaling</b>
+                    </div>
+                </div>
+            <div style={{borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px', marginBottom: '20px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={`${Styles.måned} ${Styles.ligeMåned}`}>
+                <p>{valgtMåned}</p>
+                <p className={Styles.økonomiDetaljerTjent}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                <p className={Styles.økonomiDetaljerUdlagt}>{beregnUdlagt(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                <p>{(beregnTjent(posteringerDetaljer)+beregnUdlagt(posteringerDetaljer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
             </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>Marts</p>
-                <p>{tjentMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentMarts + udlagtMarts).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {martsPosteringer && martsPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(martsPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
+            <p className={Styles.modalText}>Posteringsgrundlag for {valgtMåned + " " + år}:</p>
+            <div className={Styles.posteringerDiv}>
+                {posteringerDetaljer.map((postering, index) => (
+                    <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
+                    <div className={ÅbenOpgaveCSS.posteringCard}>
+                        <div>
+                            <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato ? dayjs(postering.dato).format('DD. MMM YYYY') : "Ingen dato valgt"} – for opgave på</p>
+                            <p className={ÅbenOpgaveCSS.posteringBruger}>{postering.opgaveID && getOpgaveAdresse(postering.opgaveID)}</p>
+                            <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
+                            <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
+                                {postering.udlæg.map((udlæg, index) => {
+                                    return udlæg.kvittering ? 
+                                    <img 
+                                    key={`udlæg-${index}`}
+                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                    src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                    alt={udlæg.beskrivelse} 
+                                    onClick={() => {
+                                        setKvitteringBillede(udlæg.kvittering);
+                                    }}/> 
+                                    : 
+                                    null;
+                                })}
+                                {postering.øvrigt.map((øvrigt, index) => {
+                                    return øvrigt.kvittering ? 
+                                    <img 
+                                    key={`øvrigt-${index}`}
+                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                    src={`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`} 
+                                    alt={øvrigt.beskrivelse} 
+                                    onClick={() => {
+                                        setKvitteringBillede(øvrigt.kvittering);
+                                    }}/> 
+                                    : 
+                                    null;
+                                })}
+                            </div>
+                        </div>
+                        <div className={ÅbenOpgaveCSS.posteringListe}>
+                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart: </span>
+                                <span>{(postering.opstart ? postering.opstart : "0") + " kr."}</span>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer > 0 ? postering.handymanTimer : 0} timer (handyman): </span>
+                                <span>{(postering.handymanTimer * 300) + " kr."}</span>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer ? postering.tømrerTimer : 0} timer (tømrer): </span>
+                                <span>{(postering.tømrerTimer * 360) + " kr."}</span>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
+                                <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.posteringRække}>
+                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
+                                <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.totalRække}>
+                                <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
+                                <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{postering.total + " kr."}</b>
+                            </div>
+                        </div>
+                    </div>
+                    <p style={{display: 'flex', marginTop: 10, justifyContent: 'center', cursor: 'pointer'}} className={ÅbenOpgaveCSS.prefix} onClick={() => {
+                        navigate(`/opgave/${postering.opgaveID}`)
+                    }}>Gå til opgave</p>
+                    </div>
+                ))}
             </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>April</p>
-                <p>{tjentApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentApril + udlagtApril).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {aprilPosteringer && aprilPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(aprilPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>Maj</p>
-                <p>{tjentMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentMaj + udlagtMaj).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {majPosteringer && majPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(majPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>Juni</p>
-                <p>{tjentJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentJuni + udlagtJuni).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {juniPosteringer && juniPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(juniPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>Juli</p>
-                <p>{tjentJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentJuli + udlagtJuli).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {juliPosteringer && juliPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(juliPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>August</p>
-                <p>{tjentAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentAugust + udlagtAugust).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {augustPosteringer && augustPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(augustPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>September</p>
-                <p>{tjentSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentSeptember + udlagtSeptember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {septemberPosteringer && septemberPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(septemberPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>Oktober</p>
-                <p>{tjentOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentOktober + udlagtOktober).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {oktoberPosteringer && oktoberPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(oktoberPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
-                <p>November</p>
-                <p>{tjentNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentNovember + udlagtNovember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {novemberPosteringer && novemberPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(novemberPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
-                <p>December</p>
-                <p>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {decemberPosteringer && decemberPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(decemberPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-            <div className={`${Styles.totalRække}`}>
-                <p>I alt, {år}</p>
-                <p>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <p>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                {decemberPosteringer && decemberPosteringer.length > 0 ? <button onClick={() => setPosteringerDetaljer(decemberPosteringer)}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
-            </div>
-        </div>
+        </PageAnimation>
+        </>}
     </Modal>
   )
 }

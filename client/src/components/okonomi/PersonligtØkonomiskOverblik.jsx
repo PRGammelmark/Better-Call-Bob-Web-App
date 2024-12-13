@@ -88,7 +88,7 @@ const PersonligtØkonomiskOverblik = (props) => {
             </div>
         </div>
       </div>
-      <ØkonomiOverblikModal trigger={åbnØkonomiOverblikModal} setTrigger={setÅbnØkonomiOverblikModal} posteringer={posteringer}/>
+      <ØkonomiOverblikModal trigger={åbnØkonomiOverblikModal} setTrigger={setÅbnØkonomiOverblikModal} posteringer={posteringer} user={props.user}/>
     </div>
   )
 }

@@ -1,5 +1,5 @@
 export const handymanTimerHonorar = 300
-export const tømrerTimerHonorar = 400
+export const tømrerTimerHonorar = 360
 export const opstartsgebyrHonorar = 200
 
 export const handymanTimerPrisExMoms = 447.2

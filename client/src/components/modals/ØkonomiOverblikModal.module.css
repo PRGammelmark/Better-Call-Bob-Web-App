@@ -59,7 +59,7 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 8px 20px;
+    padding: 10px 20px;
     background: #fff;
 }
 
@@ -69,9 +69,10 @@
     justify-content: space-between;
     align-items: center;
     gap: 10px;
-    padding: 8px 20px;
+    padding: 10px 20px;
     background: #3c5a3f;
     color: #fff;
+    font-family: OmnesBold;
 }
 
 .totalRække b {
@@ -90,6 +91,14 @@
 .måned b {
     font-family: OmnesBold;
     color: #222222;
+}
+
+.økonomiDetaljerTjent {
+    color: #59bf1a;
+}
+
+.økonomiDetaljerUdlagt {
+    color: orange;
 }
 
 .måned button {
@@ -113,6 +122,7 @@
     border-radius: 6px;
     overflow: hidden;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    margin-bottom: 20px;
 }
 
 .uligeMåned {
@@ -127,4 +137,29 @@
 
 .modalText {
     margin-bottom: 20px;
+}
+
+.backIcon {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.modalHeaderContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.posteringerDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 30px;
+    background: #f1f1f1;
+    border-radius: 20px 20px 0px 0px;
+    overflow-x: scroll;
+    margin-bottom: 20px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
