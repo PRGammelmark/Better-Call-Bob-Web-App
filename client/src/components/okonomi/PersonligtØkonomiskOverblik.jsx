@@ -83,7 +83,7 @@ const PersonligtØkonomiskOverblik = (props) => {
                 <b style={{color: "orange"}} className={Styles.økonomiDetaljerContent}>{udlægDenneMåned ? udlægDenneMåned.toLocaleString() : 0} kr.</b>
             </div>
             <div className={Styles.økonomiDetaljerDiv}>
-                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Udbetaling i alt (eks. moms)</h3>
+                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Honorar i alt (eks. moms)</h3>
                 <b className={Styles.økonomiDetaljerContent}>{(tjentDenneMåned + udlægDenneMåned).toLocaleString()} kr.</b>
             </div>
         </div>

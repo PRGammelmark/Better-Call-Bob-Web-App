@@ -10,7 +10,7 @@ import { useBesøg } from '../context/BesøgContext.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 import OpenTasks from '../components/tables/OpenTasks'
 import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkonomiskOverblik'
-
+import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
 const Overblik = () => {
   const {user} = useAuthContext();
     
@@ -125,7 +125,7 @@ const Overblik = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
-
+        <AdminØkonomiskOverblik user={user} />
       </div>}
       
       {!managerOverblik && <div>

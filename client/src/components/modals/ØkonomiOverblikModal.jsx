@@ -315,19 +315,19 @@ const ØkonomiOverblikModal = (props) => {
                 <h2 className={ModalStyles.modalHeading}>Dine posteringer for {valgtMåned + " " + år}</h2>
             </div>
             <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={Styles.månedHeadings}>
-                    <div>
-                        <b>Måned</b>
-                    </div>
-                    <div>
-                        <b>Optjent</b>
-                    </div>
-                    <div>
-                        <b>Udlæg</b>
-                    </div>
-                    <div>
-                        <b>Udbetaling</b>
-                    </div>
+                <div>
+                    <b>Måned</b>
                 </div>
+                <div>
+                    <b>Optjent</b>
+                </div>
+                <div>
+                    <b>Udlæg</b>
+                </div>
+                <div>
+                    <b>Udbetaling</b>
+                </div>
+            </div>
             <div style={{borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px', marginBottom: '20px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={`${Styles.måned} ${Styles.ligeMåned}`}>
                 <p>{valgtMåned}</p>
                 <p className={Styles.økonomiDetaljerTjent}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
