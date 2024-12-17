@@ -91,10 +91,6 @@ const ÅbenOpgave = () => {
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
-
-    useEffect(() => {
-        console.log(outlays);
-    }, [outlays]);
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -104,7 +100,6 @@ const ÅbenOpgave = () => {
         })
         .then(res => {
             setBrugere(res.data)
-            console.log(res.data)
         })
         .catch(error => console.log(error))
     }, [])
@@ -1061,6 +1056,7 @@ const ÅbenOpgave = () => {
         setEventData(besøgTilÅbning);
         setOpenDialog(true);
       };
+
     // konstater til regnskabsopstillingen -- HONORARER --
     const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0);
     const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 300;
@@ -1073,7 +1069,6 @@ const ÅbenOpgave = () => {
         const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
         return akk + øvrigSum;
     }, 0);
-
     const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
 
     // konstanter til regnskabsopstillingen -- FAKTURA --
@@ -1088,73 +1083,20 @@ const ÅbenOpgave = () => {
         const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
         return akk + øvrigSum;
     }, 0);
-    const administrationsgebyr = vilBetaleMedMobilePay ? 0 : 50;
-
     const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
-        // const base64String = base64PDF.includes('dataapplication/octet+streambase64') ? base64PDF.split('dataapplication/octet+streambase64')[1] : base64PDF;
-        // const byteCharacters = atob(base64String);
-        // const byteNumbers = new Array(byteCharacters.length);
-        // for (let i = 0; i < byteCharacters.length; i++) {
-        //     byteNumbers[i] = byteCharacters.charCodeAt(i);
-        // }
-        // const byteArray = new Uint8Array(byteNumbers);
-    
-        // // Create a blob and download the PDF
-        // const blob = new Blob([byteArray], { type: 'application/pdf' });
-        // const url = URL.createObjectURL(blob);
-
-        // // Open the PDF in a new tab
-        // window.open(url, '_blank');
-
         if (opgave && opgave.fakturaPDFUrl) {
             const baseURL = import.meta.env.VITE_API_URL;
             window.open(`${baseURL}${opgave.fakturaPDFUrl}`, '_blank');
         }
     }
 
-    function mobilePay() {
-        
-        // REQUEST SERVER TO GET ACCESS TOKEN
-        axios.post(`${import.meta.env.VITE_API_URL}/mobilepay/get-qr-code`, {}, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(response => {
-            console.log('QR-code received from server:', response.data);
-        })
-        .catch(error => {
-            console.error('Error fetching QR-code from server:', error);
-        });
-
-        // GET ACCESS TOKEN
-        // axios.post('https://apitest.vipps.no/accesstoken/get', {}, {
-        //     headers: {
-        //         'Content-Type': 'application/json',
-        //         'client_id': `${import.meta.env.VITE_MP_CLIENT_ID}`,
-        //         'client_secret': `${import.meta.env.VITE_MP_CLIENT_SECRET}`,
-        //         'Ocp-Apim-Subscription-Key': `${import.meta.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
-        //         'Merchant-Serial-Number': `${import.meta.env.VITE_MSN}`,
-        //         'Vipps-System-Name': 'YOUR-SYSTEM-NAME',
-        //         'Vipps-System-Version': 'YOUR-SYSTEM-VERSION',
-        //         'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
-        //         'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
-        //     }
-        // })
-        // .then(response => {
-        //     console.log('Access token received:', response.data);
-        // })
-        // .catch(error => {
-        //     console.error('Error fetching access token:', error);
-        // });
-    }
-
     function sletOpgave() {
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
             isDeleted: dayjs().toISOString(),
-            markeretSomFærdig: true
+            markeretSomFærdig: true,
+            ansvarlig: []
         }, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -1162,6 +1104,43 @@ const ÅbenOpgave = () => {
         })
         .then(response => {
             console.log('Opgave slettet:', response.data);
+            const posteringerPåDenneOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id);
+            const besøgPåDenneOpgave = alleBesøg && alleBesøg.filter(besøg => besøg.opgaveID === opgave._id)
+            
+            // Slet posteringer
+            if(posteringerPåDenneOpgave.length > 0) {
+                posteringerPåDenneOpgave.forEach(postering => {
+                axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${postering._id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(response => {
+                    console.log('Postering slettet:', response.data);
+                })
+                .catch(error => {
+                        console.error('Error deleting postering:', error);
+                    });
+                })
+            }
+
+            // Slet besøg
+            if(besøgPåDenneOpgave.length > 0) {
+                besøgPåDenneOpgave.forEach(besøg => {
+                    axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${besøg._id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(response => {
+                        console.log('Besøg slettet:', response.data);
+                    })
+                    .catch(error => {
+                            console.error('Error deleting besøg:', error);
+                    });
+                })
+            }
+
             navigate(-1)
         })
         .catch(error => {
@@ -1208,10 +1187,6 @@ const ÅbenOpgave = () => {
         .catch(error => {
             console.error('Error updating customer:', error);
         });
-    }
-
-    function registrerFakturaBetaling() {
-        console.log('Faktura betalt')
     }
 
     function afslutOpgave() {

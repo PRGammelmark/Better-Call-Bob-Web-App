@@ -20,7 +20,6 @@ const MedarbejderØkonomiDetaljer = (props) => {
     const uniqueOpgaveIDs = opgaveIDs && [...new Set(opgaveIDs)]
     const user = props && props.user
     const opgaver = props && props.opgaver
-    console.log("opgaver", opgaver)
 
     const getBrugerName = (brugerID) => {
         const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
@@ -29,7 +28,6 @@ const MedarbejderØkonomiDetaljer = (props) => {
 
     const navn = posteringer && getBrugerName(posteringer[0].brugerID)
     const opgaverForBruger = opgaver && uniqueOpgaveIDs && opgaver.filter(opgave => uniqueOpgaveIDs.includes(opgave._id))
-    console.log("opgaverForBruger", opgaverForBruger)
 
     function beregnTjent(posteringer) {
         if(!posteringer) return 0
@@ -106,9 +104,8 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 </div>
                 {opgaverForBruger && opgaverForBruger.map(opgave => {
                     const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                    console.log("posteringerForOpgave", posteringerForOpgave)
                     return ( 
-                    <div className={`${Styles.opgaver} ${Styles.uligeMåned} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
+                    <div key={opgave._id} className={`${Styles.opgaver} ${Styles.uligeMåned} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
                         <p>{opgave.adresse}</p>
                         <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
                         <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
