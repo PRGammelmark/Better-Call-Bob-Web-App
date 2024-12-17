@@ -4,11 +4,12 @@ import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Styles from './OpretRegningModal.module.css'
 import SwitcherStyles from '../../pages/Switcher.module.css'
 import useBetalMedFaktura from '../../hooks/useBetalMedFaktura.js'
-import useBetalMedMobilePayAnmodning from '../../hooks/useBetalMedMobilePayAnmodning.js'
+import useBetalMedMobilePayViaAnmodning from '../../hooks/useBetalMedMobilePayViaAnmodning.jsx'
 import useBetalMedMobilePayQR from '../../hooks/useBetalMedMobilePayQR.jsx'
 import mobilePayLogo from '../../assets/mobilePay.png'
 import BarLoader from '../loaders/BarLoader.js'
 import BackButton from '../../assets/back.svg'
+import PageAnimation from '../../components/PageAnimation'
 import axios from 'axios'
 
 
@@ -47,38 +48,23 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
         useBetalMedMobilePayQR(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setQrErrorMessage)
     }
 
-    // const pollPaymentStatus = (orderId) => {
-    //     setInterval(() => {
-    //         axios.get(`https://api.vipps.no/ecomm/v2/payments/${orderId}/details`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${user.token}`
-    //             }
-    //         })
-    //         .then(response => {
-    //             console.log(response.data)
-    //         })
-    //         .catch(error => {
-    //             console.error('Error polling payment status: ', error);
-    //         });
-    //     }, 2000);
-    // }
-
-    // useEffect(() => {
-    //     if (qrURL) {
-    //         const orderId = qrURL.split('/').pop(); // Assuming the orderId is the last part of the URL
-    //         pollPaymentStatus(orderId);
-    //     }
-    // }, [qrURL]);
+    function initierAnmodningState() {
+        setBetalNuMedAnmodningModalState(true)
+        setLoadingMobilePaySubmission(true)
+        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal)
+    }
 
   return (
     <Modal trigger={åbnOpretRegningModal} setTrigger={setÅbnOpretRegningModal}>
         
         {/* ====== FAKTURA SUCCESS ====== */}
         {!loadingFakturaSubmission && successFakturaSubmission && 
-        <div className={Styles.successSubmission}>
-            <h2>Faktura sendt! 🎉</h2>
-            <p>Fakturaen er blevet oprettet, og sendt til kundens e-mail.</p>
-        </div>}
+        <PageAnimation>
+            <div className={Styles.successSubmission}>
+                <h2>Faktura sendt! 🎉</h2>
+                <p>Fakturaen er blevet oprettet, og sendt til kundens e-mail.</p>
+            </div>
+        </PageAnimation>}
         
         {/* ====== LOADING ====== */}
         {loadingFakturaSubmission && 
@@ -93,11 +79,24 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
             />
         </div>}
         
+        {loadingMobilePaySubmission && 
+        <div className={Styles.loadingSubmission}>
+            <h2>Sender anmodning ...</h2>
+            <BarLoader
+                color="#59bf1a"
+                width={100}
+                ariaLabel="oval-loading"
+                wrapperStyle={{}}
+                wrapperClass=""
+            />
+        </div>}
+
         {/* ====== FIRST FORM – CHOOSE BETWEEN PAYING NOW OR LATER ====== */}
-        {!loadingFakturaSubmission && !successFakturaSubmission && !betalSenereModalState && !betalNuMedAnmodningModalState && !betalNuMedQRModalState && !qrPaymentAuthorized &&
+        {!loadingFakturaSubmission && !successFakturaSubmission && !betalSenereModalState && !betalNuMedAnmodningModalState && !betalNuMedQRModalState && !qrPaymentAuthorized && !qrErrorMessage &&
         <>
-        <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
-        <form action="">
+        <PageAnimation>
+            <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
+            <form action="">
             <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p>
             <p>Når regningen er oprettet vil den automatisk blive sendt via sms og/eller e-mail til kunden.</p>
             <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
@@ -118,14 +117,17 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 </div>
             </div>
         </form>
-        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalNuKnap} onClick={() => initierQRState()}>Betal nu med Mobile Pay <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>}
+        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <input style={{marginTop: 10, marginBottom: 10, textAlign: 'center', paddingRight: 65}} className={ÅbenOpgaveCSS.modalInput} type="tel" name="telefonnummer" id="telefonnummer" placeholder="Indtast evt. alternativt telefonnummer til anmodning" onChange={(e) => setTelefonnummerTilAnmodning(e.target.value)} />}
+        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalNuKnap} onClick={() => initierAnmodningState()}><span>Send Mobile Pay-anmodning<br /><span style={{fontSize: 13}}>Tlf.: {telefonnummerTilAnmodning ? telefonnummerTilAnmodning : opgave.telefon}</span></span> <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>}
         {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalSenereKnap} onClick={() => setBetalSenereModalState(true)}>Betal senere med faktura – kr. 49,-</button>}
+        </PageAnimation>
         </>
         }
         
         {/* ====== SECOND FORM – PAYING LATER ====== */}
-        {!loadingFakturaSubmission && !successFakturaSubmission && betalSenereModalState &&
+        {!loadingFakturaSubmission && !successFakturaSubmission && !qrErrorMessage && betalSenereModalState &&
         <>
+        <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
                 <img src={BackButton} className={Styles.backButton} onClick={() => setBetalSenereModalState(false)} alt="Tilbage" /><h2 className={ÅbenOpgaveCSS.modalHeading}>Betal senere med faktura</h2>
             </div>
@@ -152,27 +154,37 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 const alternativEmail = opgave && opgave.email
                 useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr)        
             }}>Betal senere med faktura – kr. 49,-</button>}
-        </>}
+        </PageAnimation>
+        </>
+        }
 
         {/* ====== THIRD FORM – PAYING NOW W. ANMODNING ====== */}
-        {!loadingMobilePaySubmission && !successMobilePaySubmission && betalNuMedAnmodningModalState &&
+        {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrErrorMessage && betalNuMedAnmodningModalState &&
         <>
+        <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
                 <img src={BackButton} className={Styles.backButton} onClick={() => setBetalNuMedAnmodningModalState(false)} alt="Tilbage" /><h2 className={ÅbenOpgaveCSS.modalHeading}>Betal nu med Mobile Pay</h2>
             </div>
-            <p>Du er ved at igangsætte en gebyrfri Mobile Pay-betalingsanmodning på <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> til kunden.</p>
-            <form action="">
-                <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
-                    <b style={{marginTop: 5, display: 'inline-block'}} className={ÅbenOpgaveCSS.bold}>Bekræft nummeret, der skal anmodes herunder:</b>
-                    <input style={{marginTop: 10, marginBottom: 10}} className={ÅbenOpgaveCSS.modalInput} type="tel" name="telefonnummer" id="telefonnummer" value={telefonnummerTilAnmodning} onChange={(e) => setTelefonnummerTilAnmodning(e.target.value)} />
-                </div>
-            </form>
-            <button className={Styles.betalNuKnap} onClick={() => useBetalMedMobilePayAnmodning(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, telefonnummerTilAnmodning)}>Send anmodning på {totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr. <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>
-        </>}
+            <p>En gebyrfri Mobile Pay-betalingsanmodning på <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> er blevet sendt til kunden.</p>
+            <div className={Styles.loadingSubmission}>
+            <b style={{display: 'block', textAlign: 'center', fontSize: 18, fontFamily: 'OmnesBold'}}>Afventer kundens godkendelse ...</b>
+            {qrTimer > 0 ? (
+                    <p className={Styles.qrTimer}>
+                        Anmodningen udløber om {Math.floor(qrTimer / 60)} minutter og {qrTimer % 60} sekunder.
+                    </p>
+                )
+                :
+                <p className={Styles.qrTimerUdløbet}>Anmodningen er udløbet.</p>
+                }
+            </div>
+        </PageAnimation>
+        </>
+        }
 
         {/* ====== FOURTH FORM – PAYING NOW W. QR-CODE ====== */}
         {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrPaymentAuthorized && !qrErrorMessage && betalNuMedQRModalState &&
         <>
+        <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
                 <img src={BackButton} className={Styles.backButton} onClick={() => setBetalNuMedQRModalState(false)} alt="Tilbage" /><h2 className={ÅbenOpgaveCSS.modalHeading}>Betal nu med Mobile Pay</h2>
             </div>
@@ -200,18 +212,26 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 }
                 <p className={Styles.generérNyQRKnap} onClick={() => initierQRState()}>Generér ny QR-kode</p>
             </div>}
-        </>}
-        {qrPaymentAuthorized && 
-            <div className={Styles.successSubmission}>
-                <h2 className={Styles.successHeading}>Betalingen er godkendt 🎉</h2>
+        </PageAnimation>
+        </>
+        }
+        {qrPaymentAuthorized && !qrErrorMessage && 
+            <PageAnimation>
+                <div className={Styles.successSubmission}>
+                    <h2 className={Styles.successHeading}>Betalingen er godkendt 🎉</h2>
                 <p className={Styles.successText}>Betalingen er blevet godkendt, og opgaven er nu afsluttet.</p>
             </div>
+        </PageAnimation>
         }
         {qrErrorMessage && 
+        <PageAnimation>
             <div className={Styles.errorSubmission}>
-                <h2 className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
-                <p className={Styles.errorText}>Betalingen er ikke godkendt. Prøv igen.</p>
+                <div className={Styles.betalSenereModalHeader}>
+                    <img src={BackButton} className={Styles.backButton} onClick={() => setQrErrorMessage(false)} alt="Tilbage" /><h2 style={{marginBottom: 10, fontFamily: 'OmnesBold'}} className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
+                </div>
+                <p className={Styles.errorText}>Betalingen blev ikke godkendt. Prøv igen.</p>
             </div>
+        </PageAnimation>
         }
     </Modal>
   )

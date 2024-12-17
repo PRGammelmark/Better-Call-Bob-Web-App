@@ -97,14 +97,14 @@ router.post('/get-qr-code', async (req, res) => {
                 "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
             },
             "customer": {
-                "phoneNumber":`0045${opgave.telefon}`
+                "phoneNumber":`45${opgave.telefon}`
             },
             "paymentMethod": {
                 "type":"WALLET"
             },
             "reference": `bcb-${uuidv4()}`,
             "paymentDescription": `Opgavebeskrivelse: ${opgave.opgaveBeskrivelse}`,
-            "userFlow": "QR"
+            "userFlow": "PUSH_MESSAGE"
         }, {
             headers: {
                 'Content-Type': 'application/json',
@@ -163,6 +163,12 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
             .then(response => {
                 console.log(response.data.state);
                 if (response.data.state === 'AUTHORIZED') {
+                    return res.status(200).json(response.data.state);
+                } else if (response.data.state === 'ABORTED') {
+                    return res.status(200).json(response.data.state);
+                } else if (response.data.state === 'FAILED') {
+                    return res.status(200).json(response.data.state);
+                } else if (response.data.state === 'EXPIRED') {
                     return res.status(200).json(response.data.state);
                 } else {
                     setTimeout(() => pollPaymentStatus(orderId), 3000);
