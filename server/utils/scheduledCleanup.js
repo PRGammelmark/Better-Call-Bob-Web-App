@@ -1,6 +1,6 @@
 import Opgave from '../models/opgaveModel.js';
 
-const deleteOldOpgaver = async () => {
+const scheduledCleanup = async () => {
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -14,4 +14,4 @@ const deleteOldOpgaver = async () => {
     }
 };
 
-export default deleteOldOpgaver;
+export default scheduledCleanup;

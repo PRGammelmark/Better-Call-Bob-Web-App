@@ -14,11 +14,11 @@ import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
-import deleteOldOpgaver from './utils/cleanup.js';
+import scheduledCleanup from './utils/scheduledCleanup.js';
+import requestedCleanup from './utils/requestedCleanup.js';
 import cron from 'node-cron';
 
 dotenv.config();
-
 const app = express();
 const port = process.env.PORT;
 
@@ -80,23 +80,26 @@ app.use('/api/fakturaer', fakturaerRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
+app.use('/api/cleanup', (req, res) => {
+    requestedCleanup();
+    res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });
+});
 
-// Daily cleanup scheduling
+// Daily scheduled cleanup
 cron.schedule('0 0 * * *', async () => {
     try {
-        await deleteOldOpgaver();
+        await scheduledCleanup();
         console.log('Daily cleanup of old opgaver completed successfully.');
     } catch (error) {
         console.error('Error during daily cleanup of old opgaver:', error);
     }
 });
 
-
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
     .then(async () => {
         // Cleanup deleted tasks more than 30 days old
-        await deleteOldOpgaver();
+        await scheduledCleanup();
         
         app.listen(port, () => {
             console.log(`App running, connected to database, and listening on port ${port}.`)

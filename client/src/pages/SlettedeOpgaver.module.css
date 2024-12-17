@@ -1,0 +1,24 @@
+.headingContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.button {
+    background-color: #3c5a3f00;
+    color: #3c5a3f;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    /* font-family: OmnesBold; */
+    margin-bottom: 10px;
+    border: 1px solid #3c5a3f;
+}
+
+.button:hover {
+    background-color: #59bf1a;
+    border: 1px solid #59bf1a;
+    color: #fff;
+}   
