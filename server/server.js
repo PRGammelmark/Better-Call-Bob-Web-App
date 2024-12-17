@@ -1,7 +1,5 @@
 import express from "express"
 import dotenv from "dotenv"
-import multer from "multer"
-import path from "path"
 import opgaverRoutes from "./routes/opgaver.js"
 import brugerRoutes from "./routes/brugere.js"
 import posteringRoutes from "./routes/posteringer.js"
@@ -16,6 +14,8 @@ import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
+import deleteOldOpgaver from './utils/cleanup.js';
+import cron from 'node-cron';
 
 dotenv.config();
 
@@ -81,10 +81,23 @@ app.use('/api/sms', smsRoutes);
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 
+// Daily cleanup scheduling
+cron.schedule('0 0 * * *', async () => {
+    try {
+        await deleteOldOpgaver();
+        console.log('Daily cleanup of old opgaver completed successfully.');
+    } catch (error) {
+        console.error('Error during daily cleanup of old opgaver:', error);
+    }
+});
+
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
-    .then(() => {
+    .then(async () => {
+        // Cleanup deleted tasks more than 30 days old
+        await deleteOldOpgaver();
+        
         app.listen(port, () => {
             console.log(`App running, connected to database, and listening on port ${port}.`)
         });

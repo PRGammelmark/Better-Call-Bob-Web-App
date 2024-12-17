@@ -2,28 +2,6 @@ import Opgave from '../models/opgaveModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
 
-// // GET alle opgaver
-// const getOpgaver = async (req,res) => {
-//     const opgaver = await Opgave.find({}).sort({createdAt: -1})
-//     res.status(200).json(opgaver)
-// }
-
-// // GET en enkelt opgave
-// const getOpgave = async (req,res) => {
-//     const { id } = req.params;
-//     if(!mongoose.Types.ObjectId.isValid(id)){
-//         return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
-
-//     const opgave = await Opgave.findById(id)
-
-//     if(!opgave) {
-//         return res.status(404).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-//     }
-
-//     res.status(200).json(opgave)
-// }
-
 const getOpgaver = async (req, res) => {
     try {
         const opgaver = await Opgave.find({}).sort({ createdAt: -1 });
@@ -136,7 +114,6 @@ const updateOpgave = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
-
 
 export {
     getOpgaver,
