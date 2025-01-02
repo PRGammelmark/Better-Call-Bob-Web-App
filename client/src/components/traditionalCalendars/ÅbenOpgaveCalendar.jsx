@@ -530,7 +530,7 @@ const onRedigerLedigTid = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis besøg & ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (ledighed synlig i dagsvisning)</span></b>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis besøg<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (ledighed synlig i dagsvisning)</span></b>
           </div>
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
@@ -539,7 +539,7 @@ const onRedigerLedigTid = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis kun ledighed</b>
+            <b className={Styles.besøgFilterDivItemHeading}>Vis ledighed</b>
           </div>
       </div>
       }

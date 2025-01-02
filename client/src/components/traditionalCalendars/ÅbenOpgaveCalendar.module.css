@@ -91,8 +91,9 @@
 
   .besøgFilterDivItemHeading {
     font-size: 1rem;
-    font-weight: 600;
+    font-family: "OmnesBold";
     text-align: center;
+    color: black;
   }
 
   .besøgFilterDivItemHeadingSpan {
