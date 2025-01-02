@@ -43,6 +43,7 @@
     align-items: center;
     gap: 20px;
     align-items: center;
+    white-space: nowrap;
 }
 
 .moveBackButton {
@@ -97,4 +98,41 @@
     display: flex;
     flex-direction: row;
     gap: 10px;
+}
+
+@media screen and (max-width: 750px) {
+    .heading {
+        font-size: 1rem;
+        color: black;
+    }
+
+    .chooseMonthButtonsContainer button {
+        font-size: 1rem;
+        height: 30px;
+        width: 30px;
+    }
+
+    .chooseMonthButtonsContainer button:last-child {
+        font-size: 1rem;
+        height: 30px;
+        width: auto;
+    }
+
+    .økonomiDetaljerDiv {
+        padding-top: 10px;
+        padding-bottom: 10px;
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .økonomiDetaljerHeading {
+        font-size: 0.7rem;
+        height: 25px;
+        white-space: nowrap;
+        margin-bottom: 0px;
+    }
+
+    .økonomiDetaljerContent {
+        font-size: 14px;
+    }
 }

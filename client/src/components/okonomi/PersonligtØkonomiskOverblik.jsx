@@ -61,7 +61,7 @@ const PersonligtØkonomiskOverblik = (props) => {
     <div className={Styles.personligtØkonomiskOverblikContainer}>
       <div className={Styles.tjentContainer}>
         <div className={Styles.okonomiHeadingContainer}>
-            <h2 style={{width: "400px"}} className={`bold ${Styles.heading}`}>Din økonomi for {customMåned.end.format('MMMM YYYY')}</h2>
+            <h2 style={{width: "400px"}} className={`bold ${Styles.heading}`}>Din økonomi - {customMåned.end.format('MMM YYYY')}</h2>
             <div className={Styles.chooseMonthButtonsContainer}>
                 <button className={Styles.moveBackButton} onClick={() => setMånedOffset(månedOffset + 1)}>
                     &lt;
@@ -83,7 +83,7 @@ const PersonligtØkonomiskOverblik = (props) => {
                 <b style={{color: "orange"}} className={Styles.økonomiDetaljerContent}>{udlægDenneMåned ? udlægDenneMåned.toLocaleString() : 0} kr.</b>
             </div>
             <div className={Styles.økonomiDetaljerDiv}>
-                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Honorar i alt (eks. moms)</h3>
+                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Honorar i alt</h3>
                 <b className={Styles.økonomiDetaljerContent}>{(tjentDenneMåned + udlægDenneMåned).toLocaleString()} kr.</b>
             </div>
         </div>

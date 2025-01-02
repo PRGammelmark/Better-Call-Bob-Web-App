@@ -81,7 +81,7 @@ const OpenTasks = () => {
                   </ul>
                 </div>
                 <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyMobile}`}>
-                  {opgaver && opgaver.map((opgave) => {
+                  {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
                     return (
                       <div className={TableCSS.opgaveListing} key={opgave._id}>
                         <ul>
@@ -95,7 +95,7 @@ const OpenTasks = () => {
                         </Link>
                       </div>
                     )
-                  })}
+                  }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
                 </div>
               </div>
             </div>

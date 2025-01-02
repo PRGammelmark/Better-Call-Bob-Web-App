@@ -110,3 +110,35 @@
 .evenRow {
     background: #e7eae7
 }
+
+@media screen and (max-width: 750px) {
+    .okonomiHeadingContainer .heading {
+        font-size: 1rem;
+        color: black;
+    }
+
+    .chooseMonthButtonsContainer button {
+        font-size: 1rem;
+        height: 30px;
+        width: 30px;
+    }
+
+    .adminØkonomiHeadings {
+        font-size: 0.7rem;
+        grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    }
+
+    .adminØkonomiRække {
+        font-size: 0.7rem;
+        grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    }
+
+    .åbnModalButtonKolonne {
+        display: none;
+    }
+
+    .adminØkonomiFooter {
+        font-size: 0.7rem;
+        grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    }
+}

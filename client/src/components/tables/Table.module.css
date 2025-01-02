@@ -104,7 +104,8 @@ button.button {
 
 @media screen and (max-width: 750px) {
     .tabelHeader {
-        font-size: 1.2rem;
-        text-align: center;
+        font-size: 1rem;
+        color: black;
+        text-align: left;
     }
 }

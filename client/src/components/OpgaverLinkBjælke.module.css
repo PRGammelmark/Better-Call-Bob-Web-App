@@ -63,3 +63,35 @@
 .slettedeOpgaverLink.active {
     border: 1px solid #ff0000;
   }
+
+@media screen and (max-width: 750px) {
+  .opgaverLinkBjælke {
+    margin-top: 30px;
+  }
+}
+
+@media screen and (display-mode: standalone) {
+  .opgaverLinkBjælke {
+    margin-top: 30px;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .aktuelleOpgaverLink {
+    flex: 1 0 100%;
+    text-align: center;
+    font-size: 1rem;
+  }
+
+  .afsluttedeOpgaverLink {
+    flex: 1 0 40%;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+
+  .slettedeOpgaverLink {
+    flex: 1 0 40%;
+    text-align: center;
+    font-size: 0.8rem;
+  }
+}

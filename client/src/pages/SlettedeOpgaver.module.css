@@ -21,4 +21,38 @@
     background-color: #59bf1a;
     border: 1px solid #59bf1a;
     color: #fff;
-}   
+}
+
+@media screen and (max-width: 750px) {
+    .papirkurvUpperContainer {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 50px;
+    }
+
+    .papirkurvUpperContainer p {
+        flex: 1 0 50%;
+    }
+
+    .button {
+        flex: 1 0 50%;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    .papirkurvUpperContainer {
+        margin-top: 30px;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 50px;
+    }
+
+    .papirkurvUpperContainer p {
+        flex: 1 0 50%;
+    }
+
+    .button {
+        flex: 1 0 50%;
+    }
+}

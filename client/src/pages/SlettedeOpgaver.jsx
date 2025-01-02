@@ -34,12 +34,14 @@ const Alle_opgaver = () => {
     <>
     <OpgaverLinkBjælke />
     <PageAnimation>
-      <div className={Styles.headingContainer}>
-        <h1 className={AlleOpgaverCSS.heading}>Papirkurv 🗑️</h1>
-        <button className={Styles.button} onClick={handleCleanup}>Tøm papirkurv</button>
+      <div className={Styles.papirkurvUpperContainer}>
+        <div className={Styles.headingContainer}>
+          <h1 className={AlleOpgaverCSS.heading}>Papirkurv 🗑️</h1>
+          <button className={Styles.button} onClick={handleCleanup}>Tøm papirkurv</button>
+        </div>
+        <p>Slettede opgaver vil ligge i papirkurven i 30 dage, hvorefter de vil blive slettet permanent.</p>
       </div>
-      <p>Slettede opgaver vil ligge i papirkurven i 30 dage, hvorefter de vil blive slettet permanent.</p>
-        <SlettedeOpgaver />
+      <SlettedeOpgaver />
       </PageAnimation>
     </>
   )

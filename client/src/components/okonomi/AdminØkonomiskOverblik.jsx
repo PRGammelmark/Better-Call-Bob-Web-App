@@ -115,7 +115,7 @@ const AdminØkonomiskOverblik = (props) => {
                 <div>
                     <b>Honorar</b>
                 </div>
-                <div>
+                <div className={Styles.åbnModalButtonKolonne}>
                     <b>Detaljer</b>
                 </div>
             </div>
@@ -128,7 +128,11 @@ const AdminØkonomiskOverblik = (props) => {
                 const rowStyle = index % 2 === 0 ? Styles.evenRow : Styles.oddRow;
 
                 return (
-                    <div className={`${Styles.adminØkonomiRække} ${rowStyle}`} key={bruger._id}>
+                    <div className={`${Styles.adminØkonomiRække} ${rowStyle}`} key={bruger._id} onClick={() => {
+                        if (brugerensPosteringerDenneMåned.length > 0 && window.innerWidth <= 750) {
+                                setÅbnMedarbejderØkonomiDetaljerModal(brugerensPosteringerDenneMåned);
+                        }
+                    }}>
                         <div>
                             <b>{bruger.navn}</b>
                         </div>
@@ -141,7 +145,7 @@ const AdminØkonomiskOverblik = (props) => {
                         <div>
                             <p>{(brugerensTjentDenneMåned + brugerensUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                         </div>
-                        <div>
+                        <div className={Styles.åbnModalButtonKolonne}>
                             {brugerensPosteringerDenneMåned.length > 0 && <button className={Styles.åbnModalButton} onClick={() => setÅbnMedarbejderØkonomiDetaljerModal(brugerensPosteringerDenneMåned)}>Detaljer</button>}
                         </div>
                     </div>
