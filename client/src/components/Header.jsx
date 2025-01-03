@@ -22,7 +22,9 @@ const Header = () => {
   // Mapping of routes to titles
   const routeTitles = {
     '/': "🗓️ Overblik",
-    '/alle-opgaver': "🗂️ Alle opgaver",
+    '/alle-opgaver': "🗂️ Aktuelle opgaver",
+    '/afsluttede-opgaver': "✅ Afsluttede opgaver",
+    '/slettede-opgaver': "🗑️ Papirkurv",
     '/mine-opgaver': "📌 Mine opgaver",
     '/team': "🤝 Teamet",
     '/dokumenter': "📄 Dokumenter",
