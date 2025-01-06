@@ -168,8 +168,16 @@
     display: none;
 }
 
+.posteringDetaljerMobile {
+    display: none;
+}
+
 @media screen and (max-width: 750px) {
     .månederDesktop {
+        display: none;
+    }
+
+    .posteringDetaljerDesktop {
         display: none;
     }
 
@@ -177,6 +185,9 @@
         display: flex;
     }
 
+    .posteringDetaljerMobile {
+        display: block;
+    }
     
     .månedHeadings {
         grid-template-columns: 1fr 1fr 1fr 1fr;
