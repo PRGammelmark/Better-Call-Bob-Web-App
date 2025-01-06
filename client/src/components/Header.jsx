@@ -82,7 +82,7 @@ const Header = () => {
           <nav className={Styles.mobileNavList}>
               <div className={Styles.backIconContainer}>
                 {showBackIcon && <img src={BackIcon} alt="" className={Styles.backIconMobile} onClick={handleBackClick}/>}
-                {location.pathname === '/' && 
+                {user.isAdmin && location.pathname === '/' && 
                 <div className={Styles.switchButtonContainer} onClick={handleSwitchClick}>
                   <p className={`${Styles.switchText} ${managerOverblik ? Styles.switchTextVisible : ''}`}>
                     Manager

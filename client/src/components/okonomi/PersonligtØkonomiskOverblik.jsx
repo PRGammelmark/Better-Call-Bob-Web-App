@@ -74,16 +74,16 @@ const PersonligtØkonomiskOverblik = (props) => {
         </div>
         <p>({dayjs(customMåned.start).format('DD. MMM')} – {dayjs(customMåned.end).format('DD. MMM')})</p>
         <div className={Styles.økonomiDetaljer}>
-            <div className={Styles.økonomiDetaljerDiv}>
+            <div className={`${Styles.økonomiDetaljerDiv} ${Styles.økonomiDetaljerDivOptjent}`}>
                 <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Optjent</h3>
                 <b style={{color: "#59bf1a"}} className={Styles.økonomiDetaljerContent}>{tjentDenneMåned ? tjentDenneMåned.toLocaleString() : (0).toLocaleString()} kr.</b>
             </div>
-            <div className={Styles.økonomiDetaljerDiv}>
+            <div className={`${Styles.økonomiDetaljerDiv} ${Styles.økonomiDetaljerDivUdlæg}`}>
                 <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Udlæg</h3>
                 <b style={{color: "orange"}} className={Styles.økonomiDetaljerContent}>{udlægDenneMåned ? udlægDenneMåned.toLocaleString() : 0} kr.</b>
             </div>
-            <div className={Styles.økonomiDetaljerDiv}>
-                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Honorar i alt</h3>
+            <div className={`${Styles.økonomiDetaljerDiv} ${Styles.økonomiDetaljerDivHonorar}`}>
+                <h3 className={`bold ${Styles.økonomiDetaljerHeading}`}>Til udbetaling, i alt</h3>
                 <b className={Styles.økonomiDetaljerContent}>{(tjentDenneMåned + udlægDenneMåned).toLocaleString()} kr.</b>
             </div>
         </div>

@@ -118,6 +118,12 @@
         width: auto;
     }
 
+    .økonomiDetaljer {
+        flex-wrap: wrap;
+        gap: 0px;
+        padding: 10px;
+    }
+
     .økonomiDetaljerDiv {
         padding-top: 10px;
         padding-bottom: 10px;
@@ -134,5 +140,33 @@
 
     .økonomiDetaljerContent {
         font-size: 14px;
+    }
+
+    .økonomiDetaljerDivOptjent {
+        width: 45%;
+        flex-grow: 1;
+        padding-bottom: 25px;
+    }
+
+    .økonomiDetaljerDivUdlæg {
+        width: 45%;
+        flex-grow: 1;
+        border-right: none;
+        padding-bottom: 25px;
+    }
+
+    .økonomiDetaljerDivHonorar {
+        width: 100%;
+        border-top: 1px solid #e0e0e0;
+        padding-top: 30px;
+        padding-bottom: 20px;
+    }
+
+    .økonomiDetaljerDivHonorar h3 {
+        font-size: 0.9rem;
+    }
+
+    .økonomiDetaljerDivHonorar b {
+        font-size: 1.6rem;
     }
 }
