@@ -163,3 +163,36 @@
     margin-bottom: 20px;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
+
+.månederMobile {
+    display: none;
+}
+
+@media screen and (max-width: 750px) {
+    .månederDesktop {
+        display: none;
+    }
+
+    .månederMobile {
+        display: flex;
+    }
+
+    
+    .månedHeadings {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .måned {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .totalRække {
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+    }
+
+    .mobilPosteringIndikator {
+        /* border-left: 1px solid #59bf1a; */
+        border-right: 4px solid #59bf1a;
+        /* box-shadow: inset 0 -10px 14px -10px #59bf1a; */
+    }
+}

@@ -197,8 +197,8 @@ const ØkonomiOverblikModal = (props) => {
                     &gt;
                 </button>
             </div>
-            <div className={Styles.måneder}>
-                <div className={Styles.månedHeadings}>
+            <div className={`${Styles.måneder} ${Styles.månederDesktop}`}>
+                <div className={`${Styles.månedHeadings} ${Styles.månedHeadingsDesktop}`}>
                     <div>
                         <b>Måned</b>
                     </div>
@@ -304,6 +304,155 @@ const ØkonomiOverblikModal = (props) => {
                     <b>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
                     <b>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
                     <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                </div>
+            </div>
+            <div className={`${Styles.måneder} ${Styles.månederMobile}`}>
+                <div className={`${Styles.månedHeadings} ${Styles.månedHeadingsMobile}`}>
+                    <div>
+                        <b>Md.</b>
+                    </div>
+                    <div>
+                        <b>Tjent</b>
+                    </div>
+                    <div>
+                        <b>Udlæg</b>
+                    </div>
+                    <div>
+                        <b>Honorar</b>
+                    </div>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${januarPosteringer && januarPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {januarPosteringer && januarPosteringer.length > 0 ? setPosteringerDetaljer(januarPosteringer) && setValgtMåned("januar") : null}}>
+                    <p>Jan</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentJanuar + udlagtJanuar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${februarPosteringer && februarPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (februarPosteringer && februarPosteringer.length > 0) {
+                        setValgtMåned("februar");
+                        setPosteringerDetaljer(februarPosteringer);
+                    }
+                }}>
+                    <p>Feb</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentFebruar + udlagtFebruar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${martsPosteringer && martsPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (martsPosteringer && martsPosteringer.length > 0) {
+                        setValgtMåned("marts");
+                        setPosteringerDetaljer(martsPosteringer);
+                    }
+                }}>
+                    <p>Mar</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentMarts + udlagtMarts).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${aprilPosteringer && aprilPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (aprilPosteringer && aprilPosteringer.length > 0) {
+                        setValgtMåned("april");
+                        setPosteringerDetaljer(aprilPosteringer);
+                    }
+                }}>
+                    <p>Apr</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentApril + udlagtApril).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${majPosteringer && majPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (majPosteringer && majPosteringer.length > 0) {
+                        setValgtMåned("maj");
+                        setPosteringerDetaljer(majPosteringer);
+                    }
+                }}>
+                    <p>Maj</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentMaj + udlagtMaj).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${juniPosteringer && juniPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (juniPosteringer && juniPosteringer.length > 0) {
+                        setValgtMåned("juni");
+                        setPosteringerDetaljer(juniPosteringer);
+                    }
+                }}>
+                    <p>Jun</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentJuni + udlagtJuni).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${juliPosteringer && juliPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (juliPosteringer && juliPosteringer.length > 0) {
+                        setValgtMåned("juli");
+                        setPosteringerDetaljer(juliPosteringer);
+                    }
+                }}>
+                    <p>Jul</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentJuli + udlagtJuli).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${augustPosteringer && augustPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (augustPosteringer && augustPosteringer.length > 0) {
+                        setValgtMåned("august");
+                        setPosteringerDetaljer(augustPosteringer);
+                    }
+                }}>
+                    <p>Aug</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentAugust + udlagtAugust).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${septemberPosteringer && septemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (septemberPosteringer && septemberPosteringer.length > 0) {
+                        setValgtMåned("september");
+                        setPosteringerDetaljer(septemberPosteringer);
+                    }
+                }}>
+                    <p>Sep</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentSeptember + udlagtSeptember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${oktoberPosteringer && oktoberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (oktoberPosteringer && oktoberPosteringer.length > 0) {
+                        setValgtMåned("oktober");
+                        setPosteringerDetaljer(oktoberPosteringer);
+                    }
+                }}>
+                    <p>Okt</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentOktober + udlagtOktober).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${novemberPosteringer && novemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (novemberPosteringer && novemberPosteringer.length > 0) {
+                        setValgtMåned("november");
+                        setPosteringerDetaljer(novemberPosteringer);
+                    }
+                }}>
+                    <p>Nov</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentNovember + udlagtNovember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.måned} ${Styles.ligeMåned} ${decemberPosteringer && decemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
+                    if (decemberPosteringer && decemberPosteringer.length > 0) {
+                        setValgtMåned("december");
+                        setPosteringerDetaljer(decemberPosteringer);
+                    }
+                }}>
+                    <p>Dec</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                </div>
+                <div className={`${Styles.totalRække}`}>
+                    <b>I alt</b>
+                    <b>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
+                    <b>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</b>
+                    <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</b>
                 </div>
             </div>
         </PageAnimation>

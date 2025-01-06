@@ -63,6 +63,7 @@ const Modal = ({ children, trigger, setTrigger }) => {
             animate="animate"
             exit="exit"
             variants={isMobile ? mobileAnimation : desktopAnimation}
+            transition={{ duration: 0.8 }} // Added transition duration
           >
             <button
               onClick={() => setTrigger(false)}
