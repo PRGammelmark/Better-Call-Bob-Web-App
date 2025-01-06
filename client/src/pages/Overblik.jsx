@@ -11,6 +11,8 @@ import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveC
 import OpenTasks from '../components/tables/OpenTasks'
 import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkonomiskOverblik'
 import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
+import { useOverblikView } from '../context/OverblikViewContext.jsx'
+
 const Overblik = () => {
   const {user} = useAuthContext();
     
@@ -25,7 +27,7 @@ const Overblik = () => {
   const [brugere, setBrugere] = useState(null);
   const [loading, setLoading] = useState(true);
   const [bruger, setBruger] = useState("")
-  const [managerOverblik, setManagerOverblik] = useState(false)
+  const { managerOverblik, setManagerOverblik } = useOverblikView()
   const [openDialog, setOpenDialog] = useState(false)
   const [eventData, setEventData] = useState(null)
   const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
@@ -96,7 +98,7 @@ const Overblik = () => {
       {managerOverblik && <div>
         <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Manager-overblik 🧑‍💻</h1>
-          <button onClick={() => setManagerOverblik(false)} className={Styles.transparentButton}>← Skift til personligt overblik</button>
+          <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
         </div>
         <OpenTasks />
         <ÅbenOpgaveCalendar 
@@ -130,7 +132,7 @@ const Overblik = () => {
       {!managerOverblik && <div>
         <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Dit personlige overblik 👨‍🔧</h1>
-          {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={Styles.transparentButton}>Skift til manager-overblik →</button>}
+          {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>Skift til manager-overblik →</button>}
         </div>
         <PersonligtØkonomiskOverblik user={user}/>
         <MyTasks openTableEvent={openTableEvent} />

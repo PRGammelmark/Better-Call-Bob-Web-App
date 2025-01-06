@@ -380,6 +380,10 @@
         margin-top: 30px;
         margin-bottom: -10px;
     }
+
+    .switchButton {
+        display: none;
+    }
 }
 
 @media screen and (display-mode: standalone) {

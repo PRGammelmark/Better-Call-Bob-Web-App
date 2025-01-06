@@ -30,6 +30,37 @@
     display: none;
 }
 
+.switchButtonContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    transform: translateY(-5px);
+}
+
+.switchButtonContainer p {
+    color: #fff;
+    font-size: 0.6rem;
+    border-radius: 10px;
+}
+
+.switchIcon {
+    margin-top: 14px;
+}
+
+.switchText {
+    transition: 0.4s ease;
+    opacity: 0;
+    height: 0px;
+    transform: translateY(8px);
+  }
+  
+  .switchTextVisible {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+
 @media screen and (max-width: 750px) {
     .mobileHeader {
         display: block;

@@ -3,17 +3,18 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Logo from '../assets/bcb-logo.svg'
 import HamburgerIcon from '../assets/hamburgerIcon.svg'
 import BackIcon from '../assets/backMobile.svg'
+import SwitchArrows from '../assets/switchArrows.svg'
 import { useLogout } from '../hooks/useLogout.js'
 import Styles from './Header.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
-
+import { useOverblikView } from '../context/OverblikViewContext.jsx'
 const Header = () => {
 
   const [showNavMenu, setShowNavMenu] = useState(false);
   const [navTitle, setNavTitle] = useState("")
   const [showBackIcon, setShowBackIcon] = useState(false)
-  
+  const { managerOverblik, setManagerOverblik } = useOverblikView()
   const { user } = useAuthContext();
   const { logout } = useLogout();
   const location = useLocation();
@@ -63,6 +64,10 @@ const Header = () => {
     navigate(-1); // Navigate one step back in the history
   }
 
+  const handleSwitchClick = () => {
+    setManagerOverblik(!managerOverblik)
+  }
+
   return (
     <>
       <header className={`${Styles.header} ${Styles.desktopHeader}`}>
@@ -77,6 +82,16 @@ const Header = () => {
           <nav className={Styles.mobileNavList}>
               <div className={Styles.backIconContainer}>
                 {showBackIcon && <img src={BackIcon} alt="" className={Styles.backIconMobile} onClick={handleBackClick}/>}
+                {location.pathname === '/' && 
+                <div className={Styles.switchButtonContainer} onClick={handleSwitchClick}>
+                  <p className={`${Styles.switchText} ${managerOverblik ? Styles.switchTextVisible : ''}`}>
+                    Manager
+                  </p>
+                  <p className={`${Styles.switchText} ${!managerOverblik ? Styles.switchTextVisible : ''}`}>
+                    Personlig
+                  </p>
+                  <img src={SwitchArrows} alt="" className={`${Styles.backIconMobile} ${Styles.switchIcon}`} />
+                </div>}
               </div>
               <h3 className={Styles.mobileNavHeading}>{navTitle || "Ingen titel"}</h3>
               <img onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} src={HamburgerIcon} alt="" />
