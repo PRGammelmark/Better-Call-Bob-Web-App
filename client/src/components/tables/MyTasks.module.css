@@ -41,3 +41,17 @@
 .myTasksHeader ul li:nth-child(5), .myTasksBody div ul li:nth-child(5) {
     width: 18%;
 }
+
+.opgaveTabelMobile {
+    display: none;
+}
+
+@media (max-width: 750px) {
+    .opgaveTabelMobile {
+        display: block;
+    }
+
+    .opgaveTabelDesktop {
+        display: none;
+    }
+}

@@ -29,8 +29,7 @@ const MyTasks = ({openTableEvent}) => {
         const filterAktuelleOpgaver = filterMineOpgaver.filter((opgave) => 
             opgave.markeretSomFærdig === false
         );
-        console.log(filterMineOpgaver)
-        setMineAktuelleOpgaver(filterMineOpgaver)
+        setMineAktuelleOpgaver(filterAktuelleOpgaver)
         setIsLoading(false)
     })
     .catch(error => console.log(error))
@@ -64,8 +63,8 @@ const findTættesteBesøg = (opgaveID) => {
 
   return (
         <div className={`${TableCSS.opgaveListe} ${Styles.container}`}>
-            <h2 className={TableCSS.tabelHeader}>Du har {mineAktuelleOpgaver.length} åbne opgaver</h2>
-            <div className={TableCSS.opgaveTabel}>
+            {mineAktuelleOpgaver.length > 0 ? mineAktuelleOpgaver.length === 1 ? <h2 className={TableCSS.tabelHeader}>Du har 1 åben opgave</h2> : <h2 className={TableCSS.tabelHeader}>Du har {mineAktuelleOpgaver.length} åbne opgaver</h2> : <h2 className={TableCSS.tabelHeader}>Du har ingen åbne opgaver</h2>}
+            <div className={`${TableCSS.opgaveTabel} ${Styles.opgaveTabelDesktop}`}>
                 <div className={`${TableCSS.opgaveHeader} ${MyTasksCSS.myTasksHeader}`}>
                     <ul>
                         <li>ID</li>
@@ -73,9 +72,10 @@ const findTættesteBesøg = (opgaveID) => {
                         <li>Kunde</li>
                         <li>Adresse</li>
                     </ul>
-                    </div>
-                    <div className={`${TableCSS.opgaveBody} ${MyTasksCSS.myTasksBody}`}>
-                    {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : mineAktuelleOpgaver.length > 0 ? mineAktuelleOpgaver.map((opgave) => {
+                </div>
+                <div className={`${TableCSS.opgaveBody} ${MyTasksCSS.myTasksBody}`}>
+                    {isLoading ? 
+                    <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : mineAktuelleOpgaver.length > 0 ? mineAktuelleOpgaver.map((opgave) => {
                         const besøg = findTættesteBesøg(opgave._id);
                         const { tættesteBesøg, tættesteBesøgID } = besøg || {};
 
@@ -92,7 +92,46 @@ const findTættesteBesøg = (opgaveID) => {
                             </Link>
                         </div>
                         )
-                    }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
+                    }) 
+                    : 
+                    <div className={TableCSS.noResults}>
+                        <p>Ingen åbne opgaver fundet.</p>
+                    </div>}
+                </div>
+            </div>
+            <div className={`${TableCSS.opgaveTabel} ${Styles.opgaveTabelMobile}`}>
+                <div className={`${TableCSS.opgaveHeader} ${MyTasksCSS.myTasksHeader}`}>
+                    <ul>
+                        <li>ID</li>
+                        <li>Næste besøg</li>
+                        <li>Kunde</li>
+                        <li>Adresse</li>
+                    </ul>
+                </div>
+                <div className={`${TableCSS.opgaveBody} ${MyTasksCSS.myTasksBody}`}>
+                    {isLoading ? 
+                    <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : mineAktuelleOpgaver.length > 0 ? mineAktuelleOpgaver.map((opgave) => {
+                        const besøg = findTættesteBesøg(opgave._id);
+                        const { tættesteBesøg, tættesteBesøgID } = besøg || {};
+
+                        return (
+                        <div className={TableCSS.opgaveListing} key={opgave._id}>
+                            <ul>
+                            <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
+                            <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
+                            <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
+                            <li>{opgave.adresse}</li>
+                            </ul>
+                            <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
+                            <button className={TableCSS.button}>Åbn</button>
+                            </Link>
+                        </div>
+                        )
+                    }) 
+                    : 
+                    <div className={TableCSS.noResults}>
+                        <p>Ingen åbne opgaver fundet.</p>
+                    </div>}
                 </div>
             </div>
         </div>
