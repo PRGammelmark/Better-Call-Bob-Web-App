@@ -156,13 +156,13 @@ const AdminØkonomiskOverblik = (props) => {
                     <b>Total, {customMåned.end.format('MMM YYYY')}</b>
                 </div>
                 <div>
-                    <b>{totalTjentDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{totalTjentDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
                 <div>
-                    <b>{totalUdlagtDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{totalUdlagtDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
                 <div>
-                    <b>{(totalTjentDenneMåned + totalUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{(totalTjentDenneMåned + totalUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
             </div>
         </div>

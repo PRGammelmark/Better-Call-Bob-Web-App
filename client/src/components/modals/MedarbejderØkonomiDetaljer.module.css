@@ -17,6 +17,14 @@
     padding: 10px 20px;
 }
 
+.adminØkonomiHeadingsMobile {
+    display: none;
+}
+
+.adminØkonomiOpgaverHeadingsMobile {
+    display: none;
+}
+
 .uligeMåned {
     background: #dde6dd;
 }
@@ -107,4 +115,77 @@
 
 .selectedOpgave .sePosteringerButton {
     background: #59bf1a;
+}
+
+.månedOverblikMobile {
+    display: none;
+}
+
+.adminØkonomiHeading span {
+    display: inline-block;
+    transform: translateY(-8px)!important;
+}
+
+.adminØkonomiOpgaverRækkeDesktop {
+        display: grid;
+    }
+
+.adminØkonomiOpgaverRækkeMobile {
+    display: none;
+}
+
+.adminØkonomiOpgaverHeadingsMobile {
+    display: none;
+}
+
+@media (max-width: 750px) {
+    .adminØkonomiHeadingsDesktop {
+        display: none;
+    }
+
+    .adminØkonomiOpgaverHeadingsDesktop {
+        display: none;
+    }
+
+    .månedOverblikDesktop {
+        display: none;
+    }
+
+    .adminØkonomiHeadingsMobile {
+        display: grid;
+    }
+
+    .adminØkonomiOpgaverHeadingsMobile {
+        display: grid;
+    }
+
+    .månedOverblikMobile {
+        display: grid;
+    }
+
+    .adminØkonomiOpgaverHeadings {
+        grid-template-columns: 2fr 1.5fr 2fr;
+    }
+
+    .adminØkonomiOpgaverRækkeDesktop {
+        display: none;
+    }
+
+    .adminØkonomiOpgaverRækkeMobile {
+        display: grid;
+    }
+
+    .opgaver {
+        grid-template-columns: 2fr 1.5fr 2fr;
+        border-right: 4px solid #59bf1a;
+        transition: 0.2s ease;
+    }
+
+    .opgaver.selectedOpgave {
+        background: #59bf1a;
+    }
+
+    .opgaver.selectedOpgave p {
+        color: #fff;
+    }
 }

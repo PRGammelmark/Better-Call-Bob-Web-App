@@ -7,7 +7,7 @@ import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
 import axios from 'axios'
 import dayjs from 'dayjs'
-
+import { useNavigate } from 'react-router-dom';
 const MyTasks = ({openTableEvent}) => {
 
   const [mineAktuelleOpgaver, setMineAktuelleOpgaver] = useState([])
@@ -15,7 +15,7 @@ const MyTasks = ({openTableEvent}) => {
   const {user} = useAuthContext()
   const [isLoading, setIsLoading] = useState(true)
   const userID = user.id;
-
+  const navigate = useNavigate();
   useEffect(()=>{
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
         headers: {
@@ -61,6 +61,10 @@ const findTættesteBesøg = (opgaveID) => {
         : null;
   };
 
+  const åbnOpgave = (opgaveID) => {
+    navigate(`../opgave/${opgaveID}`);
+  }
+
   return (
         <div className={`${TableCSS.opgaveListe} ${Styles.container}`}>
             {mineAktuelleOpgaver.length > 0 ? mineAktuelleOpgaver.length === 1 ? <h2 className={TableCSS.tabelHeader}>Du har 1 åben opgave</h2> : <h2 className={TableCSS.tabelHeader}>Du har {mineAktuelleOpgaver.length} åbne opgaver</h2> : <h2 className={TableCSS.tabelHeader}>Du har ingen åbne opgaver</h2>}
@@ -84,7 +88,7 @@ const findTættesteBesøg = (opgaveID) => {
                             <ul>
                             <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                             <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
-                            <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
+                            <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={Styles.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                             <li>{opgave.adresse}</li>
                             </ul>
                             <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
@@ -102,10 +106,9 @@ const findTættesteBesøg = (opgaveID) => {
             <div className={`${TableCSS.opgaveTabel} ${Styles.opgaveTabelMobile}`}>
                 <div className={`${TableCSS.opgaveHeader} ${MyTasksCSS.myTasksHeader}`}>
                     <ul>
-                        <li>ID</li>
-                        <li>Næste besøg</li>
                         <li>Kunde</li>
                         <li>Adresse</li>
+                        <li>Næste besøg</li>
                     </ul>
                 </div>
                 <div className={`${TableCSS.opgaveBody} ${MyTasksCSS.myTasksBody}`}>
@@ -115,16 +118,12 @@ const findTættesteBesøg = (opgaveID) => {
                         const { tættesteBesøg, tættesteBesøgID } = besøg || {};
 
                         return (
-                        <div className={TableCSS.opgaveListing} key={opgave._id}>
+                        <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
                             <ul>
-                            <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                            <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
-                            <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
-                            <li>{opgave.adresse}</li>
+                                <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={Styles.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                                <li>{opgave.adresse}</li>
+                                <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
                             </ul>
-                            <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
-                            <button className={TableCSS.button}>Åbn</button>
-                            </Link>
                         </div>
                         )
                     }) 

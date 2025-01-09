@@ -60,9 +60,9 @@ const MedarbejderØkonomiDetaljer = (props) => {
     return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
         <div>
-            <h2>{navn}s økonomi i {props.customMåned.end.format('MMM YYYY')}</h2>
+            <h2 className={Styles.adminØkonomiHeading} style={{fontFamily: 'OmnesBold'}}>{navn &&navn.split(' ')[0]}s økonomi <br /><span style={{fontFamily: 'Omnes', fontSize: '16px', color: '#696969'}}>- {props.customMåned.end.format('MMMM YYYY')}</span></h2>
             <div className={Styles.adminØkonomiContainer}>
-                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={Styles.adminØkonomiHeadings}>
+                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiHeadings} ${Styles.adminØkonomiHeadingsDesktop}`}>
                     <div>
                         <b>Medarbejder</b>
                     </div>
@@ -76,16 +76,36 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <b>Honorar</b>
                     </div>
                 </div>
-                <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
+                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiHeadings} ${Styles.adminØkonomiHeadingsMobile}`}>
+                    <div>
+                        <b>Medarb.</b>
+                    </div>
+                    <div>
+                        <b>Tjent</b>
+                    </div>
+                    <div>
+                        <b>Udlæg</b>
+                    </div>
+                    <div>
+                        <b>Honorar</b>
+                    </div>
+                </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikDesktop}`}>
                     <p>{navn && navn.split(' ')[0]}</p>
                     <p>{beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p>{(beregnTjent(posteringer) + beregnUdlagt(posteringer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                 </div>
+                <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikMobile}`}>
+                    <p>{navn && navn.split(' ')[0]}</p>
+                    <p>{beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p>{(beregnTjent(posteringer) + beregnUdlagt(posteringer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                </div>
             </div>
             <b>Fordelt på følgende opgaver:</b>
             <div className={Styles.adminØkonomiContainer}>
-                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={Styles.adminØkonomiOpgaverHeadings}>
+                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiOpgaverHeadings} ${Styles.adminØkonomiOpgaverHeadingsDesktop}`}>
                     <div>
                         <b>Adresse</b>
                     </div>
@@ -102,16 +122,34 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <b></b>
                     </div>
                 </div>
+                <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiOpgaverHeadings} ${Styles.adminØkonomiOpgaverHeadingsMobile}`}>
+                    <div>
+                        <b>Adresse</b>
+                    </div>
+                    <div>
+                        <b>Status</b>
+                    </div>
+                    <div>
+                        <b>Honorar</b>
+                    </div>
+                </div>
                 {opgaverForBruger && opgaverForBruger.map(opgave => {
                     const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
                     return ( 
-                    <div key={opgave._id} className={`${Styles.opgaver} ${Styles.uligeMåned} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
+                    <>
+                    <div key={opgave._id} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeDesktop} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
                         <p>{opgave.adresse}</p>
                         <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
                         <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                        <p><button onClick={() => setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
+                        <p><button onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
                         <p><button onClick={() => navigate(`/opgave/${opgave._id}`)}>Gå til opgave</button></p>
                     </div>
+                    <div key={opgave._id} onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeMobile} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
+                        <p>{opgave.adresse}</p>
+                        <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
+                        <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    </div>
+                    </>
                     )
                 })}
             </div>

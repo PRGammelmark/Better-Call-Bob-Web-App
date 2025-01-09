@@ -22,28 +22,33 @@
     text-wrap: nowrap;
 }
 
-.myTasksHeader ul li:nth-child(1), .myTasksBody div ul li:nth-child(1) {
+.opgaveTabelDesktop .myTasksHeader ul li:nth-child(1), .opgaveTabelDesktop .myTasksBody div ul li:nth-child(1) {
     width: 6%;
 }
 
-.myTasksHeader ul li:nth-child(2), .myTasksBody div ul li:nth-child(2) {
+.opgaveTabelDesktop .myTasksHeader ul li:nth-child(2), .opgaveTabelDesktop .myTasksBody div ul li:nth-child(2) {
     width: 28%;
 }
 
-.myTasksHeader ul li:nth-child(3), .myTasksBody div ul li:nth-child(3) {
+.opgaveTabelDesktop .myTasksHeader ul li:nth-child(3), .opgaveTabelDesktop .myTasksBody div ul li:nth-child(3) {
     width: 22%;
 }
 
-.myTasksHeader ul li:nth-child(4), .myTasksBody div ul li:nth-child(4) {
+.opgaveTabelDesktop .myTasksHeader ul li:nth-child(4), .opgaveTabelDesktop .myTasksBody div ul li:nth-child(4) {
     width: 30%;
 }
 
-.myTasksHeader ul li:nth-child(5), .myTasksBody div ul li:nth-child(5) {
+.opgaveTabelDesktop .myTasksHeader ul li:nth-child(5), .opgaveTabelDesktop .myTasksBody div ul li:nth-child(5) {
     width: 18%;
 }
 
 .opgaveTabelMobile {
     display: none;
+}
+
+.opgaveVirksomhedNavn {
+    font-size: 0.65rem;
+    color: #696969;
 }
 
 @media (max-width: 750px) {
@@ -53,5 +58,22 @@
 
     .opgaveTabelDesktop {
         display: none;
+    }
+
+    .opgaveTabelMobile .myTasksHeader ul li:nth-child(1), .opgaveTabelMobile .myTasksBody div ul li:nth-child(1) {
+        width: 40%;
+        min-width: 40%;
+    }
+
+    .opgaveTabelMobile .myTasksHeader ul li:nth-child(2), .opgaveTabelMobile .myTasksBody div ul li:nth-child(2) {
+        width: 30%;
+    }
+
+    .opgaveTabelMobile .myTasksHeader ul li:nth-child(3), .opgaveTabelMobile .myTasksBody div ul li:nth-child(3) {
+        width: 30%;
+    }
+
+    .opgaveTabelMobile .myTasksBody div {
+        border-right: 4px solid #59bf1a;
     }
 }

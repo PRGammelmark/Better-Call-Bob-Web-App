@@ -137,7 +137,7 @@ const NyOpgave = () => {
                             <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
                             <span className={SwitcherStyles.slider}></span>
                         </label>
-                        <b>Skal fakturaen oprettes manuelt efter opgaven er løst?</b>
+                        <b>Opret faktura manuelt?</b>
                     </div>
                     <p style={{marginTop: 10, fontSize: 13}}>(Hvis du fx har talt med kunden om rammer for prisen på forhånd.)</p>
                     {fakturaOprettesManuelt && 
