@@ -106,13 +106,13 @@ const AdminØkonomiskOverblik = (props) => {
                 <div>
                     <b>Medarbejder</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>Optjent</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>Udlæg</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>Honorar</b>
                 </div>
                 <div className={Styles.åbnModalButtonKolonne}>
@@ -137,13 +137,13 @@ const AdminØkonomiskOverblik = (props) => {
                             <b>{bruger.navn}</b>
                         </div>
                         <div>
-                            <p style={{color: '#59bf1a'}}>{brugerensTjentDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p style={{color: '#59bf1a', textAlign: 'right'}}>{brugerensTjentDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         </div>
                         <div>
-                            <p style={{color: 'orange'}}>{brugerensUdlagtDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p style={{color: 'orange', textAlign: 'right'}}>{brugerensUdlagtDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         </div>
                         <div>
-                            <p>{(brugerensTjentDenneMåned + brugerensUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p style={{textAlign: 'right'}}>{(brugerensTjentDenneMåned + brugerensUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         </div>
                         <div className={Styles.åbnModalButtonKolonne}>
                             {brugerensPosteringerDenneMåned.length > 0 && <button className={Styles.åbnModalButton} onClick={() => setÅbnMedarbejderØkonomiDetaljerModal(brugerensPosteringerDenneMåned)}>Detaljer</button>}
@@ -155,13 +155,13 @@ const AdminØkonomiskOverblik = (props) => {
                 <div>
                     <b>Total, {customMåned.end.format('MMM YYYY')}</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>{totalTjentDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>{totalUdlagtDenneMåned.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
-                <div>
+                <div style={{textAlign: 'right'}}>
                     <b>{(totalTjentDenneMåned + totalUdlagtDenneMåned).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                 </div>
             </div>

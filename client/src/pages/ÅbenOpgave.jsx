@@ -33,6 +33,7 @@ const ÅbenOpgave = () => {
     const [opgave, setOpgave] = useState(null);
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
+    const [updateOpgave, setUpdateOpgave] = useState(false);
     const [status, setStatus] = useState("");
     const [brugere, setBrugere] = useState(null);
     const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(null);
@@ -287,7 +288,7 @@ const ÅbenOpgave = () => {
             setLoading(false);
         })
         .catch(error => console.log(error))
-    }, [])
+    }, [updateOpgave])
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
@@ -1570,7 +1571,6 @@ const ÅbenOpgave = () => {
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger {getBrugerName(editedPostering.brugerID).split(" ")[0]}s postering</h2>
                                                 <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
                                                     e.preventDefault();
-                                                    // console.log(editedPostering)
                                                     editPostering(postering._id);
                                                 }}>
                                                     <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Dato</label>

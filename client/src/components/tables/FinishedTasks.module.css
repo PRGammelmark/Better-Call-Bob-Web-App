@@ -17,3 +17,39 @@
 .finishedTasksHeader ul li:nth-child(5), .finishedTasksBody div ul li:nth-child(5) {
     width: 20%;
 }
+
+.mobileTable {
+    display: none;
+}
+
+.opgaveVirksomhedNavn {
+    font-size: 0.65rem;
+    color: #696969;
+}
+
+@media (max-width: 750px) {
+    .mobileTable {
+        display: block;
+    }
+
+    .desktopTable {
+        display: none;
+    }
+
+    .finishedTasksHeader ul li:nth-child(1), .finishedTasksBody div ul li:nth-child(1) {
+        width: 40%;
+    }
+    
+    .finishedTasksHeader ul li:nth-child(2), .finishedTasksBody div ul li:nth-child(2) {
+        width: 30%;
+    }
+    
+    .finishedTasksHeader ul li:nth-child(3), .finishedTasksBody div ul li:nth-child(3) {
+        width: 30%;
+    }
+
+    .finishedTasksBody div {
+        cursor: pointer;
+        border-right: 4px solid #59bf1a;
+    }
+}

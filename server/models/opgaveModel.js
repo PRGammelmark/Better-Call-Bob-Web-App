@@ -106,7 +106,11 @@ const opgaverSchema = new Schema({
     isDeleted: {
         type: Date,
         default: false
-    }
+    },
+    posteringer: [{
+        type: Array,
+        required: false
+    }]
 }, { timestamps: true })
 
 const model = mongoose.model('Opgave', opgaverSchema);
