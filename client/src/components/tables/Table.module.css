@@ -112,4 +112,12 @@ button.button {
     .opgaveHeader ul {
         max-width: 100%; /* This value accomodates for the missing button in the OpgaveBody on mobile devices */ 
     }
+
+
+    .opgaveListing {
+        transition: 0.18s ease;
+    }
+    .opgaveListing:active {
+        background-color: #59bf1a50;
+    }
 }

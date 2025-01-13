@@ -149,14 +149,14 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
         .then(response => {
             console.log(response.data)
             if (response.data === 'AUTHORIZED') {
-                setOpgaveAfsluttet(true)
+                setOpgaveAfsluttet(dayjs().format('YYYY-MM-DD'))
                 setQrPaymentAuthorized(true)
                 setLoadingMobilePaySubmission(false)
                 setSuccessMobilePaySubmission(true)
                 setÅbnOpretRegningModal(true)
                 axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                     opgaveBetaltMedMobilePay: dayjs().format('YYYY-MM-DD'),
-                    opgaveAfsluttet: true
+                    opgaveAfsluttet: dayjs().toISOString()
                 }, {
                     headers: authHeaders
                 })

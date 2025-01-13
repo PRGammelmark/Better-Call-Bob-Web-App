@@ -66,12 +66,16 @@ const opgaverSchema = new Schema({
         type: String,
         required: false
     },
+    fastlagtFakturaBeløb: {
+        type: Number,
+        required: false
+    },
     markeretSomFærdig: {
         type: Boolean,
         default: false
     },
     opgaveAfsluttet: {
-        type: Boolean,
+        type: Date,
         default: false,
         required: false
     },

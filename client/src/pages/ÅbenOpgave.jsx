@@ -285,6 +285,7 @@ const ÅbenOpgave = () => {
             setTelefon(res.data.telefon);
             setEmail(res.data.email);
             setFærdiggjort(res.data.markeretSomFærdig);
+            setOpgaveAfsluttet(res.data.opgaveAfsluttet);
             setLoading(false);
         })
         .catch(error => console.log(error))
@@ -561,7 +562,7 @@ const ÅbenOpgave = () => {
     function åbnForÆndringer () {
         const genåbnOpgaveOgSletFaktura = {
             markeretSomFærdig: false,
-            opgaveAfsluttet: false,
+            opgaveAfsluttet: null,
             fakturaSendt: null,
             fakturaPDF: null,
             fakturaPDFUrl: null,
@@ -577,7 +578,7 @@ const ÅbenOpgave = () => {
             })
             .then(response => {
                 setFærdiggjort(false);
-                setOpgaveAfsluttet(false);
+                setOpgaveAfsluttet(null);
 
                 axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                     headers: {
@@ -766,12 +767,12 @@ const ÅbenOpgave = () => {
                     console.log(response.data);
 
                     axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                        opgaveAfsluttet: true
+                        opgaveAfsluttet: dayjs().toISOString()
                     }, {
                         headers: authHeaders
                     })
                     .then(res => {
-                        setOpgaveAfsluttet(true);
+                        setOpgaveAfsluttet(dayjs().format("YYYY-MM-DD"));
                         console.log("Opgaven er afsluttet.")
                         
                     })
@@ -1193,7 +1194,7 @@ const ÅbenOpgave = () => {
     function afslutOpgave() {
         if (window.confirm("Du er ved at afslutte opgaven. Har du oprettet fakturaen for denne opgave, og modtaget betaling?")) {
             axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
-                opgaveAfsluttet: true
+                opgaveAfsluttet: dayjs().toISOString()
             }, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -1965,8 +1966,9 @@ const ÅbenOpgave = () => {
                             <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>
                             {!user.isAdmin && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Faktura oprettes og administreres separat. Du skal ikke foretage dig yderligere.</p>}
                             {user.isAdmin && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Faktura oprettes og administreres separat. {opgave.tilbudAfgivet ? ` Oprindeligt tilbud afgivet: ${opgave.tilbudAfgivet} kr.` : "Intet konkret tilbud afgivet."}</p>}
-                            {user.isAdmin && <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>}
-                            {user.isAdmin && <button className={ÅbenOpgaveCSS.afslutButton} onClick={() => afslutOpgave()}>Afslut opgave</button>}
+                            {user.isAdmin && !opgave.opgaveAfsluttet && <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>}
+                            {user.isAdmin && !opgave.opgaveAfsluttet && <button className={ÅbenOpgaveCSS.afslutButton} onClick={() => afslutOpgave()}>Afslut opgave</button>}
+                            {user.isAdmin && opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>✅</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
                         </div>
                         :
                         posteringer.length > 0 && 
@@ -2001,9 +2003,13 @@ const ÅbenOpgave = () => {
                                     : null
                                 }
                                 {opgave.opgaveAfsluttet 
-                                    ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p>
+                                    ? ((typeof opgave.opgaveAfsluttet === 'boolean') 
+                                        ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> 
+                                        : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.prefix}><span style={{fontSize: '1.2rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
+                                    )
                                     : <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn for ændringer</button>
                                 }
+
                             </div> 
                             : 
                             posteringer.length > 0 && 

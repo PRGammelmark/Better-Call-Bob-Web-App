@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
+import { useNavigate } from 'react-router-dom'
 
 const DelegatedTasks = () => {
-
+  const navigate = useNavigate()
   const [uddelegeredeOpgaver, setUddelegeredeOpgaver] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
@@ -81,7 +82,7 @@ const DelegatedTasks = () => {
               <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : uddelegeredeOpgaver.length > 0 ? uddelegeredeOpgaver.map((opgave) => {
                   return (
-                    <div className={TableCSS.opgaveListing} key={opgave._id}>
+                    <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                         <li>{opgave.adresse}</li>

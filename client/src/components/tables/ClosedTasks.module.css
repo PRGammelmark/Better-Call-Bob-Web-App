@@ -17,3 +17,37 @@
 .closedTasksHeader ul li:nth-child(5), .closedTasksBody div ul li:nth-child(5) {
     width: 20%;
 }
+
+.mobileTable {
+    display: none;
+}
+
+@media (max-width: 750px) {
+    .mobileTable {
+        display: block;
+    }
+
+    .desktopTable {
+        display: none;
+    }
+
+    .closedTasksHeader ul li:nth-child(1), .closedTasksBody div ul li:nth-child(1) {
+        width: 18%;
+    }
+    
+    .closedTasksHeader ul li:nth-child(2), .closedTasksBody div ul li:nth-child(2) {
+        width: 42%;
+    }
+    
+    .closedTasksHeader ul li:nth-child(3), .closedTasksBody div ul li:nth-child(3) {
+        width: 20%;
+    }
+    
+    .closedTasksHeader ul li:nth-child(4), .closedTasksBody div ul li:nth-child(4) {
+        width: 20%;
+    }
+
+    .closedTasksBody div {
+        border-right: 4px solid #59bf1a;
+    }
+}
