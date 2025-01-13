@@ -48,15 +48,53 @@ const FinishedTasks = () => {
     })
   }, [user])
 
+  // function beregnFakturaBeløb(posteringer) {
+  //   const handymanTotal = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * 447.2, 0);
+  //   const tømrerTotal = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * 480, 0);
+  //   const opstartTotal = posteringer.reduce((sum, postering) => sum + postering.opstart / 200 * 319, 0);
+  //   const udlægTotal = posteringer.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0), 0);
+  //   const øvrigtTotal = posteringer.reduce((sum, postering) => sum + postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0), 0);
+  //   const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal
+  //   return totalBeløb
+  // }
+
   function beregnFakturaBeløb(posteringer) {
-    const handymanTotal = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * 447.2, 0)
-    const tømrerTotal = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * 480, 0)
-    const opstartTotal = posteringer.reduce((sum, postering) => sum + postering.opstart / 200 * 319, 0)
-    const udlægTotal = posteringer.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0), 0)
-    const øvrigtTotal = posteringer.reduce((sum, postering) => sum + postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0), 0)
-    const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal
-    return totalBeløb
+    if (!Array.isArray(posteringer)) return 0; // Ensure posteringer is an array
+    
+    const handymanTotal = Array.isArray(posteringer) 
+      ? posteringer.reduce((sum, postering) => sum + ((postering.handymanTimer || 0) * 447.2), 0)
+      : 0;
+  
+    const tømrerTotal = Array.isArray(posteringer) 
+      ? posteringer.reduce((sum, postering) => sum + ((postering.tømrerTimer || 0) * 480), 0)
+      : 0;
+  
+    const opstartTotal = Array.isArray(posteringer) 
+      ? posteringer.reduce((sum, postering) => sum + (((postering.opstart || 0) / 200) * 319), 0)
+      : 0;
+  
+    const udlægTotal = Array.isArray(posteringer) 
+      ? posteringer.reduce((sum, postering) => 
+          sum + (Array.isArray(postering.udlæg) 
+            ? postering.udlæg.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
+            : 0), 
+          0
+        )
+      : 0;
+  
+    const øvrigtTotal = Array.isArray(posteringer) 
+      ? posteringer.reduce((sum, postering) => 
+          sum + (Array.isArray(postering.øvrigt) 
+            ? postering.øvrigt.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
+            : 0), 
+          0
+        )
+      : 0;
+  
+    const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal;
+    return totalBeløb;
   }
+  
 
   return (
     <>
