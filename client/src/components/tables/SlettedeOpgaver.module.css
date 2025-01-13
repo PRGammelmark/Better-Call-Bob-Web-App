@@ -1,19 +1,50 @@
 .slettedeOpgaverHeader ul li:nth-child(1), .slettedeOpgaverBody div ul li:nth-child(1) {
-    width: 6%;
+    width: 15%;
 }
 
 .slettedeOpgaverHeader ul li:nth-child(2), .slettedeOpgaverBody div ul li:nth-child(2) {
-    width: 13%;
+    width: 30%;
 }
 
 .slettedeOpgaverHeader ul li:nth-child(3), .slettedeOpgaverBody div ul li:nth-child(3) {
-    width: 18%;
+    width: 30%;
 }
 
 .slettedeOpgaverHeader ul li:nth-child(4), .slettedeOpgaverBody div ul li:nth-child(4) {
     width: 25%;
 }
 
-.slettedeOpgaverHeader ul li:nth-child(5), .slettedeOpgaverBody div ul li:nth-child(5) {
-    width: 20%;
+.mobileTable {
+    display: none;
+}
+
+.opgaveVirksomhedNavn {
+    font-size: 0.65rem;
+    color: #696969;
+}
+
+@media (max-width: 750px) {
+    .mobileTable {
+        display: block;
+    }
+
+    .desktopTable {
+        display: none;
+    }
+
+    .slettedeOpgaverHeader ul li:nth-child(1), .slettedeOpgaverBody div ul li:nth-child(1) {
+        width: 30%;
+    }
+    
+    .slettedeOpgaverHeader ul li:nth-child(2), .slettedeOpgaverBody div ul li:nth-child(2) {
+        width: 40%;
+    }
+    
+    .slettedeOpgaverHeader ul li:nth-child(3), .slettedeOpgaverBody div ul li:nth-child(3) {
+        width: 30%;
+    }
+
+    .slettedeOpgaverBody div {
+        border-right: 4px solid #59bf1a;
+    }
 }
