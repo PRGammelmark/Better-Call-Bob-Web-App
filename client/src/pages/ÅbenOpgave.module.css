@@ -78,7 +78,7 @@
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
 .opgavestatus:focus {
@@ -141,6 +141,14 @@
 
 .ansvarlige {
     margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.closeIcon {
+    width: 15px;
+    height: 15px;
 }
 
 .tildelAnsvarlige {
@@ -155,7 +163,7 @@
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
 }
 
 .fjernAnsvarlig {
@@ -167,6 +175,15 @@
     background: rgba(193, 26, 57, 0.25);
     color: rgba(193, 26, 57, 1);
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ansvarligDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .aktuellePosteringer {
@@ -450,7 +467,7 @@
     font-family: OmnesBold;
 }
 
-.redigerKundeButton {
+.redigerKundeButtonDesktop {
     border: none;
     background: none;
     cursor: pointer;
@@ -1219,7 +1236,67 @@
     gap: 10px;
 }
 
+.privatEllerErhvervskunde {
+    font-size: 0.8rem;
+    color: #696969;
+}
+
+.kundeHeadingContainer {
+    position: relative;
+}
+
+.redigerKundeButtonMobile {
+    display: none;
+}
+
+.adresseTekst {
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+.virksomhedInfo {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0px;
+    background: #f0f0f0;
+    padding: 10px 60px 10px 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.virksomhedHeading {
+    margin-bottom: 5px;
+}
+
+.virksomhedTekst {
+    font-size: 0.8rem;
+}
+
 @media screen and (max-width: 750px) {
+
+    .redigerKundeButtonDesktop {
+        display: none;
+    }
+    
+    .redigerKundeButtonMobile {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 8px 15px;
+        color: rgba(179,116,0,0.85);
+        border-radius: 10px;
+        font-family: OmnesBold;
+        font-size: 0.8rem;
+        transition: 0.2s ease;
+        border: 1px solid transparent;
+        background: none;
+        background-color: #f6f9d2;
+        cursor: pointer;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(179,116,0,0.25) 0px 0px 0px 1px;
+        display: block;
+    }
+
     .tilbageKnap {
         display: none;
     }
@@ -1240,12 +1317,12 @@
 
     .kolonner {
         flex-direction: column;
-        gap: 15px;
+        gap: 0px;
     }
 
     .kundeinformationer .kolonner b.kundeHeading {
         display: block;
-        font-size: 1.2rem;
+        font-size: 0.9rem;
     }
 
     .postfix {
@@ -1264,37 +1341,33 @@
     .kundeKontaktMobile {
         display: flex;
         align-items: center;
-        gap: 30px;
+        gap: 10px;
         justify-content: start;
         margin-top: 20px;
+        justify-content: space-between;
     }
 
-    .kundeKontaktMobile a.link:first-child {
+    .kundeKontaktMobile a.link {
         text-decoration: none;
         color: #fff;
         font-weight: 600;
-        display: inline-block;
-        padding: 10px 20px;
-        background-color: #59bf1a;
-        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 15px;
+        background-color: #59bf1a28;
+        color: #59bf1a;
         text-align: center;
-        border-radius: 5px;
+        border-radius: 10px;
         cursor: pointer;
         font-family: OmnesBold;
+        font-size: 0.8rem;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(89,191,26,0.55) 0px 0px 0px 1px;
     }
 
-    .kundeKontaktMobile a.link:nth-child(2) {
-        text-decoration: none;
-        color: #59bf1a!important;
-        font-weight: 600;
-        display: inline-block;
-        padding: 10px 5px;
-        background-color: none;
-        color: white;
-        text-align: center;
-        border-radius: 5px;
-        cursor: pointer;
-        font-family: OmnesBold;
+    .kundeKontaktMobile a.link img {
+        width: 20px;
+        height: 20px;
     }
 
     .kundeKontaktMobile > .marginTop10 {
@@ -1307,13 +1380,16 @@
 
     .opgavestatusContainerMobile {
         display: block;
+        margin-top: 0px;
     }
 
     .opgavestatus {
-        height: 50px;
+        height: 40px;
         padding-left: 32px;
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 0.85rem;
+        font-weight: 800;
+        border-radius: 10px;
+        margin-top: 0px;
     }
 
     .kundeinformationer {
@@ -1329,18 +1405,19 @@
     }
 
     .tildelAnsvarlige {
-        height: 50px;
+        height: 40px;
         padding-left: 32px;
-        font-size: 1rem;
+        font-size: 0.85rem;
         font-weight: 600;
         color: black;
         background: white;
+        border-radius: 10px;
     }
 
     .uddelegeringMobile {
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 0px;
     }
 
     .uddelegeringDesktop {
@@ -1385,5 +1462,9 @@
 
     .aktuellePosteringer::-webkit-scrollbar {
         display: none;
+    }
+
+    .kundeInformationerContainer {
+        margin-bottom: 0px!important;
     }
 }
