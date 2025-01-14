@@ -1450,7 +1450,10 @@ const ÅbenOpgave = () => {
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
                             {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
-                                    <p key={ansvarlig._id}>{ansvarlig.navn}{færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>}</p>
+                                    <div key={ansvarlig._id} className={ÅbenOpgaveCSS.ansvarligDiv}>
+                                        <p>{ansvarlig.navn}</p>
+                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>}
+                                    </div>
                                 )
                             })}
                             </div>
