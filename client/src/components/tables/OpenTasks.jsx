@@ -97,7 +97,7 @@ const OpenTasks = () => {
                       <div className={`${TableCSS.opgaveListing} ${opgave.status === "Dato aftalt" && OpenTasksCSS.markerKlarTilUddelegering}`} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
                         <ul>
                           <li>{dayjs(opgave.createdAt).fromNow()}</li>
-                          <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                          <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                           <li>{opgave.adresse}</li>
                           <li>{opgave.status}</li>
                         </ul>

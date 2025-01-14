@@ -39,7 +39,7 @@ const Team = () => {
   
     return (
         <PageAnimation>
-    <div>
+    <div className={styles.teamContainer}>
         <h1 className={`bold ${styles.heading}`}>Teamet</h1>
         <div className={styles.adminDiv}>
             <h2 className={styles.subheading}>Administratorer   </h2>

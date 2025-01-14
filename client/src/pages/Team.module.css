@@ -1,3 +1,8 @@
+.teamContainer {
+    overflow-x: hidden;
+    padding-bottom: 200px;
+}
+
 .adminDiv, .medarbejdereDiv {
     margin-top: 50px;
     width: 100%;
@@ -16,6 +21,7 @@
 .cardHolder {
     display: flex;
     gap: 20px;
+
 }
 
 .card {
@@ -60,5 +66,33 @@
 @media screen and (display-mode: standalone) {
     .heading {
         display: none;
+    }
+
+    .cardHolder {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        padding: 35px;
+        gap: 20px;
+        margin-left: -35px;
+        margin-right: -35px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;  /* Internet Explorer 10+ */
+        overflow: -moz-scrollbars-none;  /* Firefox */
+    }
+
+    .cardHolder::-webkit-scrollbar { 
+        display: none;  /* Safari and Chrome */
+    }
+
+    .card {
+        width: auto;
+    }
+
+    .contactInfo {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 5px;
     }
 }
