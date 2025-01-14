@@ -1384,7 +1384,7 @@ const ÅbenOpgave = () => {
                             </div>
                             <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}><img src={PhoneIcon} alt="Phone Icon" /> {opgave.telefon}</a>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}><img src={SmsIcon} alt="SMS Icon" /> SMS</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + opgave.telefon + "&body=Hej%20" + opgave.navn.split(" ")[0] + ", "}><img src={SmsIcon} alt="SMS Icon" /> SMS</a>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}><img src={MailIcon} alt="Mail Icon" /> Mail</a>
                             </div>
                             <br /><button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>
