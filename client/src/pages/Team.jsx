@@ -4,6 +4,8 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import styles from "./Team.module.css"
 import axios from "axios"
 import PageAnimation from '../components/PageAnimation'
+import PhoneIcon from "../assets/phone.svg"
+import MailIcon from "../assets/mail.svg"
 
 const Team = () => {
     const [team, setTeam] = useState(null)
@@ -42,30 +44,40 @@ const Team = () => {
     <div className={styles.teamContainer}>
         <h1 className={`bold ${styles.heading}`}>Teamet</h1>
         <div className={styles.adminDiv}>
-            <h2 className={styles.subheading}>Administratorer   </h2>
+            <h2 className={styles.subheading}>Administratorer ({admins && admins.length})</h2>
             <div className={styles.cardHolder}>
                 {admins && admins.map((bruger)=>{
                     return (
                         <div className={styles.card} key={bruger._id}>
                             <p className={styles.name}>{bruger.navn}</p>
                             <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                            <p className={styles.contactInfo}>✉️ <a className={styles.links} href={"mailto:" + bruger.email}>{bruger.email}</a></p>
-                            <p className={styles.contactInfo}>📞 <a className={styles.links} href={"tel:" + bruger.telefon}>{bruger.telefon}</a></p>
+                            <div className={styles.kundeKontaktMobile}>
+                                <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
+                                    <img src={PhoneIcon} alt="Phone Icon" />
+                                    <span className={styles.popup}>{bruger.telefon}</span>
+                                    Ring
+                                </a>
+                                <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
+                                    <img src={MailIcon} alt="Mail Icon" />
+                                    <span className={styles.popup}>{bruger.email}</span>
+                                    Skriv
+                                </a>
+                            </div>
                         </div>
                     )
                 })}
             </div>
         </div>
         <div className={styles.medarbejdereDiv}>
-            <h2 className={styles.subheading}>Medarbejdere</h2>
+            <h2 className={styles.subheading}>Medarbejdere ({medarbejdere && medarbejdere.length})</h2>
             <div className={styles.cardHolder}>
                 {medarbejdere && medarbejdere.map((bruger)=>{
                     return (
                         <div className={styles.card} key={bruger._id}>
                             <p className={styles.name}>{bruger.navn}</p>
                             <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                            <p className={styles.contactInfo}>✉️ <a className={styles.links} href={"mailto:" + bruger.email}>{bruger.email}</a></p>
-                            <p className={styles.contactInfo}>📞 <a className={styles.links} href={"tel:" + bruger.telefon}>{bruger.telefon}</a></p>
+                            <p className={styles.contactInfo}><img src={MailIcon} alt="mail" className={styles.icon} /> <a className={styles.links} href={"mailto:" + bruger.email}>{bruger.email}</a></p>
+                            <p className={styles.contactInfo}><img src={PhoneIcon} alt="phone" className={styles.icon} /> <a className={styles.links} href={"tel:" + bruger.telefon}>{bruger.telefon}</a></p>
                         </div>
                     )
                 })}

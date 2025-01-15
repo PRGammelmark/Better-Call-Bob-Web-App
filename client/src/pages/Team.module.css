@@ -27,13 +27,14 @@
 .card {
     background: #fff;
     border-radius: 15px;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     padding: 10px 16px;
 }
 
 .name {
     font-family: OmnesBold;
     font-size: 1.1rem;
+    white-space: nowrap;
 }
 
 .contactInfo {
@@ -55,6 +56,65 @@
 
 .links:hover {
     color: #59bf1a;
+}
+
+.kundeKontaktMobile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+    margin-top: 10px;
+    justify-content: space-between;
+}
+
+.kundeKontaktMobile a.link {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background-color: #59bf1a28;
+    color: #59bf1a;
+    text-align: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(89,191,26,0.55) 0px 0px 0px 1px;
+    position: relative;
+}
+
+.kundeKontaktMobile a.link span {
+    position: absolute;
+    bottom: -120%;
+    left: 50%;
+    padding: 5px 10px;
+    width: auto;
+    height: auto;
+    background-color: #00000080;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    border-radius: 10px;
+    opacity: 0;
+    transition: 0.2s ease;
+    transform: translateY(-10%) translateX(-50%);
+    pointer-events: none;
+}
+
+.kundeKontaktMobile a.link:hover span {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+}
+
+.kundeKontaktMobile a.link img {
+    width: 20px;
+    height: 20px;
 }
 
 @media screen and (max-width: 750px) {
