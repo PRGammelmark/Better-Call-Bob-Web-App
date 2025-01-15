@@ -45,6 +45,7 @@ const Team = () => {
         <h1 className={`bold ${styles.heading}`}>Teamet</h1>
         <div className={styles.adminDiv}>
             <h2 className={styles.subheading}>Administratorer ({admins && admins.length})</h2>
+            <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
             <div className={styles.cardHolder}>
                 {admins && admins.map((bruger)=>{
                     return (
@@ -76,8 +77,18 @@ const Team = () => {
                         <div className={styles.card} key={bruger._id}>
                             <p className={styles.name}>{bruger.navn}</p>
                             <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                            <p className={styles.contactInfo}><img src={MailIcon} alt="mail" className={styles.icon} /> <a className={styles.links} href={"mailto:" + bruger.email}>{bruger.email}</a></p>
-                            <p className={styles.contactInfo}><img src={PhoneIcon} alt="phone" className={styles.icon} /> <a className={styles.links} href={"tel:" + bruger.telefon}>{bruger.telefon}</a></p>
+                            <div className={styles.kundeKontaktMobile}>
+                                <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
+                                    <img src={PhoneIcon} alt="Phone Icon" />
+                                    <span className={styles.popup}>{bruger.telefon}</span>
+                                    Ring
+                                </a>
+                                <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
+                                    <img src={MailIcon} alt="Mail Icon" />
+                                    <span className={styles.popup}>{bruger.email}</span>
+                                    Skriv
+                                </a>
+                            </div>
                         </div>
                     )
                 })}
