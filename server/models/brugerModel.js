@@ -41,6 +41,14 @@ const brugerSchema = new Schema({
     eventColor: {
         type: String,
         required: false
+    },
+    harStige: {
+        type: Boolean,
+        default: false
+    },
+    arbejdsLokationer: {
+        type: [String],
+        required: false
     }
 })
 

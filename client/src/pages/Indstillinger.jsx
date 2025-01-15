@@ -7,6 +7,11 @@ import LedighedCalendar from '../components/calendars/LedighedCalendar'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal.jsx'
+import LocationMarker from '../assets/locationMarker.svg'
+import EditIcon from '../assets/editIcon.svg'
+import PasswordIcon from '../assets/passwordIcon.svg'
+import ToolboxIcon from '../assets/toolboxIcon.svg'
+import ClockIcon from '../assets/clockIcon.svg'
 
 const Indstillinger = () => {
     const {user} = useAuthContext();
@@ -202,26 +207,27 @@ const Indstillinger = () => {
       <div className={Styles.pageContent}>
         <h1 className={`bold ${Styles.heading}`}>Indstillinger</h1>
         <div className={Styles.personligInfo}>
-          <p className={Styles.miniheading}>Personlig info:</p>
           <div className={Styles.infoListe}>
-            <div className={Styles.infoListeElement}>
-              <b className={`${Styles.text} ${Styles.navn}`}>{bruger && bruger.navn}</b>
-            </div>
-            <div className={Styles.infoListeElement}>
-              <i className={`${Styles.text} ${Styles.titel}`}>{bruger && bruger.titel}</i>
-            </div>
-            <div className={Styles.subPersonligInfo}>
-              <div className={`${Styles.infoListeElement} ${Styles.marginTop10}`}>
-                <span className={Styles.text}>🏠 {bruger && bruger.adresse}</span>
+            <div className={Styles.personligInfoBox}>
+              <div className={Styles.infoListeElement}>
+                <b className={`${Styles.text} ${Styles.navn}`}>{bruger && bruger.navn}</b>
               </div>
               <div className={Styles.infoListeElement}>
-                <span className={Styles.text}>✉️ {bruger && bruger.email}</span>
+                <i className={`${Styles.text} ${Styles.titel}`}>{bruger && bruger.titel}</i>
               </div>
-              <div className={Styles.infoListeElement}>
-                <span className={Styles.text}>📞 {bruger && bruger.telefon}</span>
+              <div className={Styles.subPersonligInfo}>
+                <div className={`${Styles.infoListeElement} ${Styles.marginTop10}`}>
+                  <span className={Styles.text}>🏠 {bruger && bruger.adresse}</span>
+                </div>
+                <div className={Styles.infoListeElement}>
+                  <span className={Styles.text}>✉️ {bruger && bruger.email}</span>
+                </div>
+                <div className={Styles.infoListeElement}>
+                  <span className={Styles.text}>📞 {bruger && bruger.telefon}</span>
+                </div>
               </div>
             </div>
-            <button className={Styles.button} onClick={() => setRedigerPersonligeOplysninger(true)}>Rediger dine personlige informationer</button>
+            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><img src={EditIcon} alt="edit icon" />Personlig info</button>
             <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
                 <h2 className={Styles.modalHeading}>Personlige informationer</h2>
                 <form onSubmit={submitÆndringer}>
@@ -238,7 +244,7 @@ const Indstillinger = () => {
                   <button className={Styles.buttonFullWidth}>Gem ændringer</button>
                 </form>
             </Modal>
-          <button className={Styles.button} onClick={() => setSkiftKodeord(true)}>Skift kodeord</button>
+          <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><img src={PasswordIcon} alt="password icon" />Skift kodeord</button>
           <Modal trigger={skiftKodeord} setTrigger={setSkiftKodeord}>
                 <h2 className={Styles.modalHeading}>Skift kodeord</h2>
                 <p className={`${Styles.text} ${Styles.marginBottom10}`}>Tips til et stærkt kodeord:</p>
@@ -262,7 +268,9 @@ const Indstillinger = () => {
         </div>
         <div className={Styles.præferencer}>
           <p className={Styles.miniheading}>Præferencer:</p>
-          <p>Ingen præferenceindstillinger i øjeblikket.</p>
+          <button className={Styles.newButton}><img src={ToolboxIcon} alt="toolbox icon" />Hvad kan du tage med?</button>
+          <button className={Styles.newButton}><img src={LocationMarker} alt="location marker" />Hvor kan du arbejde?</button>
+          <button className={Styles.newButton}><img src={ClockIcon} alt="clock icon" />Hvornår er du ledig?</button>
         </div>
       </div>
     </PageAnimation>

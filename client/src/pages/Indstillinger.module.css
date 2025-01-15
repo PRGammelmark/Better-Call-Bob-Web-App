@@ -28,7 +28,6 @@
 }
 
 .infoListe {
-    width: 300px;
     margin-top: 20px;
 }
 
@@ -36,6 +35,16 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+}
+
+.personligInfoBox {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    background: #f0f0f0;
+    padding: 20px 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
 }
 
 .text {
@@ -72,6 +81,34 @@
     background: #59bf1a;
     color: #fff;
     border: 1px solid #59bf1a;
+}
+
+.newButton {
+    background: none;
+    border: none;
+    font-family: Omnes;
+    font-size: 1rem;
+    cursor: pointer;
+    border-radius: 50px 10px 10px 50px;
+    padding: 3px 10px 3px 3px;
+    transition: 0.2s ease;
+    color: #222222;
+    display: flex;
+    align-items: center;
+    gap: 0px;
+}
+
+.newButton img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    padding: 5px;
+    background: #59bf1a60;
+    border-radius: 50px;
+}
+
+.newButton:hover {
+    background: #f0f0f0;
 }
 
 .præferencer {
@@ -387,6 +424,18 @@
 @media screen and (max-width: 750px) {
     .heading {
         display: none;
+    }
+
+    .infoListe {
+        margin-top: 0px;
+    }
+
+    .personligInfo {
+        margin-top: 30px;
+    }
+
+    .personligInfoBox {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
 }
 

@@ -95,6 +95,7 @@ const ÅbenOpgave = () => {
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
+    const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -279,6 +280,7 @@ const ÅbenOpgave = () => {
         })
         .then(res => {
             setOpgave(res.data);
+            setNyeKundeinformationer(res.data);
             setOpgaveBeskrivelse(res.data.opgaveBeskrivelse);
             setStatus(res.data.status);
             setNavn(res.data.navn);
@@ -1178,18 +1180,20 @@ const ÅbenOpgave = () => {
         e.preventDefault()
 
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
-            navn: opgave.navn,
-            telefon: opgave.telefon,
-            email: opgave.email,
-            virksomhed: opgave.virksomhed,
-            CVR: opgave.CVR
+            navn: nyeKundeinformationer.navn,
+            adresse: nyeKundeinformationer.adresse,
+            telefon: nyeKundeinformationer.telefon,
+            email: nyeKundeinformationer.email,
+            virksomhed: nyeKundeinformationer.virksomhed,
+            CVR: nyeKundeinformationer.CVR
         }, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
         })
         .then(response => {
-            console.log('Kunde opdateret:', response.data);
+            console.log('Kunde opdateret.');
+            setOpgave({...opgave, ...nyeKundeinformationer})
             setRedigerKundeModal(false)
         })
         .catch(error => {
@@ -1357,18 +1361,20 @@ const ÅbenOpgave = () => {
                             </div>
                             <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>
-                                <form>
+                                <form className={ÅbenOpgaveCSS.redigerKundeForm} onSubmit={redigerKunde}>
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Navn</label>
-                                    <input type="text" name="navn" className={ÅbenOpgaveCSS.modalInput} value={opgave.navn} onChange={(e) => setOpgave({...opgave, navn: e.target.value})} />
+                                    <input type="text" name="navn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.navn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, navn: e.target.value})} />
+                                    <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Adresse</label>
+                                    <input type="text" name="adresse" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.adresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value})} />
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
-                                    <input type="text" name="telefon" className={ÅbenOpgaveCSS.modalInput} value={opgave.telefon} onChange={(e) => setOpgave({...opgave, telefon: e.target.value})} />
+                                    <input type="text" name="telefon" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.telefon} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value})} />
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="email">E-mail</label>
-                                    <input type="text" name="email" className={ÅbenOpgaveCSS.modalInput} value={opgave.email} onChange={(e) => setOpgave({...opgave, email: e.target.value})} />
+                                    <input type="text" name="email" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.email} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, email: e.target.value})} />
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="virksomhed">Virksomhed</label>
-                                    <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={opgave.virksomhed} onChange={(e) => setOpgave({...opgave, virksomhed: e.target.value})} />
+                                    <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} />
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
-                                    <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={opgave.CVR} onChange={(e) => setOpgave({...opgave, CVR: e.target.value})} />
-                                    <button className={ModalCSS.buttonFullWidth} onClick={(e) => redigerKunde(e)}>Opdater kunde</button>
+                                    <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value})} />
+                                    <button className={ModalCSS.buttonFullWidth} type="submit">Opdater kunde</button>
                                 </form>
                             </Modal>
                             <p className={ÅbenOpgaveCSS.adresseTekst}>{opgave.adresse}, {opgave.postnummerOgBy}</p>
