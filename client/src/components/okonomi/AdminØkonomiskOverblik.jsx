@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Styles from './AdminØkonomiskOverblik.module.css'
-import { handymanTimerHonorar, tømrerTimerHonorar } from '../../variables'
+// import { handymanTimerHonorar, tømrerTimerHonorar } from '../../variables'
+import satser from '../../variables'
 import MedarbejderØkonomiDetaljer from '../modals/MedarbejderØkonomiDetaljer'
 
 const AdminØkonomiskOverblik = (props) => {
@@ -29,7 +30,7 @@ const AdminØkonomiskOverblik = (props) => {
         const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
         const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
 
-        return månedensOpstartsgebyrer + (månedensHandymantimer * handymanTimerHonorar) + (månedensTømrertimer * tømrerTimerHonorar)
+        return månedensOpstartsgebyrer + (månedensHandymantimer * satser.handymanTimerHonorar) + (månedensTømrertimer * satser.tømrerTimerHonorar)
     }
 
     function beregnUdlagt(posteringer) {

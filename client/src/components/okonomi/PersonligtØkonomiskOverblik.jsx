@@ -3,7 +3,8 @@ import axios from 'axios'
 import Styles from './PersonligtØkonomiskOverblik.module.css'
 import dayjs from 'dayjs'
 import ØkonomiOverblikModal from '../modals/ØkonomiOverblikModal'
-import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+// import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+import satser from '../../variables'
 
 const PersonligtØkonomiskOverblik = (props) => {
 
@@ -50,7 +51,7 @@ const PersonligtØkonomiskOverblik = (props) => {
         }, 0);
 
         const sumUdlægDenneMåned = denneMånedsUdlæg + denneMånedsØvrigt
-        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * handymanTimerHonorar) + (denneMånedsTømrertimer * tømrerTimerHonorar)
+        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * satser.handymanTimerHonorar) + (denneMånedsTømrertimer * satser.tømrerTimerHonorar)
         
         setTjentDenneMåned(sumTjentDenneMåned)
         setUdlægDenneMåned(sumUdlægDenneMåned)

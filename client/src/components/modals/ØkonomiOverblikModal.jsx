@@ -8,7 +8,8 @@ import PageAnimation from '../PageAnimation'
 import BackIcon from "../../assets/back.svg"
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Paperclip from "../../assets/paperclip.svg"
-import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+// import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+import satser from '../../variables'
 import axios from 'axios'
 
 const ØkonomiOverblikModal = (props) => {
@@ -97,7 +98,7 @@ const ØkonomiOverblikModal = (props) => {
         const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
         const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
 
-        return månedensOpstartsgebyrer + (månedensHandymantimer * handymanTimerHonorar) + (månedensTømrertimer * tømrerTimerHonorar)
+        return månedensOpstartsgebyrer + (månedensHandymantimer * satser.handymanTimerHonorar) + (månedensTømrertimer * satser.tømrerTimerHonorar)
     }
 
     function beregnUdlagt(posteringer) {

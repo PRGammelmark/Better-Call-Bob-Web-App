@@ -21,6 +21,9 @@ import PhoneIcon from "../assets/phone.svg"
 import MailIcon from "../assets/mail.svg"
 import SmsIcon from "../assets/smsIcon.svg"
 import CloseIcon from "../assets/closeIcon.svg"
+import SwitcherStyles from './Switcher.module.css'
+import satser from '../variables'
+
 const ÅbenOpgave = () => {
     
     const navigate = useNavigate();
@@ -57,7 +60,7 @@ const ÅbenOpgave = () => {
     const [tømrertimer, setTømrertimer] = useState("");
     const [posteringDato, setPosteringDato] = useState(dayjs().format('YYYY-MM-DD'));
     const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
-    const [inkluderOpstart, setInkluderOpstart] = useState(200);
+    const [inkluderOpstart, setInkluderOpstart] = useState(1);
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
@@ -96,6 +99,8 @@ const ÅbenOpgave = () => {
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
+    const [aftentillæg, setAftentillæg] = useState(false)
+    const [natTillæg, setNatTillæg] = useState(false)
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -241,19 +246,29 @@ const ÅbenOpgave = () => {
 
     function tilføjPostering (e) {
         
-        const total = (handymantimer * 300) + (tømrertimer * 360) + inkluderOpstart + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
+        const posteringSatser = satser;
+        const posteringFastHonorar = 0;
+        const posteringFastPris = 0;
+        const posteringDynamiskHonorar = (handymantimer * posteringSatser.handymanTimerHonorar) + (tømrertimer * posteringSatser.tømrerTimerHonorar) + (inkluderOpstart * posteringSatser.opstartsgebyrHonorar) + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
+        const posteringDynamiskPris = (handymantimer * posteringSatser.handymanTimerPris) + (tømrertimer * posteringSatser.tømrerTimerPris) + (inkluderOpstart * posteringSatser.opstartsgebyrPris) + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
         
         const postering = {
             dato: posteringDato,
+            beskrivelse: posteringBeskrivelse,
+            opstart: inkluderOpstart,
             handymanTimer: handymantimer,
             tømrerTimer: tømrertimer,
             udlæg: outlays,
             øvrigt: øvrige,
+            aftentillæg: aftentillæg,
+            natTillæg: natTillæg,
+            satser: posteringSatser,
+            fastHonorar: posteringFastHonorar,
+            fastPris: posteringFastPris,
+            dynamiskHonorar: posteringDynamiskHonorar,
+            dynamiskPris: posteringDynamiskPris,
             opgaveID: opgaveID,
-            brugerID: userID,
-            opstart: inkluderOpstart,
-            beskrivelse: posteringBeskrivelse,
-            total: total
+            brugerID: userID
         }
 
         axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
@@ -268,6 +283,8 @@ const ÅbenOpgave = () => {
             setTømrertimer("");
             setOutlays([]);
             setØvrige([]);
+            setAftentillæg(false);
+            setNatTillæg(false);
         })
         .catch(error => console.log(error))
     }
@@ -1833,9 +1850,32 @@ const ÅbenOpgave = () => {
                                 <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
-                                <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
-                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 200 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 200 ? 0 : 200)}/>
+                                {/* <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
+                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 1 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 200 ? 0 : 200)}/>
                                     <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 200,-)</label>
+                                </div> */}
+                                <div className={ÅbenOpgaveCSS.posteringSwitchers}>
+                                    <div className={SwitcherStyles.checkboxContainer}>
+                                        <label className={SwitcherStyles.switch} htmlFor="opstartsgebyr">
+                                            <input type="checkbox" id="opstartsgebyr" name="opstartsgebyr" className={SwitcherStyles.checkboxInput} checked={inkluderOpstart === 1 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 1 ? 0 : 1)} />
+                                            <span className={SwitcherStyles.slider}></span>
+                                        </label>
+                                        <b>Opstartsgebyr</b>
+                                    </div>
+                                    <div className={SwitcherStyles.checkboxContainer}>
+                                        <label className={SwitcherStyles.switch} htmlFor="aftentillæg">
+                                            <input type="checkbox" id="aftentillæg" name="aftentillæg" className={SwitcherStyles.checkboxInput} checked={aftentillæg} onChange={(e) => setAftentillæg(aftentillæg === true ? false : true)} />
+                                            <span className={SwitcherStyles.slider}></span>
+                                        </label>
+                                        <b>Aftentillæg (kl. 18-23)</b>
+                                    </div>
+                                    <div className={SwitcherStyles.checkboxContainer}>
+                                        <label className={SwitcherStyles.switch} htmlFor="nattillæg">
+                                            <input type="checkbox" id="nattillæg" name="nattillæg" className={SwitcherStyles.checkboxInput} checked={natTillæg} onChange={(e) => setNatTillæg(natTillæg === true ? false : true)} />
+                                            <span className={SwitcherStyles.slider}></span>
+                                        </label>
+                                        <p>Nattillæg (kl. 23-07)</p>
+                                    </div>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.modalKolonner}>
                                     <div>

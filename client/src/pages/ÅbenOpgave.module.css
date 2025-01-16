@@ -1315,6 +1315,13 @@
     margin-bottom: 10px;
 }
 
+.posteringSwitchers {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 20px;
+}
+
 @media screen and (max-width: 750px) {
 
     .redigerKundeButtonDesktop {

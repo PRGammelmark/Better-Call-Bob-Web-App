@@ -5,7 +5,8 @@ import dayjs from 'dayjs'
 import Styles from './MedarbejderØkonomiDetaljer.module.css'
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Modal from '../Modal.jsx'
-import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+// import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
+import satser from '../../variables'
 
 
 
@@ -35,7 +36,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
         const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
         const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
 
-        return månedensOpstartsgebyrer + (månedensHandymantimer * handymanTimerHonorar) + (månedensTømrertimer * tømrerTimerHonorar)
+        return månedensOpstartsgebyrer + (månedensHandymantimer * satser.handymanTimerHonorar) + (månedensTømrertimer * satser.tømrerTimerHonorar)
     }
 
     function beregnUdlagt(posteringer) {

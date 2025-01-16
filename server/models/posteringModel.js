@@ -18,9 +18,15 @@ const posteringSchema = new Schema({
         beløb: Number,
         kvittering: String // Added field to store image
     }],
+    aftentillæg: Boolean,
+    natTillæg: Boolean,
+    satser: Object,
+    fastHonorar: Number,
+    fastPris: Number,
+    dynamiskHonorar: Number,
+    dynamiskPris: Number,
     opgaveID: String,
-    brugerID: String,
-    total: Number
+    brugerID: String
 }, { timestamps: true })
 
 const model = mongoose.model('Postering', posteringSchema);
