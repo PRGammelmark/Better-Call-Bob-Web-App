@@ -58,7 +58,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .opgavebeskrivelse:focus {
@@ -78,7 +78,7 @@
     cursor: pointer;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .opgavestatus:focus {
@@ -212,7 +212,7 @@
 }
 
 .posteringCard {
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
     padding: 10px 20px;
     border-radius: 15px;
     position: relative;
@@ -293,7 +293,7 @@
     position: fixed;
     background: white;
     animation: fade-in 0.35s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
     border-radius: 20px;
     z-index: 30;
 }
@@ -351,6 +351,18 @@
 .modalHeading3 {
     font-family: OmnesBold;
     margin-bottom: 10px;
+    margin-top: 20px;
+}
+
+.modalHeading4 {
+    font-family: OmnesBold;
+    display: block;
+}
+
+.modalSubheading {
+    display: block;
+    font-size: 0.8rem;
+    color: #33333390;
 }
 
 .udlæg {
@@ -368,7 +380,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .udlægInput:focus {
@@ -412,7 +424,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .modalInput:focus {
@@ -421,9 +433,9 @@
 }
 
 .modalKolonner {
-    display: flex;
-    flex-direction: row;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
 }
 
 .tilføjUdlægButton {
@@ -444,12 +456,12 @@
     color: white;
 }
 
-.registrerPosteringButton {
+.registrerPosteringButtonDesktop, .registrerPosteringButtonMobile {
     padding: 14px 20px;
     border-radius: 15px;
     border: none;
-    margin-top: 15px;
-    margin-bottom: 10px;
+    margin-top: 0px;
+    margin-bottom: 0px;
     background: #3c5a3f;
     cursor: pointer;
     font-family: OmnesBold;
@@ -457,8 +469,12 @@
     transition: 0.2s ease
 }
 
-.registrerPosteringButton:hover {
+.registrerPosteringButtonDesktop:hover, .registrerPosteringButtonMobile:hover {
     background: #59bf1a;
+}
+
+.registrerPosteringButtonMobile {
+    display: none;
 }
 
 .sletUdlægButton {
@@ -560,7 +576,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .nyKommentar:focus {
@@ -1318,8 +1334,63 @@
 .posteringSwitchers {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 0px;
     margin-bottom: 20px;
+}
+
+.dynamiskFastButtonsDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.dynamiskFastButton {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #e9e9e9!important;
+    border: 1px solid #22222200;
+    cursor: pointer;
+    background: #fefefe;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.2s ease;
+    color: #222222;
+}
+
+.dynamiskFastButtonActive {
+    background: #59bf1a30!important;
+}
+
+.dynamiskFastButton:hover {
+    border: 1px solid #222222;
+}
+
+.dynamiskFastButton img {
+    width: 15px;
+    height: 15px;
+}
+
+.previewHonorarTotal {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.previewTotalPostering {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid #1f1f1f30;
+    bottom: 0px;
+    padding-bottom: 0px;
+    width: 100%;
+    background: #ffffff;
+    opacity: 1;
+    padding-top: 20px;
 }
 
 @media screen and (max-width: 750px) {
@@ -1535,5 +1606,38 @@
     .dækningsbidragRække {
         padding-left: 10px;
         padding-right: 10px;
+    }
+    
+    .previewTotalPostering {
+        display: flex;
+        flex-direction: row;
+        gap: 10px;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #1f1f1f30;
+        position: sticky;
+        bottom: 0px;
+        padding-bottom: 0px;
+        width: 100%;
+        background: #ffffff;
+        opacity: 1;
+        margin-bottom: 0px;
+    }
+    
+    .previewTotalPostering::after {
+        content: '';
+        position: absolute;
+        bottom: -40px;
+        width: 100%;
+        height: 40px;
+        background: #ffffff;
+    }
+
+    .registrerPosteringButtonDesktop {
+        display: none;
+    }
+
+    .registrerPosteringButtonMobile {
+        display: block;
     }
 }

@@ -1,13 +1,15 @@
+import React, { useState, useEffect } from 'react'
+import axios from 'axios'
 import ModalStyles from '../modals/Modal.module.css'
+import dayjs from 'dayjs'
+import satser from '../../variables'
 
+const AddLedighed = (props) => {
 
+    const [addLedighed, setAddLedighed] = useState(false)
 
-
-
-
-
-return (
-    <Modal trigger={addLedighed} setTrigger={setAddLedighed}>
+    return (
+        <Modal trigger={addLedighed} setTrigger={setAddLedighed}>
         <h2 className={ModalStyles.modalHeading}>Tilføj ledighed</h2>
         {tilføjRegelmæssigLedighed ? 
         <p className={ModalStyles.modalLink} onClick={() => setTilføjRegelmæssigLedighed(false)}>Tilføj ledighed for enkeltdato</p> : <p className={ModalStyles.modalLink} onClick={() => setTilføjRegelmæssigLedighed(true)}>Tilføj regelmæssig ledighed</p>}
@@ -61,4 +63,6 @@ return (
             {opretLedighedSuccess && <p className={ModalStyles.successMessage}>{opretLedighedSuccess}</p>}
         </form>}
     </Modal>
-)
+)}
+
+export default AddLedighed

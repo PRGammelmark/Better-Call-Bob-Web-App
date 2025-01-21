@@ -18,13 +18,19 @@ const posteringSchema = new Schema({
         beløb: Number,
         kvittering: String // Added field to store image
     }],
-    aftentillæg: Boolean,
+    aftenTillæg: Boolean,
     natTillæg: Boolean,
+    trailer: Boolean,
+    rådgivningOpmålingVejledning: Number,
     satser: Object,
+    dynamiskHonorarBeregning: Boolean,
+    dynamiskPrisBeregning: Boolean,
     fastHonorar: Number,
     fastPris: Number,
     dynamiskHonorar: Number,
     dynamiskPris: Number,
+    totalHonorar: Number,
+    totalPris: Number,
     opgaveID: String,
     brugerID: String
 }, { timestamps: true })

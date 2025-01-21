@@ -23,7 +23,7 @@ import SmsIcon from "../assets/smsIcon.svg"
 import CloseIcon from "../assets/closeIcon.svg"
 import SwitcherStyles from './Switcher.module.css'
 import satser from '../variables'
-
+import AddPostering from '../components/modals/AddPostering.jsx'
 const ÅbenOpgave = () => {
     
     const navigate = useNavigate();
@@ -54,13 +54,6 @@ const ÅbenOpgave = () => {
     const [openPosteringModalID, setOpenPosteringModalID] = useState(null);
     const [editedComment, setEditedComment] = useState("");
     const [editedPostering, setEditedPostering] = useState("");
-    const [outlays, setOutlays] = useState([]);
-    const [øvrige, setØvrige] = useState([]);
-    const [handymantimer, setHandymantimer] = useState("");
-    const [tømrertimer, setTømrertimer] = useState("");
-    const [posteringDato, setPosteringDato] = useState(dayjs().format('YYYY-MM-DD'));
-    const [posteringBeskrivelse, setPosteringBeskrivelse] = useState("");
-    const [inkluderOpstart, setInkluderOpstart] = useState(1);
     const [posteringer, setPosteringer] = useState("");
     const [kommentar, setKommentar] = useState("");
     const [kommentarer, setKommentarer] = useState([]);
@@ -99,8 +92,6 @@ const ÅbenOpgave = () => {
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
-    const [aftentillæg, setAftentillæg] = useState(false)
-    const [natTillæg, setNatTillæg] = useState(false)
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -191,103 +182,6 @@ const ÅbenOpgave = () => {
           setSelectedDate(dayjs(opgave.onsketDato));
         }
       }, [opgave]);
-    
-      const handleOutlayChange = (index, event) => {
-        const newOutlays = [...outlays];
-        newOutlays[index][event.target.name] = event.target.value;
-        setOutlays(newOutlays);
-    };
-
-    const handleØvrigeChange = (index, event) => {
-        const newØvrige = [...øvrige];
-        newØvrige[index][event.target.name] = event.target.value;
-        setØvrige(newØvrige);
-    }
-
-    const addOutlay = (e) => {
-        e.preventDefault();
-        setOutlays([...outlays, { beskrivelse: '', beløb: '', kvittering: '' }]);
-    }
-
-    const addØvrig = (e) => {
-        e.preventDefault();
-        setØvrige([...øvrige, { description: '', amount: '' }]);
-    }
-
-    const deleteOutlay = (index) => {
-        const newOutlays = [...outlays];
-        const deletedOutlay = newOutlays.splice(index, 1)[0];
-        setOutlays(newOutlays);
-
-        if (deletedOutlay.kvittering) {
-            axios.delete(`${import.meta.env.VITE_API_URL}${deletedOutlay.kvittering}`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .catch(error => console.log(error));
-        }
-    };
-
-    const deleteØvrig = (index) => {
-        const newØvrige = [...øvrige];
-        const deletedØvrig = newØvrige.splice(index, 1)[0];
-        setØvrige(newØvrige);
-
-        if (deletedØvrig.kvittering) {
-            axios.delete(`${import.meta.env.VITE_API_URL}${deletedØvrig.kvittering}`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .catch(error => console.log(error));
-        }
-    };
-
-    function tilføjPostering (e) {
-        
-        const posteringSatser = satser;
-        const posteringFastHonorar = 0;
-        const posteringFastPris = 0;
-        const posteringDynamiskHonorar = (handymantimer * posteringSatser.handymanTimerHonorar) + (tømrertimer * posteringSatser.tømrerTimerHonorar) + (inkluderOpstart * posteringSatser.opstartsgebyrHonorar) + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
-        const posteringDynamiskPris = (handymantimer * posteringSatser.handymanTimerPris) + (tømrertimer * posteringSatser.tømrerTimerPris) + (inkluderOpstart * posteringSatser.opstartsgebyrPris) + (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0));
-        
-        const postering = {
-            dato: posteringDato,
-            beskrivelse: posteringBeskrivelse,
-            opstart: inkluderOpstart,
-            handymanTimer: handymantimer,
-            tømrerTimer: tømrertimer,
-            udlæg: outlays,
-            øvrigt: øvrige,
-            aftentillæg: aftentillæg,
-            natTillæg: natTillæg,
-            satser: posteringSatser,
-            fastHonorar: posteringFastHonorar,
-            fastPris: posteringFastPris,
-            dynamiskHonorar: posteringDynamiskHonorar,
-            dynamiskPris: posteringDynamiskPris,
-            opgaveID: opgaveID,
-            brugerID: userID
-        }
-
-        axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(res => {
-            setOpenModal(false);
-            setPosteringDato("");
-            setHandymantimer("");
-            setTømrertimer("");
-            setOutlays([]);
-            setØvrige([]);
-            setAftentillæg(false);
-            setNatTillæg(false);
-        })
-        .catch(error => console.log(error))
-    }
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
@@ -339,9 +233,6 @@ const ÅbenOpgave = () => {
         .then(res => {
             const filteredPosteringer = res.data.filter(postering => postering.opgaveID === opgaveID);
             setPosteringer(filteredPosteringer);
-
-
-
         })
         .catch(error => console.log(error))
     }, [openModal])
@@ -1099,7 +990,7 @@ const ÅbenOpgave = () => {
     const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
 
     // konstanter til regnskabsopstillingen -- FAKTURA --
-    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart || 0), 0)) / 200 * 319.2);
+    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart * nuv.satser.opstartsgebyrPris || 0), 0)));
     const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 447.2);
     const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0)) * 480);
     const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {
@@ -1584,29 +1475,63 @@ const ÅbenOpgave = () => {
                                             </div>
                                         </div>
                                         <div className={ÅbenOpgaveCSS.posteringListe}>
-                                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart: </span>
-                                                <span>{(postering.opstart ? postering.opstart : "0") + " kr."}</span>
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer} timer (handyman): </span>
-                                                <span>{(postering.handymanTimer * 300) + " kr."}</span>
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer} timer (tømrer): </span>
-                                                <span>{(postering.tømrerTimer * 360) + " kr."}</span>
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
-                                                <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
-                                                <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                                            </div>
+                                            {postering.opstart > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
+                                                    <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.handymanTimer > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
+                                                    <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.tømrerTimer > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
+                                                    <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.rådgivningOpmålingVejledning > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
+                                                    <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.aftenTillæg && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg ({postering.satser.aftenTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
+                                                    <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.aftenTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.natTillæg && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg ({postering.satser.natTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
+                                                    <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.natTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.trailer && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
+                                                    <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.udlæg.length > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
+                                                    <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {postering.øvrigt.length > 0 && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt </span>
+                                                    <span>{(postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
                                             <div className={ÅbenOpgaveCSS.totalRække}>
                                                 <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                                <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{postering.total + " kr."}</b>
+                                                <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                                             </div>
                                         </div>
                                     </div>
@@ -1840,193 +1765,7 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    <Modal trigger={openModal} setTrigger={setOpenModal}>
-                    <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
-                            <form className={ÅbenOpgaveCSS.modalForm} onSubmit={(e) => {
-                                e.preventDefault();
-                                tilføjPostering();
-                            }}>
-                                <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
-                                <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
-                                <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
-                                <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
-                                {/* <div className={ÅbenOpgaveCSS.opstartsgebyrDiv}>
-                                    <input className={ÅbenOpgaveCSS.posteringCheckbox} type="checkbox" checked={inkluderOpstart === 1 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 200 ? 0 : 200)}/>
-                                    <label className={ÅbenOpgaveCSS.prefix}>Inkludér opstartsgebyr (kr. 200,-)</label>
-                                </div> */}
-                                <div className={ÅbenOpgaveCSS.posteringSwitchers}>
-                                    <div className={SwitcherStyles.checkboxContainer}>
-                                        <label className={SwitcherStyles.switch} htmlFor="opstartsgebyr">
-                                            <input type="checkbox" id="opstartsgebyr" name="opstartsgebyr" className={SwitcherStyles.checkboxInput} checked={inkluderOpstart === 1 ? true : false} onChange={(e) => setInkluderOpstart(inkluderOpstart === 1 ? 0 : 1)} />
-                                            <span className={SwitcherStyles.slider}></span>
-                                        </label>
-                                        <b>Opstartsgebyr</b>
-                                    </div>
-                                    <div className={SwitcherStyles.checkboxContainer}>
-                                        <label className={SwitcherStyles.switch} htmlFor="aftentillæg">
-                                            <input type="checkbox" id="aftentillæg" name="aftentillæg" className={SwitcherStyles.checkboxInput} checked={aftentillæg} onChange={(e) => setAftentillæg(aftentillæg === true ? false : true)} />
-                                            <span className={SwitcherStyles.slider}></span>
-                                        </label>
-                                        <b>Aftentillæg (kl. 18-23)</b>
-                                    </div>
-                                    <div className={SwitcherStyles.checkboxContainer}>
-                                        <label className={SwitcherStyles.switch} htmlFor="nattillæg">
-                                            <input type="checkbox" id="nattillæg" name="nattillæg" className={SwitcherStyles.checkboxInput} checked={natTillæg} onChange={(e) => setNatTillæg(natTillæg === true ? false : true)} />
-                                            <span className={SwitcherStyles.slider}></span>
-                                        </label>
-                                        <p>Nattillæg (kl. 23-07)</p>
-                                    </div>
-                                </div>
-                                <div className={ÅbenOpgaveCSS.modalKolonner}>
-                                    <div>
-                                        <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal handymantimer:</label>
-                                        <input className={ÅbenOpgaveCSS.modalInput} value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" />
-                                    </div>
-                                    <div>
-                                        <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Antal tømrertimer:</label>
-                                        <input className={ÅbenOpgaveCSS.modalInput} value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" />
-                                    </div>
-                                </div>
-                                
-                                <div className={ÅbenOpgaveCSS.udlæg}>
-                                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Udlæg</h3>
-                                    <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
-                                    {outlays.map((outlay, index) => (
-                                        <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
-                                            <div className={ÅbenOpgaveCSS.udlægKvittering}>
-                                                {outlay.kvittering ? (
-                                                    <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${outlay.kvittering}`} alt={outlay.beskrivelse} />
-                                                ) : (
-                                                    <label>
-                                                        <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-udlæg-file-input-${index}`).click()}>
-                                                        </div>
-                                                        <input
-                                                            id={`ny-udlæg-file-input-${index}`}
-                                                            type="file"
-                                                            accept="image/*"
-                                                            className={ÅbenOpgaveCSS.udlægKvitteringInput}
-                                                            onChange={(e) => {
-                                                                const formData = new FormData();
-                                                                formData.append('file', e.target.files[0]);
-                                                                axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
-                                                                    headers: {
-                                                                        'Content-Type': 'multipart/form-data',
-                                                                        'Authorization': `Bearer ${user.token}`
-                                                                    }
-                                                                })
-                                                                .then(res => {
-                                                                    console.log(res.data)
-                                                                    const updatedOutlay = { ...outlays[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
-                                                                    const newOutlays = [...outlays];
-                                                                    newOutlays[index] = updatedOutlay; // Replace the outlay at index
-                                                                    setOutlays(newOutlays);
-                                                                })
-                                                                .catch(error => console.log(error));
-                                                            }}
-                                                        />
-                                                    </label>
-                                                )}
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
-                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
-                                                <input
-                                                    type="text"
-                                                    className={ÅbenOpgaveCSS.udlægInput}
-                                                    name="beskrivelse"
-                                                    id={`beskrivelse-${index}`}
-                                                    value={outlay.beskrivelse}
-                                                    onChange={(e) => handleOutlayChange(index, e)}
-                                                />
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
-                                                <input
-                                                    type="number"
-                                                    className={ÅbenOpgaveCSS.udlægInput}
-                                                    name="beløb"
-                                                    id={`beløb-${index}`}
-                                                    value={outlay.beløb}
-                                                    onChange={(e) => handleOutlayChange(index, e)}
-                                                />
-                                            </div>
-                                            <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}>-</button>
-                                        </div>
-                                    ))}
-                                    <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addOutlay}>+ Nyt udlæg</button>
-                                    </div>
-                                    
-                                </div>
-                                <div className={ÅbenOpgaveCSS.udlæg}>
-                                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Øvrige</h3>
-                                    <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
-                                    {øvrige.map((øvrig, index) => (
-                                        <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
-                                            <div className={ÅbenOpgaveCSS.udlægKvittering}>
-                                                {øvrig.kvittering ? (
-                                                    <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${øvrig.kvittering}`} alt={øvrig.beskrivelse} />
-                                                ) : (
-                                                    <label>
-                                                        <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-øvrig-file-input-${index}`).click()}>
-                                                        </div>
-                                                        <input
-                                                            type="file"
-                                                            accept="image/*"
-                                                            className={ÅbenOpgaveCSS.udlægKvitteringInput}
-                                                            id={`ny-øvrig-file-input-${index}`}
-                                                            onChange={(e) => {
-                                                                const formData = new FormData();
-                                                                formData.append('file', e.target.files[0]);
-                                                                axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
-                                                                    headers: {
-                                                                        'Content-Type': 'multipart/form-data',
-                                                                        'Authorization': `Bearer ${user.token}`
-                                                                    }
-                                                                })
-                                                                .then(res => {
-                                                                    console.log(res.data)
-                                                                    const updatedØvrige = { ...øvrige[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
-                                                                    const newØvrige = [...øvrige];
-                                                                    newØvrige[index] = updatedØvrige; // Replace the outlay at index
-                                                                    setØvrige(newØvrige);
-                                                                })
-                                                                .catch(error => console.log(error));
-                                                            }}
-                                                        />
-                                                    </label>
-                                                )}
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
-                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
-                                                <input
-                                                    type="text"
-                                                    className={ÅbenOpgaveCSS.udlægInput}
-                                                    name="beskrivelse"
-                                                    id={`beskrivelse-${index}`}
-                                                    value={øvrig.beskrivelse}
-                                                    onChange={(e) => handleØvrigeChange(index, e)}
-                                                />
-                                            </div>
-                                            <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                                <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
-                                                <input
-                                                    type="number"
-                                                    className={ÅbenOpgaveCSS.udlægInput}
-                                                    name="beløb"
-                                                    id={`beløb-${index}`}
-                                                    value={øvrig.beløb}
-                                                    onChange={(e) => handleØvrigeChange(index, e)}
-                                                />
-                                            </div>
-                                            <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteØvrig(index)}}>-</button>
-                                        </div>
-                                    ))}
-                                    <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addØvrig}>+ Ny øvrig</button>
-                                    </div>
-                                    
-                                </div>
-                                <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Registrér postering</button>
-                            </form>
-                    </Modal>
+                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} />
                     <div>
                     {!opgave.isDeleted && opgave.fakturaOprettesManuelt && (færdiggjort ? 
                         <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
