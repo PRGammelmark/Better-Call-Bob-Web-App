@@ -49,7 +49,8 @@ const brugerSchema = new Schema({
     arbejdsLokationer: {
         type: [String],
         required: false
-    }
+    },
+    satser: Object
 })
 
 // static signup method

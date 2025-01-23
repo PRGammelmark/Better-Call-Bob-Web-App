@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import Styles from './MedarbejderØkonomiDetaljer.module.css'
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Modal from '../Modal.jsx'
-// import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
 import satser from '../../variables'
 
 

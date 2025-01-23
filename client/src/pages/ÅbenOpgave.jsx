@@ -382,18 +382,6 @@ const ÅbenOpgave = () => {
                 }
             });
 
-            // Delete files associated with øvrigt
-            postering.øvrigt.forEach(øvrigt => {
-                if (øvrigt.kvittering) {
-                    axios.delete(`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
-                    })
-                    .catch(error => console.error("Der opstod en fejl ved sletning af kvittering:", error));
-                }
-            });
-
             // Delete the postering itself
             axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
                 headers: {
@@ -435,7 +423,7 @@ const ÅbenOpgave = () => {
     function editPostering (posteringID) {
         const opdateretPostering = editedPostering;
 
-        const opdateretPosteringTotal = ((opdateretPostering.handymanTimer || 0) * 300) + ((opdateretPostering.tømrerTimer || 0) * 360) + (opdateretPostering.opstart || 0) + (opdateretPostering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) || 0) + (opdateretPostering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) || 0);
+        const opdateretPosteringTotal = ((opdateretPostering.handymanTimer || 0) * 300) + ((opdateretPostering.tømrerTimer || 0) * 360) + (opdateretPostering.opstart || 0) + (opdateretPostering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) || 0);
         opdateretPostering.total = opdateretPosteringTotal;
 
         axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, opdateretPostering, {
@@ -577,21 +565,6 @@ const ÅbenOpgave = () => {
                     quantity: 1,
                     unitNetPrice: postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0),
                     discountPercentage: 0.00
-                })
-            }
-
-            if (postering.øvrigt && postering.øvrigt.length > 0) {
-                postering.øvrigt.forEach(posteringØvrig => {
-                    lines.push({
-                        lineNumber: lineNumber++,
-                        description: `${posteringØvrig.beskrivelse}`,
-                        product: {
-                            productNumber: "3"
-                        },
-                        quantity: 1,
-                        unitNetPrice: posteringØvrig.beløb,
-                        discountPercentage: 0.00
-                    })
                 })
             }
 
@@ -983,25 +956,22 @@ const ÅbenOpgave = () => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
         return akk + udlægSum;
     }, 0);
-    const øvrigtTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {
-        const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
-        return akk + øvrigSum;
-    }, 0);
-    const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar + øvrigtTotalHonorar;
+    const totalHonorar = opstartTotalHonorar + handymanTotalHonorar + tømrerTotalHonorar + udlægTotalHonorar;
 
     // konstanter til regnskabsopstillingen -- FAKTURA --
     const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart * nuv.satser.opstartsgebyrPris || 0), 0)));
-    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer || 0), 0)) * 447.2);
-    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer || 0), 0)) * 480);
+    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer * nuv.satser.handymanTimerPris || 0), 0)));
+    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris || 0), 0)));
+    const rådgivningOpmålingVejledningTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris || 0), 0)));
+    const trailerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.trailer * nuv.satser.trailerPris || 0), 0)));
+    const aftenTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris))) || 0), 0)));
+    const natTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris))) || 0), 0)));
     const udlægTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
         return akk + udlægSum;
     }, 0);
-    const øvrigtTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => {
-        const øvrigSum = nuv.øvrigt.reduce((sum, øvrig) => sum + (parseFloat(øvrig.beløb) || 0), 0);
-        return akk + øvrigSum;
-    }, 0);
-    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + udlægTotalFaktura + øvrigtTotalFaktura;
+    const rabatterTotalFaktura = posteringer && posteringer.reduce((akk, nuv) => akk + ((nuv.totalPris / (100 - nuv.rabatProcent) * 100) * (nuv.rabatProcent/100)), 0);
+    const totalFaktura = opstartTotalFaktura + handymanTotalFaktura + tømrerTotalFaktura + rådgivningOpmålingVejledningTotalFaktura + trailerTotalFaktura + aftenTillægTotalFaktura + natTillægTotalFaktura + udlægTotalFaktura - rabatterTotalFaktura;
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
         if (opgave && opgave.fakturaPDFUrl) {
@@ -1459,19 +1429,6 @@ const ÅbenOpgave = () => {
                                                     : 
                                                     null;
                                                 })}
-                                                {postering.øvrigt.map((øvrigt, index) => {
-                                                    return øvrigt.kvittering ? 
-                                                    <img 
-                                                    key={`øvrigt-${index}`}
-                                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                                    src={`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`} 
-                                                    alt={øvrigt.beskrivelse} 
-                                                    onClick={() => {
-                                                        setKvitteringBillede(øvrigt.kvittering);
-                                                    }}/> 
-                                                    : 
-                                                    null;
-                                                })}
                                             </div>
                                         </div>
                                         <div className={ÅbenOpgaveCSS.posteringListe}>
@@ -1523,10 +1480,10 @@ const ÅbenOpgave = () => {
                                                     <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.øvrigt.length > 0 && (
+                                            {postering.rabatProcent > 0 && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt </span>
-                                                    <span>{(postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
+                                                    <span>-{((postering.totalHonorar / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
                                             <div className={ÅbenOpgaveCSS.totalRække}>
@@ -1659,102 +1616,6 @@ const ÅbenOpgave = () => {
                                                         </div>
                                                         
                                                     </div>
-                                                    <div className={ÅbenOpgaveCSS.udlæg}>
-                                                        <h3 className={ÅbenOpgaveCSS.modalHeading3}>Øvrige</h3>
-                                                        <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
-                                                        {(editedPostering.øvrigt || []).map((øvrig, index) => (
-                                                            <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
-                                                                <div className={ÅbenOpgaveCSS.udlægKvittering}>
-                                                                    {øvrig.kvittering ? (
-                                                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${øvrig.kvittering}`} alt={øvrig.beskrivelse} />
-                                                                    ) : (
-                                                                        <label>
-                                                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`øvrig-file-input-${index}`).click()}>
-                                                                            </div>
-                                                                            <input
-                                                                                type="file"
-                                                                                accept="image/*"
-                                                                                className={ÅbenOpgaveCSS.udlægKvitteringInput}
-                                                                                id={`øvrig-file-input-${index}`}
-                                                                                onChange={(e) => {
-                                                                                    const formData = new FormData();
-                                                                                    formData.append('file', e.target.files[0]);
-                                                                                    axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
-                                                                                        headers: {
-                                                                                            'Content-Type': 'multipart/form-data',
-                                                                                            'Authorization': `Bearer ${user.token}`
-                                                                                        }
-                                                                                    })
-                                                                                    .then(res => {
-                                                                                        console.log(res.data)
-                                                                                        const updatedØvrig = { ...editedPostering.øvrigt[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
-                                                                                        const newØvrigt = [...editedPostering.øvrigt];
-                                                                                        newØvrigt[index] = updatedØvrig; // Replace the øvrig at index
-                                                                                        setEditedPostering({...editedPostering, øvrigt: newØvrigt});
-                                                                                    })
-                                                                                    .catch(error => console.log(error));
-                                                                                }}
-                                                                            />
-                                                                        </label>
-                                                                    )}
-                                                                </div>
-                                                                <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
-                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
-                                                                    <input
-                                                                        type="text"
-                                                                        className={ÅbenOpgaveCSS.udlægInput}
-                                                                        name="beskrivelse"
-                                                                        id={`beskrivelse-${index}`}
-                                                                        value={øvrig.beskrivelse}
-                                                                        onChange={(e) => {
-                                                                            const newØvrigt = [...editedPostering.øvrigt];
-                                                                            newØvrigt[index].beskrivelse = e.target.value;
-                                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                                <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
-                                                                    <input
-                                                                        type="number"
-                                                                        className={ÅbenOpgaveCSS.udlægInput}
-                                                                        name="beløb"
-                                                                        id={`beløb-${index}`}
-                                                                        value={øvrig.beløb}
-                                                                        onChange={(e) => {
-                                                                            const newØvrigt = [...editedPostering.øvrigt];
-                                                                            newØvrigt[index].beløb = e.target.value;
-                                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
-                                                                        }}
-                                                                    />
-                                                                </div>
-                                                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={async (e) => {
-                                                                    e.preventDefault();
-                                                                    const deletedØvrig = editedPostering.øvrigt[index];
-                                                                    const newØvrigt = editedPostering.øvrigt.filter((_, i) => i !== index);
-                                                                    setEditedPostering({...editedPostering, øvrigt: newØvrigt});
-                                                                    
-                                                                    if (deletedØvrig.kvittering) {
-                                                                        try {
-                                                                            await axios.delete(`${import.meta.env.VITE_API_URL}${deletedØvrig.kvittering}`, {
-                                                                                headers: {
-                                                                                    'Authorization': `Bearer ${user.token}`
-                                                                                }
-                                                                            });
-                                                                        } catch (error) {
-                                                                            console.log(error);
-                                                                        }
-                                                                    }
-                                                                }}>-</button>
-                                                            </div>
-                                                        ))}
-                                                        <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={(e) => {
-                                                            e.preventDefault();
-                                                            const newØvrigt = [...editedPostering.øvrigt, { beskrivelse: "", beløb: "" }];
-                                                            setEditedPostering({...editedPostering, øvrigt: newØvrigt});
-                                                        }}>+ Ny øvrig</button>
-                                                        </div>
-                                                    </div>
                                                     <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater postering</button>
                                                 </form>
                                         </Modal>
@@ -1864,13 +1725,13 @@ const ÅbenOpgave = () => {
                                     <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
                                     <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>}
+                                {rådgivningOpmålingVejledningTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Rådgivning, opmåling og vejledning (i alt):</span>
+                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{rådgivningOpmålingVejledningTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                </div>}
                                 {udlægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                     <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
                                     <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                </div>}
-                                {øvrigtTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
-                                    <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>}
                                 <div className={`${ÅbenOpgaveCSS.subtotalRække} ${ÅbenOpgaveCSS.totalFakturaRække}`}>
                                     <span className={ÅbenOpgaveCSS.subtotalFaktura}>Indtægter, i alt:</span>
@@ -1895,10 +1756,6 @@ const ÅbenOpgave = () => {
                         {udlægTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                        </div>}
-                        {øvrigtTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>Øvrigt (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{øvrigtTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                         </div>}
                         <div className={`${ÅbenOpgaveCSS.subtotalRække} ${ÅbenOpgaveCSS.totalHonorarRække}`}>
                             <span className={ÅbenOpgaveCSS.subtotalHonorar}>Udgifter, i alt:</span>

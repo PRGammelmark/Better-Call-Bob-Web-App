@@ -6,11 +6,10 @@ import SwitcherStyles from '../../pages/Switcher.module.css'
 import dayjs from 'dayjs'
 import satser from '../../variables'
 import SwithArrowsBlack from '../../assets/switchArrowsBlack.svg'
-
+import RabatIcon from '../../assets/rabatIcon.svg'
 const AddPostering = (props) => {
 
     const [outlays, setOutlays] = useState([]);
-    const [øvrige, setØvrige] = useState([]);
     const [handymantimer, setHandymantimer] = useState(0);
     const [tømrertimer, setTømrertimer] = useState(0);
     const [posteringDato, setPosteringDato] = useState(dayjs().format('YYYY-MM-DD'));
@@ -26,24 +25,28 @@ const AddPostering = (props) => {
     const [posteringFastHonorar, setPosteringFastHonorar] = useState(0);
     const [posteringFastPris, setPosteringFastPris] = useState(0);
     const [previewDynamiskHonorar, setPreviewDynamiskHonorar] = useState(0);
+    const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
+    const [rabatProcent, setRabatProcent] = useState(0);
 
     const user = props.user;
 
     useEffect(() => {
-        const xposteringDynamiskHonorar = (
-            (handymantimer * aktuelleSatser.handymanTimerHonorar) + 
-            (tømrertimer * aktuelleSatser.tømrerTimerHonorar) + 
-            (aftenTillæg ? ((handymantimer * aktuelleSatser.aftenTillægHonorar) + (tømrertimer * aktuelleSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.aftenTillægHonorar)) : 0) + 
-            (natTillæg ? ((handymantimer * aktuelleSatser.natTillægHonorar) + (tømrertimer * aktuelleSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.natTillægHonorar)) : 0) + 
-            (inkluderOpstart * aktuelleSatser.opstartsgebyrHonorar) + 
+        const xPosteringDynamiskHonorar = (
+            ((handymantimer * aktuelleSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
+            ((tømrertimer * aktuelleSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
+            (aftenTillæg ? ((handymantimer * aktuelleSatser.aftenTillægHonorar) + (tømrertimer * aktuelleSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.aftenTillægHonorar)) * (1 - rabatProcent / 100) : 0) + 
+            (natTillæg ? ((handymantimer * aktuelleSatser.natTillægHonorar) + (tømrertimer * aktuelleSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.natTillægHonorar)) * (1 - rabatProcent / 100) : 0) + 
+            ((inkluderOpstart * aktuelleSatser.opstartsgebyrHonorar) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (trailer ? aktuelleSatser.trailerHonorar : 0) + 
-            (rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * aktuelleSatser.rådgivningOpmålingVejledningHonorar : 0)
+            (trailer ? aktuelleSatser.trailerHonorar * (1 - rabatProcent / 100) : 0) + 
+            (rådgivningOpmålingVejledning * aktuelleSatser.rådgivningOpmålingVejledningHonorar * (1 - rabatProcent / 100))
         );
+
+        const xOutlays = (outlays.reduce((sum, item) => sum + Number(item.beløb), 0));
         
-        setPreviewDynamiskHonorar(xposteringDynamiskHonorar)
-    }, [handymantimer, tømrertimer, aftenTillæg, natTillæg, inkluderOpstart, outlays, øvrige, trailer, rådgivningOpmålingVejledning, aktuelleSatser]);
+        setPreviewDynamiskHonorar(xPosteringDynamiskHonorar)
+        setPreviewDynamiskOutlays(xOutlays)
+    }, [handymantimer, tømrertimer, aftenTillæg, natTillæg, inkluderOpstart, outlays, trailer, rådgivningOpmålingVejledning, aktuelleSatser, rabatProcent]);
 
     function tilføjPostering (e) {
 
@@ -51,26 +54,24 @@ const AddPostering = (props) => {
         const posteringFastHonorar = 0;
         const posteringFastPris = 0;
         const posteringDynamiskHonorar = (
-            (handymantimer * posteringSatser.handymanTimerHonorar) + 
-            (tømrertimer * posteringSatser.tømrerTimerHonorar) + 
-            (aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægHonorar) + (tømrertimer * posteringSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægHonorar)) : 0) + 
-            (natTillæg ? ((handymantimer * posteringSatser.natTillægHonorar) + (tømrertimer * posteringSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.natTillægHonorar)) : 0) + 
-            (inkluderOpstart * posteringSatser.opstartsgebyrHonorar) + 
+            ((handymantimer * posteringSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
+            ((tømrertimer * posteringSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
+            ((aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægHonorar) + (tømrertimer * posteringSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægHonorar)) : 0) * (1 - rabatProcent / 100)) + 
+            ((natTillæg ? ((handymantimer * posteringSatser.natTillægHonorar) + (tømrertimer * posteringSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.natTillægHonorar)) : 0) * (1 - rabatProcent / 100)) + 
+            ((inkluderOpstart * posteringSatser.opstartsgebyrHonorar) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (trailer ? posteringSatser.trailerHonorar : 0) + 
-            (rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningHonorar : 0)
+            ((trailer ? posteringSatser.trailerHonorar : 0) * (1 - rabatProcent / 100)) + 
+            ((rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningHonorar) * (1 - rabatProcent / 100))
         );
         const posteringDynamiskPris = (
-            (handymantimer * posteringSatser.handymanTimerPris) + 
-            (tømrertimer * posteringSatser.tømrerTimerPris) + 
-            (aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægPris) + (tømrertimer * posteringSatser.aftenTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægPris)) : 0) + 
-            (natTillæg ? ((handymantimer * posteringSatser.natTillægPris) + (tømrertimer * posteringSatser.natTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.natTillægPris)) : 0) + 
-            (inkluderOpstart * posteringSatser.opstartsgebyrPris) + 
+            ((handymantimer * posteringSatser.handymanTimerPris) * (1 - rabatProcent / 100)) + 
+            ((tømrertimer * posteringSatser.tømrerTimerPris) * (1 - rabatProcent / 100)) + 
+            ((aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægPris) + (tømrertimer * posteringSatser.aftenTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
+            ((natTillæg ? ((handymantimer * posteringSatser.natTillægPris) + (tømrertimer * posteringSatser.natTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.natTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
+            ((inkluderOpstart * posteringSatser.opstartsgebyrPris) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (øvrige.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            (trailer ? posteringSatser.trailerPris : 0) + 
-            (rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningPris : 0)
+            ((trailer ? posteringSatser.trailerPris : 0) * (1 - rabatProcent / 100)) + 
+            ((rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningPris : 0) * (1 - rabatProcent / 100))
         );
         
         const postering = {
@@ -80,12 +81,12 @@ const AddPostering = (props) => {
             handymanTimer: handymantimer,
             tømrerTimer: tømrertimer,
             udlæg: outlays,
-            øvrigt: øvrige,
             aftenTillæg: aftenTillæg,
             natTillæg: natTillæg,
             trailer: trailer,
             rådgivningOpmålingVejledning: rådgivningOpmålingVejledning,
             satser: posteringSatser,
+            rabatProcent: rabatProcent,
             dynamiskHonorarBeregning: dynamiskHonorarBeregning,
             dynamiskPrisBeregning: dynamiskPrisBeregning,
             fastHonorar: posteringFastHonorar,
@@ -111,7 +112,6 @@ const AddPostering = (props) => {
             setTømrertimer(0);
             setRådgivningOpmålingVejledning(0);
             setOutlays([]);
-            setØvrige([]);
             setAftenTillæg(false);
             setNatTillæg(false);
             setTrailer(false);
@@ -121,6 +121,7 @@ const AddPostering = (props) => {
             setPosteringBeskrivelse("");
             setDynamiskHonorarBeregning(true);
             setDynamiskPrisBeregning(true);
+            setRabatProcent(0);
         })
         .catch(error => console.log(error))
     }
@@ -131,20 +132,9 @@ const AddPostering = (props) => {
         setOutlays(newOutlays);
     };
 
-    const handleØvrigeChange = (index, event) => {
-        const newØvrige = [...øvrige];
-        newØvrige[index][event.target.name] = event.target.value;
-        setØvrige(newØvrige);
-    }
-
     const addOutlay = (e) => {
         e.preventDefault();
         setOutlays([...outlays, { beskrivelse: '', beløb: '', kvittering: '' }]);
-    }
-
-    const addØvrig = (e) => {
-        e.preventDefault();
-        setØvrige([...øvrige, { description: '', amount: '' }]);
     }
 
     const deleteOutlay = (index) => {
@@ -154,21 +144,6 @@ const AddPostering = (props) => {
 
         if (deletedOutlay.kvittering) {
             axios.delete(`${import.meta.env.VITE_API_URL}${deletedOutlay.kvittering}`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .catch(error => console.log(error));
-        }
-    };
-
-    const deleteØvrig = (index) => {
-        const newØvrige = [...øvrige];
-        const deletedØvrig = newØvrige.splice(index, 1)[0];
-        setØvrige(newØvrige);
-
-        if (deletedØvrig.kvittering) {
-            axios.delete(`${import.meta.env.VITE_API_URL}${deletedØvrig.kvittering}`, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
                 }
@@ -201,7 +176,7 @@ const AddPostering = (props) => {
                 </div>}
                 {!dynamiskPrisBeregning && 
                 <div>
-                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast pris</h3>
+                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast pris (ekskl. moms)</h3>
                     <div>
                         <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="number" min="0" inputMode="numeric" pattern="[0-9]*" />
                     </div>
@@ -254,7 +229,12 @@ const AddPostering = (props) => {
                             <p>Trailer {dynamiskHonorarBeregning && `(${aktuelleSatser.trailerHonorar} kr.)`}</p>
                         </div>
                     </div>
-                    
+                    <h3 className={ÅbenOpgaveCSS.modalHeading3}>Rabat</h3>
+                    <p>Rabatter vil kun blive givet på timer & tilvalg, og påvirker både kundens pris og dit honorar.</p>
+                    <div className={ÅbenOpgaveCSS.rabatButtonsDiv}>
+                        <button type="button" className={`${ÅbenOpgaveCSS.rabatButton} ${rabatProcent === 10 ? ÅbenOpgaveCSS.rabatButtonActive : ''}`} onClick={() => {rabatProcent === 10 ? setRabatProcent(0) : setRabatProcent(10)}}>10% rabat<img src={RabatIcon} alt="switch" /></button>
+                        <button type="button" className={`${ÅbenOpgaveCSS.rabatButton} ${rabatProcent === 20 ? ÅbenOpgaveCSS.rabatButtonActive : ''}`} onClick={() => {rabatProcent === 20 ? setRabatProcent(0) : setRabatProcent(20)}}>20% rabat<img src={RabatIcon} alt="switch" /></button>
+                    </div>
                     <div className={ÅbenOpgaveCSS.udlæg}>
                         <h3 className={ÅbenOpgaveCSS.modalHeading3}>Udlæg</h3>
                         <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
@@ -323,78 +303,10 @@ const AddPostering = (props) => {
                         </div>
                         
                     </div>
-                    <div className={ÅbenOpgaveCSS.udlæg}>
-                        <h3 className={ÅbenOpgaveCSS.modalHeading3}>Øvrige</h3>
-                        <div className={ÅbenOpgaveCSS.listeOverUdlæg}>
-                        {øvrige.map((øvrig, index) => (
-                            <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
-                                <div className={ÅbenOpgaveCSS.udlægKvittering}>
-                                    {øvrig.kvittering ? (
-                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${øvrig.kvittering}`} alt={øvrig.beskrivelse} />
-                                    ) : (
-                                        <label>
-                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-øvrig-file-input-${index}`).click()}>
-                                            </div>
-                                            <input
-                                                type="file"
-                                                accept="image/*"
-                                                className={ÅbenOpgaveCSS.udlægKvitteringInput}
-                                                id={`ny-øvrig-file-input-${index}`}
-                                                onChange={(e) => {
-                                                    const formData = new FormData();
-                                                    formData.append('file', e.target.files[0]);
-                                                    axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
-                                                        headers: {
-                                                            'Content-Type': 'multipart/form-data',
-                                                            'Authorization': `Bearer ${user.token}`
-                                                        }
-                                                    })
-                                                    .then(res => {
-                                                        console.log(res.data)
-                                                        const updatedØvrige = { ...øvrige[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
-                                                        const newØvrige = [...øvrige];
-                                                        newØvrige[index] = updatedØvrige; // Replace the outlay at index
-                                                        setØvrige(newØvrige);
-                                                    })
-                                                    .catch(error => console.log(error));
-                                                }}
-                                            />
-                                        </label>
-                                    )}
-                                </div>
-                                <div className={ÅbenOpgaveCSS.udlægBeskrivelse}>
-                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beskrivelse-${index}`}>Beskrivelse:</label>
-                                    <input
-                                        type="text"
-                                        className={ÅbenOpgaveCSS.udlægInput}
-                                        name="beskrivelse"
-                                        id={`beskrivelse-${index}`}
-                                        value={øvrig.beskrivelse}
-                                        onChange={(e) => handleØvrigeChange(index, e)}
-                                    />
-                                </div>
-                                <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
-                                    <input
-                                        type="number"
-                                        className={ÅbenOpgaveCSS.udlægInput}
-                                        name="beløb"
-                                        id={`beløb-${index}`}
-                                        value={øvrig.beløb}
-                                        onChange={(e) => handleØvrigeChange(index, e)}
-                                    />
-                                </div>
-                                <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteØvrig(index)}}>-</button>
-                            </div>
-                        ))}
-                        <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addØvrig}>+ Ny øvrig</button>
-                        </div>
-                        
-                    </div>
                 </div>}
                 <div className={ÅbenOpgaveCSS.previewTotalPostering}>
                     <div className={ÅbenOpgaveCSS.previewHonorarTotal}>
-                        <h3 className={ÅbenOpgaveCSS.modalHeading4}>Total: {(dynamiskHonorarBeregning ? previewDynamiskHonorar : posteringFastHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</h3>
+                        <h3 className={ÅbenOpgaveCSS.modalHeading4}>Total: {(dynamiskHonorarBeregning ? previewDynamiskHonorar : posteringFastHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}{rabatProcent > 0 && <span className={ÅbenOpgaveCSS.overstregetPreview}>{(((previewDynamiskHonorar - previewDynamiskOutlays) / (100 - rabatProcent) * 100) + previewDynamiskOutlays).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>}</h3>
                         <p className={ÅbenOpgaveCSS.modalSubheading}>Dit honorar for posteringen</p>
                     </div>
                     <button className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} type="submit">Registrér postering</button>

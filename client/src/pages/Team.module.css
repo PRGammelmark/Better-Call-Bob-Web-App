@@ -47,7 +47,6 @@
     font-size: 0.7rem;
     padding-bottom: 5px;
     margin-bottom: 8px;
-    border-bottom: 1px solid #f3f3f3;
 }
 
 .links {
@@ -63,8 +62,11 @@
     align-items: center;
     gap: 10px;
     justify-content: start;
-    margin-top: 10px;
     justify-content: space-between;
+    border-bottom: 1px solid #33333330;
+    border-top: 1px solid #33333330;
+    padding-bottom: 10px;
+    padding-top: 10px;
 }
 
 .kundeKontaktMobile a.link {
@@ -117,10 +119,33 @@
     height: 20px;
 }
 
+.button {
+    background-color: #fff;
+    color: #3c5a3f;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    border: 1px solid #3c5a3f;
+    cursor: pointer;
+    width: 100%;
+    transition: 0.2s ease;
+}
+
+.button:hover {
+    background-color: #59bf1a;
+    color: #fff;
+    border: 1px solid #59bf1a;
+}
+
 .infoText {
     font-size: 0.8rem;
     margin-top: 10px;
     display: none;
+}
+
+.flereMedarbejderDetaljer {
+    margin-top: 10px;
 }
 
 @media screen and (max-width: 750px) {
