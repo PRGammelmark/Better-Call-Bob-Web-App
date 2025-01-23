@@ -45,12 +45,8 @@ const PersonligtØkonomiskOverblik = (props) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
         }, 0);
-        const denneMånedsØvrigt = denneMånedsPosteringer.reduce((sum, postering) => {
-            const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
-            return sum + øvrigtSum;
-        }, 0);
 
-        const sumUdlægDenneMåned = denneMånedsUdlæg + denneMånedsØvrigt
+        const sumUdlægDenneMåned = denneMånedsUdlæg;
         const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * satser.handymanTimerHonorar) + (denneMånedsTømrertimer * satser.tømrerTimerHonorar)
         
         setTjentDenneMåned(sumTjentDenneMåned)

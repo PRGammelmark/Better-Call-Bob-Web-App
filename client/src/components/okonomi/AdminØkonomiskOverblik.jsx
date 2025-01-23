@@ -38,12 +38,8 @@ const AdminØkonomiskOverblik = (props) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
         }, 0);
-        const månedensØvrigt = posteringer.reduce((sum, postering) => {
-            const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
-            return sum + øvrigtSum;
-        }, 0);
 
-        return månedensUdlæg + månedensØvrigt;
+        return månedensUdlæg;
     }
 
     const posteringerDenneMåned = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))

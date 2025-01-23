@@ -7,7 +7,11 @@ import dayjs from 'dayjs'
 import satser from '../../variables'
 import SwithArrowsBlack from '../../assets/switchArrowsBlack.svg'
 import RabatIcon from '../../assets/rabatIcon.svg'
+import { useAuthContext } from '../../hooks/useAuthContext'
+
 const AddPostering = (props) => {
+
+    const {user} = useAuthContext()
 
     const [outlays, setOutlays] = useState([]);
     const [handymantimer, setHandymantimer] = useState(0);
@@ -19,7 +23,7 @@ const AddPostering = (props) => {
     const [natTillæg, setNatTillæg] = useState(false)
     const [trailer, setTrailer] = useState(false)
     const [rådgivningOpmålingVejledning, setRådgivningOpmålingVejledning] = useState(0)
-    const [aktuelleSatser, setAktuelleSatser] = useState(satser);
+    const [aktuelleSatser, setAktuelleSatser] = useState(user && user.satser ? user.satser : satser);
     const [dynamiskHonorarBeregning, setDynamiskHonorarBeregning] = useState(true);
     const [dynamiskPrisBeregning, setDynamiskPrisBeregning] = useState(true);
     const [posteringFastHonorar, setPosteringFastHonorar] = useState(0);
@@ -27,9 +31,7 @@ const AddPostering = (props) => {
     const [previewDynamiskHonorar, setPreviewDynamiskHonorar] = useState(0);
     const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
     const [rabatProcent, setRabatProcent] = useState(0);
-
-    const user = props.user;
-
+    
     useEffect(() => {
         const xPosteringDynamiskHonorar = (
             ((handymantimer * aktuelleSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
