@@ -1,9 +1,10 @@
 import React from 'react'
 import PageAnimation from '../components/PageAnimation'
 import { useNavigate } from 'react-router-dom'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import styles from "./NyBruger.module.css"
 import { useSignup } from '../hooks/useSignup'
+import fasteSatser from '../variables'
 
 const NyBruger = () => {
     
@@ -16,12 +17,13 @@ const [telefon, setTelefon] = useState("");
 const [email, setEmail] = useState("");
 const [isAdmin, setIsAdmin] = useState(false);
 const [brugerID, setBrugerID] = useState("");
+const [satser, setSatser] = useState(fasteSatser)
 const { signup, error, loading, succes, setSucces } = useSignup();
 
 const handleSubmit = async (e) => {
     e.preventDefault();
 
-    await signup(navn, adresse, titel, telefon, email, password, isAdmin)
+    await signup(navn, adresse, titel, telefon, email, password, isAdmin, satser)
 }
 
 function startForfra(){
@@ -41,6 +43,20 @@ const navigate = useNavigate();
 function navigerTilBruger(){
     navigate(`../brugere/${brugerID}`)
 }
+
+useEffect(() => {
+    const satserForNyeBrugere = {
+        handymanTimerHonorar: Math.round(satser.handymanTimerHonorar * 0.5),
+        tømrerTimerHonorar: Math.round(satser.tømrerTimerHonorar * 0.5),
+        rådgivningOpmålingVejledningHonorar: Math.round(satser.rådgivningOpmålingVejledningHonorar * 0.5),
+        opstartsgebyrHonorar: Math.round(satser.opstartsgebyrHonorar * 0.5),
+        aftenTillægHonorar: Math.round(satser.aftenTillægHonorar * 0.5),
+        natTillægHonorar: Math.round(satser.natTillægHonorar * 0.5),
+        trailerHonorar: Math.round(satser.trailerHonorar * 0.5),
+    }
+
+    setSatser(satserForNyeBrugere)
+}, [])
 
 function autoKode(){
     let randomPassword = ""
@@ -96,6 +112,7 @@ return (
                 </div> : <button className={styles.submitButton}>{loading ? "Opretter bruger ..." : "Opret bruger"}</button>}
             </div>
         </form>
+        {console.log(satser)}
         {error && <div className={styles.error}>{error}</div>}
     </div>
 </PageAnimation>

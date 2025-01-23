@@ -54,7 +54,7 @@ const brugerSchema = new Schema({
 })
 
 // static signup method
-brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar, eventColor ) {
+brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, email, password, isAdmin, showTraditionalCalendar, eventColor, satser ) {
     
     // validation
     if (!email || !password) {
@@ -91,7 +91,7 @@ brugerSchema.statics.signup = async function (navn, adresse, titel, telefon, ema
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(password, salt)
 
-    const bruger = await this.create({ navn, telefon, adresse, titel, email, password: hash, isAdmin, showTraditionalCalendar, eventColor })
+    const bruger = await this.create({ navn, telefon, adresse, titel, email, password: hash, isAdmin, showTraditionalCalendar, eventColor, satser })
 
     return bruger
 }

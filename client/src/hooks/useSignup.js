@@ -7,14 +7,14 @@ export const useSignup = () => {
     const [succes, setSucces] = useState(false);
     // const { dispatch } = useAuthContext();
 
-    const signup = async (navn, adresse, titel, telefon, email, password, isAdmin) => {
+    const signup = async (navn, adresse, titel, telefon, email, password, isAdmin, satser) => {
         setLoading(true)
         setError(null)
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/brugere/signup`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ navn, adresse, titel, telefon, email, password, isAdmin })
+            body: JSON.stringify({ navn, adresse, titel, telefon, email, password, isAdmin, satser })
         })
 
         const json = await response.json();
