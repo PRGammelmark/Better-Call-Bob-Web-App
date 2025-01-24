@@ -67,7 +67,7 @@ const PosteringSatserModal = (props) => {
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
-            <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID)} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
+            <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID).split(' ')[0]} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
             <div className={ÅbenOpgaveCSS.posteringCard}>
                 <div>
                     <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
@@ -155,7 +155,7 @@ const PosteringSatserModal = (props) => {
                         <div className={styles.posteringRække}>
                             <span className={styles.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
                             <span className={styles.posteringRækkeSatser}>-</span>
-                            <span>-{((postering.totalHonorar / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={styles.posteringRækkeSatser}>- {((postering.totalHonorar / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                         </div>
                     )}
                     <div className={styles.totalRække}>

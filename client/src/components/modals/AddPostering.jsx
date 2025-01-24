@@ -53,8 +53,6 @@ const AddPostering = (props) => {
     function tilføjPostering (e) {
 
         const posteringSatser = aktuelleSatser;
-        const posteringFastHonorar = 0;
-        const posteringFastPris = 0;
         const posteringDynamiskHonorar = (
             ((handymantimer * posteringSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
             ((tømrertimer * posteringSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 

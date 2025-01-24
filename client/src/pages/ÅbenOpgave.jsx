@@ -952,53 +952,44 @@ const ÅbenOpgave = () => {
       };
 
     // konstater til regnskabsopstillingen -- HONORARER --
-    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.opstart * satser.opstartsgebyrHonorar || 0), 0);
-    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer * satser.handymanTimerHonorar|| 0), 0));
-    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer * satser.tømrerTimerHonorar || 0), 0));
-    const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.rådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningHonorar || 0), 0));
-    const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.trailer * satser.trailerHonorar || 0), 0));
-    const aftenTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.aftenTillæg ? ((nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * satser.aftenTillægHonorar || 0) : 0), 0));
-    const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.natTillæg ? ((nuv.handymanTimer * (satser.handymanTimerPrisInklNatTillæg - satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (satser.tømrerTimerPrisInklNatTillæg - satser.tømrerTimerPris))) || 0) : 0), 0));
-    const udlægTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => {
+    const fasteHonorarerTotal = posteringer && posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskHonorarBeregning ? nuv.fastHonorar : 0), 0);
+    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.opstart * satser.opstartsgebyrHonorar) : 0), 0);
+    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.handymanTimer * satser.handymanTimerHonorar) : 0), 0));
+    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.tømrerTimer * satser.tømrerTimerHonorar) : 0), 0));
+    const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningHonorar) : 0), 0));
+    const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * satser.trailerHonorar) : 0), 0));
+    const aftenTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * satser.aftenTillægHonorar) : 0) : 0), 0));
+    const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (satser.handymanTimerPrisInklNatTillæg - satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (satser.tømrerTimerPrisInklNatTillæg - satser.tømrerTimerPris)))) : 0) : 0), 0));
+    const udlægTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + udlægSum;
+        return akk + (nuv.dynamiskHonorarBeregning ? udlægSum : 0);
     }, 0);
     const rabatterTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
         const rabatProcent = nuv.rabatProcent || 0;
         const totalHonorarEksklUdlæg = (nuv.totalHonorar - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
-        return akk + ((totalHonorarEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100));
+        return akk + (nuv.dynamiskHonorarBeregning ? ((totalHonorarEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
     }, 0);
-    const totalHonorar = Number(opstartTotalHonorar) + Number(handymanTotalHonorar) + Number(tømrerTotalHonorar) + Number(rådgivningOpmålingVejledningTotalHonorar) + Number(trailerTotalHonorar) + Number(aftenTillægTotalHonorar) + Number(natTillægTotalHonorar) + Number(udlægTotalHonorar) - Number(rabatterTotalHonorar);
+    const totalHonorar = Number(fasteHonorarerTotal) + Number(opstartTotalHonorar) + Number(handymanTotalHonorar) + Number(tømrerTotalHonorar) + Number(rådgivningOpmålingVejledningTotalHonorar) + Number(trailerTotalHonorar) + Number(aftenTillægTotalHonorar) + Number(natTillægTotalHonorar) + Number(udlægTotalHonorar) - Number(rabatterTotalHonorar);
 
     // konstanter til regnskabsopstillingen -- FAKTURA --
-    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.opstart * nuv.satser.opstartsgebyrPris || 0), 0)));
-    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.handymanTimer * nuv.satser.handymanTimerPris || 0), 0)));
-    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris || 0), 0)));
-    const rådgivningOpmålingVejledningTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris || 0), 0)));
-    const trailerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.trailer * nuv.satser.trailerPris || 0), 0)));
-    const aftenTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris))) || 0) : 0), 0)));
-    const natTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris))) || 0) : 0), 0)));
+    const fastPrisTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskPrisBeregning ? nuv.fastPris : 0), 0)));
+    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrPris) : 0), 0)));
+    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPris) : 0), 0)));
+    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) : 0), 0)));
+    const rådgivningOpmålingVejledningTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris) : 0), 0)));
+    const trailerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.trailer * nuv.satser.trailerPris) : 0), 0)));
+    const aftenTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0)));
+    const natTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0)));
     const udlægTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + udlægSum;
+        return akk + (nuv.dynamiskPrisBeregning ? udlægSum : 0);
     }, 0);
     const rabatterTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
         const rabatProcent = nuv.rabatProcent || 0;
         const totalPrisEksklUdlæg = (nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
-        return akk + ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100));
+        return akk + (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
     }, 0);
-    const totalFaktura = Number(opstartTotalFaktura) + Number(handymanTotalFaktura) + Number(tømrerTotalFaktura) + Number(rådgivningOpmålingVejledningTotalFaktura) + Number(trailerTotalFaktura) + Number(aftenTillægTotalFaktura) + Number(natTillægTotalFaktura) + Number(udlægTotalFaktura) - Number(rabatterTotalFaktura);
-
-    console.log("opstartTotalFaktura", opstartTotalFaktura)
-    console.log("handymanTotalFaktura", handymanTotalFaktura)
-    console.log("tømrerTotalFaktura", tømrerTotalFaktura)
-    console.log("rådgivningOpmålingVejledningTotalFaktura", rådgivningOpmålingVejledningTotalFaktura)
-    console.log("trailerTotalFaktura", trailerTotalFaktura)
-    console.log("aftenTillægTotalFaktura", aftenTillægTotalFaktura)
-    console.log("natTillægTotalFaktura", natTillægTotalFaktura)
-    console.log("udlægTotalFaktura", udlægTotalFaktura)
-    console.log("rabatterTotalFaktura", rabatterTotalFaktura)
-    console.log("totalFaktura", totalFaktura)
+    const totalFaktura = Number(fastPrisTotalFaktura) + Number(opstartTotalFaktura) + Number(handymanTotalFaktura) + Number(tømrerTotalFaktura) + Number(rådgivningOpmålingVejledningTotalFaktura) + Number(trailerTotalFaktura) + Number(aftenTillægTotalFaktura) + Number(natTillægTotalFaktura) + Number(udlægTotalFaktura) - Number(rabatterTotalFaktura);
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
         if (opgave && opgave.fakturaPDFUrl) {
@@ -1459,58 +1450,64 @@ const ÅbenOpgave = () => {
                                             </div>
                                         </div>
                                         <div className={ÅbenOpgaveCSS.posteringListe}>
-                                            {postering.opstart > 0 && (
+                                            {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
                                                     <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.handymanTimer > 0 && (
+                                            {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
                                                     <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.tømrerTimer > 0 && (
+                                            {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
                                                     <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.rådgivningOpmålingVejledning > 0 && (
+                                            {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
                                                     <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.aftenTillæg && (
+                                            {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg ({postering.satser.aftenTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
                                                     <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.aftenTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.natTillæg && (
+                                            {postering.natTillæg && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg ({postering.satser.natTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
                                                     <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.natTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.trailer && (
+                                            {postering.trailer && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
                                                     <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.udlæg.length > 0 && (
+                                            {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
                                                     <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
-                                            {postering.rabatProcent > 0 && (
+                                            {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
                                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                                    <span>-{(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                    <span>- {(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                                </div>
+                                            )}
+                                            {!postering.dynamiskHonorarBeregning && (
+                                                <div className={ÅbenOpgaveCSS.posteringRække}>
+                                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
+                                                    <span>{postering.fastHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                                 </div>
                                             )}
                                             <div className={ÅbenOpgaveCSS.totalRække}>
@@ -1741,6 +1738,10 @@ const ÅbenOpgave = () => {
                         </>
                         :
                         <>
+                            {fastPrisTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>Faste priser (i alt):</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{fastPrisTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            </div>}
                             {opstartTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
@@ -1784,6 +1785,10 @@ const ÅbenOpgave = () => {
                         </>}
                         <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Udgifter</b>
                         <p className={ÅbenOpgaveCSS.opgaveØkonomiRedSubheading}>{opgave && opgave.ansvarlig.length > 1 ? "(medarbejderne skal have)" : "(medarbejderen skal have)"}</p>
+                        {fasteHonorarerTotal > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>Faste honorarer (i alt):</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{fasteHonorarerTotal.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                        </div>}
                         {opstartTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
