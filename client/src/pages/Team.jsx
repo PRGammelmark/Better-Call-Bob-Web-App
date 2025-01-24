@@ -42,23 +42,23 @@ const Team = () => {
     }, [løntrinModal])
 
     const akkumuleredeStandardSatser = (
-        satser.handymanTimerHonorar + 
-        satser.tømrerTimerHonorar + 
-        satser.opstartsgebyrHonorar + 
-        satser.aftenTillægHonorar + 
-        satser.natTillægHonorar + 
-        satser.trailerHonorar + 
-        satser.rådgivningOpmålingVejledningHonorar
+        Number(satser.handymanTimerHonorar) + 
+        Number(satser.tømrerTimerHonorar) + 
+        Number(satser.opstartsgebyrHonorar) + 
+        Number(satser.aftenTillægHonorar) + 
+        Number(satser.natTillægHonorar) + 
+        Number(satser.trailerHonorar) + 
+        Number(satser.rådgivningOpmålingVejledningHonorar)
     )
 
     const akkumuleredeSatserForBruger = (bruger) => {
-        return (bruger.satser ? bruger.satser.handymanTimerHonorar : satser.handymanTimerHonorar) + 
-        (bruger.satser ? bruger.satser.tømrerTimerHonorar : satser.tømrerTimerHonorar) + 
-        (bruger.satser ? bruger.satser.opstartsgebyrHonorar : satser.opstartsgebyrHonorar) + 
-        (bruger.satser ? bruger.satser.aftenTillægHonorar : satser.aftenTillægHonorar) + 
-        (bruger.satser ? bruger.satser.natTillægHonorar : satser.natTillægHonorar) + 
-        (bruger.satser ? bruger.satser.trailerHonorar : satser.trailerHonorar) + 
-        (bruger.satser ? bruger.satser.rådgivningOpmålingVejledningHonorar : satser.rådgivningOpmålingVejledningHonorar)
+        return Number(bruger.satser ? bruger.satser.handymanTimerHonorar : satser.handymanTimerHonorar) + 
+        Number(bruger.satser ? bruger.satser.tømrerTimerHonorar : satser.tømrerTimerHonorar) + 
+        Number(bruger.satser ? bruger.satser.opstartsgebyrHonorar : satser.opstartsgebyrHonorar) + 
+        Number(bruger.satser ? bruger.satser.aftenTillægHonorar : satser.aftenTillægHonorar) + 
+        Number(bruger.satser ? bruger.satser.natTillægHonorar : satser.natTillægHonorar) + 
+        Number(bruger.satser ? bruger.satser.trailerHonorar : satser.trailerHonorar) + 
+        Number(bruger.satser ? bruger.satser.rådgivningOpmålingVejledningHonorar : satser.rådgivningOpmålingVejledningHonorar)
     }
   
     return (

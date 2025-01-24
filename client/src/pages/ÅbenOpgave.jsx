@@ -24,6 +24,8 @@ import CloseIcon from "../assets/closeIcon.svg"
 import SwitcherStyles from './Switcher.module.css'
 import satser from '../variables'
 import AddPostering from '../components/modals/AddPostering.jsx'
+import PosteringSatserModal from '../components/modals/PosteringSatserModal.jsx'
+
 const ÅbenOpgave = () => {
     
     const navigate = useNavigate();
@@ -92,6 +94,7 @@ const ÅbenOpgave = () => {
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
+    const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -1493,6 +1496,8 @@ const ÅbenOpgave = () => {
                                         </div>
                                     </div>
                                     <div className={ÅbenOpgaveCSS.posteringKnapper}>
+                                        <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
+                                        <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
                                         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id), setEditedPostering(postering)}}>Rediger</button>}
                                         <Modal trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID}>
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger {getBrugerName(editedPostering.brugerID).split(" ")[0]}s postering</h2>

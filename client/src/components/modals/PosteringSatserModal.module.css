@@ -1,0 +1,48 @@
+.modalHeading {
+    font-family: OmnesBold;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.posteringRække {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    gap: 25px;
+}
+
+.totalRække {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px;
+    margin-top: 5px;
+    padding-top: 5px;
+    border-top: 1px solid #1f1f1f30;
+}
+
+.totalRækkeBeskrivelse {
+    font-family: OmnesBold;
+}
+
+.totalRækkeResultat {
+    font-family: OmnesBold;
+}
+
+.posteringListe {
+    padding-top: 5px;
+    border-top: 1px solid #33333330;
+}
+
+.posteringRækkeBeskrivelse {
+    width: 50%;
+    text-align: left;
+}
+
+.posteringRækkeSatser {
+    width: 25%;
+    text-align: right;
+}
+
+.løngruppeP {
+    margin-bottom: 20px;
+}
