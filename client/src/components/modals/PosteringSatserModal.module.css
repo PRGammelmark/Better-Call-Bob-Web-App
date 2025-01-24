@@ -4,6 +4,12 @@
     margin-bottom: 20px;
 }
 
+.modalHeading3 {
+    font-family: OmnesBold;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
 .posteringRække {
     display: flex;
     justify-content: space-between;
@@ -45,4 +51,58 @@
 
 .løngruppeP {
     margin-bottom: 20px;
+}
+
+.obsInfo {
+    font-size: 0.85rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-family: Omnes;
+    margin-top: 20px;
+    background: #ff000020;
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.alleMedarbejdersSatser {
+    margin-top: 20px;
+}
+
+.inputLinesContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f0f0f0;
+    padding: 15px 20px;
+    border-radius: 20px;
+    margin-top: 20px;
+}
+
+.inputLine {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 0px 0 10px 0;
+}
+
+.inputLine:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.label {
+    font-family: Omnes;
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.subLabel {
+    font-size: 0.8rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-family: Omnes;
+    margin-top: -20px;
+    display: inline-block;
 }

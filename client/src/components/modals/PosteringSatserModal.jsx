@@ -9,6 +9,10 @@ import satser from '../../variables'
 const PosteringSatserModal = (props) => {
     const postering = props.postering;
 
+    const bruger = props.brugere && props.brugere.find(user => user._id === postering.brugerID);
+
+    const brugersAktuelleSatser = bruger && bruger.satser || satser;
+
     const getBrugerName = (brugerID) => {
         const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
         return bruger ? bruger.navn : 'Unknown User';
@@ -37,10 +41,33 @@ const PosteringSatserModal = (props) => {
         return løntrin;
     }
 
+    const beregnAktuelLøngruppe = (brugersAktuelleSatser) => {
+        const akkumuleredeStandardSatser = 
+            Number(satser.handymanTimerHonorar) + 
+            Number(satser.tømrerTimerHonorar) + 
+            Number(satser.rådgivningOpmålingVejledningHonorar) + 
+            Number(satser.opstartsgebyrHonorar) + 
+            Number(satser.aftenTillægHonorar) + 
+            Number(satser.natTillægHonorar) + 
+            Number(satser.trailerHonorar);
+
+        const akkumuleredeBrugerSatser = 
+            Number(brugersAktuelleSatser.handymanTimerHonorar) + 
+            Number(brugersAktuelleSatser.tømrerTimerHonorar) + 
+            Number(brugersAktuelleSatser.rådgivningOpmålingVejledningHonorar) + 
+            Number(brugersAktuelleSatser.opstartsgebyrHonorar) + 
+            Number(brugersAktuelleSatser.aftenTillægHonorar) + 
+            Number(brugersAktuelleSatser.natTillægHonorar) + 
+            Number(brugersAktuelleSatser.trailerHonorar);
+        
+        const løntrin = Math.floor((akkumuleredeBrugerSatser / akkumuleredeStandardSatser) * 10);
+        return løntrin;
+    }
+
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
-            <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID)} er på <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px'}}><b>løntrin {beregnLøngruppe(postering)}.</b></span></p>
+            <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID)} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
             <div className={ÅbenOpgaveCSS.posteringCard}>
                 <div>
                     <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
@@ -136,7 +163,43 @@ const PosteringSatserModal = (props) => {
                         <b className={styles.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                     </div>
                 </div>
-                
+            </div>
+            <div className={styles.obsInfo}>
+                <p>OBS! Satserne angivet i posteringen er hentet fra medarbejderens lønsatser på tidspunktet for posteringens oprettelse. Medarbejderens nuværende lønsatser kan være forskellige fra satserne angivet i posteringen.</p>
+            </div>
+            <div className={styles.alleMedarbejdersSatser}>
+                <h3 className={styles.modalHeading3}>{getBrugerName(postering.brugerID).split(' ')[0]}s nuværende lønsatser (ekskl. moms)</h3>
+                <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID)} er pt. på <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnAktuelLøngruppe(brugersAktuelleSatser)}.</b></span></p>
+                <div className={styles.inputLinesContainer}>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Handymantimer<br /><span className={styles.subLabel}>Kr./timen</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.handymanTimerHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Tømrertimer <br /><span className={styles.subLabel}>Kr./timen</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.tømrerTimerHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Rådgivning/opmåling <br /><span className={styles.subLabel}>Kr./timen</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.rådgivningOpmålingVejledningHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Opstartsgebyr <br /><span className={styles.subLabel}>Kr./gang</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.opstartsgebyrHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Aftentillæg <br /><span className={styles.subLabel}>Kr./timen</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.aftenTillægHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Nattillæg <br /><span className={styles.subLabel}>Kr./timen</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.natTillægHonorar},-</p>
+                    </div>
+                    <div className={styles.inputLine}>
+                        <p className={styles.label}>Trailer <br /><span className={styles.subLabel}>Kr./gang</span></p>
+                        <p className={styles.label}>Kr. {brugersAktuelleSatser.trailerHonorar},-</p>
+                    </div>
+                </div>
             </div>
         </Modal>
     )

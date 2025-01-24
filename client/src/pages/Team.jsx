@@ -8,6 +8,7 @@ import PhoneIcon from "../assets/phone.svg"
 import MailIcon from "../assets/mail.svg"
 import satser from '../variables'
 import RedigerLøntrin from '../components/modals/RedigerLøntrin'
+
 const Team = () => {
     const [team, setTeam] = useState(null)
     const [admins, setAdmins] = useState(null)
