@@ -67,12 +67,7 @@ const RedigerLøntrin = (props) => {
         setBrugerSatser(nyeLønsatser);
     };
 
-    useEffect(() => {
-        console.log("Calculating løntrin...");
-        console.log("bruger:", bruger);
-        console.log("akkumuleredeBrugerSatser:", akkumuleredeBrugerSatser);
-        console.log("akkumuleredeStandardSatser:", akkumuleredeStandardSatser);
-    
+    useEffect(() => {    
         const updatedLøntrin = Math.floor((akkumuleredeBrugerSatser / akkumuleredeStandardSatser) * 10);
         setLøntrin(updatedLøntrin);
     }, [akkumuleredeBrugerSatser, akkumuleredeStandardSatser, bruger]);
