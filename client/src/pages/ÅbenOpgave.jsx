@@ -25,7 +25,7 @@ import SwitcherStyles from './Switcher.module.css'
 import satser from '../variables'
 import AddPostering from '../components/modals/AddPostering.jsx'
 import PosteringSatserModal from '../components/modals/PosteringSatserModal.jsx'
-
+import RedigerPostering from '../components/modals/RedigerPostering.jsx'
 const ÅbenOpgave = () => {
     
     const navigate = useNavigate();
@@ -238,7 +238,7 @@ const ÅbenOpgave = () => {
             setPosteringer(filteredPosteringer);
         })
         .catch(error => console.log(error))
-    }, [openModal])
+    }, [openModal, openPosteringModalID])
 
     if (loading) {
         return (
@@ -1520,7 +1520,8 @@ const ÅbenOpgave = () => {
                                         <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
                                         <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
                                         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id), setEditedPostering(postering)}}>Rediger</button>}
-                                        <Modal trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID}>
+                                        <RedigerPostering trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID} postering={postering} />
+                                        {/* <Modal trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID}>
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger {getBrugerName(editedPostering.brugerID).split(" ")[0]}s postering</h2>
                                                 <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
                                                     e.preventDefault();
@@ -1644,7 +1645,7 @@ const ÅbenOpgave = () => {
                                                     </div>
                                                     <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater postering</button>
                                                 </form>
-                                        </Modal>
+                                        </Modal> */}
                                         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
                                     </div>
                                 </div>
