@@ -95,8 +95,8 @@ const RedigerPostering = (props) => {
             dynamiskPris: posteringDynamiskPris,
             totalHonorar: dynamiskHonorarBeregning ? posteringDynamiskHonorar : posteringFastHonorar,
             totalPris: dynamiskPrisBeregning ? posteringDynamiskPris : posteringFastPris,
-            opgaveID: props.opgaveID,
-            brugerID: props.userID
+            opgaveID: postering.opgaveID,
+            brugerID: postering.brugerID
         }
 
         axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${postering._id}`, editedPostering, {
@@ -155,7 +155,6 @@ const RedigerPostering = (props) => {
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger postering 📄</h2>
-            <button onClick={() => console.log(postering)}>Close</button>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {
                 e.preventDefault();
                 redigerPostering();
@@ -307,7 +306,7 @@ const RedigerPostering = (props) => {
                 </div>}
                 <div className={ÅbenOpgaveCSS.previewTotalPostering}>
                     <div className={ÅbenOpgaveCSS.previewHonorarTotal}>
-                        <h3 className={ÅbenOpgaveCSS.modalHeading4}>Total: {(dynamiskHonorarBeregning ? previewDynamiskHonorar : posteringFastHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}{rabatProcent > 0 && <span className={ÅbenOpgaveCSS.overstregetPreview}>{(((previewDynamiskHonorar - previewDynamiskOutlays) / (100 - rabatProcent) * 100) + previewDynamiskOutlays).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>}</h3>
+                        <h3 className={ÅbenOpgaveCSS.modalHeading4}>Total: {(dynamiskHonorarBeregning ? previewDynamiskHonorar : posteringFastHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}{rabatProcent > 0 && dynamiskHonorarBeregning && <span className={ÅbenOpgaveCSS.overstregetPreview}>{(((previewDynamiskHonorar - previewDynamiskOutlays) / (100 - rabatProcent) * 100) + previewDynamiskOutlays).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>}</h3>
                         <p className={ÅbenOpgaveCSS.modalSubheading}>Dit honorar for posteringen</p>
                     </div>
                     <button className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} type="submit">Opdatér postering</button>
