@@ -50,6 +50,9 @@ const Overblik = () => {
     if(user.isAdmin){
       setManagerOverblik(true)
       setLoading(false)
+    } else {
+      setManagerOverblik(false)
+      setLoading(false)
     }
   }, [user])
 
@@ -101,6 +104,9 @@ const Overblik = () => {
           <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
         </div>
         <OpenTasks />
+        <p className={Styles.alleOpgaverButton} onClick={() => {
+          navigate(`/alle-opgaver`)
+        }}>Gå til alle opgaver</p>
         <ÅbenOpgaveCalendar 
                         user={user} 
                         tilknyttetOpgave={tilknyttetOpgave}

@@ -38,19 +38,23 @@ const PersonligtØkonomiskOverblik = (props) => {
     // FILTRER POSTERINGER OG BEREGN TJENT + UDLÆG FOR VALGT MÅNED
     useEffect(() => {
         const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
-        const denneMånedsOpstartsgebyrer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        const denneMånedsHandymantimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-        const denneMånedsTømrertimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+        const denneMånedsOpstartsgebyrer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
+        const denneMånedsHandymantimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
+        const denneMånedsTømrertimer = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
+        const denneMånedsRådgivningOpmålingVejledning = denneMånedsPosteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
+        const denneMånedsAftenTillæg = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.aftenTillægHonorar : 0), 0)
+        const denneMånedsNatTillæg = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.natTillægHonorar : 0), 0)
+        const denneMånedsTrailer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
         const denneMånedsUdlæg = denneMånedsPosteringer.reduce((sum, postering) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
         }, 0);
 
         const sumUdlægDenneMåned = denneMånedsUdlæg;
-        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + (denneMånedsHandymantimer * satser.handymanTimerHonorar) + (denneMånedsTømrertimer * satser.tømrerTimerHonorar)
+        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + denneMånedsHandymantimer + denneMånedsTømrertimer + denneMånedsRådgivningOpmålingVejledning + denneMånedsAftenTillæg + denneMånedsNatTillæg + denneMånedsTrailer
         
         setTjentDenneMåned(sumTjentDenneMåned)
-        setUdlægDenneMåned(sumUdlægDenneMåned)
+        setUdlægDenneMåned(denneMånedsUdlæg)
 
     }, [posteringer, månedOffset])
 

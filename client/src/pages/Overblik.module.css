@@ -359,6 +359,26 @@
     align-items: center;
 }
 
+.alleOpgaverButton {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    cursor: pointer;
+    color: #222222;
+    font-weight: bold;
+    font-family: OmnesBold;
+    font-size: 14px;
+    background-color: #ffffff00;
+    padding: 10px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.alleOpgaverButton:hover {
+    background-color: #f0f0f0;
+}
+
 @media screen and (max-width: 750px) {
     .heading {
         display: none;

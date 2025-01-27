@@ -26,11 +26,15 @@ const AdminØkonomiskOverblik = (props) => {
     }
 
     function beregnTjent(posteringer) {
-        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
+        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
+        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
+        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
+        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.aftenTillægHonorar : 0), 0)
+        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.natTillægHonorar : 0), 0)
+        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
 
-        return månedensOpstartsgebyrer + (månedensHandymantimer * satser.handymanTimerHonorar) + (månedensTømrertimer * satser.tømrerTimerHonorar)
+        return månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
     }
 
     function beregnUdlagt(posteringer) {

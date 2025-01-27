@@ -7,8 +7,6 @@ import dayjs from 'dayjs'
 import PageAnimation from '../PageAnimation'
 import BackIcon from "../../assets/back.svg"
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
-import Paperclip from "../../assets/paperclip.svg"
-// import { handymanTimerHonorar, tømrerTimerHonorar, opstartsgebyrHonorar } from '../../variables'
 import satser from '../../variables'
 import axios from 'axios'
 
@@ -83,10 +81,10 @@ const ØkonomiOverblikModal = (props) => {
         .catch(error => console.log(error))
     }, [])
     
-    const getBrugerName = (brugerID) => {
-        const bruger = brugere && brugere.find(user => user._id === brugerID);
-        return bruger ? bruger.navn : 'Unknown User';
-    };
+    // const getBrugerName = (brugerID) => {
+    //     const bruger = brugere && brugere.find(user => user._id === brugerID);
+    //     return bruger ? bruger.navn : 'Unknown User';
+    // };
 
     const getOpgaveAdresse = (opgaveID) => {
         const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
@@ -94,11 +92,15 @@ const ØkonomiOverblikModal = (props) => {
     };
     
     function beregnTjent(posteringer) {
-        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
+        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
+        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
+        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
+        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.aftenTillægHonorar : 0), 0)
+        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.natTillægHonorar : 0), 0)
+        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
 
-        return månedensOpstartsgebyrer + (månedensHandymantimer * satser.handymanTimerHonorar) + (månedensTømrertimer * satser.tømrerTimerHonorar)
+        return månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
     }
 
     function beregnUdlagt(posteringer) {
@@ -106,12 +108,8 @@ const ØkonomiOverblikModal = (props) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
         }, 0);
-        const månedensØvrigt = posteringer.reduce((sum, postering) => {
-            const øvrigtSum = postering.øvrigt.reduce((øvrigtSum, øvrigtItem) => øvrigtSum + øvrigtItem.beløb, 0);
-            return sum + øvrigtSum;
-        }, 0);
 
-        return månedensUdlæg + månedensØvrigt;
+        return månedensUdlæg;
     }
 
     let januarPosteringerX = []
@@ -510,7 +508,104 @@ const ØkonomiOverblikModal = (props) => {
             </div>
             <p className={Styles.modalText}>Posteringsgrundlag for {valgtMåned + " " + år}:</p>
             <div className={Styles.posteringerDiv}>
-                {posteringerDetaljer.map((postering, index) => (
+            {posteringerDetaljer && posteringerDetaljer.map((postering) => {
+                return (
+                    <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
+                        <div className={ÅbenOpgaveCSS.posteringCard}>
+
+                            <div>
+                                <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
+                                <p className={ÅbenOpgaveCSS.posteringBruger}>{postering.opgaveID && getOpgaveAdresse(postering.opgaveID)}</p>
+                                <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
+                                <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
+                                    {postering.udlæg.map((udlæg, index) => {
+                                        return udlæg.kvittering ? 
+                                        <img 
+                                        key={`udlæg-${index}`}
+                                        className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                        src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                        alt={udlæg.beskrivelse} 
+                                        onClick={() => {
+                                            setKvitteringBillede(udlæg.kvittering);
+                                        }}/> 
+                                        : 
+                                        null;
+                                    })}
+                                </div>
+                            </div>
+                            <div className={ÅbenOpgaveCSS.posteringListe}>
+                                {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
+                                        <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
+                                        <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
+                                        <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
+                                        <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg ({postering.satser.aftenTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
+                                        <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.aftenTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.natTillæg && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg ({postering.satser.natTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
+                                        <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.natTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.trailer && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
+                                        <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
+                                        <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
+                                        <span>- {(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                {!postering.dynamiskHonorarBeregning && (
+                                    <div className={ÅbenOpgaveCSS.posteringRække}>
+                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
+                                        <span>{postering.fastHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    </div>
+                                )}
+                                <div className={ÅbenOpgaveCSS.totalRække}>
+                                    <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
+                                    <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
+                                </div>
+                            </div>
+                        </div>
+                        <p style={{display: 'flex', marginTop: 10, justifyContent: 'center', cursor: 'pointer'}} className={ÅbenOpgaveCSS.prefix} onClick={() => {
+                        navigate(`/opgave/${postering.opgaveID}`)
+                    }}>Gå til opgave</p>
+                    </div>
+                );})}
+                {/* {posteringerDetaljer.map((postering, index) => (
                     <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
                     <div className={ÅbenOpgaveCSS.posteringCard}>
                         <div>
@@ -527,19 +622,6 @@ const ØkonomiOverblikModal = (props) => {
                                     alt={udlæg.beskrivelse} 
                                     onClick={() => {
                                         setKvitteringBillede(udlæg.kvittering);
-                                    }}/> 
-                                    : 
-                                    null;
-                                })}
-                                {postering.øvrigt.map((øvrigt, index) => {
-                                    return øvrigt.kvittering ? 
-                                    <img 
-                                    key={`øvrigt-${index}`}
-                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                    src={`${import.meta.env.VITE_API_URL}${øvrigt.kvittering}`} 
-                                    alt={øvrigt.beskrivelse} 
-                                    onClick={() => {
-                                        setKvitteringBillede(øvrigt.kvittering);
                                     }}/> 
                                     : 
                                     null;
@@ -563,10 +645,6 @@ const ØkonomiOverblikModal = (props) => {
                                 <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
                                 <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
                             </div>
-                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.øvrigt.length > 0 ? postering.øvrigt.length : 0} øvrigt: </span>
-                                <span>{postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                            </div>
                             <div className={ÅbenOpgaveCSS.totalRække}>
                                 <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
                                 <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{postering.total + " kr."}</b>
@@ -577,7 +655,7 @@ const ØkonomiOverblikModal = (props) => {
                         navigate(`/opgave/${postering.opgaveID}`)
                     }}>Gå til opgave</p>
                     </div>
-                ))}
+                ))} */}
             </div>
         </PageAnimation>
         </>}
