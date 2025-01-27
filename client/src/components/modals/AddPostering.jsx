@@ -153,7 +153,7 @@ const AddPostering = (props) => {
     };
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} >
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {
                 e.preventDefault();

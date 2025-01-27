@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDom from "react-dom";
 import ModalStyles from "./Modal.module.css";
+import CloseIcon from "../assets/closeIcon.svg";
 import { AnimatePresence, motion } from "framer-motion";
 
 // Define animations for overlay and modal separately
@@ -69,7 +70,7 @@ const Modal = ({ children, trigger, setTrigger }) => {
               onClick={() => setTrigger(false)}
               className={ModalStyles.lukModal}
             >
-              -
+              <img src={CloseIcon} alt="Luk modal" />
             </button>
             {children}
           </motion.div>

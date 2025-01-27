@@ -707,6 +707,7 @@
     cursor: pointer;
     color: #333333;
     transition: 0.2s ease;
+    width: 50%;
 }
 
 .genåbnButton:hover {
@@ -714,20 +715,6 @@
     color: #fff;
     border: 2px solid #59bf1a;
 }
-
-/* .informerKundenOmPåVej {
-    padding: 10px 20px;
-    border-radius: 15px;
-    background: #3c5a3f;
-    border: 2px solid #3c5a3f;
-    cursor: pointer;
-    color: #fff;
-    transition: 0.2s ease;
-    font-family: OmnesBold;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-} */
 
 .informerKundenOmPåVej {
     display: block;
@@ -804,11 +791,11 @@
     margin-bottom: 30px;
 }
 
-.indsendTilEconomicButton {
-    padding: 10px 20px;
+.startBetalingButton {
+    padding: 12px 20px;
     border-radius: 15px;
     font-family: OmnesBold;
-    margin-top: 20px;
+    margin-top: 15px;
     background: #3c5a3f;
     border: 2px solid #3c5a3f;
     cursor: pointer;
@@ -816,9 +803,12 @@
     transition: 0.2s ease;
     display: flex;
     align-items: center;
+    width: 100%;
+    justify-content: center;
+    font-size: 1rem;
 }
 
-.indsendTilEconomicButton:hover {
+.startBetalingButton:hover {
     background: #59bf1a;
     color: #fff;
     border: 2px solid #59bf1a;
@@ -1438,10 +1428,36 @@
     padding-top: 20px;
 }
 
+.ikkeAfsluttetButtonsDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: -6px;
+}
+
+.infoLine {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    background: #f0f0f0;
+    padding: 10px 20px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+}
+
 @media screen and (max-width: 750px) {
 
     .redigerKundeButtonDesktop {
         display: none;
+    }
+
+    .startBetalingButton {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.9rem;
+        font-family: OmnesBold;
     }
     
     .redigerKundeButtonMobile {

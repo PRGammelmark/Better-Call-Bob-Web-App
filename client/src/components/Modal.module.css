@@ -73,6 +73,14 @@
     color: rgba(193, 26, 57, 1);
     cursor: pointer;
     z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.lukModal img {
+    width: 16px;
+    height: 16px;
 }
 
 .modalHeading {

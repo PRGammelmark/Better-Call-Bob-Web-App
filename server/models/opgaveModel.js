@@ -99,6 +99,11 @@ const opgaverSchema = new Schema({
         type: String,
         required: false
     },
+    opgaveBetaltPåAndenVis: {
+        type: Date,
+        default: null,
+        required: false
+    },
     incrementalID: {
         type: Number,
         unique: true

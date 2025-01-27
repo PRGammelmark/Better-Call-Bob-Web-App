@@ -49,51 +49,41 @@ const FinishedTasks = () => {
   }, [user])
 
   // function beregnFakturaBeløb(posteringer) {
-  //   const handymanTotal = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * 447.2, 0);
-  //   const tømrerTotal = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * 480, 0);
-  //   const opstartTotal = posteringer.reduce((sum, postering) => sum + postering.opstart / 200 * 319, 0);
-  //   const udlægTotal = posteringer.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0), 0);
-  //   const øvrigtTotal = posteringer.reduce((sum, postering) => sum + postering.øvrigt.reduce((sum, item) => sum + Number(item.beløb), 0), 0);
-  //   const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal
-  //   return totalBeløb
-  // }
-
-  function beregnFakturaBeløb(posteringer) {
-    if (!Array.isArray(posteringer)) return 0; // Ensure posteringer is an array
+  //   if (!Array.isArray(posteringer)) return 0; // Ensure posteringer is an array
     
-    const handymanTotal = Array.isArray(posteringer) 
-      ? posteringer.reduce((sum, postering) => sum + ((postering.handymanTimer || 0) * 447.2), 0)
-      : 0;
+  //   const handymanTotal = Array.isArray(posteringer) 
+  //     ? posteringer.reduce((sum, postering) => sum + ((postering.handymanTimer || 0) * 447.2), 0)
+  //     : 0;
   
-    const tømrerTotal = Array.isArray(posteringer) 
-      ? posteringer.reduce((sum, postering) => sum + ((postering.tømrerTimer || 0) * 480), 0)
-      : 0;
+  //   const tømrerTotal = Array.isArray(posteringer) 
+  //     ? posteringer.reduce((sum, postering) => sum + ((postering.tømrerTimer || 0) * 480), 0)
+  //     : 0;
   
-    const opstartTotal = Array.isArray(posteringer) 
-      ? posteringer.reduce((sum, postering) => sum + (((postering.opstart || 0) / 200) * 319), 0)
-      : 0;
+  //   const opstartTotal = Array.isArray(posteringer) 
+  //     ? posteringer.reduce((sum, postering) => sum + (((postering.opstart || 0) / 200) * 319), 0)
+  //     : 0;
   
-    const udlægTotal = Array.isArray(posteringer) 
-      ? posteringer.reduce((sum, postering) => 
-          sum + (Array.isArray(postering.udlæg) 
-            ? postering.udlæg.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
-            : 0), 
-          0
-        )
-      : 0;
+  //   const udlægTotal = Array.isArray(posteringer) 
+  //     ? posteringer.reduce((sum, postering) => 
+  //         sum + (Array.isArray(postering.udlæg) 
+  //           ? postering.udlæg.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
+  //           : 0), 
+  //         0
+  //       )
+  //     : 0;
   
-    const øvrigtTotal = Array.isArray(posteringer) 
-      ? posteringer.reduce((sum, postering) => 
-          sum + (Array.isArray(postering.øvrigt) 
-            ? postering.øvrigt.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
-            : 0), 
-          0
-        )
-      : 0;
+  //   const øvrigtTotal = Array.isArray(posteringer) 
+  //     ? posteringer.reduce((sum, postering) => 
+  //         sum + (Array.isArray(postering.øvrigt) 
+  //           ? postering.øvrigt.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
+  //           : 0), 
+  //         0
+  //       )
+  //     : 0;
   
-    const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal;
-    return totalBeløb;
-  }
+  //   const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal;
+  //   return totalBeløb;
+  // }
   
 
   return (
@@ -114,14 +104,14 @@ const FinishedTasks = () => {
             <div className={`${TableCSS.opgaveBody} ${FinishedTasksCSS.finishedTasksBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                const fakturaBeløb = beregnFakturaBeløb(posteringerForOpgave)
+                const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                      <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                       <li>{opgave.adresse}</li>
-                      <li>{fakturaBeløb.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                      <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
                     <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
@@ -148,12 +138,12 @@ const FinishedTasks = () => {
             <div className={`${TableCSS.opgaveBody} ${FinishedTasksCSS.finishedTasksBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                const fakturaBeløb = beregnFakturaBeløb(posteringerForOpgave)
+                const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                     <ul>
-                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                      <li>{fakturaBeløb.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                      <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
                   </div>
