@@ -1,58 +1,144 @@
 import axios from "axios";
 import dayjs from "dayjs";
+import satser from "../variables";
 import BCBLogo from "../assets/mobilePay.png";
 
-const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal) => {
+const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal) => {
 
     console.log("Betaling med Mobile Pay via anmodning igangsættes.")
 
     const paymentInformation = {
         opgave: opgave,
         posteringer: posteringer,
-        totalFaktura: totalFaktura
+        totalFaktura: totalFaktura,
+        telefonnummerTilAnmodning: telefonnummerTilAnmodning || ""
     }
     
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
     }
 
+    function beregnRabat(postering) {
+        const rabatProcent = postering.rabatProcent > 0 ? postering.rabatProcent * postering.totalPris : 0;
+        const samledeUdlæg = postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0);
+        const totalRabat = (postering.totalPris - samledeUdlæg) * (1 - (rabatProcent / 100));
+        return totalRabat;
+    }
+
     // ===== BEREGNINGER TIL KVITTERING =====
-    const totalOpstartsgebyrer = posteringer.reduce((total, postering) => total + ((postering.opstart / 200) || 0), 0);
-    const totalHandymanTimer = posteringer.reduce((total, postering) => total + (postering.handymanTimer || 0), 0);
-    const totalTømrerTimer = posteringer.reduce((total, postering) => total + (postering.tømrerTimer || 0), 0);
-    const totalMaterialer = posteringer.reduce((total, postering) => total + (Array.isArray(postering.udlæg) ? postering.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb * 1.25), 0) : 0), 0);
-    const totalØvrigt = posteringer.reduce((total, postering) => total + (Array.isArray(postering.øvrigt) ? postering.øvrigt.reduce((sum, øvrigt) => sum + (øvrigt.beløb * 1.25), 0) : 0), 0);
-    const total = (totalOpstartsgebyrer * 399) + (totalHandymanTimer * 559) + (totalTømrerTimer * 600) + totalMaterialer + totalØvrigt
-    const totalMoms = total * 0.20
+    const antalOpstartsgebyrer = posteringer.reduce((total, postering) => total + ((postering.opstart) || 0), 0);
+    const antalHandymanTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.handymanTimer), 0);
+    const antalTømrerTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.tømrerTimer), 0);
+    const antalRådgivningOpmålingVejledning = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.rådgivningOpmålingVejledning), 0);
+    const antalHandymanTimerAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.handymanTimer) : 0), 0);
+    const antalTømrerTimerAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.tømrerTimer) : 0), 0);
+    const antalRådgivningOpmålingVejledningAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.rådgivningOpmålingVejledning) : 0), 0);
+    const antalHandymanTimerNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.handymanTimer) : 0), 0);
+    const antalTømrerTimerNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.tømrerTimer) : 0), 0);
+    const antalRådgivningOpmålingVejledningNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.rådgivningOpmålingVejledning) : 0), 0);
+    const antalTrailer = posteringer.reduce((total, postering) => total + (postering.trailer ? 1 : 0), 0);
+    
+    const totalOpstartsgebyrer = antalOpstartsgebyrer * satser.opstartPris
+    const totalHandymanTimer = antalHandymanTimer * satser.handymanTimerPris
+    const totalTømrerTimer = antalTømrerTimer * satser.tømrerTimerPris
+    const totalRådgivningOpmålingVejledning = antalRådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningPris
+    const totalHandymanTimerAftenTillæg = antalHandymanTimerAftenTillæg * satser.handymanTimerPrisInklAftenTillæg
+    const totalTømrerTimerAftenTillæg = antalTømrerTimerAftenTillæg * satser.tømrerTimerPrisInklAftenTillæg
+    const totalRådgivningOpmålingVejledningAftenTillæg = antalRådgivningOpmålingVejledningAftenTillæg * satser.tømrerTimerPrisInklAftenTillæg
+    const totalHandymanTimerNatTillæg = antalHandymanTimerNatTillæg * satser.handymanTimerPrisInklNatTillæg
+    const totalTømrerTimerNatTillæg = antalTømrerTimerNatTillæg * satser.tømrerTimerPrisInklNatTillæg
+    const totalRådgivningOpmålingVejledningNatTillæg = antalRådgivningOpmålingVejledningNatTillæg * satser.tømrerTimerPrisInklNatTillæg
+    const totalTrailer = antalTrailer * satser.trailerPris
+
+    const totalRabat = posteringer.reduce((total, postering) => total + beregnRabat(postering), 0);
+    const totalUdlæg = posteringer.reduce((total, postering) => total + (Array.isArray(postering.udlæg) ? postering.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb), 0) : 0), 0);
+    
+    const total = posteringer.reduce((total, postering) => total + postering.totalPris, 0);
+    const totalInklMoms = total * 1.25
+    const momsAfTotal = total * 0.25
 
     // ===== OPSÆTNING AF KVITTERINGSLINJER =====
-    const opstartsgebyrLinje = totalOpstartsgebyrer > 0 ? `
+    const opstartsgebyrLinje = antalOpstartsgebyrer > 0 ? `
         <tr>
-            <td>${totalOpstartsgebyrer} opstartsgebyr(er):</td>
-            <td style="text-align: right;">${(totalOpstartsgebyrer * 399).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td>${antalOpstartsgebyrer} opstartsgebyr(er):</td>
+            <td style="text-align: right;">${(totalOpstartsgebyrer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
-    const handymanTimerLinje = totalHandymanTimer > 0 ? `
+    const handymanTimerLinje = antalHandymanTimer > 0 ? `
         <tr>
-            <td>${totalHandymanTimer} handymantimer:</td>
-            <td style="text-align: right;">${(totalHandymanTimer * 559).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td>${antalHandymanTimer} handymantimer:</td>
+            <td style="text-align: right;">${(totalHandymanTimer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
-    const tømrerTimerLinje = totalTømrerTimer > 0 ? `
+    const tømrerTimerLinje = antalTømrerTimer > 0 ? `
         <tr>
-            <td>${totalTømrerTimer} tømrertimer:</td>
-            <td style="text-align: right;">${(totalTømrerTimer * 600).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td>${antalTømrerTimer} tømrertimer:</td>
+            <td style="text-align: right;">${(totalTømrerTimer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
-    const materialerLinje = totalMaterialer > 0 ? `
+    const rådgivningOpmålingVejledningLinje = antalRådgivningOpmålingVejledning > 0 ? `
         <tr>
-            <td>Materialer, i alt:</td>
-            <td style="text-align: right;">${(totalMaterialer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td>${antalRådgivningOpmålingVejledning} rådgivnings- og vejledningstimer:</td>
+            <td style="text-align: right;">${(totalRådgivningOpmålingVejledning * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const handymanTimerInklAftenTillægLinje = antalHandymanTimerAftenTillæg > 0 ? `
+    <tr>
+        <td>${antalHandymanTimerAftenTillæg} handymantimer (inkl. aftentillæg):</td>
+        <td style="text-align: right;">${(totalHandymanTimerAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+    </tr>` : '';
+
+    const tømrerTimerInklAftenTillægLinje = antalTømrerTimerAftenTillæg > 0 ? `
+        <tr>
+            <td>${antalTømrerTimerAftenTillæg} tømrertimer (inkl. aftentillæg):</td>
+            <td style="text-align: right;">${(totalTømrerTimerAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const rådgivningOpmålingVejledningInklAftenTillægLinje = antalRådgivningOpmålingVejledningAftenTillæg > 0 ? `
+        <tr>
+            <td>${antalRådgivningOpmålingVejledningAftenTillæg} rådgivnings- og vejledningstimer (inkl. aftentillæg):</td>
+            <td style="text-align: right;">${(totalRådgivningOpmålingVejledningAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const handymanTimerInklNatTillægLinje = antalHandymanTimerNatTillæg > 0 ? `
+    <tr>
+        <td>${antalHandymanTimerNatTillæg} handymantimer (inkl. nattillæg):</td>
+        <td style="text-align: right;">${(totalHandymanTimerNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+    </tr>` : '';
+
+    const tømrerTimerInklNatTillægLinje = antalTømrerTimerNatTillæg > 0 ? `
+        <tr>
+            <td>${antalTømrerTimerNatTillæg} tømrertimer (inkl. nattillæg):</td>
+            <td style="text-align: right;">${(totalTømrerTimerNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const rådgivningOpmålingVejledningInklNatTillægLinje = antalRådgivningOpmålingVejledningNatTillæg > 0 ? `
+        <tr>
+            <td>${antalRådgivningOpmålingVejledningNatTillæg} rådgivnings- og vejledningstimer (inkl. nattillæg):</td>
+            <td style="text-align: right;">${(totalRådgivningOpmålingVejledningNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const trailerLinje = antalTrailer > 0 ? `
+        <tr>
+            <td>${antalTrailer} x trailerbrug:</td>
+            <td style="text-align: right;">${(totalTrailer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const rabatLinje = totalRabat > 0 ? `
+        <tr>
+            <td>Rabat:</td>
+            <td style="text-align: right;">${(totalRabat * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const materialerLinje = totalUdlæg > 0 ? `
+        <tr>
+            <td>Udlæg & materialer, i alt:</td>
+            <td style="text-align: right;">${(totalUdlæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const materialeHeader = `
         <tr>
-            <td style="padding-top: 10px;">Materialer:</td>
+            <td style="padding-top: 10px;">Udlæg & materialer:</td>
         </tr>
         `
     
@@ -62,34 +148,16 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
             <td style="text-align: right; font-size: 0.8rem; opacity: 0.5;">${(udlæg.beløb * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>`).join('')).join('');
 
-    const øvrigtLinje = totalØvrigt > 0 ? `
-        <tr>
-            <td>Øvrigt, i alt:</td>
-            <td style="text-align: right;">${(totalØvrigt).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
-        </tr>` : '';
-
-    const øvrigtHeader = `
-        <tr>
-            <td style="padding-top: 10px;">Øvrigt:</td>
-        </tr>
-        `
-
-    const øvrigtDetaljer = posteringer.map(postering => postering.øvrigt.map(øvrigt => `
-        <tr>
-            <td style="font-size: 0.8rem; opacity: 0.5;">- ${øvrigt.beskrivelse}:</td>
-            <td style="text-align: right; font-size: 0.8rem; opacity: 0.5;">${(øvrigt.beløb * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
-        </tr>`).join('')).join('');
-
     const totalLinje = `
         <tr style="border-top: 1px solid black; padding-top: 20px;">
             <td style="font-size: 1.3rem; padding-top: 10px;"><b>Total:</b></td>
-            <td style="text-align: right; font-size: 1.3rem; padding-top: 10px;"><b>${(total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b></td>
+            <td style="text-align: right; font-size: 1.3rem; padding-top: 10px;"><b>${(totalInklMoms).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b></td>
         </tr>`;
 
     const momsLinje = `
         <tr>
             <td style="opacity: 0.5;">Heraf moms:</td>
-            <td style="text-align: right; opacity: 0.5;">${(totalMoms).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td style="text-align: right; opacity: 0.5;">${(momsAfTotal).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>`;
 
     const tableHeadings = `
@@ -112,12 +180,18 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                 ${opstartsgebyrLinje}
                 ${handymanTimerLinje}
                 ${tømrerTimerLinje}
+                ${rådgivningOpmålingVejledningLinje}
+                ${handymanTimerInklAftenTillægLinje}
+                ${tømrerTimerInklAftenTillægLinje}
+                ${rådgivningOpmålingVejledningInklAftenTillægLinje}
+                ${handymanTimerInklNatTillægLinje}
+                ${tømrerTimerInklNatTillægLinje}
+                ${rådgivningOpmålingVejledningInklNatTillægLinje}
+                ${trailerLinje}
+                ${rabatLinje}
                 ${materialeHeader}
-                ${materialeudlægDetaljer}
                 ${materialerLinje}
-                ${øvrigtHeader}
-                ${øvrigtDetaljer}
-                ${øvrigtLinje}
+                ${materialeudlægDetaljer}
                 ${totalLinje}
                 ${momsLinje}
             </table>

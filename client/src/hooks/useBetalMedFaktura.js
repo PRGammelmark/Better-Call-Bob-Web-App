@@ -25,7 +25,8 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alte
     // 3) -> BOOK FAKTURA 
     // 4) -> MARKER OPGAVE SOM AFSLUTTET
     // 5) -> LAGR FAKTURA PDF I DB
-    // 6) -> SEND SMS MED LINK TIL FAKTURA
+    // 6) -> SEND SMS TIL KUNDEN MED LINK TIL FAKTURA
+    // 7) -> SEND EMAIL TIL KUNDEN MED LINK TIL FAKTURA (KOMMENTERET UD FOR NU)
 
 
     // 1) -> OPRET NY KUNDE
@@ -207,24 +208,24 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alte
                             }
 
                             // 7) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
-                            axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                                to: alternativEmail ? alternativEmail : opgave.email,
-                                subject: `Faktura fra Better Call Bob`,
-                                body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
-                            }, {
-                                headers: {
-                                    'Authorization': `Bearer ${user.token}`
-                                }
-                            })
-                            .then(response => {
-                                console.log("Email sendt til kunden.");
-                                setLoadingFakturaSubmission(false);
-                                setSuccessFakturaSubmission(true);
-                            })
-                            .catch(error => {
-                                console.log("Fejl: Kunne ikke sende email til kunden.");
-                                console.log(error);
-                            })
+                            // axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                            //     to: alternativEmail ? alternativEmail : opgave.email,
+                            //     subject: `Faktura fra Better Call Bob`,
+                            //     body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
+                            // }, {
+                            //     headers: {
+                            //         'Authorization': `Bearer ${user.token}`
+                            //     }
+                            // })
+                            // .then(response => {
+                            //     console.log("Email sendt til kunden.");
+                            //     setLoadingFakturaSubmission(false);
+                            //     setSuccessFakturaSubmission(true);
+                            // })
+                            // .catch(error => {
+                            //     console.log("Fejl: Kunne ikke sende email til kunden.");
+                            //     console.log(error);
+                            // })
                         });
                     })
                     .catch(error => {

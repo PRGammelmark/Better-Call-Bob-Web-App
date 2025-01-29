@@ -80,6 +80,7 @@ router.post('/get-qr-code', async (req, res) => {
 
     const paymentInformationObject = req.body;
     const opgave = paymentInformationObject.opgave;
+    const telefonnummerTilAnmodning = paymentInformationObject.telefonnummerTilAnmodning;
     
     // STEP 1: GET ACCESS TOKEN
     console.log("Getting access token from MobilePay.")
@@ -97,7 +98,7 @@ router.post('/get-qr-code', async (req, res) => {
                 "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
             },
             "customer": {
-                "phoneNumber":`45${opgave.telefon}`
+                "phoneNumber":`45${telefonnummerTilAnmodning ||opgave.telefon}`
             },
             "paymentMethod": {
                 "type":"WALLET"

@@ -47,43 +47,6 @@ const FinishedTasks = () => {
       setPosteringer(res.data)
     })
   }, [user])
-
-  // function beregnFakturaBeløb(posteringer) {
-  //   if (!Array.isArray(posteringer)) return 0; // Ensure posteringer is an array
-    
-  //   const handymanTotal = Array.isArray(posteringer) 
-  //     ? posteringer.reduce((sum, postering) => sum + ((postering.handymanTimer || 0) * 447.2), 0)
-  //     : 0;
-  
-  //   const tømrerTotal = Array.isArray(posteringer) 
-  //     ? posteringer.reduce((sum, postering) => sum + ((postering.tømrerTimer || 0) * 480), 0)
-  //     : 0;
-  
-  //   const opstartTotal = Array.isArray(posteringer) 
-  //     ? posteringer.reduce((sum, postering) => sum + (((postering.opstart || 0) / 200) * 319), 0)
-  //     : 0;
-  
-  //   const udlægTotal = Array.isArray(posteringer) 
-  //     ? posteringer.reduce((sum, postering) => 
-  //         sum + (Array.isArray(postering.udlæg) 
-  //           ? postering.udlæg.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
-  //           : 0), 
-  //         0
-  //       )
-  //     : 0;
-  
-  //   const øvrigtTotal = Array.isArray(posteringer) 
-  //     ? posteringer.reduce((sum, postering) => 
-  //         sum + (Array.isArray(postering.øvrigt) 
-  //           ? postering.øvrigt.reduce((innerSum, item) => innerSum + Number(item.beløb || 0), 0) 
-  //           : 0), 
-  //         0
-  //       )
-  //     : 0;
-  
-  //   const totalBeløb = handymanTotal + tømrerTotal + opstartTotal + udlægTotal + øvrigtTotal;
-  //   return totalBeløb;
-  // }
   
 
   return (

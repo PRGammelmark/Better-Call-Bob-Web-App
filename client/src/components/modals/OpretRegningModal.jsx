@@ -51,7 +51,7 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
     function initierAnmodningState() {
         setBetalNuMedAnmodningModalState(true)
         setLoadingMobilePaySubmission(true)
-        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal)
+        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal)
     }
 
   return (
@@ -106,7 +106,7 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                         <input type="checkbox" id="opgaveLøst" name="opgaveLøst" className={SwitcherStyles.checkboxInput} required checked={opgaveLøstTilfredsstillende} onChange={(e) => setOpgaveLøstTilfredsstillende(e.target.checked)} />
                         <span className={SwitcherStyles.slider}></span>
                     </label>
-                    <b>Er kundens opgave blevet løst tilfredsstillende?</b>
+                    <b>Er opgaverne gennemgået og godkendt af kunden?</b>
                 </div>
                 <div className={SwitcherStyles.checkboxContainer}>
                     <label className={SwitcherStyles.switch} htmlFor="posteringerUdfyldt">

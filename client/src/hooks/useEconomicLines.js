@@ -1,3 +1,5 @@
+import satser from "../variables.js";
+
 const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
 
     const lines = []; 
@@ -13,12 +15,12 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                     productNumber: "5"
                 },
                 quantity: 1,
-                unitNetPrice: 319.20,
-                discountPercentage: 0.00
+                unitNetPrice: satser.opstartsgebyrPris,
+                discountPercentage: postering.rabatProcent || 0.00
             });
         }
 
-        if (postering.handymanTimer > 0 ) {
+        if (postering.handymanTimer > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
             lines.push({
                 lineNumber: lineNumber++,
                 description: `Handymanarbejde: ${postering.beskrivelse}`,
@@ -26,12 +28,38 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                     productNumber: "1"
                 },
                 quantity: (postering.handymanTimer),
-                unitNetPrice: 447.20,
-                discountPercentage: 0.00
+                unitNetPrice: satser.handymanTimerPris,
+                discountPercentage: postering.rabatProcent || 0.00
             });
         }
 
-        if (postering.tømrerTimer > 0) {
+        if (postering.handymanTimer > 0 && postering.aftenTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Handymanarbejde: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "1"
+                },
+                quantity: (postering.handymanTimer),
+                unitNetPrice: satser.handymanTimerPrisInklAftenTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.handymanTimer > 0 && postering.natTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Handymanarbejde: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "1"
+                },
+                quantity: (postering.handymanTimer),
+                unitNetPrice: satser.handymanTimerPrisInklNatTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.tømrerTimer > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
             lines.push({
                 lineNumber: lineNumber++,
                 description: `Tømrerarbejde: ${postering.beskrivelse}`,
@@ -40,7 +68,85 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                 },
                 quantity: (postering.tømrerTimer),
                 unitNetPrice: 480,
-                discountPercentage: 0.00
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.tømrerTimer > 0 && postering.aftenTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "6"
+                },
+                quantity: (postering.tømrerTimer),
+                unitNetPrice: satser.tømrerTimerPrisInklAftenTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.tømrerTimer > 0 && postering.natTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "6"
+                },
+                quantity: (postering.tømrerTimer),
+                unitNetPrice: satser.tømrerTimerPrisInklNatTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.rådgivningOpmålingVejledning > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "6"
+                },
+                quantity: (postering.rådgivningOpmålingVejledning),
+                unitNetPrice: satser.rådgivningOpmålingVejledningPris,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.rådgivningOpmålingVejledning > 0 && postering.aftenTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "6"
+                },
+                quantity: (postering.rådgivningOpmålingVejledning),
+                unitNetPrice: satser.tømrerTimerPrisInklAftenTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.rådgivningOpmålingVejledning > 0 && postering.natTillæg) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                product: {
+                    productNumber: "6"
+                },
+                quantity: (postering.rådgivningOpmålingVejledning),
+                unitNetPrice: satser.tømrerTimerPrisInklNatTillæg,
+                discountPercentage: postering.rabatProcent || 0.00
+            });
+        }
+
+        if (postering.trailer) {
+            lines.push({
+                lineNumber: lineNumber++,
+                description: `Trailer`,
+                product: {
+                    productNumber: "7"
+                },
+                quantity: 1,
+                unitNetPrice: satser.trailerPris,
+                discountPercentage: postering.rabatProcent || 0.00
             });
         }
 
@@ -57,21 +163,6 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
             })
         }
 
-        if (postering.øvrigt && postering.øvrigt.length > 0) {
-            postering.øvrigt.forEach(posteringØvrig => {
-                lines.push({
-                    lineNumber: lineNumber++,
-                    description: `${posteringØvrig.beskrivelse}`,
-                    product: {
-                        productNumber: "3"
-                    },
-                    quantity: 1,
-                    unitNetPrice: posteringØvrig.beløb,
-                    discountPercentage: 0.00
-                })
-            })
-        }
-
         if (bekræftAdmGebyr) {
             lines.push({
                 lineNumber: lineNumber++,
@@ -84,7 +175,6 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                 discountPercentage: 0.00
             })
         }
-
     })
 
     return lines;
