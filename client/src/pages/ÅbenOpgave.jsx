@@ -332,7 +332,15 @@ const ÅbenOpgave = () => {
                 }
             })
             .then(res => {
-                setNuværendeAnsvarlige(opdateretAnsvarlige);              
+                setNuværendeAnsvarlige(opdateretAnsvarlige);
+                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                    to: nyAnsvarlig.email,
+                    subject: "Du har fået tildelt en ny opgave",
+                    body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + opgave.navn + "\n\nAdresse: " + opgave.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
+                    html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + opgave.navn + "<br />Adresse: " + opgave.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på app'en for at se opgaven.</p><p>//Better Call Bob</p>"
+                })
+                .then(res => console.log(res.data))
+                .catch(error => console.log(error))
             })
             .catch(error => console.log(error));
         }
@@ -351,7 +359,6 @@ const ÅbenOpgave = () => {
             })
             .then(res => {
                 setNuværendeAnsvarlige(opdateredeAnsvarlige);
-                console.log(res.data);
             })
             .catch(error => console.log(error));
         }
