@@ -2,6 +2,11 @@
   "display": "standalone",
   "short_name": "Better Call Bob",
   "handle_links": "preferred",
+  "url_handlers": {
+    "https://app.bettercallbob.dk/*": {
+      "origin": "https://app.bettercallbob.dk"
+    }
+  },
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",
