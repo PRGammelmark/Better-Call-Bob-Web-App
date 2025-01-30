@@ -14,13 +14,21 @@ import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
+import resetPasswordRoutes from './routes/requestResetPassword.js';
 import scheduledCleanup from './utils/scheduledCleanup.js';
 import requestedCleanup from './utils/requestedCleanup.js';
 import cron from 'node-cron';
+import rateLimit from 'express-rate-limit';
 
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+
+const emailLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 5, // Limit each IP to 5 requests per windowMs
+    message: "Too many password reset requests. Try again later."
+});
 
 // middleware
 const allowedOrigins = [
@@ -69,6 +77,7 @@ app.post('/api/send-email', async (req, res) => {
 });
 
 // routes
+app.use('/api/password', resetPasswordRoutes);
 app.use('/api/opgaver', opgaverRoutes);
 app.use('/api/brugere', brugerRoutes);
 app.use('/api/posteringer', posteringRoutes);

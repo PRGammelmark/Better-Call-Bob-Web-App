@@ -51,6 +51,7 @@
     transition: 0.3s ease;
     display: block;
     margin-bottom: 10px;
+    margin-top: 20px;
     width: 100%;
 }
 
@@ -85,6 +86,14 @@
     padding-left: 10px;
     padding-right: 10px;
     width: 400px;
+}
+
+.error {
+    color: red;
+}
+
+.success {
+    color: green;
 }
 
 @media screen and (display-mode: standalone) {

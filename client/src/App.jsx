@@ -20,7 +20,7 @@ import Login from './pages/Login'
 import Team from './pages/Team'
 import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
 import SlettedeOpgaver from './pages/SlettedeOpgaver'
-
+import GendanKodeord from './pages/GendanKodeord'
 function App() {
 
   const { user } = useAuthContext();
@@ -31,20 +31,23 @@ function App() {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={user ? <Content /> : <Login />}>
-        <Route index element={<Overblik />}/>
-        <Route path="alle-opgaver" element={<AlleOpgaver />}/>
-        <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />}/>
-        <Route path="slettede-opgaver" element={<SlettedeOpgaver />}/>
-        <Route path="mine-opgaver" element={<MineOpgaver />}/>
-        <Route path="team" element={<Team />}/>
-        <Route path="dokumenter" element={<Dokumenter />}/>
-        <Route path="indstillinger" element={<Indstillinger />}/>
-        <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
-        <Route path="ny-opgave" element={<NyOpgave />}/>
-        <Route path="ny-bruger" element={<NyBruger />}/>
-        <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
-      </Route>
+      <>
+        <Route path="/" element={user ? <Content /> : <Login />}>
+          <Route index element={<Overblik />}/>
+          <Route path="alle-opgaver" element={<AlleOpgaver />}/>
+          <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />}/>
+          <Route path="slettede-opgaver" element={<SlettedeOpgaver />}/>
+          <Route path="mine-opgaver" element={<MineOpgaver />}/>
+          <Route path="team" element={<Team />}/>
+          <Route path="dokumenter" element={<Dokumenter />}/>
+          <Route path="indstillinger" element={<Indstillinger />}/>
+          <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
+          <Route path="ny-opgave" element={<NyOpgave />}/>
+          <Route path="ny-bruger" element={<NyBruger />}/>
+          <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
+        </Route>
+        <Route path="gendan-kodeord" element={<GendanKodeord />}/>
+      </>
     )
   )
 

@@ -1,0 +1,83 @@
+.backIcon {
+    width: 20px;
+    height: 20px;
+}
+
+.linklikeButton {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    background: #f0f0f0;
+    color: #222222;
+    border: none;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 15px;
+    width: 100%;
+    transition: 0.2s ease;
+}
+
+.linklikeButton:hover {
+    background: #e0e0e0;
+}
+
+.modalText {
+    margin-bottom: 20px;
+}
+
+.modalButton {
+    margin-top: 30px;
+    margin-bottom: 0px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    padding: 10px 20px;
+    border-radius: 15px;
+    font-family: OmnesBold;
+    font-size: 1rem;
+}
+
+.modalButton:hover {
+    background: #59bf1a;
+    color: #fff;
+    border: 2px solid #59bf1a;
+}
+
+.modalButtonDate {
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #f0f0f0;
+}
+
+.modalForm {
+    margin-top: 30px;
+}
+
+.modalHeadingContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.modalHeadingContainer img {
+    width: 30px;
+    height: 30px;
+    background-color: #f0f0f000;
+    border-radius: 50%;
+    padding: 5px 5px 5px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.modalHeadingContainer img:hover {
+    background-color: #f0f0f0;
+}
+
+.modalHeadingContainer h2 {
+    font-family: OmnesBold;
+}
