@@ -1,6 +1,7 @@
 {
   "display": "standalone",
   "short_name": "Better Call Bob",
+  "handle_links": "preferred",
   "icons": [
     {
       "src": "manifest-icon-192.maskable.png",

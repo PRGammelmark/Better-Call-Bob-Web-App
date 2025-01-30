@@ -337,7 +337,7 @@ const ÅbenOpgave = () => {
                     to: nyAnsvarlig.email,
                     subject: "Du har fået tildelt en ny opgave",
                     body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + opgave.navn + "\n\nAdresse: " + opgave.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
-                    html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + opgave.navn + "<br />Adresse: " + opgave.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på app'en for at se opgaven.</p><p>//Better Call Bob</p>"
+                    html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + opgave.navn + "<br />Adresse: " + opgave.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk' target='_self'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
                 })
                 .then(res => console.log(res.data))
                 .catch(error => console.log(error))
@@ -1346,7 +1346,7 @@ const ÅbenOpgave = () => {
 
                 <div className={ÅbenOpgaveCSS.praktisk}>
                     <div className={`${ÅbenOpgaveCSS.uddelegeringDesktop}`}>
-                        {færdiggjort ? null : user.isAdmin && <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
+                        {user.isAdmin && (færdiggjort ? null : <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
                             <b className={ÅbenOpgaveCSS.prefix}>Tildel ansvarlige:</b>
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Vælg Bob ..." name="vælgBob" onChange={tildelAnsvar}>
                                 <option disabled>Vælg Bob ...</option>
@@ -1356,16 +1356,17 @@ const ÅbenOpgave = () => {
                                     )
                                 })}
                             </select>
-                        </form>}
+                        </form>)}
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
                             <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
+                            {console.log(user.isAdmin)}
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
                             {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
                                     <div key={ansvarlig._id} className={ÅbenOpgaveCSS.ansvarligDiv}>
                                         <p>{ansvarlig.navn}</p>
-                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>}
+                                        {user.isAdmin && (færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>)}
                                     </div>
                                 )
                             })}
@@ -1373,7 +1374,7 @@ const ÅbenOpgave = () => {
                         </div>
                     </div>
                     <div className={`${ÅbenOpgaveCSS.uddelegeringMobile}`}>
-                        {færdiggjort ? null : user.isAdmin && <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
+                        {user.isAdmin && (færdiggjort ? null : <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
 
                             <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Tildel ansvarlige til opgaven ..." name="vælgBob" onChange={tildelAnsvar}>
                                 <option disabled>Tildel ansvarlige til opgaven ...</option>
@@ -1383,7 +1384,7 @@ const ÅbenOpgave = () => {
                                     )
                                 })}
                             </select>
-                        </form>}
+                        </form>)}
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
                             <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.ansvarshavendeHeading}`}>Ansvarshavende</b>
@@ -1392,7 +1393,7 @@ const ÅbenOpgave = () => {
                                 return (
                                     <div key={ansvarlig._id} className={ÅbenOpgaveCSS.ansvarligDiv}>
                                         <p>{ansvarlig.navn}</p>
-                                        {færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>}
+                                        {user.isAdmin && (færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>)}
                                     </div>
                                 )
                             }) : <p>Der er ikke udpeget en ansvarlig til opgaven.</p>}
