@@ -7,6 +7,7 @@ const ÅbnIAppen = (props) => {
 
     useEffect(() => {
         const handler = (event) => {
+            console.log("beforeinstallprompt event fired")
             event.preventDefault();
             setDeferredPrompt(event);
         };
