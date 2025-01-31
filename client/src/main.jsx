@@ -12,6 +12,7 @@ import updateLocale from 'dayjs/plugin/updateLocale'
 import { BesøgProvider } from './context/BesøgContext.jsx'
 import { TaskAndDateProvider } from './context/TaskAndDateContext.jsx'
 import { OverblikViewProvider } from './context/OverblikViewContext.jsx'
+
 dayjs.extend(updateLocale)
 dayjs.locale('da'); // Set dayjs to use Danish locale globally
 dayjs.updateLocale('en', {

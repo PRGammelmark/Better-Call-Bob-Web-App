@@ -1,7 +1,14 @@
 {
   "display": "standalone",
+  "name": "Better Call Bob",
   "short_name": "Better Call Bob",
+  "start_url": "/",
+  "scope": "/",
+  "description": "Med Better Call Bob's app gør vi det nemt for dig at få overblik over dine kundeopgaver, registrere din arbejdstid og dine udlæg samt få betaling for dit arbejde.",
   "handle_links": "preferred",
+  "orientation": "portrait",
+  "theme_color": "#3c5a3f",
+  "background_color": "#ffffff",
   "url_handlers": {
     "https://app.bettercallbob.dk/*": {
       "origin": "https://app.bettercallbob.dk"

@@ -6,10 +6,13 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import { Navigate } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
+import { useState, useEffect } from 'react'
+
 
 const Content = () => {
 
   const { user } = useAuthContext();
+
 
   return (
     <>
@@ -35,8 +38,8 @@ const Content = () => {
           </div>
 
           <FloatingActionButton />
-          
         </div>
+        
         <Footer />
     </>
   )

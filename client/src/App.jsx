@@ -1,12 +1,12 @@
 import './App.css'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { createBrowserRouter, Route, Link, NavLink, createRoutesFromElements, RouterProvider, Navigate } from 'react-router-dom'
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Content from './components/Content'
 import { useAuthContext } from './hooks/useAuthContext'
 import FastClick from 'fastclick'
-
+import ÅbnIAppen from './components/modals/ÅbnIAppen.jsx'
 // pages
 import Overblik from './pages/Overblik'
 import AlleOpgaver from './pages/AlleOpgaver'
@@ -21,13 +21,37 @@ import Team from './pages/Team'
 import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
 import SlettedeOpgaver from './pages/SlettedeOpgaver'
 import GendanKodeord from './pages/GendanKodeord'
+
 function App() {
 
   const { user } = useAuthContext();
+  const [openedInBrowser, setOpenedInBrowser] = useState(false);
+
+  useEffect(() => {
+    if (!window.matchMedia('(display-mode: standalone)').matches && window.innerWidth < 750) {  
+      setOpenedInBrowser(true);
+    }
+  }, []);
 
   useEffect(() => {
     FastClick(document.body);
   }, [])
+
+  useEffect(() => {
+    // Registering the service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker
+          .register('/sw.js')  // Ensure that sw.js is in the root folder
+          .then((registration) => {
+            console.log('Service Worker registered with scope:', registration.scope);
+          })
+          .catch((error) => {
+            console.log('Service Worker registration failed:', error);
+          });
+      });
+    }
+  }, []);
 
   const router = createBrowserRouter(
     createRoutesFromElements(
@@ -57,6 +81,7 @@ function App() {
         <main style={{ WebkitTapHighlightColor: "transparent"}}>
         </main>
       </RouterProvider>
+      <ÅbnIAppen trigger={openedInBrowser} setTrigger={setOpenedInBrowser} />
     </>
   )
 }

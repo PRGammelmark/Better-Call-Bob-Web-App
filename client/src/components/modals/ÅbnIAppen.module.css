@@ -1,0 +1,21 @@
+h2 {
+    width: 80%;
+    font-family: "OmnesBold";
+    margin-bottom: 20px;
+}
+
+.modalButton {
+    background-color: #3c5a3f;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 20px;
+    margin-bottom: -10px;
+    font-family: "OmnesBold";
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    outline: none;
+    border-radius: 35px;
+}
