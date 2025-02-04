@@ -53,7 +53,7 @@ const Dokumenter = () => {
 
   return (
     <PageAnimation>
-      <div>
+      <div className={DokumenterCSS.dokumenterPage}>
         <h1 className={DokumenterCSS.heading}>Dokumenter</h1>
         {user.isAdmin ? <p>Her finder du et overblik over alle uploadede dokumenter.</p> : <p>Her finder du et overblik over dokumenter tilknyttet dig.</p>}
         
@@ -103,7 +103,7 @@ const Dokumenter = () => {
                   {dokument.kraevSamtykke && 
                   dokument.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) 
                   ? 
-                  <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D/MM-YY')}</b>
+                  <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D/M-YY')}</b>
                   :
                   <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: 'red'}}>Mangler din underskrift</b>}
                 </div>

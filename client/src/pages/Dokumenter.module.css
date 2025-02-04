@@ -112,6 +112,27 @@ h1.heading {
     h1.heading {
         display: none;
     }
+
+    .dokumenterPage {
+        margin-top: 40px;
+    }
+
+    .dokumenterContainer {
+    }
+
+    .dokumentContainer {
+        width: 40%;
+        flex-grow: 1;
+        align-items: center;
+    }
+
+    .dokumentTimestamp {
+        font-size: 14px;
+    }
+
+    .dokumentSamtykkeText {
+        font-size: 12px;
+    }
 }
 
 @media screen and (display-mode: standalone) {
