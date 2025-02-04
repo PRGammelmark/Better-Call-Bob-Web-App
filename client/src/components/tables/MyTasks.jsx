@@ -44,7 +44,9 @@ const MyTasks = ({openTableEvent}) => {
     .then(res => {
         setMineBesøg(res.data);
     })
-    .catch(error => console.log(error));
+    .catch(error => {
+        console.log("Ingen besøg fundet for nuværende bruger.")
+    });
 }, [userID]);
 
 const findTættesteBesøg = (opgaveID) => {
@@ -120,7 +122,7 @@ const findTættesteBesøg = (opgaveID) => {
                         return (
                         <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
                             <ul>
-                                <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={Styles.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                                <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={Styles.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                                 <li>{opgave.adresse}</li>
                                 <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
                             </ul>

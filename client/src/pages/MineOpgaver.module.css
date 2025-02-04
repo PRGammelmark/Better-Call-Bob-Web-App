@@ -1,0 +1,16 @@
+h1.heading {
+    margin-bottom: 10px;
+    font-family: OmnesBold;
+}
+
+@media screen and (max-width: 750px) {
+    h1.heading {
+        display: none;
+    }
+}
+
+@media screen and (display-mode: standalone) {
+    h1.heading {
+        display: none;
+    }
+}

@@ -2,8 +2,12 @@ import React from 'react'
 import ReactDom from 'react-dom'
 import Styles from './MobileNavMenu.module.css'
 import { Link } from 'react-router-dom'
+import { useAuthContext } from '../hooks/useAuthContext'
 
-const MobileNavMenu = ({ handleLogout, setShowNavMenu}) => {
+
+const MobileNavMenu = ({ setShowNavMenu}) => {
+
+    const { user } = useAuthContext();
 
     const linkStyles = {
         textDecoration: 'none',
@@ -22,9 +26,12 @@ const MobileNavMenu = ({ handleLogout, setShowNavMenu}) => {
                 <Link style={linkStyles} to={'/'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Overblik</h2>
                 </Link>
-                <Link style={linkStyles} to={'alle-opgaver'} onClick={() => setShowNavMenu(false)}>
+                {user.isAdmin && <Link style={linkStyles} to={'alle-opgaver'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Alle opgaver</h2>
-                </Link>
+                </Link>}
+                {!user.isAdmin && <Link style={linkStyles} to={'mine-opgaver'} onClick={() => setShowNavMenu(false)}>
+                    <h2 className={Styles.mobileNavItem}>Mine opgaver</h2>
+                </Link>}
                 <Link style={linkStyles} to={'team'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Team</h2>
                 </Link>

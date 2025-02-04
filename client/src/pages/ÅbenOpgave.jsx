@@ -1924,6 +1924,7 @@ const ÅbenOpgave = () => {
                     <form>
                         <textarea 
                             type="text" 
+                            enterKeyHint="Send"
                             className={ÅbenOpgaveCSS.nyKommentar} 
                             placeholder='Skriv en kommentar til opgaven ...' 
                             value={kommentar} 

@@ -306,18 +306,18 @@ const FloatingActionButton = () => {
         </div>}
         {!isOnTaskPage && !isOnDocumentsPage && 
             <>
-                <div className={FloatingActionButtonCSS.addLedighedButton} onClick={tilføjLedighedFunction} style={{transform: menuOpen ? "translate(-75px, -75px) scale(1)" : "translate(0px, 0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
+                <div className={FloatingActionButtonCSS.addLedighedButton} onClick={tilføjLedighedFunction} style={{transform: menuOpen ? "translateY(-100px) scale(1)" : "translate(0px, 0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
                     <span className={FloatingActionButtonCSS.icons}>🙋🏽</span>
                     <span className={FloatingActionButtonCSS.addXText}>Reg. ledighed</span>
                 </div>
-                <div className={FloatingActionButtonCSS.addNewTaskButton} onClick={redirectCreateTask} style={{transform: menuOpen ? "translateY(-100px) scale(1)" : "translateY(0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
+                {user.isAdmin && <div className={FloatingActionButtonCSS.addNewTaskButton} onClick={redirectCreateTask} style={{transform: menuOpen ? "translate(-75px, -75px) scale(1)" : "translateY(0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
                     <span className={FloatingActionButtonCSS.icons}>📋</span>
                     <span className={FloatingActionButtonCSS.addXText}>Ny opgave</span>
-                </div>
-                <div className={FloatingActionButtonCSS.addNewUserButton} onClick={redirectCreateUser} style={{transform: menuOpen ? "translateX(-100px) scale(1)" : "translate(0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
+                </div>}
+                {user.isAdmin && <div className={FloatingActionButtonCSS.addNewUserButton} onClick={redirectCreateUser} style={{transform: menuOpen ? "translateX(-100px) scale(1)" : "translate(0px) scale(0)", opacity: menuOpen ? "1" : "0"}}>
                     <span className={FloatingActionButtonCSS.icons}>👷🏼‍♂️</span>
                     <span className={FloatingActionButtonCSS.addXText}>Ny bruger</span>
-                </div>
+                </div>}
             </>
         }
 

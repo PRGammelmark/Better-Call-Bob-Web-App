@@ -63,14 +63,19 @@
     .opgaveTabelMobile .myTasksHeader ul li:nth-child(1), .opgaveTabelMobile .myTasksBody div ul li:nth-child(1) {
         width: 30%;
         min-width: 30%;
+        max-width: 30%;
     }
 
     .opgaveTabelMobile .myTasksHeader ul li:nth-child(2), .opgaveTabelMobile .myTasksBody div ul li:nth-child(2) {
+        min-width: 30%;
         width: 30%;
+        max-width: 30%;
     }
 
     .opgaveTabelMobile .myTasksHeader ul li:nth-child(3), .opgaveTabelMobile .myTasksBody div ul li:nth-child(3) {
+        min-width: 40%;
         width: 40%;
+        max-width: 40%;
     }
 
     .opgaveTabelMobile .myTasksBody div {

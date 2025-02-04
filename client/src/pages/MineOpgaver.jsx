@@ -1,6 +1,8 @@
 import React from 'react'
 import PageAnimation from '../components/PageAnimation'
 import MyTasks from '../components/tables/MyTasks.jsx'
+import Styles from './MineOpgaver.module.css'
+import MyEarlierTasks from '../components/tables/MyEarlierTasks'
 
 const Mine_opgaver = () => {
 
@@ -25,8 +27,9 @@ const Mine_opgaver = () => {
   return (
     <PageAnimation>
       <div>
-        <h1 className='bold'>Mine opgaver</h1>
+        <h1 className={Styles.heading}>Mine opgaver</h1>
         <MyTasks openTableEvent={openTableEvent} />
+        <MyEarlierTasks />
       </div>
     </PageAnimation>
   )
