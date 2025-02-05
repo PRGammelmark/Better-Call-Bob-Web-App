@@ -37,12 +37,12 @@ const TradCalendar = withDragAndDrop(Calendar);
 const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
+  const [currentView, setCurrentView] = useState("month")
   const [visEgneBesøg, setVisEgneBesøg] = useState(opgaveID ? true : false)
   const [visAlleBesøg, setVisAlleBesøg] = useState(false)
   const [visLedighed, setVisLedighed] = useState(false)
   const [visKunLedighedOverblik, setVisKunLedighedOverblik] = useState(false)
   const [visOgsåBesøgOverblik, setVisOgsåBesøgOverblik] = useState(opgaveID ? false : true)
-  // const [visAlt, setVisAlt] = useState(false)
   const [editBesøg, setEditBesøg] = useState(false)
   const [selectedTimeFrom, setSelectedTimeFrom] = useState("");
   const [selectedTimeTo, setSelectedTimeTo] = useState("");
@@ -55,9 +55,12 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
   const eventStyleGetter = (event) => {
-    let backgroundColor = event.eventColor || '#3c5a3f';
+    // let backgroundColor = event.eventColor || '#3c5a3f';
     let style = {
-      backgroundColor: backgroundColor
+      backgroundColor: event.eventColor || '#3c5a3f',
+      padding: "2px 3px 3px 3px",
+      borderRadius: "2px",
+      fontSize: "5px",
     };
     return {
       style: style
@@ -108,7 +111,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       end: new Date(besøg.datoTidTil),
       brugerID: besøg.brugerID,
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
-      title: <span style={{color: 'white', fontSize: 10}}><b style={{fontFamily: "OmnesBold", fontSize: "12px"}}>Dig</b> (ca. {dayjs(besøg.datoTidFra).format("HH")}-{dayjs(besøg.datoTidTil).format("HH")})</span>
+      title: <span style={{color: 'white', fontSize: 8}}><p style={{color: 'white', fontSize: 8, marginBottom: "3px"}}>{dayjs(besøg.datoTidFra).format("HH:mm")}-{dayjs(besøg.datoTidTil).format("HH:mm")}</p><b style={{fontFamily: "OmnesBold", fontSize: "10px"}}>Besøg</b></span>
     }));
 
     const egneBesøgAlleOpgaverFormateret = egneBesøg.map((besøg) => ({
@@ -373,6 +376,11 @@ const openEditDialog = () => {
   setEditBesøg(true)
 }
 
+const openCalendarDay = (slotInfo) => {
+  setChosenDate(slotInfo.start)
+  alert("Opret besøg")
+}
+
 const onRedigerBesøg = (e) => {
   e.preventDefault()
 
@@ -463,6 +471,7 @@ const onRedigerLedigTid = (e) => {
         {visOgsåBesøgOverblik && <><b className={Styles.bold}>{besøgDenneMåned > 0 ? besøgDenneMåned > 1 ? "Du har " + besøgDenneMåned + " planlagte besøg i " + dayjs(chosenDate).format('MMMM') : "Du har " + besøgDenneMåned + " planlagt besøg i " + dayjs(chosenDate).format('MMMM') : "Du har ingen planlagte besøg i " + dayjs(chosenDate).format('MMMM')}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg og hvornår du er registreret ledig)</p></>}
       </div> }
       <TradCalendar
+        className={Styles.calendar}
         culture={'da'}
         localizer={localizer}
         events={
@@ -474,6 +483,8 @@ const onRedigerLedigTid = (e) => {
           }
         backgroundEvents={visOgsåBesøgOverblik ? egneLedigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
+        selectable={'ignoreEvents'}
+        onSelectSlot={openCalendarDay}
         startAccessor="start"
         endAccessor="end"
         messages={messages}
@@ -511,7 +522,7 @@ const onRedigerLedigTid = (e) => {
             </div>
             <b className={Styles.besøgFilterDivItemHeading}>Vis alle besøg<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
           </div>
-          <div className={Styles.besøgFilterDivItem}>
+          {user.isAdmin && <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
               <label className={Styles.switch}>
                 <input type="checkbox" className={Styles.checkboxSwitch} checked={visLedighed} onChange={kalenderVisningLedighed} />
@@ -519,7 +530,7 @@ const onRedigerLedigTid = (e) => {
               </label>
             </div>
             <b className={Styles.besøgFilterDivItemHeading}>Vis ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (alle medarbejdere)</span></b>
-          </div>
+          </div>}
       </div>
       :
       <div className={Styles.besøgFilterDiv}>
