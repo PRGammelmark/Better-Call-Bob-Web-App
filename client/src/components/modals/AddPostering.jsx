@@ -187,15 +187,15 @@ const AddPostering = (props) => {
                     <div className={ÅbenOpgaveCSS.modalKolonner}>
                         <div>
                             <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Handyman:</label>
-                            <input className={ÅbenOpgaveCSS.modalInput} value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="numeric" pattern="[0-9]*" />
+                            <input className={ÅbenOpgaveCSS.modalInput} value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
                         <div>
                             <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Tømrer:</label>
-                            <input className={ÅbenOpgaveCSS.modalInput} value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" min="0" step="0.5" inputMode="numeric" pattern="[0-9]*" />
+                            <input className={ÅbenOpgaveCSS.modalInput} value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
                         <div>
                             <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Rådgivning:</label>
-                            <input className={ÅbenOpgaveCSS.modalInput} value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value)} type="number" min="0" step="0.5" inputMode="numeric" pattern="[0-9]*" />
+                            <input className={ÅbenOpgaveCSS.modalInput} value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
                     </div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Tilvalg</h3>
