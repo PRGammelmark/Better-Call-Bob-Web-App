@@ -16,7 +16,9 @@ const NyOpgave = () => {
 
     // State managers
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("");
-    const [navn, setNavn] = useState("");
+    const [fornavn, setFornavn] = useState("");
+    const [efternavn, setEfternavn] = useState("");
+    // const [navn, setNavn] = useState("");
     const [CVR, setCVR] = useState("");
     const [virksomhed, setVirksomhed] = useState("");
     const [adresse, setAdresse] = useState("");
@@ -40,7 +42,7 @@ const NyOpgave = () => {
 
         const opgave = {
             opgaveBeskrivelse,
-            navn,
+            navn: fornavn + " " + efternavn,
             CVR,
             virksomhed,
             adresse,
@@ -79,7 +81,8 @@ const NyOpgave = () => {
 
     function startForfra(){
         setOpgaveBeskrivelse("");
-        setNavn("");
+        setFornavn("");
+        setEfternavn("");
         setCVR("");
         setVirksomhed("");
         setAdresse("");
@@ -106,8 +109,10 @@ const NyOpgave = () => {
                 <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus="autofocus" name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
                 <div className={NyOpgaveCSS.kolonner}>
                     <div className={NyOpgaveCSS.kolonneEt}>
-                        <label className={NyOpgaveCSS.label}>Navn</label>
-                        <input type="text" name="navn" placeholder="Navn" className={NyOpgaveCSS.input} onChange={(e) => setNavn(e.target.value)} value={navn} required/>
+                        <label className={NyOpgaveCSS.label}>Fornavn</label>
+                        <input type="text" name="fornavn" placeholder="Fornavn" className={NyOpgaveCSS.input} onChange={(e) => setFornavn(e.target.value)} value={fornavn} required/>
+                        <label className={NyOpgaveCSS.label}>Efternavn</label>
+                        <input type="text" name="efternavn" placeholder="Efternavn" className={NyOpgaveCSS.input} onChange={(e) => setEfternavn(e.target.value)} value={efternavn} required/>
                         <label className={NyOpgaveCSS.label}>Adresse</label>
                         <input type="text" name="adresse" placeholder="Adresse" className={NyOpgaveCSS.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
                         <label className={NyOpgaveCSS.label}>Postnummer og by</label>
