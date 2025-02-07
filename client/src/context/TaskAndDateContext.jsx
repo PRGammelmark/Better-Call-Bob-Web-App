@@ -6,13 +6,16 @@ export const TaskAndDateProvider = ({ children }) => {
 
     const [chosenTask, setChosenTask] = useState(null);
     const [chosenDate, setChosenDate] = useState(dayjs());
+    const [chosenEndDate, setChosenEndDate] = useState(null);
 
     return (
         <TaskAndDateContext.Provider value={{ 
             chosenTask,
             setChosenTask,
             chosenDate,
-            setChosenDate
+            setChosenDate,
+            chosenEndDate,
+            setChosenEndDate
          }}>
           {children}
         </TaskAndDateContext.Provider>

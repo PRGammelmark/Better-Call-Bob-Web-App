@@ -13,7 +13,7 @@ import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
 import axios from 'axios'
 import { useBesøg } from '../context/BesøgContext.jsx'
-
+import AddBesøg from './modals/AddBesøg.jsx'
 const FloatingActionButton = () => {
 
     const { user } = useAuthContext();
@@ -377,8 +377,8 @@ const FloatingActionButton = () => {
                 {opretLedighedSuccess && <p className={ModalStyles.successMessage}>{opretLedighedSuccess}</p>}
             </form>}
         </Modal>
-
-        {modalOpen && <Modal trigger={modalOpen} setTrigger={setModalOpen}>
+        <AddBesøg trigger={modalOpen} setTrigger={setModalOpen} />
+        {/* {modalOpen && <Modal trigger={modalOpen} setTrigger={setModalOpen}>
             <h2 className={ModalStyles.modalHeading}>Tilføj besøg</h2>
             <div className={ModalStyles.modalSubheadingContainer}>
                 <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.navn : "Ingen person"}</h3>
@@ -418,7 +418,7 @@ const FloatingActionButton = () => {
                 <button className={ModalStyles.buttonFullWidth}>Tilføj besøg</button>
                 {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
             </form>
-        </Modal> }
+        </Modal> } */}
     </>
   )
 }

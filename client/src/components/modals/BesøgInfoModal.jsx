@@ -9,7 +9,7 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 import axios from 'axios'
 import { useBesøg } from '../../context/BesøgContext.jsx'
 
-const AddBesøg = (props) => {
+const BesøgInfoModal = (props) => {
 
     const { user } = useAuthContext();
     const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate } = useTaskAndDate();
@@ -189,4 +189,4 @@ const AddBesøg = (props) => {
     )
 }
 
-export default AddBesøg
+export default BesøgInfoModal
