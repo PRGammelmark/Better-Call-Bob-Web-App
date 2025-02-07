@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import { useBesøg } from '../context/BesøgContext.jsx'
 import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
+import ManagerCalendar from '../components/traditionalCalendars/ManagerCalendar.jsx'
 import OpenTasks from '../components/tables/OpenTasks'
 import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkonomiskOverblik'
 import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
@@ -98,7 +99,7 @@ const Overblik = () => {
 
   return (
     <PageAnimation>
-      {managerOverblik && <div>
+      {managerOverblik && <div className={Styles.overblikContainer}>
         <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Manager-overblik 🧑‍💻</h1>
           <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
@@ -107,7 +108,7 @@ const Overblik = () => {
         <p className={Styles.alleOpgaverButton} onClick={() => {
           navigate(`/alle-opgaver`)
         }}>Gå til alle opgaver</p>
-        <ÅbenOpgaveCalendar 
+        <ManagerCalendar 
                         user={user} 
                         tilknyttetOpgave={tilknyttetOpgave}
                         setTilknyttetOpgave={setTilknyttetOpgave}
@@ -135,7 +136,7 @@ const Overblik = () => {
         <AdminØkonomiskOverblik user={user} />
       </div>}
       
-      {!managerOverblik && <div>
+      {!managerOverblik && <div className={Styles.overblikContainer}>
         <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Dit personlige overblik 👨‍🔧</h1>
           {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>Skift til manager-overblik →</button>}

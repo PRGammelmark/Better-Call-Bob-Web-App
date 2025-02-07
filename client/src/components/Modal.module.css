@@ -93,9 +93,12 @@
     margin-top: 30px;
     margin-bottom: 30px;
     position: relative;
+    background: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 10px;
 }
 
-.modalSubheadingContainer::before {
+/* .modalSubheadingContainer::before {
     content: "";
     display: block;
     height: 1px;
@@ -113,7 +116,7 @@
     position: absolute;
     bottom: -10px;
     background: #1f1f1f30;
-}
+} */
 
 .modalSubheading {
     font-family: Omnes;
@@ -133,7 +136,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .modalInput:focus {
@@ -142,7 +145,7 @@
 }
 
 .buttonFullWidth {
-    padding: 10px 20px;
+    padding: 20px 20px;
     border-radius: 15px;
     border: none;
     width: 100%;
@@ -153,6 +156,7 @@
     cursor: pointer;
     color: #fff;
     font-family: OmnesBold;
+    font-size: 1rem;
     transition: 0.2s ease
 }
 

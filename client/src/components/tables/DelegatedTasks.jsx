@@ -38,7 +38,7 @@ const DelegatedTasks = () => {
         <>
         <div className={DelegatedTasksCSS.desktopTable}>
           <div className={TableCSS.opgaveListe}>
-            <h2 className={TableCSS.tabelHeader}>Uddelegerede opgaver ({uddelegeredeOpgaver ? uddelegeredeOpgaver.length : 0})</h2>
+            <h2 className={TableCSS.tabelHeader}>Igangværende opgaver ({uddelegeredeOpgaver ? uddelegeredeOpgaver.length : 0})</h2>
             <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${DelegatedTasksCSS.delegatedTasksHeader}`}>
                 <ul>

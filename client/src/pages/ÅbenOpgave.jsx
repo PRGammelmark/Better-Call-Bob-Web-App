@@ -1360,7 +1360,6 @@ const ÅbenOpgave = () => {
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
                             <b className={ÅbenOpgaveCSS.prefix}>Nuv. ansvarlige:</b>
-                            {console.log(user.isAdmin)}
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
                             {nuværendeAnsvarlige && nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
