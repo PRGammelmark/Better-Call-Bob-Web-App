@@ -68,6 +68,11 @@
     height: 0px;
 }
 
+.activeOpgaveListing {
+    background: #59bf1a;
+    color: #fff;
+}
+
 button.button {
     border-radius: 5px;
     border: none;

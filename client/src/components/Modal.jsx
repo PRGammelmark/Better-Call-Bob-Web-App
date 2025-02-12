@@ -25,7 +25,7 @@ const desktopAnimation = {
   };
   
 
-const Modal = ({ children, trigger, setTrigger }) => {
+const Modal = ({ children, trigger, setTrigger, onClose }) => {
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -51,7 +51,10 @@ const Modal = ({ children, trigger, setTrigger }) => {
       {trigger && (
         <motion.div
           className={ModalStyles.overlay}
-          onClick={() => setTrigger(false)}
+          onClick={() => {
+            setTrigger(false)
+            onClose()
+          }}
           initial="initial"
           animate="animate"
           exit="exit"
@@ -67,7 +70,10 @@ const Modal = ({ children, trigger, setTrigger }) => {
             transition={{ duration: 0.45 }} // Added transition duration
           >
             <button
-              onClick={() => setTrigger(false)}
+              onClick={() => {
+                setTrigger(false)
+                onClose()
+              }}
               className={ModalStyles.lukModal}
             >
               <img src={CloseIcon} alt="Luk modal" />

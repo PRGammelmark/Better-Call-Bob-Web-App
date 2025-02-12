@@ -20,7 +20,7 @@
     font-size: 0.9rem;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
     min-height: 36px;
 }
 
@@ -47,7 +47,7 @@
     resize: none;
     border: none;
     transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
 .opgavebeskrivelse:focus {
@@ -57,7 +57,7 @@
 
 .kolonner {
     display: flex;
-    gap: 50px;
+    gap: 20px;
 }
 
 .kolonneEt {
@@ -103,6 +103,20 @@
     transition: 0.3s ease;
 }
 
+.submitButtonFullWidth {
+    min-height: 36px;
+    border-radius: 25px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 100%;
+}
+
 .submitButton:hover {
     background: rgba(89, 191, 26, 1);
 }
@@ -126,9 +140,20 @@
     padding-bottom: 20px;
 }
 
+.subHeading {
+    font-family: OmnesBold;
+    margin-bottom: 5px;
+}
+
 @media screen and (max-width: 750px) {
     .overskrift {
         display: none;
+    }
+
+    .subHeading {
+        font-size: 1rem;
+        color: black;
+        text-align: left;
     }
 }
 

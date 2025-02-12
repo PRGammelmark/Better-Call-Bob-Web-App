@@ -37,7 +37,7 @@ const opgaverSchema = new Schema({
     },
     onsketDato: {
         type: Date,
-        required: true
+        required: false
     },
     harStige: {
         type: Boolean,

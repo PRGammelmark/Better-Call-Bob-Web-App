@@ -70,3 +70,199 @@
     display: flex;
     justify-content: center;
 }
+
+.modalButtonFlexContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.stateButton {
+    width: 100%;
+    background: #f0f0f0;
+    color: #222222;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.activeStateButton {
+    background: #59bf1a;
+    color: #fff;
+}
+
+.vælgOpgaveContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vælgOpgaveContainer {
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    padding: 1px;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-out,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeVælgOpgaveContainer {
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-in-out 0.25s;
+    transform: translateX(0px);
+    /* margin-top: 30px;
+    margin-bottom: 30px; */
+}
+
+.vælgAnsvarligContainer {
+    max-height: 0px;
+    padding: 1px;
+    opacity: 0;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-in,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeVælgAnsvarligContainer {
+    max-height: 100px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.opretBesøgFraOverblikContainer {
+    max-height: 0px;
+    opacity: 0;
+    padding: 1px;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-in-out 0.25s, 
+        opacity 0.3s ease-in-out, 
+        transform 0.3s ease-in,
+        margin-top 0.5s ease-in-out 0.25s,
+        margin-bottom 0.5s ease-in-out 0.25s;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeOpretBesøgFraOverblikContainer {
+    max-height: 500px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.infoContainer {
+    background: #f0f0f0;
+    padding: 0;
+    border-radius: 15px;
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    transition: 
+        max-height 0.5s ease-in-out 0.25s,
+        opacity 0.5s ease-in-out 0.25s,
+        margin-top 0.5s ease-in-out 0.25s,
+        margin-bottom 0.5s ease-in-out 0.25s,
+        padding 0.5s ease-in-out 0.25s;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeInfoContainer {
+    max-height: 150px;
+    opacity: 1;
+    padding: 15px 20px;
+}
+
+.subHeading {
+    font-family: OmnesBold;
+    margin-bottom: 10px;
+}
+
+.opretOpgaveContainer {
+    max-height: 0px;
+    padding: 1px;
+    opacity: 0;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-out,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeOpretOpgaveContainer {
+    max-height: 1100px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-bottom: 30px;
+}
+
+.infoSuccessMessage {
+    font-family: OmnesBold;
+    color: #59bf1a;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    background: #59bf1a30;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+@media screen and (max-width: 750px) {
+    .subHeading {
+        font-size: 1rem;
+        color: black;
+        text-align: left;
+    }
+}
