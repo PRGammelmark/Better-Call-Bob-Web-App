@@ -10,6 +10,8 @@ import axios from 'axios'
 import { useBesøg } from '../../context/BesøgContext.jsx'
 import VælgOpgaveVedNytBesøg from '../tables/VælgOpgaveVedNytBesøg.jsx'
 import NyOpgaveFraOpretBesøg from '../NyOpgaveFraOpretBesøg.jsx'
+import SwitchArrows from "../../assets/switchArrowsBlack.svg"
+
 const AddBesøg = (props) => {
 
     const { user } = useAuthContext();
@@ -36,6 +38,8 @@ const AddBesøg = (props) => {
     const [opgaverLoading, setOpgaverLoading] = useState(true);
     const [opgaveID, setOpgaveID] = useState(null);
     const [opgaveOprettet, setOpgaveOprettet] = useState(false);
+    const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(false);
+    const [medarbejdere, setMedarbejdere] = useState([]);
 
     const resetState = () => {
         setOpretOpgave(false);
@@ -46,21 +50,19 @@ const AddBesøg = (props) => {
         setTilknyttetAnsvarlig(null);
     }
 
-    // useEffect(() => {
-    //     axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
-    //         headers: {
-    //             'Authorization': `Bearer ${user.token}`
-    //         }
-    //     })
-    //     .then(response => {
-    //         const ikkeAdminBrugere = response.data.filter(bruger => !bruger.isAdmin);
-    //         setMedarbejdere(ikkeAdminBrugere)
-    //         console.log(ikkeAdminBrugere)
-    //     })
-    //     .catch(error => {
-    //         console.log(error)
-    //     })
-    // }, [user])
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            setMedarbejdere(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }, [user])
     
     useEffect(() => {
         if (props.trigger.action === "select") {
@@ -127,6 +129,24 @@ const AddBesøg = (props) => {
         }
 
         const nyAnsvarlig = tilknyttetOpgave.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+        const eksisterendeAnsvarlig = tilknyttetOpgave.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+
+        if (!eksisterendeAnsvarlig) {
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${tilknyttetOpgave._id}`, {
+                ansvarlig: [...tilknyttetOpgave.ansvarlig, tilknyttetAnsvarlig]
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                console.log("Tilknyttet ny ansvarlig til opgaven.")
+                console.log(res)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
         
         axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
             headers: {
@@ -275,17 +295,30 @@ const AddBesøg = (props) => {
                 </div>
                 {/* VÆLG OPGAVE, TRIN 2: VÆLG ANSVARLIG */}
                 <div className={`${Styles.vælgAnsvarligContainer} ${(tilknyttetOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
-                    <h3 className={Styles.subHeading}>Vælg ansvarlig:</h3>
-                    <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
-                        <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
-                        {tilknyttetOpgave && tilknyttetOpgave.ansvarlig && tilknyttetOpgave.ansvarlig.length > 0 ? (
-                            tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
-                                <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
-                            ))
-                        ) : (
-                            <option value="">Ingen ansvarlige</option>
+                    <h3 className={Styles.subHeading}>Vælg blandt {vælgAnsvarligBlandtAlleMedarbejdere ? "alle medarbejdere" : "ansvarlige"}:</h3>
+                    <div className={Styles.vælgAnsvarligFlexContainer}>
+                        {!vælgAnsvarligBlandtAlleMedarbejdere && <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
+                            <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
+                            {tilknyttetOpgave && tilknyttetOpgave.ansvarlig && tilknyttetOpgave.ansvarlig.length > 0 ? (
+                                tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
+                                    <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
+                                ))
+                            ) : (
+                                <option value="">Ingen ansvarlige</option>
+                                )}
+                        </select>}
+                        {vælgAnsvarligBlandtAlleMedarbejdere && <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
+                            <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
+                            {medarbejdere && (
+                                medarbejdere.map((ansvarlig, index) => (
+                                    <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
+                                ))
                             )}
-                    </select>
+                        </select>}
+                        {!vælgAnsvarligBlandtAlleMedarbejdere && <button className={Styles.ansvarligeStateButton} onClick={() => setVælgAnsvarligBlandtAlleMedarbejdere(true)}>Ansvarlige <img src={SwitchArrows} alt="Switch arrows" /></button>}
+                        {vælgAnsvarligBlandtAlleMedarbejdere && <button className={Styles.ansvarligeStateButton} onClick={() => setVælgAnsvarligBlandtAlleMedarbejdere(false)}>Alle <img src={SwitchArrows} alt="Switch arrows" /></button>}
+                    </div>
+                    
                 </div>
                 <div className={`${Styles.opretBesøgFraOverblikContainer} ${tilknyttetAnsvarlig ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
                     <h3 className={Styles.subHeading}>Besøgsdetaljer:</h3>

@@ -259,6 +259,35 @@
     display: inline-block;
 }
 
+.vælgAnsvarligFlexContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.ansvarligeStateButton {
+    background: #f0f0f0;
+    color: #222222;
+    width: 80%;
+    height: 36px;
+    border-radius: 15px;
+    border: none;
+    font-weight: bold;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    cursor: pointer;
+}
+
+.ansvarligeStateButton img {
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+}
+
 @media screen and (max-width: 750px) {
     .subHeading {
         font-size: 1rem;
