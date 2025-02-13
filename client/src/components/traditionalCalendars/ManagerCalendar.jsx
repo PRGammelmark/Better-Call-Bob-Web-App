@@ -403,8 +403,8 @@ const onRedigerBesøg = (e) => {
         className={Styles.calendar}
         culture={'da'}
         localizer={localizer}
-        events={(visOgsåBesøgOverblik ? alleBesøgFormateret : ledigeTiderFormateret)}
-        backgroundEvents={visOgsåBesøgOverblik ? ledigeTiderFormateret : []}
+        events={(visOgsåBesøgOverblik ? alleBesøgFormateret : ledigeTiderMinusBesøg)}
+        backgroundEvents={visOgsåBesøgOverblik ? ledigeTiderMinusBesøg : []}
         onSelectEvent={openCalendarEvent}
         selectable={'ignoreEvents'}
         onSelectSlot={openCalendarDay}
