@@ -288,6 +288,15 @@
     margin-left: 5px;
 }
 
+.modalSubheading {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #757575;
+    margin-top: -15px;
+    margin-bottom: 20px;
+}
+
 @media screen and (max-width: 750px) {
     .subHeading {
         font-size: 1rem;

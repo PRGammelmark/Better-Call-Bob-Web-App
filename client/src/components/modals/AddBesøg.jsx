@@ -68,11 +68,17 @@ const AddBesøg = (props) => {
         if (props.trigger.action === "select") {
             setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
             setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
+        } else if (props.trigger.action === "ledigTidSelect") {
+            const ansvarlig = medarbejdere ? medarbejdere.find(bruger => bruger._id === props.trigger.ansvarligID) : null;
+            setTilknyttetAnsvarlig(ansvarlig)
+            setChosenDate(dayjs(props.trigger.start).format("YYYY-MM-DD"))
+            setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
+            setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
         } else {
             setSelectedTimeFrom("08:00")
             setSelectedTimeTo("12:00")
         }
-    }, [props.trigger])
+    }, [props.trigger, medarbejdere])
 
     useEffect(()=>{
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -115,10 +121,12 @@ const AddBesøg = (props) => {
         const besøg = {
             datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
             datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
-            brugerID: tilknyttetAnsvarlig._id,
+            brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
             opgaveID: tilknyttetOpgave._id,
             kommentar: comment ? comment : ""
         }
+
+        console.log(besøg)
 
         if (besøg.datoTidFra >= besøg.datoTidTil) {
             setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
@@ -132,8 +140,9 @@ const AddBesøg = (props) => {
         const eksisterendeAnsvarlig = tilknyttetOpgave.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
 
         if (!eksisterendeAnsvarlig) {
+            const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
             axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${tilknyttetOpgave._id}`, {
-                ansvarlig: [...tilknyttetOpgave.ansvarlig, tilknyttetAnsvarlig]
+                ansvarlig: [...tilknyttetOpgave.ansvarlig, xAnsvarlig]
             }, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -271,17 +280,18 @@ const AddBesøg = (props) => {
             resetState()
         }}>
             <h2 className={ModalStyles.modalHeading}>Tilføj besøg</h2>
+            {props.trigger.action === "ledigTidSelect" && <p className={Styles.modalSubheading}>for {props.trigger.ansvarligNavn}<br />ledig d. {dayjs(props.trigger.start).format("DD. MMMM")} fra kl. {dayjs(props.trigger.start).format("HH:mm")}-{dayjs(props.trigger.end).format("HH:mm")}</p>}
             {user.isAdmin && !isOnTaskPage && !(tilknyttetAnsvarlig && tilknyttetOpgave) && (
                     <div className={Styles.modalButtonFlexContainer}>
-                        <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setTilknyttetOpgave(null)}}>Ny opgave</button>
-                        <button className={`${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); setTilknyttetAnsvarlig("")}}>Eksisterende opgave</button>
+                        <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setTilknyttetOpgave(null); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Ny opgave</button>
+                        <button className={`${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Eksisterende opgave</button>
                     </div>
                 )}
                 
                 {/* INFORMATIONS-CONTAINER VED EKSISTERENDE OPGAVE */}
                 <div className={`${Styles.infoContainer} ${(tilknyttetAnsvarlig && tilknyttetOpgave) ? Styles.activeInfoContainer : ""}`}>
                     {opgaveOprettet && <p className={Styles.infoSuccessMessage}>Opgave oprettet! 🥳 </p>}
-                    {(tilknyttetAnsvarlig && tilknyttetOpgave) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig.navn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.adresse}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.navn}</b>.</p>}
+                    {(tilknyttetAnsvarlig && tilknyttetOpgave) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig.navn || props.trigger.ansvarligNavn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.adresse}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.navn}</b>.</p>}
                 </div>
 
                 {/* NY OPGAVE, TRIN 1: OPRET OPGAVE */}
@@ -320,7 +330,7 @@ const AddBesøg = (props) => {
                     </div>
                     
                 </div>
-                <div className={`${Styles.opretBesøgFraOverblikContainer} ${tilknyttetAnsvarlig ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
+                <div className={`${Styles.opretBesøgFraOverblikContainer} ${(tilknyttetAnsvarlig && tilknyttetOpgave) ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
                     <h3 className={Styles.subHeading}>Besøgsdetaljer:</h3>
                     <form action="" onSubmit={submitNewBesøgFromOverblikPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         {chosenEndDate ? 
