@@ -297,6 +297,14 @@
     margin-bottom: 20px;
 }
 
+.modalSubheadingContainer {
+    margin-bottom: 30px;
+    position: relative;
+    background: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
 @media screen and (max-width: 750px) {
     .subHeading {
         font-size: 1rem;

@@ -1426,6 +1426,8 @@ const ÅbenOpgave = () => {
                         setAlleLedigeTider={setAlleLedigeTider}
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
+                        updateOpgave={updateOpgave}
+                        setUpdateOpgave={setUpdateOpgave}
                         />
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>

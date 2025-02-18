@@ -23,7 +23,7 @@ const AddBesøg = (props) => {
     const [tilknytOpgave, setTilknytOpgave] = useState(false);
     const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null);
     const [tilknytAnsvarlig, setTilknytAnsvarlig] = useState(false);
-    const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState(null);
+    const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState("");
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
@@ -207,7 +207,7 @@ const AddBesøg = (props) => {
         const besøg = {
             datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
             datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
-            brugerID: selectedAnsvarlig,
+            brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
             opgaveID: chosenTask._id,
             kommentar: comment ? comment : ""
         }
@@ -221,6 +221,25 @@ const AddBesøg = (props) => {
         }
 
         const nyAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+        const eksisterendeAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+
+        if (!eksisterendeAnsvarlig) {
+            const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${chosenTask._id}`, {
+                ansvarlig: [...chosenTask.ansvarlig, xAnsvarlig]
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                // refetchAnsvarlige
+                props.setUpdateOpgave(!props.updateOpgave)
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
         
         axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
             headers: {
@@ -308,7 +327,7 @@ const AddBesøg = (props) => {
                     <h3 className={Styles.subHeading}>Vælg blandt {vælgAnsvarligBlandtAlleMedarbejdere ? "alle medarbejdere" : "ansvarlige"}:</h3>
                     <div className={Styles.vælgAnsvarligFlexContainer}>
                         {!vælgAnsvarligBlandtAlleMedarbejdere && <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
-                            <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
+                            <option value="vælg" disabled hidden selected>Vælg ansvarlig ...</option>
                             {tilknyttetOpgave && tilknyttetOpgave.ansvarlig && tilknyttetOpgave.ansvarlig.length > 0 ? (
                                 tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
                                     <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
@@ -376,13 +395,13 @@ const AddBesøg = (props) => {
                 </div>
             
             
-            {isOnTaskPage && <div className={ModalStyles.modalSubheadingContainer}>
+            {isOnTaskPage && <div className={Styles.modalSubheadingContainer}>
                 <label className={ModalStyles.modalLabel}>Kundeinformationer</label>
                 <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.navn : "Ingen person"}</h3>
                 <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.adresse : "Ingen adresse"}</h3>
             </div>}
             {isOnTaskPage && <form action="" onSubmit={submitNewBesøgFromTaskPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
-                {user.isAdmin && isOnTaskPage && (
+                {user.isAdmin && isOnTaskPage && props.trigger.origin !== "besøgFraLedigTid" && (
                     <>
                     <label className={ModalStyles.modalLabel} htmlFor="ansvarlige">Vælg medarbejder</label>
                     <select className={ModalStyles.modalInput} id="ansvarlige" value={selectedAnsvarlig} onChange={(e) => {setSelectedAnsvarlig(e.target.value)}}>

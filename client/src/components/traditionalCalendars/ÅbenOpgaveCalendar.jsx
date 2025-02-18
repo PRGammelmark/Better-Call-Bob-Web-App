@@ -35,7 +35,7 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID, updateOpgave, setUpdateOpgave}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
   const [currentView, setCurrentView] = useState("month")
@@ -255,15 +255,15 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
 
       if(opgaveTilknyttetBesøg !== ""){
-      axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        })
-        .then(res => {
-          setTilknyttetOpgave(res.data)
-        })
-        .catch(error => console.log(error))
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
+            headers: {
+              'Authorization': `Bearer ${user.token}`
+            }
+          })
+          .then(res => {
+            setTilknyttetOpgave(res.data)
+          })
+          .catch(error => console.log(error))
       } else {
         setTilknyttetOpgave(callEvent)
       }
@@ -559,7 +559,7 @@ const onRedigerLedigTid = (e) => {
           eventTimeRangeFormat: ""
         }}
         // draggableAccessor={fratrækBesøgFraLedigeTider ? false : (egneBesøgFormateret) => true}
-        draggableAccessor={() => true}
+        draggableAccessor={(event) => event.objectIsLedigTid ? false : true}
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
         onView={(view) => setView(view)}
@@ -678,6 +678,7 @@ const onRedigerLedigTid = (e) => {
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(tilknyttetOpgave.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave && tilknyttetOpgave.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>}
         {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
+        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({origin: "besøgFraLedigTid", action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
         <br />
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
@@ -764,7 +765,7 @@ const onRedigerLedigTid = (e) => {
         
       }
       </Modal>
-      <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} />
+      <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave}/>
     </div>
   )
 }
