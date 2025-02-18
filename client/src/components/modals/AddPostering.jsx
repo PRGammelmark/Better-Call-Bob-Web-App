@@ -52,7 +52,11 @@ const AddPostering = (props) => {
 
     function tilføjPostering (e) {
 
-        const posteringSatser = aktuelleSatser;
+        const posteringSatser = {
+            ...satser,
+            ...aktuelleSatser
+        }
+        
         const posteringDynamiskHonorar = (
             ((handymantimer * posteringSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
             ((tømrertimer * posteringSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
@@ -63,6 +67,7 @@ const AddPostering = (props) => {
             ((trailer ? posteringSatser.trailerHonorar : 0) * (1 - rabatProcent / 100)) + 
             ((rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningHonorar) * (1 - rabatProcent / 100))
         );
+        
         const posteringDynamiskPris = (
             ((handymantimer * posteringSatser.handymanTimerPris) * (1 - rabatProcent / 100)) + 
             ((tømrertimer * posteringSatser.tømrerTimerPris) * (1 - rabatProcent / 100)) + 

@@ -1000,6 +1000,18 @@ const ÅbenOpgave = () => {
         const totalPrisEksklUdlæg = (nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
         return akk + (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
     }, 0);
+
+    // console.log("Fast pris, totalFaktura:", Number(fastPrisTotalFaktura))
+    // console.log("Opstart", Number(opstartTotalFaktura))
+    // console.log("Handyman", Number(handymanTotalFaktura))
+    // console.log("Tømrer:", Number(tømrerTotalFaktura))
+    // console.log("Rådgivning:", Number(rådgivningOpmålingVejledningTotalFaktura))
+    // console.log("Trailer:", Number(trailerTotalFaktura))
+    // console.log("Aftentillæg:", Number(aftenTillægTotalFaktura))
+    // console.log("Nattillæg:", Number(natTillægTotalFaktura))
+    // console.log("Udlæg:", Number(udlægTotalFaktura))
+    // console.log("Rabat:", Number(rabatterTotalFaktura))
+    
     const totalFaktura = Number(fastPrisTotalFaktura) + Number(opstartTotalFaktura) + Number(handymanTotalFaktura) + Number(tømrerTotalFaktura) + Number(rådgivningOpmålingVejledningTotalFaktura) + Number(trailerTotalFaktura) + Number(aftenTillægTotalFaktura) + Number(natTillægTotalFaktura) + Number(udlægTotalFaktura) - Number(rabatterTotalFaktura);
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
