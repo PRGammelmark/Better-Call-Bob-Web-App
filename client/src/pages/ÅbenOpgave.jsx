@@ -970,7 +970,7 @@ const ÅbenOpgave = () => {
     const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningHonorar) : 0), 0));
     const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * satser.trailerHonorar) : 0), 0));
     const aftenTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * satser.aftenTillægHonorar) : 0) : 0), 0));
-    const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (satser.handymanTimerPrisInklNatTillæg - satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (satser.tømrerTimerPrisInklNatTillæg - satser.tømrerTimerPris)))) : 0) : 0), 0));
+    const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * satser.natTillægHonorar) : 0) : 0), 0));
     const udlægTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
         return akk + (nuv.dynamiskHonorarBeregning ? udlægSum : 0);
@@ -1440,6 +1440,7 @@ const ÅbenOpgave = () => {
                         {posteringer && posteringer.map((postering) => {
                             return (
                                 <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
+                                    {console.log(postering)}
                                     <div className={ÅbenOpgaveCSS.posteringCard}>
                                         <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
                                         <div>
