@@ -174,16 +174,7 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
       title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(besøg.datoTidFra).format("HH:mm")}-{dayjs(besøg.datoTidTil).format("HH:mm")}</p><b style={besøgBStyles}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b></span>
     }));
 
-    const ledigeTiderFormateret =  alleLedigeTider.map((ledigTid) => ({
-      ...ledigTid,
-      start: new Date(ledigTid.datoTidFra),
-      end: new Date(ledigTid.datoTidTil),
-      brugerID: ledigTid.brugerID,
-      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '60' || '#3c5a3f60',
-      title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(ledigTid.datoTidFra).format("HH:mm")}-{dayjs(ledigTid.datoTidTil).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
-    }))
-
-    const ledigeTiderMinusBesøg = ledigeTiderFormateret.flatMap(tid => {
+    const ledigeTiderMinusBesøg = alleLedigeTider.flatMap(tid => {
       let updatedTider = [tid];
       alleBesøgFormateret.forEach(besøg => {
         if (besøg.brugerID === tid.brugerID) {
@@ -216,6 +207,15 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
       });
       return updatedTider;
     });
+
+    const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => ({
+      ...ledigTid,
+      start: new Date(ledigTid.datoTidFra),
+      end: new Date(ledigTid.datoTidTil),
+      brugerID: ledigTid.brugerID,
+      eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '60' || '#3c5a3f60',
+      title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(ledigTid.datoTidFra).format("HH:mm")}-{dayjs(ledigTid.datoTidTil).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
+    }))
 
    const openCalendarEvent = useCallback((callEvent) => {
     
@@ -403,8 +403,8 @@ const onRedigerBesøg = (e) => {
         className={Styles.calendar}
         culture={'da'}
         localizer={localizer}
-        events={(visOgsåBesøgOverblik ? alleBesøgFormateret : ledigeTiderMinusBesøg)}
-        backgroundEvents={visOgsåBesøgOverblik ? ledigeTiderMinusBesøg : []}
+        events={(visOgsåBesøgOverblik ? alleBesøgFormateret : ledigeTiderFormateret)}
+        backgroundEvents={visOgsåBesøgOverblik ? ledigeTiderFormateret : []}
         onSelectEvent={openCalendarEvent}
         selectable={'ignoreEvents'}
         onSelectSlot={openCalendarDay}
