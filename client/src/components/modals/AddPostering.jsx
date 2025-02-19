@@ -68,41 +68,45 @@ const AddPostering = (props) => {
             ((rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningHonorar) * (1 - rabatProcent / 100))
         );
         
-        const posteringDynamiskPris = (
-            ((handymantimer * posteringSatser.handymanTimerPris) * (1 - rabatProcent / 100)) + 
-            ((tømrertimer * posteringSatser.tømrerTimerPris) * (1 - rabatProcent / 100)) + 
-            ((aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægPris) + (tømrertimer * posteringSatser.aftenTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
-            ((natTillæg ? ((handymantimer * posteringSatser.natTillægPris) + (tømrertimer * posteringSatser.natTillægPris) + (rådgivningOpmålingVejledning * posteringSatser.natTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
-            ((inkluderOpstart * posteringSatser.opstartsgebyrPris) * (1 - rabatProcent / 100)) + 
-            (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            ((trailer ? posteringSatser.trailerPris : 0) * (1 - rabatProcent / 100)) + 
-            ((rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningPris : 0) * (1 - rabatProcent / 100))
+        const posteringDynamiskPris = parseFloat(
+            (
+                ((handymantimer * posteringSatser.handymanTimerPris) * (1 - rabatProcent / 100)) + 
+                ((tømrertimer * posteringSatser.tømrerTimerPris) * (1 - rabatProcent / 100)) + 
+                ((aftenTillæg ? ((handymantimer * (posteringSatser.handymanTimerPrisInklAftenTillæg - posteringSatser.handymanTimerPris)) + (tømrertimer * (posteringSatser.tømrerTimerPrisInklAftenTillæg - posteringSatser.tømrerTimerPris)) + (rådgivningOpmålingVejledning * (posteringSatser.tømrerTimerPrisInklAftenTillæg - posteringSatser.rådgivningOpmålingVejledningPris))) : 0) * (1 - rabatProcent / 100)) + 
+                ((natTillæg ? ((handymantimer * (posteringSatser.handymanTimerPrisInklNatTillæg - posteringSatser.handymanTimerPris)) + (tømrertimer * (posteringSatser.tømrerTimerPrisInklNatTillæg - posteringSatser.tømrerTimerPris)) + (rådgivningOpmålingVejledning * (posteringSatser.tømrerTimerPrisInklNatTillæg - posteringSatser.rådgivningOpmålingVejledningPris))) : 0) * (1 - rabatProcent / 100)) + 
+                ((inkluderOpstart * posteringSatser.opstartsgebyrPris) * (1 - rabatProcent / 100)) + 
+                (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
+                ((trailer ? posteringSatser.trailerPris : 0) * (1 - rabatProcent / 100)) + 
+                ((rådgivningOpmålingVejledning ? rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningPris : 0) * (1 - rabatProcent / 100))
+            ).toFixed(2)
         );
         
         const postering = {
             dato: posteringDato,
             beskrivelse: posteringBeskrivelse,
-            opstart: inkluderOpstart,
-            handymanTimer: handymantimer,
-            tømrerTimer: tømrertimer,
+            opstart: Number(inkluderOpstart),
+            handymanTimer: Number(handymantimer),
+            tømrerTimer: Number(tømrertimer),
             udlæg: outlays,
             aftenTillæg: aftenTillæg,
             natTillæg: natTillæg,
             trailer: trailer,
-            rådgivningOpmålingVejledning: rådgivningOpmålingVejledning,
+            rådgivningOpmålingVejledning: Number(rådgivningOpmålingVejledning),
             satser: posteringSatser,
             rabatProcent: rabatProcent,
             dynamiskHonorarBeregning: dynamiskHonorarBeregning,
             dynamiskPrisBeregning: dynamiskPrisBeregning,
-            fastHonorar: posteringFastHonorar,
-            fastPris: posteringFastPris,
+            fastHonorar: Number(posteringFastHonorar),
+            fastPris: Number(posteringFastPris),
             dynamiskHonorar: posteringDynamiskHonorar,
             dynamiskPris: posteringDynamiskPris,
-            totalHonorar: dynamiskHonorarBeregning ? posteringDynamiskHonorar : posteringFastHonorar,
-            totalPris: dynamiskPrisBeregning ? posteringDynamiskPris : posteringFastPris,
+            totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
+            totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: props.opgaveID,
             brugerID: props.userID
         }
+
+        console.log(postering)
 
         axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
             headers: {
@@ -176,14 +180,14 @@ const AddPostering = (props) => {
                 <div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast honorar</h3>
                     <div>
-                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastHonorar} onChange={(e) => setPosteringFastHonorar(e.target.value)} type="number" min="0" inputMode="numeric" pattern="[0-9]*" />
+                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastHonorar} onChange={(e) => setPosteringFastHonorar(e.target.value)} type="decimal" min="0" inputMode="numeric" pattern="[0-9]*" />
                     </div>
                 </div>}
                 {!dynamiskPrisBeregning && 
                 <div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast pris (ekskl. moms)</h3>
                     <div>
-                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="number" min="0" inputMode="numeric" pattern="[0-9]*" />
+                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="decimal" min="0" inputMode="numeric" pattern="[0-9]*" />
                     </div>
                 </div>}
                 {(dynamiskHonorarBeregning || dynamiskPrisBeregning) && 

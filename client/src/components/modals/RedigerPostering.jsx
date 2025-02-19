@@ -34,6 +34,25 @@ const RedigerPostering = (props) => {
     const [rabatProcent, setRabatProcent] = useState(postering.rabatProcent);
     
     useEffect(() => {
+        setOutlays(postering.udlæg || []);
+        setHandymantimer(postering.handymanTimer || 0);
+        setTømrertimer(postering.tømrerTimer || 0);
+        setPosteringDato(dayjs(postering.dato).format('YYYY-MM-DD'));
+        setPosteringBeskrivelse(postering.beskrivelse || "Ingen beskrivelse");
+        setInkluderOpstart(postering.opstart || 0);
+        setAftenTillæg(postering.aftenTillæg || false);
+        setNatTillæg(postering.natTillæg || false);
+        setTrailer(postering.trailer || false);
+        setRådgivningOpmålingVejledning(postering.rådgivningOpmålingVejledning || 0);
+        setAktuelleSatser(postering.satser || satser);
+        setDynamiskHonorarBeregning(postering.dynamiskHonorarBeregning || true);
+        setDynamiskPrisBeregning(postering.dynamiskPrisBeregning || true);
+        setPosteringFastHonorar(postering.fastHonorar || 0);
+        setPosteringFastPris(postering.fastPris || 0);
+        setRabatProcent(postering.rabatProcent || 0);
+    }, [postering]);    
+    
+    useEffect(() => {
         const xPosteringDynamiskHonorar = (
             ((handymantimer * aktuelleSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
             ((tømrertimer * aktuelleSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
@@ -66,8 +85,8 @@ const RedigerPostering = (props) => {
         const posteringDynamiskPris = (
             ((handymantimer * aktuelleSatser.handymanTimerPris) * (1 - rabatProcent / 100)) + 
             ((tømrertimer * aktuelleSatser.tømrerTimerPris) * (1 - rabatProcent / 100)) + 
-            ((aftenTillæg ? ((handymantimer * aktuelleSatser.aftenTillægPris) + (tømrertimer * aktuelleSatser.aftenTillægPris) + (rådgivningOpmålingVejledning * aktuelleSatser.aftenTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
-            ((natTillæg ? ((handymantimer * aktuelleSatser.natTillægPris) + (tømrertimer * aktuelleSatser.natTillægPris) + (rådgivningOpmålingVejledning * aktuelleSatser.natTillægPris)) : 0) * (1 - rabatProcent / 100)) + 
+            ((aftenTillæg ? ((handymantimer * (aktuelleSatser.handymanTimerPrisInklAftenTillæg - aktuelleSatser.handymanTimerPris)) + (tømrertimer * (aktuelleSatser.tømrerTimerPrisInklAftenTillæg - aktuelleSatser.tømrerTimerPris)) + (rådgivningOpmålingVejledning * (aktuelleSatser.tømrerTimerPrisInklAftenTillæg - aktuelleSatser.rådgivningOpmålingVejledningPris))) : 0) * (1 - rabatProcent / 100)) + 
+                ((natTillæg ? ((handymantimer * (aktuelleSatser.handymanTimerPrisInklNatTillæg - aktuelleSatser.handymanTimerPris)) + (tømrertimer * (aktuelleSatser.tømrerTimerPrisInklNatTillæg - aktuelleSatser.tømrerTimerPris)) + (rådgivningOpmålingVejledning * (aktuelleSatser.tømrerTimerPrisInklNatTillæg - aktuelleSatser.rådgivningOpmålingVejledningPris))) : 0) * (1 - rabatProcent / 100)) + 
             ((inkluderOpstart * aktuelleSatser.opstartsgebyrPris) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
             ((trailer ? aktuelleSatser.trailerPris : 0) * (1 - rabatProcent / 100)) + 
@@ -77,24 +96,24 @@ const RedigerPostering = (props) => {
         const editedPostering = {
             dato: posteringDato,
             beskrivelse: posteringBeskrivelse,
-            opstart: inkluderOpstart,
-            handymanTimer: handymantimer,
-            tømrerTimer: tømrertimer,
+            opstart: Number(inkluderOpstart),
+            handymanTimer: Number(handymantimer),
+            tømrerTimer: Number(tømrertimer),
             udlæg: outlays,
             aftenTillæg: aftenTillæg,
             natTillæg: natTillæg,
             trailer: trailer,
-            rådgivningOpmålingVejledning: rådgivningOpmålingVejledning,
+            rådgivningOpmålingVejledning: Number(rådgivningOpmålingVejledning),
             satser: aktuelleSatser,
             rabatProcent: rabatProcent,
             dynamiskHonorarBeregning: dynamiskHonorarBeregning,
             dynamiskPrisBeregning: dynamiskPrisBeregning,
-            fastHonorar: posteringFastHonorar,
-            fastPris: posteringFastPris,
+            fastHonorar: Number(posteringFastHonorar),
+            fastPris: Number(posteringFastPris),
             dynamiskHonorar: posteringDynamiskHonorar,
             dynamiskPris: posteringDynamiskPris,
-            totalHonorar: dynamiskHonorarBeregning ? posteringDynamiskHonorar : posteringFastHonorar,
-            totalPris: dynamiskPrisBeregning ? posteringDynamiskPris : posteringFastPris,
+            totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
+            totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: postering.opgaveID,
             brugerID: postering.brugerID
         }
