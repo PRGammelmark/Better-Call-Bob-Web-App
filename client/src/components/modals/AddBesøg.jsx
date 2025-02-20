@@ -51,6 +51,15 @@ const AddBesøg = (props) => {
     }
 
     useEffect(() => {
+        if (props.trigger) {
+          // Blur any focused element to prevent keyboard from showing
+          if (document.activeElement) {
+            document.activeElement.blur();
+          }
+        }
+      }, [props.trigger]);
+    
+    useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`

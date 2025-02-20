@@ -363,7 +363,6 @@ const openEditDialog = () => {
 }
 
 const openCalendarDay = (slotInfo) => {
-    console.log(slotInfo)
     if(slotInfo.action === "click"){
         return
     }
