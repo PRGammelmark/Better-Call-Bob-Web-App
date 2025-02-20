@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ReactDom from "react-dom";
 import ModalStyles from "./Modal.module.css";
+import ContentStyles from "./Content.module.css"
 import CloseIcon from "../assets/closeIcon.svg";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -29,6 +30,55 @@ const Modal = ({ children, trigger, setTrigger, onClose }) => {
 
     const [isMobile, setIsMobile] = useState(false);
 
+    // // Prevent scrolling of the background when modal is open
+    useEffect(() => {
+      const contentElement = document.querySelector(`${ContentStyles.content}`); // Select the element
+      
+      const preventScroll = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+      };
+    
+      if (trigger) {
+        document.body.style.overflow = "hidden";
+        document.body.style.touchAction = "none";
+    
+        if (contentElement) {
+          contentElement.style.overflow = "hidden";
+          contentElement.style.touchAction = "none";
+          
+          // Fully block scroll behavior
+          contentElement.addEventListener("wheel", preventScroll, { passive: false });
+          contentElement.addEventListener("touchmove", preventScroll, { passive: false });
+        }
+      } else {
+        document.body.style.overflow = "";
+        document.body.style.touchAction = "";
+    
+        if (contentElement) {
+          contentElement.style.overflow = "";
+          contentElement.style.touchAction = "";
+          
+          // Remove listeners when modal closes
+          contentElement.removeEventListener("wheel", preventScroll);
+          contentElement.removeEventListener("touchmove", preventScroll);
+        }
+      }
+    
+      return () => {
+        document.body.style.overflow = "";
+        document.body.style.touchAction = "";
+    
+        if (contentElement) {
+          contentElement.style.overflow = "";
+          contentElement.style.touchAction = "";
+          contentElement.removeEventListener("wheel", preventScroll);
+          contentElement.removeEventListener("touchmove", preventScroll);
+        }
+      };
+    }, [trigger]);
+    
     useEffect(() => {
       const handleResize = () => {
         setIsMobile(window.innerWidth <= 750); // Adjust 750px to your desired breakpoint

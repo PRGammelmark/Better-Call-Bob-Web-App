@@ -521,7 +521,7 @@ const onRedigerLedigTid = (e) => {
       // Vis dette på opgavesider
       <div className={Styles.calendarHeadingDiv}>
         {visEgneBesøg && <><b className={Styles.bold}>{egneBesøgFormateret.length > 0 ? egneBesøgFormateret.length > 1 ? "Du har " + egneBesøgFormateret.length + " planlagte besøg" : "Du har " + egneBesøgFormateret.length + " planlagt besøg" : "Du har ingen planlagte besøg"}</b><p className={Styles.calendarHeadingDivP}>(Viser dine besøg på denne opgave)</p></>}
-        {visAlleBesøg && <><b className={Styles.bold}>{alleBesøgDenneOpgaveFormateret.length > 0 ? alleBesøgDenneOpgaveFormateret.length > 1 ? alleBesøgDenneOpgaveFormateret.length + " planlagte besøg på denne opgave" : alleBesøgDenneOpgaveFormateret.length + " planlagt besøg på denne opgave" : "Der er ingen planlagte besøg på denne opgave"}</b><p className={Styles.calendarHeadingDivP}>(Viser alle besøg på denne opgave)</p></>}
+        {visAlleBesøg && <><b className={Styles.bold}>{alleBesøgDenneOpgaveFormateret.length > 0 ? alleBesøgDenneOpgaveFormateret.length > 1 ? alleBesøgDenneOpgaveFormateret.length + " planlagte besøg på denne opgave" : alleBesøgDenneOpgaveFormateret.length + " planlagt besøg på denne opgave" : "Ingen planlagte besøg på denne opgave"}</b><p className={Styles.calendarHeadingDivP}>(Viser alle besøg på denne opgave)</p></>}
         {visLedighed && (fratrækBesøgFraLedigeTider ? <><b className={Styles.bold}>Viser ledighed minus planlagte besøg</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(false)}>Se registrerede ledighedsblokke</p></> : <><b className={Styles.bold}>Viser registrerede ledighedsblokke</b><p className={Styles.calendarHeadingDivPLink} onClick={() => setFratrækBesøgFraLedigeTider(true)}>Vis ledighed minus besøg</p></>)}
       </div>
       :
@@ -574,7 +574,7 @@ const onRedigerLedigTid = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis dine besøg ({egneBesøgFormateret.length})<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
+            <b className={Styles.besøgFilterDivItemHeading}>Dine besøg ({egneBesøgFormateret.length})<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
           </div>
           <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
@@ -583,7 +583,7 @@ const onRedigerLedigTid = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis alle besøg ({alleBesøgDenneOpgaveFormateret.length})<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
+            <b className={Styles.besøgFilterDivItemHeading}>Alle besøg ({alleBesøgDenneOpgaveFormateret.length})<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (denne opgave)</span></b>
           </div>
           {user.isAdmin && <div className={Styles.besøgFilterDivItem}>
             <div className={Styles.switcherDiv}>
@@ -592,7 +592,7 @@ const onRedigerLedigTid = (e) => {
                 <span className={Styles.slider}></span>
               </label>
             </div>
-            <b className={Styles.besøgFilterDivItemHeading}>Vis ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (alle medarbejdere)</span></b>
+            <b className={Styles.besøgFilterDivItemHeading}>Ledighed<br /><span className={Styles.besøgFilterDivItemHeadingSpan}> (alle medarbejdere)</span></b>
           </div>}
       </div>
       :
