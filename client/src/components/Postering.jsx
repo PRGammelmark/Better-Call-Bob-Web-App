@@ -54,6 +54,9 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
             <div className={`${ÅbenOpgaveCSS.posteringFlipper} ${honorarVisning ? '' : ÅbenOpgaveCSS.flipped}`}>
                 <div className={ÅbenOpgaveCSS.posteringFront}>
                     <div className={ÅbenOpgaveCSS.posteringCard}>
+                        {user.isAdmin && <div className={`${ÅbenOpgaveCSS.dækningsbidragPill} ${honorarVisning ? ÅbenOpgaveCSS.dækningsbidragPillActive : ''}`}>
+                            <p>{(postering.totalPris - postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        </div>}
                         <div>
                             <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
                             <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
@@ -154,6 +157,9 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringBack}>
                     <div className={ÅbenOpgaveCSS.posteringCard}>
+                        {user.isAdmin && <div className={`${ÅbenOpgaveCSS.dækningsbidragPill} ${honorarVisning ? '' : ÅbenOpgaveCSS.dækningsbidragPillActive}`}>
+                            <p>{(postering.totalPris - postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                        </div>}
                         <div>
                             <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
                             <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
