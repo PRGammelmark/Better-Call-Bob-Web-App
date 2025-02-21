@@ -1233,11 +1233,11 @@ const ÅbenOpgave = () => {
             <PageAnimation>
             <div className={ÅbenOpgaveCSS.tilbageOpgaveSektion}>
                 <img src={BackIcon} alt="" onClick={() => navigate(-1)} className={ÅbenOpgaveCSS.tilbageKnap} />
-                <div>
+                <div className={ÅbenOpgaveCSS.headerContainer}>
                     <b className={`${ÅbenOpgaveCSS.opgaveIDHeader} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
                     <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{opgave.adresse}</h2>
                     <div className={ÅbenOpgaveCSS.kortLinkContainer}>
-                        <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>🌍 Find på kort</a>
+                        {/* <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden</a> */}
                         {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
                         <p className={ÅbenOpgaveCSS.smsSendtTekst}>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
                         {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
@@ -1282,10 +1282,11 @@ const ÅbenOpgave = () => {
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                 </form>}
-                <div className={ÅbenOpgaveCSS.oprettetUdførtContainer}>
+                {!færdiggjort && <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden </a>}
+                {/* <div className={ÅbenOpgaveCSS.oprettetUdførtContainer}>
                     <span className={ÅbenOpgaveCSS.prefix}>Oprettet: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.createdAt).toLocaleDateString()}</span></span>
                     <span className={ÅbenOpgaveCSS.prefix}>Ønskes udført: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.onsketDato).toLocaleDateString()}, fra kl. {new Date(opgave.onsketDato).toLocaleTimeString().slice(0,5)}</span></span>
-                </div>
+                </div> */}
                 
 
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>

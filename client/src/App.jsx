@@ -1,6 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
 import { createBrowserRouter, Route, Link, NavLink, createRoutesFromElements, RouterProvider, Navigate } from 'react-router-dom'
+import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Content from './components/Content'

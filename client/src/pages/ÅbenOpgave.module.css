@@ -1,12 +1,21 @@
 .adresseHeading {
     font-family: OmnesBold;
+    margin-bottom: 10px;
 }
 
 .kortLink {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-top: 5px;
     text-decoration: none;
-    color: #59bf1a;
+    color: #222222;
+    background-color: #f0f0f0;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-family: "OmnesBold";
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+    
 }
 
 .tilbageKnap {
@@ -21,12 +30,16 @@
     align-items: center;
     gap: 10px;
     position: relative;
-    max-width: 600px;
+    max-width: 800px;
+}
+
+.headerContainer {
+    min-width: 500px;
 }
 
 .opgaveContainer {
     margin-top: 30px;
-    max-width: 600px;
+    max-width: 800px;
 }
 
 .label {
@@ -54,7 +67,7 @@
     padding: 8px 20px;
     font-family: Omnes;
     font-size: 0.9rem;
-    height: 70px;
+    height: 200px;
     resize: none;
     border: none;
     transition: 0.2s ease;
@@ -1518,6 +1531,11 @@
 
 @media screen and (max-width: 750px) {
 
+    .headerContainer {
+        min-width: 260px;
+        background: yellow;
+    }
+
     .totalRække {
         font-size: 0.9rem;
     }
@@ -1570,7 +1588,7 @@
     }
 
     .opgavebeskrivelse {
-        height: 120px;
+        height: 180px;
     }
 
     .kolonner {
