@@ -1227,6 +1227,19 @@ const ÅbenOpgave = () => {
         });
     }
 
+    function åbnKortLink() {
+        const appleMapsUrl = `maps://maps.apple.com/?q=${opgave.adresse}, Denmark`;
+        const googleMapsUrl = `https://maps.google.com/?q=${opgave.adresse}, Denmark`;
+        console.log("no")
+      
+        // Tjek om det er en iOS-enhed
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+          window.location.href = appleMapsUrl;
+        } else {
+          window.location.href = googleMapsUrl;
+        }
+      }
+
     return (
     
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1282,7 +1295,7 @@ const ÅbenOpgave = () => {
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                 </form>}
-                {!færdiggjort && <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden </a>}
+                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden </p>}
                 {/* <div className={ÅbenOpgaveCSS.oprettetUdførtContainer}>
                     <span className={ÅbenOpgaveCSS.prefix}>Oprettet: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.createdAt).toLocaleDateString()}</span></span>
                     <span className={ÅbenOpgaveCSS.prefix}>Ønskes udført: <span className={ÅbenOpgaveCSS.postfix}>{new Date(opgave.onsketDato).toLocaleDateString()}, fra kl. {new Date(opgave.onsketDato).toLocaleTimeString().slice(0,5)}</span></span>
