@@ -90,7 +90,7 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                                 if (alternativEmail.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) || alternativEmail === '') {
                                     setLoadingFakturaSubmission(true);
                                     const bekræftAdmGebyr = false;
-                                    useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr);
+                                    useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr);
                                 } else {
                                     alert("Indtast en gyldig e-mailadresse, eller efterlad feltet tomt.");
                                 }

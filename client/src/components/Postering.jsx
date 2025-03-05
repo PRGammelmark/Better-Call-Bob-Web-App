@@ -214,7 +214,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                             {postering.natTillæg && postering.dynamiskPrisBeregning && (
                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg </span>
-                                    <span>{((postering.handymanTimer * (postering.handymanTimerPrisInklNatTillæg - postering.handymanTimerPris)) + (postering.tømrerTimer * (postering.tømrerTimerPrisInklNatTillæg - postering.tømrerTimerPris)) + (postering.rådgivningOpmålingVejledning * (postering.tømrerTimerPrisInklNatTillæg - postering.rådgivningOpmålingVejledningPris))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span>{((postering.handymanTimer * (postering.satser.handymanTimerPrisInklNatTillæg - postering.satser.handymanTimerPris)) + (postering.tømrerTimer * (postering.satser.tømrerTimerPrisInklNatTillæg - postering.satser.tømrerTimerPris)) + (postering.rådgivningOpmålingVejledning * (postering.satser.tømrerTimerPrisInklNatTillæg - postering.satser.rådgivningOpmålingVejledningPris))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>
                             )}
                             {postering.trailer && postering.dynamiskPrisBeregning && (

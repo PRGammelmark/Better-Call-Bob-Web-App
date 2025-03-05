@@ -1,4 +1,4 @@
-import satser from "../variables.js";
+// import satser from "../variables.js";
 
 const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
 
@@ -7,6 +7,8 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
     let lineNumber = 1;
     
     posteringer.forEach((postering) => {
+        let satser = postering.satser;
+
         if (postering.opstart > 0 ) {
             lines.push({
                 lineNumber: lineNumber++,
@@ -23,7 +25,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.handymanTimer > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Handymanarbejde: ${postering.beskrivelse}`,
+                description: `Handymanarbejde${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "1"
                 },
@@ -36,7 +38,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.handymanTimer > 0 && postering.aftenTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Handymanarbejde: ${postering.beskrivelse}`,
+                description: `Handymanarbejde (inkl. aftentillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "1"
                 },
@@ -49,7 +51,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.handymanTimer > 0 && postering.natTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Handymanarbejde: ${postering.beskrivelse}`,
+                description: `Handymanarbejde (inkl. nattillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "1"
                 },
@@ -62,7 +64,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.tømrerTimer > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                description: `Tømrerarbejde${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "6"
                 },
@@ -75,7 +77,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.tømrerTimer > 0 && postering.aftenTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                description: `Tømrerarbejde (inkl. aftentillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "6"
                 },
@@ -88,7 +90,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.tømrerTimer > 0 && postering.natTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Tømrerarbejde: ${postering.beskrivelse}`,
+                description: `Tømrerarbejde (inkl. nattillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
                     productNumber: "6"
                 },
@@ -101,9 +103,9 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.rådgivningOpmålingVejledning > 0 && !(postering.aftenTillæg || postering.natTillæg)) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                description: `Rådgivning, opmåling og vejledning${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
-                    productNumber: "6"
+                    productNumber: "7"
                 },
                 quantity: (postering.rådgivningOpmålingVejledning),
                 unitNetPrice: satser.rådgivningOpmålingVejledningPris,
@@ -114,9 +116,9 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.rådgivningOpmålingVejledning > 0 && postering.aftenTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                description: `Rådgivning, opmåling og vejledning (inkl. aftentillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
-                    productNumber: "6"
+                    productNumber: "7"
                 },
                 quantity: (postering.rådgivningOpmålingVejledning),
                 unitNetPrice: satser.tømrerTimerPrisInklAftenTillæg,
@@ -127,9 +129,9 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
         if (postering.rådgivningOpmålingVejledning > 0 && postering.natTillæg) {
             lines.push({
                 lineNumber: lineNumber++,
-                description: `Rådgivning, opmåling og vejledning: ${postering.beskrivelse}`,
+                description: `Rådgivning, opmåling og vejledning (inkl. nattillæg)${postering.beskrivelse ? (": " + postering.beskrivelse) : ""}`,
                 product: {
-                    productNumber: "6"
+                    productNumber: "7"
                 },
                 quantity: (postering.rådgivningOpmålingVejledning),
                 unitNetPrice: satser.tømrerTimerPrisInklNatTillæg,
@@ -142,7 +144,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                 lineNumber: lineNumber++,
                 description: `Trailer`,
                 product: {
-                    productNumber: "7"
+                    productNumber: "8"
                 },
                 quantity: 1,
                 unitNetPrice: satser.trailerPris,
@@ -169,9 +171,9 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr) => {
                 description: "Administrationsgebyr",
                 product: {
                 productNumber: "4"
-            },
-            quantity: 1,
-            unitNetPrice: 49,
+                },
+                quantity: 1,
+                unitNetPrice: 49,
                 discountPercentage: 0.00
             })
         }

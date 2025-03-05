@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
 
-const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
+const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -17,7 +17,27 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alte
     // Importer linjer til faktura fra posteringer
     const economicLines = useEconomicLines(posteringer, bekræftAdmGebyr);
 
+    const cvrNummer = opgave.CVR ? ("corporateIdentificationNumber: opgave.CVR") : "";
 
+    const nyKundeObject = {
+        name: opgave.navn ? opgave.navn : "Intet navn oplyst",
+        address: opgave.adresse ? opgave.adresse : "Ingen adresse oplyst",
+        email: alternativEmail ? alternativEmail : opgave.email ? opgave.email : null,
+        vatZone: {
+            vatZoneNumber: 1
+        },
+        cvrNummer,
+        currency: "DKK",
+        customerGroup: {
+            customerGroupNumber: 1
+        },
+        paymentTerms: {
+            paymentTermsNumber: 1,
+            daysOfCredit: 8,
+            name: "Netto 8 dage",
+            paymentTermsType: "net"
+        }
+    }
     // ===== BETALINGSFLOW =====
 
     // 1) -> OPRET NY KUNDE 
@@ -37,7 +57,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alte
         vatZone: {
             vatZoneNumber: 1
         },
-        corporateIdentificationNumber: opgave.CVR ? opgave.CVR : null,
+        // corporateIdentificationNumber: opgave.CVR ? opgave.CVR : null,
         currency: "DKK",
         customerGroup: {
             customerGroupNumber: 1
@@ -188,11 +208,13 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, alte
                                     setSuccessFakturaSubmission(true);
 
                                     // 7) -> RELOAD OPGAVE ================================
-                                    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                                    axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                                        opgaveAfsluttet: new Date().toISOString()
+                                    }, {
                                         headers: authHeaders
                                     })
                                     .then(response => {
-                                        setOpgave(response.data);
+                                        setOpgave(response.data)
                                     })
                                     .catch(error => {
                                         console.log("Fejl: Kunne ikke genindlæse opgaven.");

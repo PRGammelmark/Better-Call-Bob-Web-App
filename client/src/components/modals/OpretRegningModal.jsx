@@ -152,7 +152,7 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
                 const alternativEmail = opgave && opgave.email
-                useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr)        
+                useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, setOpgave)        
             }}>Betal senere med faktura – kr. 49,-</button>}
         </PageAnimation>
         </>

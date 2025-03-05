@@ -841,10 +841,17 @@
     color: #fff;
     transition: 0.2s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
     width: 100%;
     justify-content: center;
     font-size: 1rem;
+}
+
+.startBetalingButton span {
+    display: block;
+    color: #fff;
+    font-size: 0.8rem;
 }
 
 .startBetalingButton:hover {

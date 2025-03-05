@@ -101,6 +101,7 @@ const ÅbenOpgave = () => {
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [tvingAfslutOpgaveModal, setTvingAfslutOpgaveModal] = useState(false)
     const [registrerBetalingsModal, setRegistrerBetalingsModal] = useState(false)
+
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
             headers: {
@@ -996,40 +997,12 @@ const ÅbenOpgave = () => {
         const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
         return akk + (nuv.dynamiskPrisBeregning ? udlægSum : 0);
     }, 0);
-    // const rabatterTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
-    //     const rabatProcent = nuv.rabatProcent || 0;
-    //     const totalPrisEksklUdlæg = (nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
-    //     return akk + (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
-    // }, 0);
     const rabatterTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv, index) => {
-        console.log(`Iteration ${index + 1}:`, nuv);
-    
         const rabatProcent = nuv.rabatProcent || 0;
-        console.log("rabatProcent:", rabatProcent);
-    
         const totalPrisEksklUdlæg = nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        console.log("totalPrisEksklUdlæg:", totalPrisEksklUdlæg);
-    
         const rabatBeregning = (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
-        console.log("rabatBeregning:", rabatBeregning);
-    
         return akk + rabatBeregning;
     }, 0);
-    
-    console.log("Total rabatterTotalFaktura:", rabatterTotalFaktura);
-    
-
-    // console.log("Fast pris, totalFaktura:", Number(fastPrisTotalFaktura))
-    // console.log("Opstart", Number(opstartTotalFaktura))
-    // console.log("Handyman", Number(handymanTotalFaktura))
-    // console.log("Tømrer:", Number(tømrerTotalFaktura))
-    // console.log("Rådgivning:", Number(rådgivningOpmålingVejledningTotalFaktura))
-    // console.log("Trailer:", Number(trailerTotalFaktura))
-    // console.log("Aftentillæg:", Number(aftenTillægTotalFaktura))
-    // console.log("Nattillæg:", Number(natTillægTotalFaktura))
-    // console.log("Udlæg:", Number(udlægTotalFaktura))
-    // console.log("Rabat:", Number(rabatterTotalFaktura))
-
     const totalFaktura = Number(fastPrisTotalFaktura) + Number(opstartTotalFaktura) + Number(handymanTotalFaktura) + Number(tømrerTotalFaktura) + Number(rådgivningOpmålingVejledningTotalFaktura) + Number(trailerTotalFaktura) + Number(aftenTillægTotalFaktura) + Number(natTillægTotalFaktura) + Number(udlægTotalFaktura) - Number(rabatterTotalFaktura);
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
@@ -1475,115 +1448,14 @@ const ÅbenOpgave = () => {
                         />
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
-                <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
-                    <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>
-                    <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
-                </Modal>
+                    <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
+                        <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>
+                        <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                    </Modal>
                     <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
-                            return (
-                                <Postering postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering}/>
-                                // <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
-                                //     {console.log(postering)}
-                                //     <div className={ÅbenOpgaveCSS.posteringCard}>
-                                //         <img src={Paperclip} className={ÅbenOpgaveCSS.paperclip} alt="" />
-                                //         <div>
-                                //             <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
-                                //             <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
-                                //             <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
-                                //             <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
-                                //                 {postering.udlæg.map((udlæg, index) => {
-                                //                     return udlæg.kvittering ? 
-                                //                     <img 
-                                //                     key={`udlæg-${index}`}
-                                //                     className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                //                     src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
-                                //                     alt={udlæg.beskrivelse} 
-                                //                     onClick={() => {
-                                //                         setKvitteringBillede(udlæg.kvittering);
-                                //                     }}/> 
-                                //                     : 
-                                //                     null;
-                                //                 })}
-                                //             </div>
-                                //         </div>
-                                //         <div className={ÅbenOpgaveCSS.posteringListe}>
-                                //             {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
-                                //                     <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
-                                //                     <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
-                                //                     <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
-                                //                     <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg ({postering.satser.aftenTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
-                                //                     <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.aftenTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.natTillæg && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg ({postering.satser.natTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
-                                //                     <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.natTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.trailer && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
-                                //                     <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
-                                //                     <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                //                     <span>- {(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             {!postering.dynamiskHonorarBeregning && (
-                                //                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                //                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
-                                //                     <span>{postering.fastHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
-                                //                 </div>
-                                //             )}
-                                //             <div className={ÅbenOpgaveCSS.totalRække}>
-                                //                 <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                //                 <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
-                                //             </div>
-                                //         </div>
-                                //     </div>
-                                //     <div className={ÅbenOpgaveCSS.posteringKnapper}>
-                                //         <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
-                                //         <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
-                                //         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id), setEditedPostering(postering)}}>Rediger</button>}
-                                //         <RedigerPostering trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID} postering={postering} />
-                                //         {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
-                                //     </div>
-                                // </div>
-                            )
+                            return <Postering key={postering._id} postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering}/>
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
@@ -1606,43 +1478,31 @@ const ÅbenOpgave = () => {
                         (færdiggjort
                             ? 
                             <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
+                                
+                                {/* InfoLines */}
                                 {!opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>}
                                 {opgave.fakturaSendt && <p className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
-                                {opgave.fakturaSendt 
+                                {opgave.opgaveAfsluttet && ((typeof opgave.opgaveAfsluttet === 'boolean') ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>)}
+                                {opgave.opgaveBetaltMedMobilePay && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
+                                {opgave.fakturaBetalt && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
+                                
+                                
+                                {/* Erhvervskunde -> send faktura */}
+                                {(opgave.virksomhed || opgave.CVR) ? (opgave.fakturaSendt 
                                     ? 
                                         <div className={ÅbenOpgaveCSS.fakturaDiv}>
-                                            <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}><span style={{fontSize: '1.2rem', marginRight: 10}}>🧾</span> Se faktura</button>
-                                            <button className={ÅbenOpgaveCSS.betalFakturaButton} onClick={() => setÅbnBetalFakturaModal(true)}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Registrer fakturabetaling</button>
-                                            <RegistrerBetalFakturaModal åbnBetalFakturaModal={åbnBetalFakturaModal} setÅbnBetalFakturaModal={setÅbnBetalFakturaModal} />
+                                            <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}><span style={{fontSize: '1.5rem'}}>🧾</span>Se faktura</button>
+                                            {/* <button className={ÅbenOpgaveCSS.betalFakturaButton} onClick={() => setÅbnBetalFakturaModal(true)}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Registrer fakturabetaling</button> */}
+                                            {/* <RegistrerBetalFakturaModal åbnBetalFakturaModal={åbnBetalFakturaModal} setÅbnBetalFakturaModal={setÅbnBetalFakturaModal} /> */}
                                         </div>
                                     : 
-                                        ((opgave.virksomhed || opgave.CVR) && 
-                                            <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura</button> 
-                                        )
-                                    } 
-                                {opgave.opgaveBetaltMedMobilePay 
-                                    ? 
-                                        <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p> 
-                                    : 
-                                        opgave.opgaveBetaltPåAndenVis 
-                                        ?
-                                            <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Betaling manuelt registreret d. {new Date(opgave.opgaveBetaltPåAndenVis).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p> 
-                                        :
-                                            !(opgave.virksomhed || opgave.CVR) && !opgave.opgaveAfsluttet && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Betaling</button>
+                                        <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura<br /><span>Kunden er registreret som erhvervskunde</span></button> 
+                                ) : <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
-                                {opgave.opgaveAfsluttet && !(opgave.opgaveBetaltMedMobilePay || opgave.opgaveBetaltPåAndenVis || opgave.fakturaBetalt) && <><button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setRegistrerBetalingsModal(true)}>Registrer betaling</button><p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span>Betaling endnu ikke registreret.</p> </>}
-                                <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/>
-                                {opgave.fakturaBetalt 
-                                    ? <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
-                                    : null
-                                }
-                                {opgave.opgaveAfsluttet 
-                                    ? 
-                                    ((typeof opgave.opgaveAfsluttet === 'boolean') 
-                                        ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> 
-                                        : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>
-                                    )
-                                    : 
+
+                                {/* <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/> */}
+                                {!opgave.opgaveAfsluttet 
+                                    && 
                                     <div className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv}>
                                         <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => setTvingAfslutOpgaveModal(true)}>Afslut uden betaling</button>
                                         <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn opgave</button>
