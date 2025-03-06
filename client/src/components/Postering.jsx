@@ -208,7 +208,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                             {postering.aftenTillæg && postering.dynamiskPrisBeregning && (
                                 <div className={ÅbenOpgaveCSS.posteringRække}>
                                     <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg </span>
-                                    <span>{((postering.handymanTimer * (postering.handymanTimerPrisInklAftenTillæg - postering.handymanTimerPris)) + (postering.tømrerTimer * (postering.tømrerTimerPrisInklAftenTillæg - postering.tømrerTimerPris)) + (postering.rådgivningOpmålingVejledning * (postering.tømrerTimerPrisInklAftenTillæg - postering.rådgivningOpmålingVejledningPris))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span>{((postering.handymanTimer * (postering.satser.handymanTimerPrisInklAftenTillæg - postering.satser.handymanTimerPris)) + (postering.tømrerTimer * (postering.satser.tømrerTimerPrisInklAftenTillæg - postering.satser.tømrerTimerPris)) + (postering.rådgivningOpmålingVejledning * (postering.satser.tømrerTimerPrisInklAftenTillæg - postering.satser.rådgivningOpmålingVejledningPris))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>
                             )}
                             {postering.natTillæg && postering.dynamiskPrisBeregning && (
