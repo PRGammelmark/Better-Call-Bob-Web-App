@@ -13,9 +13,9 @@ import PageAnimation from '../../components/PageAnimation'
 import axios from 'axios'
 
 
-const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, totalFaktura}) => {
-    const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
-    const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
+const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, totalFaktura}) => {
+    // const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
+    // const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
     const [betalSenereModalState, setBetalSenereModalState] = useState(false)
     const [betalNuMedAnmodningModalState, setBetalNuMedAnmodningModalState] = useState(false)
     const [betalNuMedQRModalState, setBetalNuMedQRModalState] = useState(false)
@@ -152,7 +152,7 @@ const OpretRegningModal = ({user, opgave, opgaveID, posteringer, setOpgaveAfslut
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
                 const alternativEmail = opgave && opgave.email
-                useBetalMedFaktura(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, setOpgave)        
+                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr)        
             }}>Betal senere med faktura – kr. 49,-</button>}
         </PageAnimation>
         </>
