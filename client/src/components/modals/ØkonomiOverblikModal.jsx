@@ -523,7 +523,7 @@ const ØkonomiOverblikModal = (props) => {
                                         <img 
                                         key={`udlæg-${index}`}
                                         className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                        src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                        src={udlæg.kvittering} 
                                         alt={udlæg.beskrivelse} 
                                         onClick={() => {
                                             setKvitteringBillede(udlæg.kvittering);
@@ -605,57 +605,6 @@ const ØkonomiOverblikModal = (props) => {
                     }}>Gå til opgave</p>
                     </div>
                 );})}
-                {/* {posteringerDetaljer.map((postering, index) => (
-                    <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
-                    <div className={ÅbenOpgaveCSS.posteringCard}>
-                        <div>
-                            <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato ? dayjs(postering.dato).format('DD. MMM YYYY') : "Ingen dato valgt"} – for opgave på</p>
-                            <p className={ÅbenOpgaveCSS.posteringBruger}>{postering.opgaveID && getOpgaveAdresse(postering.opgaveID)}</p>
-                            <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
-                            <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
-                                {postering.udlæg.map((udlæg, index) => {
-                                    return udlæg.kvittering ? 
-                                    <img 
-                                    key={`udlæg-${index}`}
-                                    className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                    src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
-                                    alt={udlæg.beskrivelse} 
-                                    onClick={() => {
-                                        setKvitteringBillede(udlæg.kvittering);
-                                    }}/> 
-                                    : 
-                                    null;
-                                })}
-                            </div>
-                        </div>
-                        <div className={ÅbenOpgaveCSS.posteringListe}>
-                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart: </span>
-                                <span>{(postering.opstart ? postering.opstart : "0") + " kr."}</span>
-                            </div>
-                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer > 0 ? postering.handymanTimer : 0} timer (handyman): </span>
-                                <span>{(postering.handymanTimer * 300) + " kr."}</span>
-                            </div>
-                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer ? postering.tømrerTimer : 0} timer (tømrer): </span>
-                                <span>{(postering.tømrerTimer * 360) + " kr."}</span>
-                            </div>
-                            <div className={ÅbenOpgaveCSS.posteringRække}>
-                                <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg: </span>
-                                <span>{postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0) + " kr."}</span>
-                            </div>
-                            <div className={ÅbenOpgaveCSS.totalRække}>
-                                <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{postering.total + " kr."}</b>
-                            </div>
-                        </div>
-                    </div>
-                    <p style={{display: 'flex', marginTop: 10, justifyContent: 'center', cursor: 'pointer'}} className={ÅbenOpgaveCSS.prefix} onClick={() => {
-                        navigate(`/opgave/${postering.opgaveID}`)
-                    }}>Gå til opgave</p>
-                    </div>
-                ))} */}
             </div>
         </PageAnimation>
         </>}

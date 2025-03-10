@@ -382,39 +382,6 @@ const ÅbenOpgave = () => {
         });
     }
 
-    // function sletPostering(posteringID){
-    //     if (window.confirm("Er du sikker på, at du vil slette denne postering?")) {
-    //         const postering = posteringer.find(postering => postering._id === posteringID);
-
-    //         // Delete files associated with udlæg
-    //         postering.udlæg.forEach(udlæg => {
-    //             if (udlæg.kvittering) {
-    //                 axios.delete(`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`, {
-    //                                            headers: {
-    //                         'Authorization': `Bearer ${user.token}`
-    //                     }
-    //                 })
-    //                 .catch(error => console.error("Der opstod en fejl ved sletning af kvittering:", error));
-    //             }
-    //         });
-
-    //         // Delete the postering itself
-    //         axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${posteringID}`, {
-    //             headers: {
-    //                 'Authorization': `Bearer ${user.token}`
-    //             }
-    //         })
-    //         .then(() => {
-    //             setPosteringer(prevPosteringer => 
-    //                 prevPosteringer.filter(postering => postering._id !== posteringID)
-    //             );
-    //         })
-    //         .catch(error => {
-    //             console.error("Der opstod en fejl ved sletning af posteringen:", error);
-    //         });
-    //     }
-    // }
-
     function editKommentar(kommentarID) {
 
         const opdateretKommentar = {

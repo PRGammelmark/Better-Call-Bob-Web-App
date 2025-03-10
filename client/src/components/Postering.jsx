@@ -4,6 +4,8 @@ import RedigerPostering from './modals/RedigerPostering';
 import ÅbenOpgaveCSS from '../pages/ÅbenOpgave.module.css'
 import SwitchArrows from "../assets/switchArrowsBlack.svg"
 import axios from 'axios';
+import { storage } from '../firebase.js'
+import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
 
 const Postering = ({ postering, brugere, user, posteringer, setPosteringer, færdiggjort, openPosteringModalID, setOpenPosteringModalID }) => {
 
@@ -21,13 +23,12 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
 
             // Delete files associated with udlæg
             postering.udlæg.forEach(udlæg => {
-                if (udlæg.kvittering) {
-                    axios.delete(`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`, {
-                                               headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
-                    })
-                    .catch(error => console.error("Der opstod en fejl ved sletning af kvittering:", error));
+                if (udlæg?.kvittering) {
+                    const storageRef = ref(storage, udlæg.kvittering);
+        
+                    deleteObject(storageRef)
+                        .then(() => console.log("Image deleted successfully"))
+                        .catch(error => console.log("Error deleting image:", error));
                 }
             });
 
@@ -67,7 +68,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                                     <img 
                                     key={`udlæg-${index}`}
                                     className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                    src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                    src={udlæg.kvittering} 
                                     alt={udlæg.beskrivelse} 
                                     onClick={() => {
                                         setKvitteringBillede(udlæg.kvittering);
@@ -170,7 +171,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                                     <img 
                                     key={`udlæg-${index}`}
                                     className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                    src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                    src={udlæg.kvittering} 
                                     alt={udlæg.beskrivelse} 
                                     onClick={() => {
                                         setKvitteringBillede(udlæg.kvittering);

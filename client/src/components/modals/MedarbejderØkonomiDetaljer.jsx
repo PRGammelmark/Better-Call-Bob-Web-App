@@ -171,7 +171,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                                             <img 
                                             key={`udlæg-${index}`}
                                             className={ÅbenOpgaveCSS.kvitteringBillede} 
-                                            src={`${import.meta.env.VITE_API_URL}${udlæg.kvittering}`} 
+                                            src={udlæg.kvittering} 
                                             alt={udlæg.beskrivelse} 
                                             onClick={() => {
                                                 setKvitteringBillede(udlæg.kvittering);

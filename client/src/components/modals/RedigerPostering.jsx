@@ -8,6 +8,9 @@ import satser from '../../variables'
 import SwithArrowsBlack from '../../assets/switchArrowsBlack.svg'
 import RabatIcon from '../../assets/rabatIcon.svg'
 import { useAuthContext } from '../../hooks/useAuthContext'
+import { storage } from '../../firebase.js'
+import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
+import {v4} from 'uuid'
 
 const RedigerPostering = (props) => {
 
@@ -156,19 +159,53 @@ const RedigerPostering = (props) => {
         setOutlays([...outlays, { beskrivelse: '', beløb: '', kvittering: '' }]);
     }
 
-    const deleteOutlay = (index) => {
-        const newOutlays = [...outlays];
-        const deletedOutlay = newOutlays.splice(index, 1)[0];
-        setOutlays(newOutlays);
+    const deleteOutlay = async (index) => {
+        setOutlays((prevOutlays) => {
+            const newOutlays = [...prevOutlays];
+            const deletedOutlay = newOutlays.splice(index, 1)[0];
+    
+            if (deletedOutlay?.kvittering) {
+                const storageRef = ref(storage, deletedOutlay.kvittering);
+    
+                deleteObject(storageRef)
+                    .then(() => console.log("Image deleted successfully"))
+                    .catch(error => console.log("Error deleting image:", error));
+            }
+    
+            return newOutlays;
+        });
+    };
 
-        if (deletedOutlay.kvittering) {
-            axios.delete(`${import.meta.env.VITE_API_URL}${deletedOutlay.kvittering}`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .catch(error => console.log(error));
-        }
+    const handleFileUpload = (file, index) => {
+        if (!file) return;
+    
+        const storageRef = ref(storage, `kvitteringer/${file.name + v4()}`);
+        const uploadTask = uploadBytesResumable(storageRef, file);
+    
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                // Progress function (optional)
+                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                console.log(`Upload is ${progress}% done`);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+            },
+            () => {
+                // On successful upload, get the download URL
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log("File available at:", downloadURL);
+    
+                    // Update state with new URL
+                    const updatedOutlay = { ...outlays[index], kvittering: downloadURL };
+                    const newOutlays = [...outlays];
+                    newOutlays[index] = updatedOutlay;
+                    setOutlays(newOutlays);
+                });
+            }
+        );
+        
     };
 
     return (
@@ -261,10 +298,10 @@ const RedigerPostering = (props) => {
                             <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
                                 <div className={ÅbenOpgaveCSS.udlægKvittering}>
                                     {outlay.kvittering ? (
-                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={`${import.meta.env.VITE_API_URL}${outlay.kvittering}`} alt={outlay.beskrivelse} />
+                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={outlay.kvittering} alt={outlay.beskrivelse} />
                                     ) : (
                                         <label>
-                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer} onClick={() => document.getElementById(`ny-udlæg-file-input-${index}`).click()}>
+                                            <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer}>
                                             </div>
                                             <input
                                                 id={`ny-udlæg-file-input-${index}`}
@@ -272,22 +309,8 @@ const RedigerPostering = (props) => {
                                                 accept="image/*"
                                                 className={ÅbenOpgaveCSS.udlægKvitteringInput}
                                                 onChange={(e) => {
-                                                    const formData = new FormData();
-                                                    formData.append('file', e.target.files[0]);
-                                                    axios.post(`${import.meta.env.VITE_API_URL}/uploads`, formData, {
-                                                        headers: {
-                                                            'Content-Type': 'multipart/form-data',
-                                                            'Authorization': `Bearer ${user.token}`
-                                                        }
-                                                    })
-                                                    .then(res => {
-                                                        console.log(res.data)
-                                                        const updatedOutlay = { ...outlays[index], kvittering: res.data.filePath }; // Ensure kvittering is updated correctly
-                                                        const newOutlays = [...outlays];
-                                                        newOutlays[index] = updatedOutlay; // Replace the outlay at index
-                                                        setOutlays(newOutlays);
-                                                    })
-                                                    .catch(error => console.log(error));
+                                                    handleFileUpload(e.target.files[0], index)
+                                                    e.target.value = ""
                                                 }}
                                             />
                                         </label>
