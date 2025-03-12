@@ -64,8 +64,8 @@ const Dokumenter = () => {
               <div className={DokumenterCSS.dokumentContainer} key={dokument._id}>
                 <div className={DokumenterCSS.dokument} key={dokument._id} onClick={() => setRedigerDokumentModal(dokument)}>
                   <div className={DokumenterCSS.dokumentUpperHalf}>
-                    {!dokument.filSti.endsWith('.pdf') && <img className={DokumenterCSS.dokumentImage} src={`${import.meta.env.VITE_API_URL}${dokument.filSti}`} alt={dokument.titel} />}
-                    {dokument.filSti.endsWith('.pdf') && <img className={DokumenterCSS.dokumentImage} src={PDFIcon} alt="pdf icon" />}
+                    {!dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={dokument.filURL} alt={dokument.titel} />}
+                    {dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={PDFIcon} alt="pdf icon" />}
                     <p className={DokumenterCSS.dokumentTitel}>{dokument.titel}</p>
                     <p className={DokumenterCSS.dokumentBeskrivelse}>{dokument.beskrivelse}</p>
                   </div>
@@ -95,8 +95,8 @@ const Dokumenter = () => {
               <div className={DokumenterCSS.dokumentContainer} key={dokument._id}>
                 <div className={DokumenterCSS.dokument} key={dokument._id} onClick={() => setÅbnDokumentModal(dokument)}>
                   <div className={DokumenterCSS.dokumentUpperHalf}>
-                    {!dokument.filSti.endsWith('.pdf') && <img className={DokumenterCSS.dokumentImage} src={`${import.meta.env.VITE_API_URL}${dokument.filSti}`} alt={dokument.titel} />}
-                    {dokument.filSti.endsWith('.pdf') && <img className={DokumenterCSS.dokumentImage} src={PDFIcon} alt="pdf icon" />}
+                    {!dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={dokument.filURL} alt={dokument.titel} />}
+                    {dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={PDFIcon} alt="pdf icon" />}
                     <p className={DokumenterCSS.dokumentTitel}>{dokument.titel}</p>
                     <p className={DokumenterCSS.dokumentBeskrivelse}>{dokument.beskrivelse}</p>
                   </div>

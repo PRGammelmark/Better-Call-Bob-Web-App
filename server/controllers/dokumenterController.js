@@ -28,10 +28,9 @@ const getDokument = async (req,res) => {
 
 // CREATE et dokument
 const createDokument = async (req, res) => {
-    const { titel, begraensAdgang, brugerAdgang, opgaveID, beskrivelse, kraevSamtykke } = req.body;
-    const filSti = `/dokumenter-uploads/${req.file.filename}`;
+    const { titel, begraensAdgang, brugerAdgang, opgaveID, beskrivelse, kraevSamtykke, filURL } = req.body;
     try {
-        const dokument = await Dokument.create({ titel, begraensAdgang, brugerAdgang, opgaveID, beskrivelse, kraevSamtykke, filSti })
+        const dokument = await Dokument.create({ titel, begraensAdgang, brugerAdgang, opgaveID, beskrivelse, kraevSamtykke, filURL })
         res.status(200).json(dokument)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -51,16 +50,6 @@ const deleteDokument = async (req, res) => {
     if(!dokument) {
         return res.status(400).json({error: 'Ingen dokumenter fundet med et matchende ID.'})
     }
-
-    // Delete the file located at filSti property
-    
-    const filePath = path.resolve('dokumenter-uploads', dokument.filSti.split('/').pop());
-
-    fs.unlink(filePath, (err) => {
-        if (err) {
-            console.error('Fejl ved sletning af fil:', err);
-        }
-    });
 
     res.status(200).json(dokument)
 }

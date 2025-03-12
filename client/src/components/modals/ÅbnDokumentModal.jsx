@@ -87,13 +87,13 @@ function sletDokument(){
   return (
     <Modal trigger={åbnDokumentModal} setTrigger={setÅbnDokumentModal}>
         <h2 className={Styles.heading}>{åbnDokumentModal.titel}</h2>
-        <p style={{marginBottom: '15px'}}>Klik herunder for at åbne filen.</p>
-        {console.log(åbnDokumentModal)}
-        {åbnDokumentModal && åbnDokumentModal.filSti.endsWith('.pdf') 
+        {åbnDokumentModal && åbnDokumentModal.filURL.includes('.pdf') && <p style={{marginBottom: '15px'}}>Klik herunder for at åbne filen.</p>}
+        {åbnDokumentModal && !åbnDokumentModal.filURL.includes('.pdf') && <p style={{marginBottom: '15px'}}>Forhåndsvisningen kan være beskåret. Klik herunder for at åbne filen.</p>}
+        {åbnDokumentModal && åbnDokumentModal.filURL.includes('.pdf') 
             ? 
-            <img className={Styles.redigerDokumentPDFIcon} src={PDFIcon} alt={åbnDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${åbnDokumentModal.filSti}`, '_blank')}/>
+            <img className={Styles.redigerDokumentPDFIcon} src={PDFIcon} alt={åbnDokumentModal.titel} onClick={() => window.open(åbnDokumentModal.filURL, '_blank')}/>
             :
-            <img className={Styles.redigerDokumentImage} src={`${import.meta.env.VITE_API_URL}${åbnDokumentModal.filSti}`} alt={åbnDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${åbnDokumentModal.filSti}`, '_blank')}/>}
+            <img className={Styles.redigerDokumentImage} src={åbnDokumentModal.filURL} alt={åbnDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${åbnDokumentModal.filURL}`, '_blank')}/>}
         
         <div style={{marginBottom: '30px', marginTop: '30px'}}>
             <b style={{fontFamily: 'OmnesBold'}}>Beskrivelse:</b>

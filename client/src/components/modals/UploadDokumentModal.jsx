@@ -7,6 +7,9 @@ import BarLoader from '../loaders/BarLoader.js'
 import axios from 'axios'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useNewDocument } from '../../context/NewDocumentContext'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage } from '../../firebase.js'
+import {v4} from 'uuid'
 
 const UploadDokumentModal = ({åbnUploadDokumentModal, setÅbnUploadDokumentModal}) => {
 
@@ -29,31 +32,44 @@ useEffect(() => {
   .catch(error => console.log(error))
 }, [])
 
-function uploadDokument(e){
-  e.preventDefault()
-  
-  const formData = new FormData();
-  formData.append('fil', file); 
-  formData.append('titel', titel || '');
-  formData.append('beskrivelse', beskrivelse || '');
-  formData.append('kraevSamtykke', kraevSamtykke);
-  formData.append('begraensAdgang', begrænsBrugerAdgang);
-  brugerAdgang.forEach(id => {
-    formData.append('brugerAdgang[]', id);
-  });
+async function uploadDokument(e) {
+  e.preventDefault();
+  if (!file) return alert("Vælg en fil først!");
 
-  console.log(brugerAdgang)
+  const storageRef = ref(storage, `dokumenter/${file.name + v4()}`);
+  const uploadTask = uploadBytesResumable(storageRef, file);
 
-  axios.post(`${import.meta.env.VITE_API_URL}/dokumenter-uploads`, formData, {
-    headers: {
-      'Authorization': `Bearer ${user.token}`
+  uploadTask.on(
+    "state_changed",
+    (snapshot) => {
+      const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log(`Upload er ${progress}% færdig`);
+    },
+    (error) => {
+      console.error("Fejl ved upload:", error);
+    },
+    () => {
+      getDownloadURL(uploadTask.snapshot.ref).then((filURL) => {
+        console.log("Fil tilgængelig på:", filURL);
+
+        axios.post(`${import.meta.env.VITE_API_URL}/dokumenter-uploads`, {
+          titel,
+          beskrivelse,
+          filURL,
+          kraevSamtykke,
+          begrænsBrugerAdgang,
+          brugerAdgang,
+        }, {
+          headers: { 'Authorization': `Bearer ${user.token}` }
+        })
+        .then(() => {
+          setRefetchDocuments(!refetchDocuments);
+          setÅbnUploadDokumentModal(false);
+        })
+        .catch(error => console.log(error));
+      });
     }
-  })
-  .then(res => {
-    setRefetchDocuments(!refetchDocuments)
-    setÅbnUploadDokumentModal(false)
-  })
-  .catch(error => console.log(error))
+  );
 }
 
 

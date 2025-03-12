@@ -1,6 +1,5 @@
 import express from "express"
 import requireAuth from "../middleware/requireAuth.js";
-import multer from "multer";
 import path from "path";
 import fs from 'fs';
 import { getDokumenter, getDokument, createDokument, deleteDokument, updateDokument } from "../controllers/dokumenterController.js"
@@ -9,33 +8,27 @@ const router = express.Router();
 
 router.use(requireAuth) 
 
-// Ensure the uploads directory exists
-const uploadsDir = path.resolve('dokumenter-uploads');
-if (!fs.existsSync(uploadsDir)) {
-    fs.mkdirSync(uploadsDir, { recursive: true });
-}
+// // Ensure the uploads directory exists
+// const uploadsDir = path.resolve('dokumenter-uploads');
+// if (!fs.existsSync(uploadsDir)) {
+//     fs.mkdirSync(uploadsDir, { recursive: true });
+// }
 
-// Set up multer for file uploads with disk storage
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadsDir);
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// // Set up multer for file uploads with disk storage
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, uploadsDir);
+//     },
+//     filename: (req, file, cb) => {
+//         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+//         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+//     }
+// });
 
-const upload = multer({ storage: storage });
+// const upload = multer({ storage: storage });
 
 // Post et dokument
-router.post('/', upload.single('fil'), (req, res, next) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded.' });
-    }
-    console.log('Uploaded file:', req.file); // Debug log
-    next();
-}, createDokument);
+router.post('/', createDokument);
 
 // router.post('/', upload.single('file'), (req, res) => {
 //     if (!req.file) {

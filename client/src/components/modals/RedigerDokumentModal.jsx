@@ -11,6 +11,8 @@ import axios from 'axios'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { useNewDocument } from '../../context/NewDocumentContext'
 import dayjs from 'dayjs'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage } from '../../firebase.js'
 
 const RedigerDokumentModal = ({redigerDokumentModal, setRedigerDokumentModal, refetchDokumenter, setRefetchDokumenter}) => {
 
@@ -66,34 +68,61 @@ function opdaterDokument(e){
   .catch(error => console.log(error))
 }
 
-function sletDokument(){
-    if (window.confirm('Er du sikker på, at du vil slette dette dokument? Dette får konsekvenser for de brugere, der har adgang til det.')) {
-        axios.delete(`${import.meta.env.VITE_API_URL}/dokumenter-uploads/${redigerDokumentModal._id}`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(res => {
-            setRefetchDocuments(!refetchDocuments)
-            setRedigerDokumentModal(false)
-        })
-        .catch(error => {
-            console.log(error);
-            setRedigerDokumentModal(false);
-        })
-    }
+// function sletDokument(){
+//     if (window.confirm('Er du sikker på, at du vil slette dette dokument? Dette får konsekvenser for de brugere, der har adgang til det.')) {
+//         axios.delete(`${import.meta.env.VITE_API_URL}/dokumenter-uploads/${redigerDokumentModal._id}`, {
+//             headers: {
+//                 'Authorization': `Bearer ${user.token}`
+//             }
+//         })
+//         .then(res => {
+//             setRefetchDocuments(!refetchDocuments)
+//             setRedigerDokumentModal(false)
+//         })
+//         .catch(error => {
+//             console.log(error);
+//             setRedigerDokumentModal(false);
+//         })
+//     }
+// }
+
+async function sletDokument() {
+  if (window.confirm('Er du sikker på, at du vil slette dette dokument? Dette får konsekvenser for de brugere, der har adgang til det.')) {
+      const storage = getStorage();
+      const fileRef = ref(storage, redigerDokumentModal.filURL); // Reference til filen i Firebase
+
+      try {
+          // Slet fil fra Firebase Storage
+          await deleteObject(fileRef);
+          console.log("Fil slettet fra Firebase Storage");
+
+          // Slet dokumentet fra databasen
+          await axios.delete(`${import.meta.env.VITE_API_URL}/dokumenter-uploads/${redigerDokumentModal._id}`, {
+              headers: {
+                  'Authorization': `Bearer ${user.token}`
+              }
+          });
+
+          setRefetchDocuments(!refetchDocuments);
+          setRedigerDokumentModal(false);
+      } catch (error) {
+          console.error("Fejl ved sletning af dokument:", error);
+          setRedigerDokumentModal(false);
+      }
+  }
 }
 
   return (
     <Modal trigger={redigerDokumentModal} setTrigger={setRedigerDokumentModal}>
         <h2 className={Styles.heading}>{redigerDokumentModal.titel}</h2>
-        <p style={{marginBottom: '15px'}}>Klik herunder for at åbne filen.</p>
+        {redigerDokumentModal && redigerDokumentModal.filURL.includes('.pdf') && <p style={{marginBottom: '15px'}}>Klik herunder for at åbne filen.</p>}
+        {redigerDokumentModal && !redigerDokumentModal.filURL.includes('.pdf') && <p style={{marginBottom: '15px'}}>Forhåndsvisningen kan være beskåret. Klik herunder for at åbne filen.</p>}
         <form onSubmit={(e) => opdaterDokument(e)} method="" encType="multipart/form-data">
-            {redigerDokumentModal && redigerDokumentModal.filSti.endsWith('.pdf') 
+            {redigerDokumentModal && redigerDokumentModal.filURL.includes('.pdf') 
             ? 
-            <img className={Styles.redigerDokumentPDFIcon} src={PDFIcon} alt={redigerDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${redigerDokumentModal.filSti}`, '_blank')}/>
+            <img className={Styles.redigerDokumentPDFIcon} src={PDFIcon} alt={redigerDokumentModal.titel} onClick={() => window.open(redigerDokumentModal.filURL, '_blank')}/>
             :
-            <img className={Styles.redigerDokumentImage} src={`${import.meta.env.VITE_API_URL}${redigerDokumentModal.filSti}`} alt={redigerDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${redigerDokumentModal.filSti}`, '_blank')}/>}
+            <img className={Styles.redigerDokumentImage} src={redigerDokumentModal.filURL} alt={redigerDokumentModal.titel} onClick={() => window.open(redigerDokumentModal.filURL, '_blank')}/>}
           <input className={ModalStyles.modalInput} style={{fontFamily: 'OmnesBold'}} type="text" name="titel" value={titel} onChange={(e) => setTitel(e.target.value)} required/>
           <input className={ModalStyles.modalInput} type="text" name="beskrivelse" placeholder="Beskrivelse" value={beskrivelse} onChange={(e) => setBeskrivelse(e.target.value)} />
           <div className={SwitcherStyles.checkboxContainer}>

@@ -29,6 +29,10 @@ const dokumenterSchema = new Schema({
     },
     filSti: {
         type: String,
+        required: false
+    },
+    filURL: {
+        type: String,
         required: true
     },
     samtykkeListe: {
