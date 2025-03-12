@@ -94,6 +94,7 @@ const Team = () => {
         </div>
         <div className={styles.medarbejdereDiv}>
             <h2 className={styles.subheading}>Medarbejdere ({medarbejdere && medarbejdere.length})</h2>
+            <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
             <div className={styles.cardHolder}>
                 {medarbejdere && medarbejdere.map((bruger)=>{
                     return (
