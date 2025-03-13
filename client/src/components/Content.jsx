@@ -4,6 +4,7 @@ import FloatingActionButton from './FloatingActionButton'
 import { useAuthContext } from '../hooks/useAuthContext'
 import Header from './Header'
 import Footer from './Footer'
+import { currentVersion } from '../version.js'
 
 
 const Content = () => {
@@ -27,7 +28,7 @@ const Content = () => {
               <li><NavLink to="team">Team</NavLink></li>
               <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
               <li><NavLink to="indstillinger">Indstillinger</NavLink></li>
-              <li><NavLink to="version">Version & ændringer</NavLink></li>
+              <li><NavLink to="version">Opdateringer (v.{currentVersion % 1 === 0 ? currentVersion.toFixed(1) : currentVersion.toString()})</NavLink></li>
             </ul>
           </div>
 
