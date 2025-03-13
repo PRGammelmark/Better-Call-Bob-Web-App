@@ -4,7 +4,7 @@ const satser = {
   tømrerTimerHonorar: 360,
   opstartsgebyrHonorar: 200,
   aftenTillægHonorar: 50,
-  natTillægHonorar: 200,
+  natTillægHonorar: 100,
   trailerHonorar: 200,
   rådgivningOpmålingVejledningHonorar: 360,
 
@@ -12,11 +12,11 @@ const satser = {
   handymanTimerPris: 447.2,
   tømrerTimerPris: 480,
   opstartsgebyrPris: 319.2,
-  handymanTimerPrisInklAftenTillæg: 519.2,
-  tømrerTimerPrisInklAftenTillæg: 551.2,
-  handymanTimerPrisInklNatTillæg: 800,
-  tømrerTimerPrisInklNatTillæg: 872,
-  trailerPris: 280,
+  handymanTimerPrisInklAftenTillæg: 670.8,
+  tømrerTimerPrisInklAftenTillæg: 720,
+  handymanTimerPrisInklNatTillæg: 894.4,
+  tømrerTimerPrisInklNatTillæg: 960,
+  trailerPris: 264,
   rådgivningOpmålingVejledningPris: 480
 };
 

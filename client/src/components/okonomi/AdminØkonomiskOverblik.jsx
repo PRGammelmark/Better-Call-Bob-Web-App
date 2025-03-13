@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import dayjs from 'dayjs'
 import Styles from './AdminØkonomiskOverblik.module.css'
-// import { handymanTimerHonorar, tømrerTimerHonorar } from '../../variables'
 import satser from '../../variables'
 import MedarbejderØkonomiDetaljer from '../modals/MedarbejderØkonomiDetaljer'
 
@@ -30,8 +29,8 @@ const AdminØkonomiskOverblik = (props) => {
         const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
         const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
         const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
-        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.aftenTillægHonorar : 0), 0)
-        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * postering.satser.natTillægHonorar : 0), 0)
+        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
+        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
         const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
 
         return månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer

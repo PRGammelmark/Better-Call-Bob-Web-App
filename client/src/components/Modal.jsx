@@ -103,7 +103,7 @@ const Modal = ({ children, trigger, setTrigger, onClose }) => {
           className={ModalStyles.overlay}
           onClick={() => {
             setTrigger(false)
-            onClose()
+            onClose && onClose()
           }}
           initial="initial"
           animate="animate"

@@ -34,17 +34,17 @@ const AddPostering = (props) => {
     const [previewDynamiskHonorar, setPreviewDynamiskHonorar] = useState(0);
     const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
     const [rabatProcent, setRabatProcent] = useState(0);
-    
+    const aftenTillægMultiplikator = aftenTillæg ? 1 + (satser.aftenTillægHonorar / 100) : 1;
+    const natTillægMultiplikator = natTillæg ? 1 + (satser.natTillægHonorar / 100) : 1;
+
     useEffect(() => {
         const xPosteringDynamiskHonorar = (
-            ((handymantimer * aktuelleSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
-            ((tømrertimer * aktuelleSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
-            (aftenTillæg ? ((handymantimer * aktuelleSatser.aftenTillægHonorar) + (tømrertimer * aktuelleSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.aftenTillægHonorar)) * (1 - rabatProcent / 100) : 0) + 
-            (natTillæg ? ((handymantimer * aktuelleSatser.natTillægHonorar) + (tømrertimer * aktuelleSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * aktuelleSatser.natTillægHonorar)) * (1 - rabatProcent / 100) : 0) + 
+            ((handymantimer * aktuelleSatser.handymanTimerHonorar) * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100)) + 
+            ((tømrertimer * aktuelleSatser.tømrerTimerHonorar) * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100)) + 
             ((inkluderOpstart * aktuelleSatser.opstartsgebyrHonorar) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
             (trailer ? aktuelleSatser.trailerHonorar * (1 - rabatProcent / 100) : 0) + 
-            (rådgivningOpmålingVejledning * aktuelleSatser.rådgivningOpmålingVejledningHonorar * (1 - rabatProcent / 100))
+            (rådgivningOpmålingVejledning * aktuelleSatser.rådgivningOpmålingVejledningHonorar * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100))
         );
 
         const xOutlays = (outlays.reduce((sum, item) => sum + Number(item.beløb), 0));
@@ -61,14 +61,12 @@ const AddPostering = (props) => {
         }
         
         const posteringDynamiskHonorar = (
-            ((handymantimer * posteringSatser.handymanTimerHonorar) * (1 - rabatProcent / 100)) + 
-            ((tømrertimer * posteringSatser.tømrerTimerHonorar) * (1 - rabatProcent / 100)) + 
-            ((aftenTillæg ? ((handymantimer * posteringSatser.aftenTillægHonorar) + (tømrertimer * posteringSatser.aftenTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.aftenTillægHonorar)) : 0) * (1 - rabatProcent / 100)) + 
-            ((natTillæg ? ((handymantimer * posteringSatser.natTillægHonorar) + (tømrertimer * posteringSatser.natTillægHonorar) + (rådgivningOpmålingVejledning * posteringSatser.natTillægHonorar)) : 0) * (1 - rabatProcent / 100)) + 
-            ((inkluderOpstart * posteringSatser.opstartsgebyrHonorar) * (1 - rabatProcent / 100)) + 
+            ((handymantimer * aktuelleSatser.handymanTimerHonorar) * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100)) + 
+            ((tømrertimer * aktuelleSatser.tømrerTimerHonorar) * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100)) + 
+            ((inkluderOpstart * aktuelleSatser.opstartsgebyrHonorar) * (1 - rabatProcent / 100)) + 
             (outlays.reduce((sum, item) => sum + Number(item.beløb), 0)) + 
-            ((trailer ? posteringSatser.trailerHonorar : 0) * (1 - rabatProcent / 100)) + 
-            ((rådgivningOpmålingVejledning * posteringSatser.rådgivningOpmålingVejledningHonorar) * (1 - rabatProcent / 100))
+            (trailer ? aktuelleSatser.trailerHonorar * (1 - rabatProcent / 100) : 0) + 
+            (rådgivningOpmålingVejledning * aktuelleSatser.rådgivningOpmålingVejledningHonorar * aftenTillægMultiplikator * natTillægMultiplikator * (1 - rabatProcent / 100))
         );
         
         const posteringDynamiskPris = parseFloat(
@@ -108,8 +106,6 @@ const AddPostering = (props) => {
             opgaveID: props.opgaveID,
             brugerID: props.userID
         }
-
-        console.log(postering)
 
         axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
             headers: {
@@ -258,14 +254,14 @@ const AddPostering = (props) => {
                                 <input type="checkbox" id="aftentillæg" name="aftentillæg" className={SwitcherStyles.checkboxInput} checked={aftenTillæg} onChange={(e) => {setAftenTillæg(aftenTillæg === true ? false : true); setNatTillæg(false)}} />
                                 <span className={SwitcherStyles.slider}></span>
                             </label>
-                            <p>Aftentillæg, kl. 18-23 {dynamiskHonorarBeregning && `(${aktuelleSatser.aftenTillægHonorar} kr./time)`}</p>
+                            <p>Aftentillæg, kl. 18-23 {dynamiskHonorarBeregning && `(+${aktuelleSatser.aftenTillægHonorar} % pr. time)`}</p>
                         </div>
                         <div className={SwitcherStyles.checkboxContainer}>
                             <label className={SwitcherStyles.switch} htmlFor="nattillæg">
                                 <input type="checkbox" id="nattillæg" name="nattillæg" className={SwitcherStyles.checkboxInput} checked={natTillæg} onChange={(e) => {setNatTillæg(natTillæg === true ? false : true); setAftenTillæg(false)}} />
                                 <span className={SwitcherStyles.slider}></span>
                             </label>
-                            <p>Nattillæg, kl. 23-07 {dynamiskHonorarBeregning && `(${aktuelleSatser.natTillægHonorar} kr./time)`}</p>
+                            <p>Nattillæg, kl. 23-07 {dynamiskHonorarBeregning && `(+${aktuelleSatser.natTillægHonorar} % pr. time)`}</p>
                         </div>
                         <div className={SwitcherStyles.checkboxContainer}>
                             <label className={SwitcherStyles.switch} htmlFor="trailer">

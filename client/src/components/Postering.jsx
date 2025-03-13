@@ -11,6 +11,8 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
 
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [honorarVisning, setHonorarVisning] = useState(true)
+    const aftenTillægMultiplikator = postering.aftenTillæg ? (postering.satser.aftenTillægHonorar / 100) : 1;
+    const natTillægMultiplikator = postering.natTillæg ? (postering.satser.natTillægHonorar / 100) : 1;
 
     const getBrugerName = (brugerID) => {
         const bruger = brugere && brugere.find(user => user._id === brugerID);
@@ -105,14 +107,14 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                             )}
                             {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
                                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg ({postering.satser.aftenTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
-                                    <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.aftenTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg (+{postering.satser.aftenTillægHonorar}% pr. time) </span>
+                                    <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) * aftenTillægMultiplikator) + ((postering.tømrerTimer * postering.satser.tømrerTimerHonorar) * aftenTillægMultiplikator) + ((postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar) * aftenTillægMultiplikator)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>
                             )}
                             {postering.natTillæg && postering.dynamiskHonorarBeregning && (
                                 <div className={ÅbenOpgaveCSS.posteringRække}>
-                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg ({postering.satser.natTillægHonorar} x {postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning}) </span>
-                                    <span>{((postering.handymanTimer + postering.tømrerTimer + postering.rådgivningOpmålingVejledning) * (postering.satser.natTillægHonorar)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg (+{postering.satser.natTillægHonorar}% pr. time) </span>
+                                    <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) * natTillægMultiplikator) + ((postering.tømrerTimer * postering.satser.tømrerTimerHonorar) * natTillægMultiplikator) + ((postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar) * natTillægMultiplikator)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
                                 </div>
                             )}
                             {postering.trailer && postering.dynamiskHonorarBeregning && (
