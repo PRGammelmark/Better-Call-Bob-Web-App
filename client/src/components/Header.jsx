@@ -32,7 +32,7 @@ const Header = () => {
     '/team': "🤝 Teamet",
     '/dokumenter': "📄 Dokumenter",
     '/indstillinger': "⚙️ Indstillinger",
-    '/version': `Ændringslog (v${currentVersion % 1 === 0 ? currentVersion.toFixed(1) : currentVersion.toString()})`,
+    '/version': `Ændringslog (v${currentVersion})`,
     '/opgave/:opgaveID': "OpgaveID",
     '/ny-opgave': "📋 Opret ny opgave",
     '/ny-bruger': "👷🏼‍♂️ Opret ny bruger",

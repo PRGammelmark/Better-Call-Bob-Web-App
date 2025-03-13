@@ -49,7 +49,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                     <h2 className={Styles.mobileNavItem}>Indstillinger</h2>
                 </Link>
                 <Link style={linkStyles} to={'version'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Opdateringer (v.{currentVersion % 1 === 0 ? currentVersion.toFixed(1) : currentVersion.toString()})</h2>
+                    <h2 className={Styles.mobileNavItem}>Opdateringer (v.{currentVersion})</h2>
                 </Link>
                 <h2 className={Styles.mobileNavItem} onClick={handleLogoutClick}>Log ud</h2>
             </div>
