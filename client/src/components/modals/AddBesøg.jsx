@@ -335,16 +335,25 @@ const AddBesøg = (props) => {
                 <div className={`${Styles.vælgAnsvarligContainer} ${(tilknyttetOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
                     <h3 className={Styles.subHeading}>Vælg blandt {vælgAnsvarligBlandtAlleMedarbejdere ? "alle medarbejdere" : "ansvarlige"}:</h3>
                     <div className={Styles.vælgAnsvarligFlexContainer}>
-                        {!vælgAnsvarligBlandtAlleMedarbejdere && <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
-                            <option value="vælg" disabled hidden selected>Vælg ansvarlig ...</option>
-                            {tilknyttetOpgave && tilknyttetOpgave.ansvarlig && tilknyttetOpgave.ansvarlig.length > 0 ? (
-                                tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
-                                    <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
-                                ))
-                            ) : (
-                                <option value="">Ingen ansvarlige</option>
+                        {!vælgAnsvarligBlandtAlleMedarbejdere && (
+                            <select
+                                className={ModalStyles.modalInput}
+                                id="ansvarlige"
+                                value={tilknyttetAnsvarlig ? JSON.stringify(tilknyttetAnsvarlig) : ""}
+                                style={{ cursor: "pointer" }}
+                                onChange={(e) => setTilknyttetAnsvarlig(JSON.parse(e.target.value))}
+                            >
+                                <option value="" disabled hidden>Vælg ansvarlig ...</option>
+                                {tilknyttetOpgave?.ansvarlig?.length > 0 ? (
+                                    tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
+                                        <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
+                                    ))
+                                ) : (
+                                    <option value="">Ingen ansvarlige</option>
                                 )}
-                        </select>}
+                            </select>
+                        )}
+
                         {vælgAnsvarligBlandtAlleMedarbejdere && <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig} style={{cursor: "pointer"}} onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
                             <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
                             {medarbejdere && (
