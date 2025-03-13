@@ -1,12 +1,9 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import ContentCSS from './Content.module.css'
 import FloatingActionButton from './FloatingActionButton'
-import Login from '../pages/Login'
 import { useAuthContext } from '../hooks/useAuthContext'
-import { Navigate } from 'react-router-dom'
 import Header from './Header'
 import Footer from './Footer'
-import { useState, useEffect } from 'react'
 
 
 const Content = () => {
@@ -30,6 +27,7 @@ const Content = () => {
               <li><NavLink to="team">Team</NavLink></li>
               <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
               <li><NavLink to="indstillinger">Indstillinger</NavLink></li>
+              <li><NavLink to="version">Version & ændringer</NavLink></li>
             </ul>
           </div>
 

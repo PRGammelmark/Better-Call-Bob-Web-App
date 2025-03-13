@@ -14,6 +14,7 @@ import AlleOpgaver from './pages/AlleOpgaver'
 import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
 import Indstillinger from './pages/Indstillinger'
+import Version from './pages/Version'
 import ÅbenOpgave from './pages/ÅbenOpgave'
 import NyOpgave from './pages/NyOpgave'
 import NyBruger from './pages/NyBruger'
@@ -66,6 +67,7 @@ function App() {
           <Route path="team" element={<Team />}/>
           <Route path="dokumenter" element={<Dokumenter />}/>
           <Route path="indstillinger" element={<Indstillinger />}/>
+          <Route path="version" element={<Version />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
           <Route path="ny-opgave" element={<NyOpgave />}/>
           <Route path="ny-bruger" element={<NyBruger />}/>

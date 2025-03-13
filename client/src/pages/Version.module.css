@@ -1,0 +1,40 @@
+.heading {
+    font-family: "OmnesBold";
+    margin-bottom: 50px;
+}
+
+.changeHeadingContainer {
+    border-bottom: 1px solid black;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.changesDate {
+    color: #00000080;
+    font-size: 0.8rem;
+}
+
+.changesHeading {
+    font-family: "OmnesBold"
+}
+
+.changesList {
+    list-style: inside;
+    list-style-type: decimal;
+}
+
+.changeEntry {
+    margin-bottom: 30px;
+}
+
+@media screen and (max-width: 750px) {
+    .heading {
+        display: none;
+    }
+
+    .content {
+        padding-top: 40px;
+    }
+}

@@ -47,6 +47,9 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                 <Link style={linkStyles} to={'indstillinger'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Indstillinger</h2>
                 </Link>
+                <Link style={linkStyles} to={'version'} onClick={() => setShowNavMenu(false)}>
+                    <h2 className={Styles.mobileNavItem}>Version</h2>
+                </Link>
                 <h2 className={Styles.mobileNavItem} onClick={handleLogoutClick}>Log ud</h2>
             </div>
         </div>

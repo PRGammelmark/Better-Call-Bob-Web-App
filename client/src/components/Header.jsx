@@ -9,6 +9,8 @@ import Styles from './Header.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
+import { currentVersion, changes } from '../version.js'
+
 const Header = () => {
 
   const [showNavMenu, setShowNavMenu] = useState(false);
@@ -30,6 +32,7 @@ const Header = () => {
     '/team': "🤝 Teamet",
     '/dokumenter': "📄 Dokumenter",
     '/indstillinger': "⚙️ Indstillinger",
+    '/version': `Ændringslog (v${currentVersion % 1 === 0 ? currentVersion.toFixed(1) : currentVersion.toString()})`,
     '/opgave/:opgaveID': "OpgaveID",
     '/ny-opgave': "📋 Opret ny opgave",
     '/ny-bruger': "👷🏼‍♂️ Opret ny bruger",
