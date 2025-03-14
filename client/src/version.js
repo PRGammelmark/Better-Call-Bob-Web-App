@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.1",
+    date: "14. marts 2025",
+    changes: [
+        "Rettede en fejl, hvor den akkumulerede økonomi-oversigt ikke viste retvisende rabatter eller udlæg.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1",
     date: "14. marts 2025",
     changes: [

@@ -174,8 +174,14 @@ const ØkonomiOverblikModal = (props) => {
         const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
         const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
         const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
+        const tjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer;
+        const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+        return tjentFørRabat - månedensRabat;
+    }
 
-        return månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
+    function beregnRabat(posteringer){
+        const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+        return månedensRabat
     }
 
     function beregnUdlagt(posteringer) {
@@ -692,6 +698,22 @@ const ØkonomiOverblikModal = (props) => {
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
                     </div>
                 ))}
+                {beregnUdlagt(posteringerDetaljer) > 0 &&
+                    <div key={`udlagt`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Udlæg</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregnUdlagt(posteringerDetaljer)} kr.</p></div>
+                    </div>
+                }
+                {beregnRabat(posteringerDetaljer) > 0 &&
+                    <div key={`rabat`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>- Rabat</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringerDetaljer)} kr.</p></div>
+                    </div>
+                }
                 <div className={Styles.akkumuleretØkonomiTableTotals}>
                     <div>
                         <b style={{fontFamily: "OmnesBold"}}>Total</b>
@@ -703,7 +725,7 @@ const ØkonomiOverblikModal = (props) => {
                         <b></b>
                     </div>
                     <div className={Styles.lineAlignRight}>
-                        <b style={{fontFamily: "OmnesBold"}}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                        <b style={{fontFamily: "OmnesBold"}}>{(beregnTjent(posteringerDetaljer) + beregnUdlagt(posteringerDetaljer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
                     </div>
                 </div>
             </div>
