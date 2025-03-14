@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1",
+    date: "14. marts 2025",
+    changes: [
+        "Medarbejdere kan nu tilgå en oversigt over akkumulerede poster for en valgt måned. I sektionen 'Din Økonomi' på overblikssiden trykker man 'Detaljer', og vælger en måned – herefter får man hhv. en opsummering, en akkumulering af timer og tillæg samt et posteringsgrundlag for den pågældende måned.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.0.1",
     date: "13. marts 2025",
     changes: [

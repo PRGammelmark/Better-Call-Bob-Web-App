@@ -85,6 +85,86 @@ const ØkonomiOverblikModal = (props) => {
         const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
         return opgave ? opgave.adresse : 'Adresse utilgængelig';
     };
+
+    function beregnAkkumuleredeData(posteringer) {
+        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
+        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning, 0)
+        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
+        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
+        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
+    }
+
+    function grupperPoster(posteringer, antalKey, satsKey) {
+        const grupperet = {};
+    
+        posteringer.forEach(postering => {
+            const sats = postering.satser[satsKey];
+            if (!grupperet[sats]) {
+                grupperet[sats] = 0;
+            }
+            grupperet[sats] += postering[antalKey];
+        });
+    
+        return Object.entries(grupperet).map(([sats, antal]) => ({
+            sats: parseFloat(sats),
+            antal,
+            total: antal * parseFloat(sats)
+        }));
+    }
+
+    function grupperTillæg(posteringer, tillægKey, tillægHonorarKey, baseHonorarKey, timerKey) {
+        const grupperet = {};
+    
+        posteringer.forEach(postering => {
+            if (!postering[tillægKey]) return; // Skip if tillæg is not applied
+    
+            const tillægProcent = postering.satser[tillægHonorarKey] / 100; // Convert % to decimal
+            const baseSats = postering.satser[baseHonorarKey]; // Base rate (handyman/tømrer/etc.)
+            const ekstraHonorar = baseSats * tillægProcent; // Extra pay per hour
+            const timer = postering[timerKey]; // Hours worked
+            const totalEkstra = ekstraHonorar * timer; // Total extra pay
+    
+            if (!grupperet[ekstraHonorar]) {
+                grupperet[ekstraHonorar] = { total: 0, antal: 0 };
+            }
+    
+            grupperet[ekstraHonorar].total += totalEkstra;
+            grupperet[ekstraHonorar].antal += timer; // Accumulate total hours
+        });
+    
+        return Object.entries(grupperet).map(([sats, data]) => ({
+            sats: parseFloat(sats),
+            total: data.total,
+            antal: data.antal // Total hours worked
+        }));
+    }  
+    
+    const opstartData = grupperPoster(posteringerDetaljer, "opstart", "opstartsgebyrHonorar")
+    const handymanData = grupperPoster(posteringerDetaljer, "handymanTimer", "handymanTimerHonorar");
+    const tømrerData = grupperPoster(posteringerDetaljer, "tømrerTimer", "tømrerTimerHonorar");
+    const rådgivningData = grupperPoster(posteringerDetaljer, "rådgivningOpmålingVejledning", "rådgivningOpmålingVejledningHonorar");
+    const trailerData = grupperPoster(posteringerDetaljer, "trailer", "trailerHonorar");
+    const handymanAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const handymanNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const tømrerAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const tømrerNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const rådgivningAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+    const rådgivningNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+
+
+    function beregnAntalOpstart(posteringer){
+        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+        return månedensOpstartsgebyrer
+    }
+
+    function beregnSatsOpstart(posteringer){
+        const antalOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+        const akkumuleredeSatser = posteringer.reduce((sum, postering) => sum + postering.satser.opstartsgebyrHonorar, 0)
+        const gennemsnitligSats = antalOpstartsgebyrer === 0 ? akkumuleredeSatser : akkumuleredeSatser / antalOpstartsgebyrer
+        return gennemsnitligSats
+    }
     
     function beregnTjent(posteringer) {
         const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
@@ -173,8 +253,6 @@ const ØkonomiOverblikModal = (props) => {
         setUdlagtDecember(beregnUdlagt(decemberPosteringerX))
 
     }, [år, props.posteringer])
-
-
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
@@ -455,7 +533,7 @@ const ØkonomiOverblikModal = (props) => {
         <PageAnimation>
             <div className={Styles.modalHeaderContainer}>
                 <img className={Styles.backIcon} src={BackIcon} alt="Tilbage" onClick={() => setPosteringerDetaljer([])}/>
-                <h2 className={ModalStyles.modalHeading}>Dine posteringer for {valgtMåned + " " + år}</h2>
+                <h2 className={ModalStyles.modalHeading}>Din økonomi for {valgtMåned + " " + år}</h2>
             </div>
             <div className={Styles.posteringDetaljerDesktop}>
                 <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={Styles.månedHeadings}>
@@ -501,7 +579,135 @@ const ØkonomiOverblikModal = (props) => {
                     <p>{(beregnTjent(posteringerDetaljer)+beregnUdlagt(posteringerDetaljer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                 </div>
             </div>
-            <p className={Styles.modalText}>Posteringsgrundlag for {valgtMåned + " " + år}:</p>
+            <div className={Styles.akkumuleretContainer}>
+                <b style={{fontFamily: "OmnesBold", display: "block", marginBottom: 10}}>Akkumuleret for {valgtMåned + " " + år}:</b>
+                <div className={Styles.akkumuleretØkonomiTableHeading}>
+                    <div>
+                        <b>Beskrivelse</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Antal</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Sats</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Total</b>
+                    </div>
+                </div>
+                
+                {opstartData[0].antal > 0 && opstartData.map((entry, index) => (
+                    <div key={`opstart-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Opstart</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                
+                {handymanData[0].antal > 0 && handymanData.map((entry, index) => (
+                    <div key={`handyman-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Handyman</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerData[0].antal > 0 && tømrerData.map((entry, index) => (
+                    <div key={`tømrer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Tømrer</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningData[0].antal > 0 && rådgivningData.map((entry, index) => (
+                    <div key={`rådgivning-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Rådgivning</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                {handymanAftenTillæg[0].antal > 0 && handymanAftenTillæg.map((entry, index) => (
+                    <div key={`handyman-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (handyman)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningAftenTillæg[0].antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
+                    <div key={`rådgivning-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (rådgivning)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerAftenTillæg[0].antal > 0 && tømrerAftenTillæg.map((entry, index) => (
+                    <div key={`tømrer-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (tømrer)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {handymanNatTillæg[0].antal > 0 && handymanNatTillæg.map((entry, index) => (
+                    <div key={`handyman-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (handyman)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerNatTillæg[0].antal > 0 && tømrerNatTillæg.map((entry, index) => (
+                    <div key={`tømrer-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (tømrer)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningNatTillæg[0].antal > 0 && rådgivningNatTillæg.map((entry, index) => (
+                    <div key={`rådgivning-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (rådgivning)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                {trailerData[0].antal > 0 && trailerData.map((entry, index) => (
+                    <div key={`trailer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Trailer</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                <div className={Styles.akkumuleretØkonomiTableTotals}>
+                    <div>
+                        <b style={{fontFamily: "OmnesBold"}}>Total</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b></b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b></b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b style={{fontFamily: "OmnesBold"}}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    </div>
+                </div>
+            </div>
+            <b style={{fontFamily: "OmnesBold", display: "block", marginBottom: 10, marginLeft: 10}}>Posteringsgrundlag:</b>
             <div className={Styles.posteringerDiv}>
             {posteringerDetaljer && posteringerDetaljer.map((postering) => {
                 return (
