@@ -21,8 +21,13 @@
 }
 
 .changesList {
-    list-style: inside;
+    list-style-position: outside;
     list-style-type: decimal;
+    padding-left: 30px;
+}
+
+.changesList li {
+    margin-bottom: 10px;
 }
 
 .changeEntry {
