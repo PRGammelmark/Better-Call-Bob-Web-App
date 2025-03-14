@@ -633,16 +633,7 @@ const ØkonomiOverblikModal = (props) => {
                 ))}
                 {handymanAftenTillæg[0].antal > 0 && handymanAftenTillæg.map((entry, index) => (
                     <div key={`handyman-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Aftentillæg (handyman)</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
-                    </div>
-                ))}
-
-                {rådgivningAftenTillæg[0].antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
-                    <div key={`rådgivning-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Aftentillæg (rådgivning)</p></div>
+                        <div><p>Aftentillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
@@ -651,7 +642,16 @@ const ØkonomiOverblikModal = (props) => {
 
                 {tømrerAftenTillæg[0].antal > 0 && tømrerAftenTillæg.map((entry, index) => (
                     <div key={`tømrer-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Aftentillæg (tømrer)</p></div>
+                        <div><p>Aftentillæg (tøm.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningAftenTillæg[0].antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
+                    <div key={`rådgivning-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
@@ -660,7 +660,7 @@ const ØkonomiOverblikModal = (props) => {
 
                 {handymanNatTillæg[0].antal > 0 && handymanNatTillæg.map((entry, index) => (
                     <div key={`handyman-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Nattillæg (handyman)</p></div>
+                        <div><p>Nattillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
@@ -669,7 +669,7 @@ const ØkonomiOverblikModal = (props) => {
 
                 {tømrerNatTillæg[0].antal > 0 && tømrerNatTillæg.map((entry, index) => (
                     <div key={`tømrer-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Nattillæg (tømrer)</p></div>
+                        <div><p>Nattillæg (tøm.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
@@ -678,7 +678,7 @@ const ØkonomiOverblikModal = (props) => {
 
                 {rådgivningNatTillæg[0].antal > 0 && rådgivningNatTillæg.map((entry, index) => (
                     <div key={`rådgivning-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>Nattillæg (rådgivning)</p></div>
+                        <div><p>Nattillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
