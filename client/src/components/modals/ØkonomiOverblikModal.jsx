@@ -56,6 +56,7 @@ const ØkonomiOverblikModal = (props) => {
     const [opgaver, setOpgaver] = useState([])
     
     const user = props.user
+    const posteringer = props.posteringer;
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -183,6 +184,18 @@ const ØkonomiOverblikModal = (props) => {
         return månedensUdlæg;
     }
 
+    const opstartData = posteringer && grupperPoster(posteringer, "opstart", "opstartsgebyrHonorar")
+    const handymanData = grupperPoster(posteringer, "handymanTimer", "handymanTimerHonorar");
+    const tømrerData = grupperPoster(posteringer, "tømrerTimer", "tømrerTimerHonorar");
+    const rådgivningData = grupperPoster(posteringer, "rådgivningOpmålingVejledning", "rådgivningOpmålingVejledningHonorar");
+    const trailerData = grupperPoster(posteringer, "trailer", "trailerHonorar");
+    const handymanAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const handymanNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const tømrerAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const tømrerNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const rådgivningAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+    const rådgivningNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+
     let januarPosteringerX = []
     let februarPosteringerX = []
     let martsPosteringerX = []
@@ -249,6 +262,8 @@ const ØkonomiOverblikModal = (props) => {
         setUdlagtDecember(beregnUdlagt(decemberPosteringerX))
 
     }, [år, props.posteringer])
+
+    
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
