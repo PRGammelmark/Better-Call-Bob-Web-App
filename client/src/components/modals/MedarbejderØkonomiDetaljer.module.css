@@ -138,6 +138,41 @@
     display: none;
 }
 
+.akkumuleretContainer {
+    background: #f0f0f0;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+.akkumuleretØkonomiTableHeading {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    border-bottom: 1px solid black;
+    margin-bottom: 10px;
+}
+
+.akkumuleretØkonomiTableTotals {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    border-top: 1px solid black;
+    margin-top: 10px;
+    padding-top: 5px;
+}
+
+.akkumuleretØkonomiTableLine {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
+
+.lineAlignRight p, .lineAlignRight b {
+    text-align: right;
+    display: block;
+}
+
 @media (max-width: 750px) {
     .adminØkonomiHeadingsDesktop {
         display: none;

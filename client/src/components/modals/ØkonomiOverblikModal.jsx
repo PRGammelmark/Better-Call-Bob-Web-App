@@ -141,17 +141,7 @@ const ØkonomiOverblikModal = (props) => {
         }));
     }  
     
-    const opstartData = grupperPoster(posteringerDetaljer, "opstart", "opstartsgebyrHonorar")
-    const handymanData = grupperPoster(posteringerDetaljer, "handymanTimer", "handymanTimerHonorar");
-    const tømrerData = grupperPoster(posteringerDetaljer, "tømrerTimer", "tømrerTimerHonorar");
-    const rådgivningData = grupperPoster(posteringerDetaljer, "rådgivningOpmålingVejledning", "rådgivningOpmålingVejledningHonorar");
-    const trailerData = grupperPoster(posteringerDetaljer, "trailer", "trailerHonorar");
-    const handymanAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "handymanTimerHonorar", "handymanTimer");
-    const handymanNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "handymanTimerHonorar", "handymanTimer");
-    const tømrerAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
-    const tømrerNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
-    const rådgivningAftenTillæg = grupperTillæg(posteringerDetaljer, "aftenTillæg", "aftenTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
-    const rådgivningNatTillæg = grupperTillæg(posteringerDetaljer, "natTillæg", "natTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+    
 
 
     function beregnAntalOpstart(posteringer){

@@ -26,7 +26,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
         return bruger ? bruger.navn : 'Ukendt bruger';
     };
 
-    const navn = posteringer && getBrugerName(posteringer[0].brugerID)
+    const navn = posteringer.length > 0 && getBrugerName(posteringer[0].brugerID)
     const opgaverForBruger = opgaver && uniqueOpgaveIDs && opgaver.filter(opgave => uniqueOpgaveIDs.includes(opgave._id))
 
     function beregnTjent(posteringer) {
@@ -38,12 +38,18 @@ const MedarbejderØkonomiDetaljer = (props) => {
         const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
         const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
         const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
+        const månedensTjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
+        const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+        return månedensTjentFørRabat - månedensRabat;
+    }
 
-        return månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
+    function beregnRabat(posteringer){
+        const månedensRabat = posteringer && posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+        return månedensRabat
     }
 
     function beregnUdlagt(posteringer) {
-        if(!posteringer) return 0
+        // if(!posteringer) return 0
         const månedensUdlæg = posteringer.reduce((sum, postering) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
@@ -51,6 +57,65 @@ const MedarbejderØkonomiDetaljer = (props) => {
 
         return månedensUdlæg;
     }
+
+    function grupperPoster(posteringer, antalKey, satsKey) {
+        if(!posteringer) return 0
+        const grupperet = {};
+    
+        posteringer.forEach(postering => {
+            const sats = postering.satser[satsKey];
+            if (!grupperet[sats]) {
+                grupperet[sats] = 0;
+            }
+            grupperet[sats] += postering[antalKey];
+        });
+    
+        return Object.entries(grupperet).map(([sats, antal]) => ({
+            sats: parseFloat(sats),
+            antal,
+            total: antal * parseFloat(sats)
+        }));
+    }
+
+    function grupperTillæg(posteringer, tillægKey, tillægHonorarKey, baseHonorarKey, timerKey) {
+        if(!posteringer) return 0
+        const grupperet = {};
+    
+        posteringer.forEach(postering => {
+            if (!postering[tillægKey]) return; // Skip if tillæg is not applied
+    
+            const tillægProcent = postering.satser[tillægHonorarKey] / 100; // Convert % to decimal
+            const baseSats = postering.satser[baseHonorarKey]; // Base rate (handyman/tømrer/etc.)
+            const ekstraHonorar = baseSats * tillægProcent; // Extra pay per hour
+            const timer = postering[timerKey]; // Hours worked
+            const totalEkstra = ekstraHonorar * timer; // Total extra pay
+    
+            if (!grupperet[ekstraHonorar]) {
+                grupperet[ekstraHonorar] = { total: 0, antal: 0 };
+            }
+    
+            grupperet[ekstraHonorar].total += totalEkstra;
+            grupperet[ekstraHonorar].antal += timer; // Accumulate total hours
+        });
+    
+        return Object.entries(grupperet).map(([sats, data]) => ({
+            sats: parseFloat(sats),
+            total: data.total,
+            antal: data.antal // Total hours worked
+        }));
+    }  
+
+    const opstartData = posteringer && grupperPoster(posteringer, "opstart", "opstartsgebyrHonorar")
+    const handymanData = grupperPoster(posteringer, "handymanTimer", "handymanTimerHonorar");
+    const tømrerData = grupperPoster(posteringer, "tømrerTimer", "tømrerTimerHonorar");
+    const rådgivningData = grupperPoster(posteringer, "rådgivningOpmålingVejledning", "rådgivningOpmålingVejledningHonorar");
+    const trailerData = grupperPoster(posteringer, "trailer", "trailerHonorar");
+    const handymanAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const handymanNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "handymanTimerHonorar", "handymanTimer");
+    const tømrerAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const tømrerNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "tømrerTimerHonorar", "tømrerTimer");
+    const rådgivningAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
+    const rådgivningNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
 
     const getOpgaveAdresse = (opgaveID) => {
         const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
@@ -92,15 +157,159 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikDesktop}`}>
                     <p>{navn && navn.split(' ')[0]}</p>
-                    <p>{beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(beregnTjent(posteringer) + beregnUdlagt(posteringer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{posteringer && beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{posteringer && beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikMobile}`}>
                     <p>{navn && navn.split(' ')[0]}</p>
                     <p>{beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p>{(beregnTjent(posteringer) + beregnUdlagt(posteringer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p>{posteringer && beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                </div>
+            </div>
+            <div className={Styles.akkumuleretContainer}>
+                <b style={{fontFamily: "OmnesBold", display: "block", marginBottom: 10}}>Akkumuleret for {props.customMåned.end.format('MMMM YYYY')}:</b>
+                <div className={Styles.akkumuleretØkonomiTableHeading}>
+                    <div>
+                        <b>Beskrivelse</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Antal</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Sats</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b>Total</b>
+                    </div>
+                </div>
+                
+                {opstartData && opstartData[0].antal > 0 && opstartData.map((entry, index) => (
+                    <div key={`opstart-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Opstart</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                
+                {handymanData && handymanData[0].antal > 0 && handymanData.map((entry, index) => (
+                    <div key={`handyman-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Handyman</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerData && tømrerData[0].antal > 0 && tømrerData.map((entry, index) => (
+                    <div key={`tømrer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Tømrer</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningData && rådgivningData[0].antal > 0 && rådgivningData.map((entry, index) => (
+                    <div key={`rådgivning-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Rådgivning</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                {handymanAftenTillæg && handymanAftenTillæg[0].antal > 0 && handymanAftenTillæg.map((entry, index) => (
+                    <div key={`handyman-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (hand.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerAftenTillæg && tømrerAftenTillæg[0].antal > 0 && tømrerAftenTillæg.map((entry, index) => (
+                    <div key={`tømrer-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (tøm.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningAftenTillæg && rådgivningAftenTillæg[0].antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
+                    <div key={`rådgivning-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Aftentillæg (vejl.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {handymanNatTillæg && handymanNatTillæg[0].antal > 0 && handymanNatTillæg.map((entry, index) => (
+                    <div key={`handyman-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (hand.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {tømrerNatTillæg && tømrerNatTillæg[0].antal > 0 && tømrerNatTillæg.map((entry, index) => (
+                    <div key={`tømrer-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (tøm.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+
+                {rådgivningNatTillæg && rådgivningNatTillæg[0].antal > 0 && rådgivningNatTillæg.map((entry, index) => (
+                    <div key={`rådgivning-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Nattillæg (vejl.)</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                {trailerData && trailerData[0].antal > 0 && trailerData.map((entry, index) => (
+                    <div key={`trailer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Trailer</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                    </div>
+                ))}
+                {posteringer && beregnUdlagt(posteringer) > 0 &&
+                    <div key={`udlagt`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Udlæg</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregnUdlagt(posteringer)} kr.</p></div>
+                    </div>
+                }
+                {posteringer && beregnRabat(posteringer) > 0 &&
+                    <div key={`rabat`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>- Rabat</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>-</p></div>
+                        <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringer)} kr.</p></div>
+                    </div>
+                }
+                <div className={Styles.akkumuleretØkonomiTableTotals}>
+                    <div>
+                        <b style={{fontFamily: "OmnesBold"}}>Total</b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b></b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b></b>
+                    </div>
+                    <div className={Styles.lineAlignRight}>
+                        <b style={{fontFamily: "OmnesBold"}}>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    </div>
                 </div>
             </div>
             <b>Fordelt på følgende opgaver:</b>

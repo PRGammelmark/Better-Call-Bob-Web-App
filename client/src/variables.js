@@ -5,7 +5,7 @@ const satser = {
   opstartsgebyrHonorar: 200,
   aftenTillægHonorar: 50,
   natTillægHonorar: 100,
-  trailerHonorar: 200,
+  trailerHonorar: 210,
   rådgivningOpmålingVejledningHonorar: 360,
 
   // Pris-beløb i kr. (ex moms)

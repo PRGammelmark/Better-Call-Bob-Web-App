@@ -18,6 +18,9 @@ const changes = [{
     date: "15. marts 2025",
     changes: [
         "Rettede en fejl, hvor økonomioversigten på siden 'Overblik' nogle gange viste forkerte data til medarbejdere.",
+        "Rettede den samme fejl for administratorers økonomiske overblik.",
+        "Nu kan administratorer også tilgå den samme oversigt over akkumulerede poster for en valgt måned for hver medarbejder.",
+        "Opdaterede honorar-priserne for at medbringe egen trailer.",
         "Smårettelser og justeringer."
     ]
 },{
