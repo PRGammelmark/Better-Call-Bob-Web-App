@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.2",
+    date: "15. marts 2025",
+    changes: [
+        "Rettede en fejl, hvor økonomioversigten på siden 'Overblik' nogle gange viste forkerte data til medarbejdere.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.1",
     date: "14. marts 2025",
     changes: [

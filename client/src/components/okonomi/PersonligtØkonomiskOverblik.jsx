@@ -49,13 +49,12 @@ const PersonligtØkonomiskOverblik = (props) => {
             const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
             return sum + udlægSum;
         }, 0);
+        const denneMånedTjentFørRabat = denneMånedsOpstartsgebyrer + denneMånedsHandymantimer + denneMånedsTømrertimer + denneMånedsRådgivningOpmålingVejledning + denneMånedsAftenTillæg + denneMånedsNatTillæg + denneMånedsTrailer
+        const denneMånedsRabat = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+        const sumTjentDenneMåned = denneMånedTjentFørRabat - denneMånedsRabat
 
-        const sumUdlægDenneMåned = denneMånedsUdlæg;
-        const sumTjentDenneMåned = denneMånedsOpstartsgebyrer + denneMånedsHandymantimer + denneMånedsTømrertimer + denneMånedsRådgivningOpmålingVejledning + denneMånedsAftenTillæg + denneMånedsNatTillæg + denneMånedsTrailer
-        
         setTjentDenneMåned(sumTjentDenneMåned)
         setUdlægDenneMåned(denneMånedsUdlæg)
-
     }, [posteringer, månedOffset])
 
   return (
