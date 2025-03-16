@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.4",
+    date: "16. marts 2025",
+    changes: [
+        "Posteringer, der tilhører afsluttede lønperioder, er nu låst og kan ikke længere redigeres i  eller slettes. Lønperioder går fra d. 20.-d. 19. Medarbejdere har til og med d. 19. i hver måned til at oprette og justere i posteringer for den indeværende lønperiode. Denne ændring sikrer, at tidligere lønperioder, for hvilke der allerede er afregnet udbetalinger, altid holder retvisende data i systemet.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.3",
     date: "15. marts 2025",
     changes: [

@@ -4,6 +4,7 @@ import RedigerPostering from './modals/RedigerPostering';
 import ÅbenOpgaveCSS from '../pages/ÅbenOpgave.module.css'
 import SwitchArrows from "../assets/switchArrowsBlack.svg"
 import axios from 'axios';
+import dayjs from 'dayjs';
 import { storage } from '../firebase.js'
 import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
 
@@ -20,6 +21,18 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
     };
 
     function sletPostering(posteringID){
+        const cutoffDate = dayjs().date(19).endOf('day');
+        const posteringDate = dayjs(postering.createdAt);
+    
+        const isPosteringBeforeCutoffDate = posteringDate.isBefore(cutoffDate);
+        const areWePastCutoffDate = dayjs().isAfter(cutoffDate);
+    
+        if (isPosteringBeforeCutoffDate && areWePastCutoffDate) {
+            console.log("Postering tilhører afsluttet lønperiode.");
+            setOpenPosteringModalID(postering._id)
+            return;
+        }
+        
         if (window.confirm("Er du sikker på, at du vil slette denne postering?")) {
             const postering = posteringer.find(postering => postering._id === posteringID);
 
