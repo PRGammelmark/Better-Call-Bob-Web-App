@@ -237,6 +237,11 @@
     justify-content: space-between;
 }
 
+.posteringCardSatsDisplay {
+    width: 100%;
+    max-width: 100%;
+}
+
 .posteringDato {
     font-size: 0.75rem;
     color: #33333390;

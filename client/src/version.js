@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.1.11",
+    date: "17. marts 2025",
+    changes: [
+        "Designforbedringer for posteringssatser-popup'en."
+    ]
+},{
     version: "1.1.10",
     date: "17. marts 2025",
     changes: [

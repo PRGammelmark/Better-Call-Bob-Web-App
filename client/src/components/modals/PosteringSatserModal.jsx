@@ -68,7 +68,7 @@ const PosteringSatserModal = (props) => {
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
             <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID).split(' ')[0]} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
-            <div className={ÅbenOpgaveCSS.posteringCard}>
+            <div className={`${ÅbenOpgaveCSS.posteringCard} ${ÅbenOpgaveCSS.posteringCardSatsDisplay}`}>
                 <div>
                     <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
                     <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
@@ -91,9 +91,9 @@ const PosteringSatserModal = (props) => {
                 </div>
                 <div className={styles.posteringListe}>
                     <div className={styles.posteringRække}>
-                        <span className={styles.posteringRækkeBeskrivelse}><b>Beskrivelse</b></span>
-                        <span className={styles.posteringRækkeSatser}><b>Sats</b></span>
-                        <span className={styles.posteringRækkeSatser}><b>Total</b></span>
+                        <span className={styles.posteringRækkeBeskrivelse}><b style={{fontFamily: "OmnesBold"}}>Beskrivelse</b></span>
+                        <span className={styles.posteringRækkeSatser}><b style={{fontFamily: "OmnesBold"}}>Sats</b></span>
+                        <span className={styles.posteringRækkeSatser}><b style={{fontFamily: "OmnesBold"}}>Total</b></span>
                     </div>
                     {postering.opstart > 0 && (
                         <div className={styles.posteringRække}>
