@@ -184,7 +184,7 @@ const ØkonomiOverblikModal = (props) => {
         return månedensUdlæg;
     }
 
-    const opstartData = posteringer && grupperPoster(posteringer, "opstart", "opstartsgebyrHonorar")
+    const opstartData = grupperPoster(posteringer, "opstart", "opstartsgebyrHonorar")
     const handymanData = grupperPoster(posteringer, "handymanTimer", "handymanTimerHonorar");
     const tømrerData = grupperPoster(posteringer, "tømrerTimer", "tømrerTimerHonorar");
     const rådgivningData = grupperPoster(posteringer, "rådgivningOpmålingVejledning", "rådgivningOpmålingVejledningHonorar");
@@ -607,7 +607,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 </div>
                 
-                {opstartData[0].antal > 0 && opstartData.map((entry, index) => (
+                {opstartData[0]?.antal > 0 && opstartData.map((entry, index) => (
                     <div key={`opstart-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Opstart</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -616,7 +616,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
                 
-                {handymanData[0].antal > 0 && handymanData.map((entry, index) => (
+                {handymanData[0]?.antal > 0 && handymanData.map((entry, index) => (
                     <div key={`handyman-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Handyman</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -625,7 +625,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {tømrerData[0].antal > 0 && tømrerData.map((entry, index) => (
+                {tømrerData[0]?.antal > 0 && tømrerData.map((entry, index) => (
                     <div key={`tømrer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Tømrer</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -634,7 +634,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {rådgivningData[0].antal > 0 && rådgivningData.map((entry, index) => (
+                {rådgivningData[0]?.antal > 0 && rådgivningData.map((entry, index) => (
                     <div key={`rådgivning-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Rådgivning</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -642,7 +642,7 @@ const ØkonomiOverblikModal = (props) => {
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
                     </div>
                 ))}
-                {handymanAftenTillæg[0].antal > 0 && handymanAftenTillæg.map((entry, index) => (
+                {handymanAftenTillæg[0]?.antal > 0 && handymanAftenTillæg.map((entry, index) => (
                     <div key={`handyman-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Aftentillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -651,7 +651,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {tømrerAftenTillæg[0].antal > 0 && tømrerAftenTillæg.map((entry, index) => (
+                {tømrerAftenTillæg[0]?.antal > 0 && tømrerAftenTillæg.map((entry, index) => (
                     <div key={`tømrer-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Aftentillæg (tøm.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -660,7 +660,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {rådgivningAftenTillæg[0].antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
+                {rådgivningAftenTillæg[0]?.antal > 0 && rådgivningAftenTillæg.map((entry, index) => (
                     <div key={`rådgivning-aften-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Aftentillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -669,7 +669,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {handymanNatTillæg[0].antal > 0 && handymanNatTillæg.map((entry, index) => (
+                {handymanNatTillæg[0]?.antal > 0 && handymanNatTillæg.map((entry, index) => (
                     <div key={`handyman-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Nattillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -678,7 +678,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {tømrerNatTillæg[0].antal > 0 && tømrerNatTillæg.map((entry, index) => (
+                {tømrerNatTillæg[0]?.antal > 0 && tømrerNatTillæg.map((entry, index) => (
                     <div key={`tømrer-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Nattillæg (tøm.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -687,7 +687,7 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 ))}
 
-                {rådgivningNatTillæg[0].antal > 0 && rådgivningNatTillæg.map((entry, index) => (
+                {rådgivningNatTillæg[0]?.antal > 0 && rådgivningNatTillæg.map((entry, index) => (
                     <div key={`rådgivning-nat-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Nattillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
@@ -695,7 +695,7 @@ const ØkonomiOverblikModal = (props) => {
                         <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
                     </div>
                 ))}
-                {trailerData[0].antal > 0 && trailerData.map((entry, index) => (
+                {trailerData[0]?.antal > 0 && trailerData.map((entry, index) => (
                     <div key={`trailer-${index}`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Trailer</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
