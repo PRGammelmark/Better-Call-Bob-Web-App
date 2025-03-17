@@ -14,10 +14,18 @@
 // 
 
 const changes = [{
+    version: "1.1.7",
+    date: "17. marts 2025",
+    changes: [
+        "Designforbedringer i posteringerne.",
+        "Rettede et problem, der opstod hvis man indstillede rabatprocenten til 100%. Nu kan rabatprocenten indstilles op til 99%. Vil man give 100% rabat på en postering skal man derimod benytte sig af manuel indtastning af honorar / pris."
+    ]
+},{
     version: "1.1.6",
     date: "17. marts 2025",
     changes: [
-        "Rettede et problem, der gjorde, at man ikke kunne uploade kvitteringer i posteringer på mobilen."
+        "Rettede et problem, der gjorde, at man ikke kunne uploade kvitteringer i posteringer på mobilen.",
+        "Smårettelser og justeringer."
     ]
 },{
     version: "1.1.5",

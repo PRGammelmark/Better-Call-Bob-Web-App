@@ -7,6 +7,7 @@ import dayjs from 'dayjs'
 import satser from '../../variables'
 import SwithArrowsBlack from '../../assets/switchArrowsBlack.svg'
 import RabatIcon from '../../assets/rabatIcon.svg'
+import CloseIcon from '../../assets/closeIcon.svg'
 import { useAuthContext } from '../../hooks/useAuthContext'
 import { storage } from '../../firebase.js'
 import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
@@ -213,10 +214,8 @@ const RedigerPostering = (props) => {
         const areWePastCutoffDate = dayjs().isAfter(cutoffDate);
     
         if (isPosteringBeforeCutoffDate && areWePastCutoffDate) {
-            console.log("Postering tilhører afsluttet lønperiode.");
             return true;
         } else {
-            console.log("Postering tilhører åben lønperiode.");
             return false;
         }
     };
@@ -309,7 +308,7 @@ const RedigerPostering = (props) => {
                             {user.isAdmin && (
                                 <div className={ÅbenOpgaveCSS.rabatInputDiv}>
                                     <input 
-                                        className={ÅbenOpgaveCSS.modalInput}
+                                        className={ÅbenOpgaveCSS.modalInput2}
                                         type="number" 
                                         min="0" 
                                         max="100"
@@ -317,7 +316,7 @@ const RedigerPostering = (props) => {
                                         value={!(rabatProcent === 0 || rabatProcent === 10 || rabatProcent === 20) && rabatProcent}
                                         onInput={(e) => {
                                             e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
-                                            if (e.target.value > 100) e.target.value = 100;
+                                            if (e.target.value > 99) e.target.value = 99;
                                             if (e.target.value < 0) e.target.value = 0;
                                             setRabatProcent(e.target.value)
                                             if (e.target.value > 0) {
@@ -383,7 +382,7 @@ const RedigerPostering = (props) => {
                                                 onChange={(e) => handleOutlayChange(index, e)}
                                             />
                                         </div>
-                                        <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}>-</button>
+                                        <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}><img src={CloseIcon} /></button>
                                     </div>
                                 ))}
                                 <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addOutlay}>+ Nyt udlæg</button>

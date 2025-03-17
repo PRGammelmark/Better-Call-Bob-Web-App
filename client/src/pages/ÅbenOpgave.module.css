@@ -411,9 +411,33 @@
 
 .enkeltUdlæg {
     display: flex;
-    gap: 15px;
+    gap: 10px;
     padding-top: 10px;
     align-items: center;
+    justify-content: center;
+}
+
+.sletUdlægButton {
+    width: 26px;
+    min-width: 26px;
+    max-width: 26px;
+    height: 26px;
+    min-height: 26px;
+    max-height: 26px;
+    border-radius: 50px;
+    border: none;
+    background: rgba(193, 26, 57, 0.25);
+    color: rgba(193, 26, 57, 1);
+    cursor: pointer;
+    margin-top: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sletUdlægButton img {
+    height: 14px;
+    width: 14px;
 }
 
 .udlægBeskrivelse {
@@ -443,6 +467,25 @@
 }
 
 .modalInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.modalInput2 {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: -10px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+}
+
+.modalInput2:focus {
     box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
     outline: none;
 }
@@ -492,16 +535,7 @@
     display: none;
 }
 
-.sletUdlægButton {
-    width: 20px;
-    height: 20px;
-    border-radius: 30px;
-    border: none;
-    background: rgba(193, 26, 57, 0.25);
-    color: rgba(193, 26, 57, 1);
-    cursor: pointer;
-    margin-top: 26px;
-}
+
 
 .inlineButton {
     cursor: pointer;
@@ -1406,6 +1440,10 @@
 .dynamiskFastButton img {
     width: 15px;
     height: 15px;
+}
+
+.rabatInputDiv {
+    margin-top: -10px;
 }
 
 .rabatButtonsDiv {
