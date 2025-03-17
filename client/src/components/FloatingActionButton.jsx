@@ -152,8 +152,8 @@ const FloatingActionButton = () => {
         const tidTil = "T" + selectedTimeTo + ":00.000";
 
         const ledighedsDage = weekdays.map(day => ({
-            datoTidFra: `${day}${tidFra}`,
-            datoTidTil: `${day}${tidTil}`,
+            datoTidFra: dayjs(`${day}${tidFra}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
+            datoTidTil: dayjs(`${day}${tidTil}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
             brugerID: user.id,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
@@ -230,8 +230,8 @@ const FloatingActionButton = () => {
         e.preventDefault();
 
         const enkeltLedighed = {
-            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
-            datoTidTil: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
+            datoTidFra: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
+            datoTidTil: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
             brugerID: user.id,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true

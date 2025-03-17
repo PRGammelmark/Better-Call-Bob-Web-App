@@ -129,9 +129,14 @@ const AddBesøg = (props) => {
         
         console.log("Tjek")
 
+        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
+        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
+        const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+        const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+
         const besøg = {
-            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000Z`,
-            datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000Z`,
+            datoTidFra: danskDatoTidFra,
+            datoTidTil: danskDatoTidTil,
             brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
             opgaveID: tilknyttetOpgave._id,
             kommentar: comment ? comment : ""
@@ -214,10 +219,15 @@ const AddBesøg = (props) => {
     
     function submitNewBesøgFromTaskPage(e){
         e.preventDefault();
+
+        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
+        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
+        const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+        const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
         
         const besøg = {
-            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
-            datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
+            datoTidFra: danskDatoTidFra,
+            datoTidTil: danskDatoTidTil,
             brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
             opgaveID: chosenTask._id,
             kommentar: comment ? comment : ""

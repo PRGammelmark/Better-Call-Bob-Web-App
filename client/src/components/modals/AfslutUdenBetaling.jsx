@@ -17,6 +17,12 @@ const AfslutUdenBetaling = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+            // Check if the betalingsDato is in the future
+        if (betalingsDato && dayjs(betalingsDato).isAfter(dayjs())) {
+            alert("Betalingsdato kan ikke være i fremtiden.");
+            return;
+        }
         
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${props.opgave._id}`, {
             opgaveAfsluttet: dayjs(),
