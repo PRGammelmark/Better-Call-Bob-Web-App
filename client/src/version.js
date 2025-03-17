@@ -17,7 +17,7 @@ const changes = [{
     version: "1.1.12",
     date: "17. marts 2025",
     changes: [
-        "Oprettelse af besøg og ledighed er nu justeret til at registrere sig i kalenderen med danske tidszoner. Det var de ikke før.",
+        "Oprettelse af nye og redigering af eksisterende besøg og ledigheder er nu justeret til at registrere sig i kalenderen med danske tidszoner. Det var de ikke før.",
         "Man kan nu ikke længere registrere betaling for en fremtidig dato når man manuelt vil afslutte en opgave."
     ]
 },{

@@ -445,8 +445,8 @@ const onRedigerBesøg = (e) => {
   e.preventDefault()
 
   const besøg = {
-    datoTidFra: `${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
-    datoTidTil: `${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
+    datoTidFra: dayjs(`${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
+    datoTidTil: dayjs(`${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
     kommentar: comment ? comment : ""
   }
 
