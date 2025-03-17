@@ -1,6 +1,8 @@
 import axios from "axios";
 import dayjs from "dayjs";
 import useEconomicLines from "./useEconomicLines.js";
+import { storage } from '../firebase.js'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
 const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
 
@@ -38,6 +40,24 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
             paymentTermsType: "net"
         }
     }
+
+    const uploadFakturaToFirebase = (fakturaPDF, opgaveID) => {
+        const fakturaBlob = new Blob([fakturaPDF.data], { type: 'application/pdf' });
+        const storageRef = ref(storage, `fakturaer/faktura_${opgaveID}.pdf`);
+    
+        return uploadBytes(storageRef, fakturaBlob)
+            .then(() => getDownloadURL(storageRef)) // Get the file URL
+            .then((downloadURL) => {
+                console.log("File uploaded. URL:", downloadURL);
+                return downloadURL; // Return the URL
+            })
+            .catch((error) => {
+                console.error("Upload error:", error);
+                throw error;
+            });
+    };
+
+
     // ===== BETALINGSFLOW =====
 
     // 1) -> OPRET NY KUNDE 
@@ -134,52 +154,21 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                     console.log(error)
                 })
                 
-                // 5) -> LAGR FAKTURA PDF I DB ================================
+                // 5) -> LAGR FAKTURA PDF I FIREBASE ================================
                 axios.get(response.data.pdf.download, {
                     responseType: 'blob',
                     headers: economicHeaders
                 })
                 .then(fakturaPDF => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(new Blob([fakturaPDF.data]));
-                    reader.onloadend = function() {
-                        const base64data = reader.result;
-                        
+                    uploadFakturaToFirebase(fakturaPDF, opgaveID)
+                    .then(fakturaURL => {
                         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                            fakturaPDF: base64data
+                            fakturaPDFUrl: fakturaURL
                         }, {
                             headers: authHeaders
                         })
                         .then(response => {
-                            console.log("Faktura-PDF'en gemt i databasen i base64-format.");
-                        })
-                        .catch(error => {
-                            console.log("Fejl: Kunne ikke lagre faktura PDF i databasen.");
-                            console.log(error);
-                        });
-
-                    // 6) -> LAGR FAKTURA PDF I SERVER-MAPPE ================================
-                    const fakturaBlob = new Blob([fakturaPDF.data], { type: 'application/pdf' });
-                    const formData = new FormData();
-                    formData.append('file', fakturaBlob, `faktura_${opgaveID}.pdf`);
-
-                    axios.post(`${import.meta.env.VITE_API_URL}/fakturaer`, formData, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`,
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    })
-                    .then(response => {
-                        console.log("Faktura PDF uploadet til server-mappen.");
-                        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                            fakturaPDFUrl: response.data.filePath
-                        }, {
-                            headers: authHeaders
-                        })
-                        .then(response => {
-                            console.log("Faktura PDF-URL'en genereret – indsætter i SMS...");
-                            opgave.fakturaPDFUrl = response.data.fakturaPDFUrl;
-                            const fullFakturaPDFUrl = `${import.meta.env.VITE_API_URL}${opgave.fakturaPDFUrl}`;
+                            console.log("Faktura PDF-URL'en genereret.");
 
                             // 6) -> SEND SMS MED LINK TIL FAKTURA ================================
                             if (opgave.telefon && String(opgave.telefon).length === 8) {
@@ -189,7 +178,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                                             "to": `${opgave.telefon}`,
                                             "countryHint": "45",
                                             "respectBlacklist": true,
-                                            "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
+                                            "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
                                             "from": "Bob",
                                             "flash": false,
                                             "encoding": "gsm7"
@@ -230,24 +219,24 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                             }
 
                             // 7) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
-                            // axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                            //     to: alternativEmail ? alternativEmail : opgave.email,
-                            //     subject: `Faktura fra Better Call Bob`,
-                            //     body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fullFakturaPDFUrl}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
-                            // }, {
-                            //     headers: {
-                            //         'Authorization': `Bearer ${user.token}`
-                            //     }
-                            // })
-                            // .then(response => {
-                            //     console.log("Email sendt til kunden.");
-                            //     setLoadingFakturaSubmission(false);
-                            //     setSuccessFakturaSubmission(true);
-                            // })
-                            // .catch(error => {
-                            //     console.log("Fejl: Kunne ikke sende email til kunden.");
-                            //     console.log(error);
-                            // })
+                            axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                                to: alternativEmail ? alternativEmail : opgave.email,
+                                subject: `Faktura fra Better Call Bob`,
+                                body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
+                            }, {
+                                headers: {
+                                    'Authorization': `Bearer ${user.token}`
+                                }
+                            })
+                            .then(response => {
+                                console.log("Email sendt til kunden.");
+                                setLoadingFakturaSubmission(false);
+                                setSuccessFakturaSubmission(true);
+                            })
+                            .catch(error => {
+                                console.log("Fejl: Kunne ikke sende email til kunden.");
+                                console.log(error);
+                            })
                         });
                     })
                     .catch(error => {
@@ -255,7 +244,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                         console.log(error);
                     });
                     }
-                })
+                )
                 .catch(error => {
                     console.log("Fejl: Faktura-PDF er ikke blevet gemt i databasen.");
                     console.log(error);

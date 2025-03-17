@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.8",
+    date: "17. marts 2025",
+    changes: [
+        "Implementerede cloudlagring af genererede fakturaer.",
+        "Når fakturaer sendes ud får modtageren nu både en SMS og en e-mail med fakturaen vedhæftet.",
+        "Når en opgave afsluttes gennem oprettelse af faktura vil fakturaen nu kunne åbnes via en knap på opgave-siden i app'en. Dette gør det muligt for medarbejderen at åbne fakturaen direkte i app'en, og sende den videre til kunden i det tilfælde, at kunden ikke modtager den med det samme."
+    ]
+},{
     version: "1.1.7",
     date: "17. marts 2025",
     changes: [

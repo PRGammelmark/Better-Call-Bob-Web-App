@@ -1526,7 +1526,19 @@
     gap: 10px;
     font-size: 0.9rem;
     background: #f0f0f0;
-    padding: 10px 20px;
+    padding: 10px 10px 10px 20px;
+    border-radius: 15px;
+    margin-bottom: 5px;
+}
+
+.infoLineFaktura {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    background: #f0f0f0;
+    padding: 10px 10px 10px 20px;
     border-radius: 15px;
     margin-bottom: 5px;
 }
@@ -1616,7 +1628,38 @@ transform: rotateY(180deg);
     transition: 0.2s ease 0.5s;
 }
 
+.åbnFakturaButton {
+    padding: 5px 30px;
+    border-radius: 10px;
+    border: none;
+    color: #fff;
+    background: #3c5a3f;
+}
+
 @media screen and (max-width: 750px) {
+
+    .infoLineFaktura {
+        display: flex;
+        flex-direction: column;
+        align-items: start;
+        gap: 10px;
+        font-size: 0.9rem;
+        background: #f0f0f0;
+        padding: 10px 10px 10px 20px;
+        border-radius: 15px;
+        margin-bottom: 5px;
+    }
+
+    .åbnFakturaATag {
+        display: block;
+        width: 100%;
+    }
+
+    .åbnFakturaButton {
+        width: 100%;
+        font-family: "OmnesBold";
+        font-size: 0.9rem;
+    }
 
     .headerContainer {
         min-width: 260px;
