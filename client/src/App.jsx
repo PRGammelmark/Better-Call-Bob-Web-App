@@ -20,6 +20,7 @@ import NyOpgave from './pages/NyOpgave'
 import NyBruger from './pages/NyBruger'
 import Login from './pages/Login'
 import Team from './pages/Team'
+import ErrorPage from './pages/ErrorPage'
 import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
 import SlettedeOpgaver from './pages/SlettedeOpgaver'
 import GendanKodeord from './pages/GendanKodeord'
@@ -59,18 +60,18 @@ function App() {
     createRoutesFromElements(
       <>
         <Route path="/" element={user ? <Content /> : <Login />}>
-          <Route index element={<Overblik />}/>
-          <Route path="alle-opgaver" element={<AlleOpgaver />}/>
-          <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />}/>
-          <Route path="slettede-opgaver" element={<SlettedeOpgaver />}/>
-          <Route path="mine-opgaver" element={<MineOpgaver />}/>
-          <Route path="team" element={<Team />}/>
-          <Route path="dokumenter" element={<Dokumenter />}/>
-          <Route path="indstillinger" element={<Indstillinger />}/>
-          <Route path="version" element={<Version />}/>
-          <Route path="opgave/:opgaveID" element={<ÅbenOpgave />}/>
-          <Route path="ny-opgave" element={<NyOpgave />}/>
-          <Route path="ny-bruger" element={<NyBruger />}/>
+          <Route index element={<Overblik />} errorElement={<ErrorPage />}/>
+          <Route path="alle-opgaver" element={<AlleOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="slettede-opgaver" element={<SlettedeOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="mine-opgaver" element={<MineOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
+          <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
+          <Route path="indstillinger" element={<Indstillinger />} errorElement={<ErrorPage />}/>
+          <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
+          <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>
+          <Route path="ny-opgave" element={<NyOpgave />} errorElement={<ErrorPage />}/>
+          <Route path="ny-bruger" element={<NyBruger />} errorElement={<ErrorPage />}/>
           <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
         </Route>
         <Route path="gendan-kodeord" element={<GendanKodeord />}/>

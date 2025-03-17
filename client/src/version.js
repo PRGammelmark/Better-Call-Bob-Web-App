@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.10",
+    date: "17. marts 2025",
+    changes: [
+        "Implementerede bedre fejlhåndtering i app'en. Hvis app'en støder på en fejl får brugeren nu mulighed for at gå tilbage til forsiden – og gentager fejlen sig får brugeren nu også instrukser til hvordan vedkommende giver udvikleren besked.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.9",
     date: "17. marts 2025",
     changes: [
