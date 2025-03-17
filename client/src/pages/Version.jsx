@@ -9,7 +9,7 @@ const Version = () => {
         <div className={Styles.content}>
           <h1 className={Styles.heading}>Aktuel version: {currentVersion}</h1>
           {changes && (changes.map((change => (
-            <div className={Styles.changeEntry}>
+            <div className={Styles.changeEntry} key={change.version}>
               <div className={Styles.changeHeadingContainer}>
                 <h3 className={Styles.changesHeading}>Version: {change.version}</h3>
                 <p className={Styles.changesDate}>Implementeret {change.date}</p>

@@ -277,6 +277,29 @@ const AddPostering = (props) => {
                         <button type="button" className={`${ÅbenOpgaveCSS.rabatButton} ${rabatProcent === 10 ? ÅbenOpgaveCSS.rabatButtonActive : ''}`} onClick={() => {rabatProcent === 10 ? setRabatProcent(0) : setRabatProcent(10)}}>10% rabat<img src={RabatIcon} alt="switch" /></button>
                         <button type="button" className={`${ÅbenOpgaveCSS.rabatButton} ${rabatProcent === 20 ? ÅbenOpgaveCSS.rabatButtonActive : ''}`} onClick={() => {rabatProcent === 20 ? setRabatProcent(0) : setRabatProcent(20)}}>20% rabat<img src={RabatIcon} alt="switch" /></button>
                     </div>
+                    {user.isAdmin && (
+                        <div className={ÅbenOpgaveCSS.rabatInputDiv}>
+                            <input 
+                                className={ÅbenOpgaveCSS.modalInput}
+                                type="number" 
+                                min="0" 
+                                max="100"
+                                placeholder='Eller indtast rabatprocent manuelt ... (1-99)'
+                                value={!(rabatProcent === 0 || rabatProcent === 10 || rabatProcent === 20) && rabatProcent}
+                                onInput={(e) => {
+                                    e.target.value = e.target.value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+                                    if (e.target.value > 100) e.target.value = 100;
+                                    if (e.target.value < 0) e.target.value = 0;
+                                    setRabatProcent(e.target.value)
+                                    if (e.target.value > 0) {
+                                        setRabatProcent(e.target.value)
+                                    } else {
+                                        setRabatProcent(0)
+                                    }
+                                }}
+                            />
+                        </div>
+                    )}
                     <div className={ÅbenOpgaveCSS.udlæg}>
                         <h3 className={ÅbenOpgaveCSS.modalHeading3}>Udlæg</h3>
                         <div className={ÅbenOpgaveCSS.listeOverUdlæg}>

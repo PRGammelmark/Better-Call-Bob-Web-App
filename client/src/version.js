@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.5",
+    date: "17. marts 2025",
+    changes: [
+        "Administratorer kan nu finjustere rabatsatsen for enkelte posteringer, både når posteringer oprettes og redigeres.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.4",
     date: "16. marts 2025",
     changes: [
