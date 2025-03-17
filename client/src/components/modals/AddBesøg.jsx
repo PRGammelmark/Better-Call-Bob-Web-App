@@ -127,9 +127,11 @@ const AddBesøg = (props) => {
     function submitNewBesøgFromOverblikPage(e){
         e.preventDefault();
         
+        console.log("Tjek")
+
         const besøg = {
-            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`,
-            datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`,
+            datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000Z`,
+            datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000Z`,
             brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
             opgaveID: tilknyttetOpgave._id,
             kommentar: comment ? comment : ""
