@@ -338,7 +338,14 @@ const RedigerPostering = (props) => {
                                             {outlay.kvittering ? (
                                                 <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={outlay.kvittering} alt={outlay.beskrivelse} />
                                             ) : (
-                                                <label>
+                                                <label
+                                                    onClick={() => {
+                                                        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+                                                        if (isMobile) {
+                                                            document.getElementById(`ny-udlæg-file-input-${index}`)?.click();
+                                                        }
+                                                    }}
+                                                >
                                                     <div className={ÅbenOpgaveCSS.udlægKvitteringInputContainer}>
                                                     </div>
                                                     <input

@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.1.6",
+    date: "17. marts 2025",
+    changes: [
+        "Rettede et problem, der gjorde, at man ikke kunne uploade kvitteringer i posteringer på mobilen."
+    ]
+},{
     version: "1.1.5",
     date: "17. marts 2025",
     changes: [
