@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.1.14",
+    date: "18. marts 2025",
+    changes: [
+        "Man kan nu klikke på billeder vedhæftet posteringer for at se billederne i en større version."
+    ]
+},{
     version: "1.1.13",
     date: "18. marts 2025",
     changes: [

@@ -8,6 +8,7 @@ import PageAnimation from '../PageAnimation'
 import BackIcon from "../../assets/back.svg"
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import satser from '../../variables'
+import BackArrow from '../../assets/back.svg'
 import axios from 'axios'
 
 const ØkonomiOverblikModal = (props) => {
@@ -54,6 +55,7 @@ const ØkonomiOverblikModal = (props) => {
     const [posteringerDetaljer, setPosteringerDetaljer] = useState([])
     const [brugere, setBrugere] = useState([])
     const [opgaver, setOpgaver] = useState([])
+    const [kvitteringBillede, setKvitteringBillede] = useState(null)
     
     const user = props.user
     const posteringer = props.posteringer;
@@ -266,7 +268,7 @@ const ØkonomiOverblikModal = (props) => {
     
 
   return (
-    <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
+    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => {setPosteringerDetaljer([]); setKvitteringBillede(null)}}>
         {!posteringerDetaljer.length > 0 
         ? <PageAnimation>
             <h2 className={ModalStyles.modalHeading}>Økonomisk overblik</h2>
@@ -542,6 +544,7 @@ const ØkonomiOverblikModal = (props) => {
         :
         <>
         <PageAnimation>
+            {!kvitteringBillede ? <>
             <div className={Styles.modalHeaderContainer}>
                 <img className={Styles.backIcon} src={BackIcon} alt="Tilbage" onClick={() => setPosteringerDetaljer([])}/>
                 <h2 className={ModalStyles.modalHeading}>Din økonomi for {valgtMåned + " " + år}</h2>
@@ -834,6 +837,14 @@ const ØkonomiOverblikModal = (props) => {
                     </div>
                 );})}
             </div>
+            </> 
+            : 
+            <PageAnimation>
+                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
+                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    </div>
+                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                </PageAnimation>}
         </PageAnimation>
         </>}
     </Modal>

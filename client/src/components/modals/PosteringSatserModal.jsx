@@ -5,12 +5,13 @@ import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import styles from './PosteringSatserModal.module.css'
 import dayjs from 'dayjs'
 import satser from '../../variables'
+import BackArrow from '../../assets/back.svg'
+import PageAnimation from '../PageAnimation.jsx'
 
 const PosteringSatserModal = (props) => {
+    const [kvitteringBillede, setKvitteringBillede] = useState(null)
     const postering = props.postering;
-
     const bruger = props.brugere && props.brugere.find(user => user._id === postering.brugerID);
-
     const brugersAktuelleSatser = bruger && bruger.satser || satser;
 
     const getBrugerName = (brugerID) => {
@@ -65,7 +66,8 @@ const PosteringSatserModal = (props) => {
     }
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}}>
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setKvitteringBillede(null)} style={{backgroundColor: 'red'}}>
+            {!kvitteringBillede ? <>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
             <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID).split(' ')[0]} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
             <div className={`${ÅbenOpgaveCSS.posteringCard} ${ÅbenOpgaveCSS.posteringCardSatsDisplay}`}>
@@ -201,6 +203,12 @@ const PosteringSatserModal = (props) => {
                     </div>
                 </div>
             </div>
+            </> : <PageAnimation>
+                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
+                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    </div>
+                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                </PageAnimation>}
         </Modal>
     )
 }

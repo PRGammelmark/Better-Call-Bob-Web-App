@@ -1283,6 +1283,7 @@
     height: 55px;
     border-radius: 3px;
     object-fit: cover;
+    cursor: pointer;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
 }
 
@@ -1327,6 +1328,29 @@
 
 .slettetOverstregning {
     text-decoration: line-through;
+}
+
+.backArrow {
+    cursor: pointer;
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    width: 30px;
+    padding: 5px;
+    padding-left: 10px;
+    border-radius: 50px;
+    transition: 0.2s ease;
+}
+
+.backArrow:hover {
+    background: #59bf1a
+}
+
+.billedModalHeader {
+    display: flex;
+    gap: 20px;
 }
 
 .genåbnOpgave {
@@ -1639,6 +1663,12 @@ transform: rotateY(180deg);
     border: none;
     color: #fff;
     background: #3c5a3f;
+}
+
+.kvitteringBilledeStort {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 16px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
 @media screen and (max-width: 750px) {

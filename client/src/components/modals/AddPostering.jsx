@@ -13,6 +13,8 @@ import { storage } from '../../firebase.js'
 import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
 import {v4} from 'uuid'
 import MoonLoader from "react-spinners/MoonLoader";
+import PageAnimation from '../PageAnimation.jsx'
+import BackArrow from '../../assets/back.svg'
 
 const AddPostering = (props) => {
 
@@ -37,6 +39,7 @@ const AddPostering = (props) => {
     const [previewDynamiskHonorar, setPreviewDynamiskHonorar] = useState(0);
     const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
     const [rabatProcent, setRabatProcent] = useState(0);
+    const [kvitteringBillede, setKvitteringBillede] = useState(null)
     const aftenTillægMultiplikator = aftenTillæg ? 1 + (satser.aftenTillægHonorar / 100) : 1;
     const natTillægMultiplikator = natTillæg ? 1 + (satser.natTillægHonorar / 100) : 1;
 
@@ -215,6 +218,7 @@ const AddPostering = (props) => {
 
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} >
+            {!kvitteringBillede ? <>
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {
                 e.preventDefault();
@@ -335,7 +339,7 @@ const AddPostering = (props) => {
                                         data-testid="loader"
                                     />
                                 ) : outlay.kvittering ? (
-                                        <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={outlay.kvittering} alt={outlay.beskrivelse} />
+                                        <img style={{cursor: "pointer"}} className={ÅbenOpgaveCSS.udlægKvitteringImg} src={outlay.kvittering} alt={outlay.beskrivelse} onClick={() => setKvitteringBillede(outlay.kvittering)}/>
                                     ) : (
                                         <label
                                             onClick={() => {
@@ -401,6 +405,12 @@ const AddPostering = (props) => {
                     {Object.values(kvitteringLoadingStates).some(Boolean) ? <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} style={{background: '#a0a0a0'}} type="submit" disabled>Afventer upload ...</button> : <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} type="submit">Registrér</button>}
                 </div>
             </form>
+            </> : <PageAnimation>
+                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
+                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    </div>
+                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                </PageAnimation>}
         </Modal>
     )
 }

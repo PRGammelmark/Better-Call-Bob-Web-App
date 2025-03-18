@@ -1,5 +1,6 @@
 import React, {useState} from 'react'
 import PosteringSatserModal from './modals/PosteringSatserModal';
+import VisBilledeModal from './modals/VisBillede.jsx'
 import RedigerPostering from './modals/RedigerPostering';
 import ÅbenOpgaveCSS from '../pages/ÅbenOpgave.module.css'
 import SwitchArrows from "../assets/switchArrowsBlack.svg"
@@ -12,6 +13,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
 
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [honorarVisning, setHonorarVisning] = useState(true)
+    const [kvitteringBillede, setKvitteringBillede] = useState("")
     const aftenTillægMultiplikator = postering.aftenTillæg ? (postering.satser.aftenTillægHonorar / 100) : 1;
     const natTillægMultiplikator = postering.natTillæg ? (postering.satser.natTillægHonorar / 100) : 1;
 
@@ -273,6 +275,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                 </div>
             </div>
         </div>
+        <VisBilledeModal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}/>
     </div>
   )
 }

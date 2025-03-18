@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import BackArrow from '../../assets/back.svg'
 import dayjs from 'dayjs'
 import Styles from './MedarbejderØkonomiDetaljer.module.css'
+import BilledStyles from './VisBillede.module.css'
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Modal from '../Modal.jsx'
 import satser from '../../variables'
+import PageAnimation from '../PageAnimation.jsx'
 
 
 
 const MedarbejderØkonomiDetaljer = (props) => {
 
+    const [kvitteringBillede, setKvitteringBillede] = useState(null)
     const [posteringerDetaljer, setPosteringerDetaljer] = useState(null)
 
     const navigate = useNavigate()
@@ -20,6 +24,10 @@ const MedarbejderØkonomiDetaljer = (props) => {
     const uniqueOpgaveIDs = opgaveIDs && [...new Set(opgaveIDs)]
     const user = props && props.user
     const opgaver = props && props.opgaver
+
+    useEffect(() => {
+        console.log("kvitteringBillede updated:", kvitteringBillede);
+    }, [kvitteringBillede]);
 
     const getBrugerName = (brugerID) => {
         const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
@@ -123,8 +131,9 @@ const MedarbejderØkonomiDetaljer = (props) => {
     };
   
     return (
-    <Modal trigger={props.trigger} setTrigger={props.setTrigger}>
+    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setPosteringerDetaljer(null)}> 
         <div>
+            {!kvitteringBillede ? <>
             <h2 className={Styles.adminØkonomiHeading} style={{fontFamily: 'OmnesBold'}}>{navn &&navn.split(' ')[0]}s økonomi <br /><span style={{fontFamily: 'Omnes', fontSize: '16px', color: '#696969'}}>- {props.customMåned.end.format('MMMM YYYY')}</span></h2>
             <div className={Styles.adminØkonomiContainer}>
                 <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiHeadings} ${Styles.adminØkonomiHeadingsDesktop}`}>
@@ -345,20 +354,20 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 {opgaverForBruger && opgaverForBruger.map(opgave => {
                     const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
                     return ( 
-                    <>
-                    <div key={opgave._id} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeDesktop} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
-                        <p>{opgave.adresse}</p>
-                        <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
-                        <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                        <p><button onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
-                        <p><button onClick={() => navigate(`/opgave/${opgave._id}`)}>Gå til opgave</button></p>
+                    <div key={opgave._id}>
+                        <div className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeDesktop} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
+                            <p>{opgave.adresse}</p>
+                            <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
+                            <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p><button onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
+                            <p><button onClick={() => navigate(`/opgave/${opgave._id}`)}>Gå til opgave</button></p>
+                        </div>
+                        <div onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeMobile} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
+                            <p>{opgave.adresse}</p>
+                            <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
+                            <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                        </div>
                     </div>
-                    <div key={opgave._id} onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeMobile} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
-                        <p>{opgave.adresse}</p>
-                        <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay) ? "✅ Betalt" : "❗️ Åben"}</p>
-                        <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    </div>
-                    </>
                     )
                 })}
             </div>
@@ -376,20 +385,17 @@ const MedarbejderØkonomiDetaljer = (props) => {
                                     <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
                                     <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
                                         {postering.udlæg.map((udlæg, index) => {
-                                            return udlæg.kvittering ? 
+                                            return udlæg.kvittering && 
                                             <img 
                                             key={`udlæg-${index}`}
                                             className={ÅbenOpgaveCSS.kvitteringBillede} 
                                             src={udlæg.kvittering} 
                                             alt={udlæg.beskrivelse} 
-                                            onClick={() => {
-                                                setKvitteringBillede(udlæg.kvittering);
-                                            }}/> 
-                                            : 
-                                            null;
+                                            onClick={() => {setKvitteringBillede(udlæg.kvittering)}}/> 
                                         })}
                                     </div>
                                 </div>
+                                
                                 <div className={ÅbenOpgaveCSS.posteringListe}>
                                     {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
@@ -464,6 +470,14 @@ const MedarbejderØkonomiDetaljer = (props) => {
                     ))}
                 </div>
             </div>}
+            </> 
+            : 
+                <PageAnimation>
+                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
+                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    </div>
+                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                </PageAnimation>}
         </div>
     </Modal>
   )
