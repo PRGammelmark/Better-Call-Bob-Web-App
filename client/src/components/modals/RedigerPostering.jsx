@@ -12,6 +12,7 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 import { storage } from '../../firebase.js'
 import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } from 'firebase/storage'
 import {v4} from 'uuid'
+import MoonLoader from "react-spinners/MoonLoader";
 
 const RedigerPostering = (props) => {
 
@@ -19,6 +20,7 @@ const RedigerPostering = (props) => {
     const postering = props.postering;
 
     const [outlays, setOutlays] = useState(postering.udlæg);
+    const [kvitteringLoadingStates, setKvitteringLoadingStates] = useState({});
     const [handymantimer, setHandymantimer] = useState(postering.handymanTimer);
     const [tømrertimer, setTømrertimer] = useState(postering.tømrerTimer);
     const [posteringDato, setPosteringDato] = useState(dayjs(postering.dato).format('YYYY-MM-DD'));
@@ -178,29 +180,44 @@ const RedigerPostering = (props) => {
     const handleFileUpload = (file, index) => {
         if (!file) return;
     
+        setKvitteringLoadingStates((prev) => ({ ...prev, [index]: true })); // Set loading for the specific index
+    
         const storageRef = ref(storage, `kvitteringer/${file.name + v4()}`);
         const uploadTask = uploadBytesResumable(storageRef, file);
+    
+        // Timeput, der annullerer upload-processen, hvis den tager for længe
+        const timeoutId = setTimeout(() => {
+            uploadTask.cancel();
+            setKvitteringLoadingStates((prev) => ({ ...prev, [index]: false }));
+            alert("Upload af udlægsbillede tog for lang tid. Vælg venligst et mindre billede.");
+        }, 20000); // 15 sekunder
     
         uploadTask.on(
             "state_changed",
             (snapshot) => {
-                // Progress function (optional)
                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
                 console.log(`Upload is ${progress}% done`);
             },
             (error) => {
-                console.error("Upload failed:", error);
+                if (error.code === "storage/canceled") {
+                    console.log("Billedupload blev annulleret.");
+                } else {
+                    alert("Billedupload fejlede. Prøv igen.");
+                }
+                clearTimeout(timeoutId); // Clear timeout to prevent unnecessary execution
+                setKvitteringLoadingStates((prev) => ({ ...prev, [index]: false }));
             },
             () => {
-                // On successful upload, get the download URL
-                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                    console.log("File available at:", downloadURL);
+                clearTimeout(timeoutId); // Clear timeout when upload is successful
+                setKvitteringLoadingStates((prev) => ({ ...prev, [index]: false }));
     
-                    // Update state with new URL
-                    const updatedOutlay = { ...outlays[index], kvittering: downloadURL };
-                    const newOutlays = [...outlays];
-                    newOutlays[index] = updatedOutlay;
-                    setOutlays(newOutlays);
+                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                    console.log("Billedupload succesfuld. Filen er tilgængelig på ", downloadURL);
+                    setOutlays((prev) => {
+                        const newOutlays = [...prev];
+                        newOutlays[index] = { ...newOutlays[index], kvittering: downloadURL };
+                        return newOutlays;
+                    });
                 });
             }
         );
@@ -334,7 +351,16 @@ const RedigerPostering = (props) => {
                                 {outlays.map((outlay, index) => (
                                     <div className={ÅbenOpgaveCSS.enkeltUdlæg} key={index}>
                                         <div className={ÅbenOpgaveCSS.udlægKvittering}>
-                                            {outlay.kvittering ? (
+                                        {kvitteringLoadingStates[index] ? (
+                                            <MoonLoader 
+                                                color="#3c5a40"
+                                                loading={true}
+                                                size={27}
+                                                cssOverride={{ marginTop: 20 }}
+                                                aria-label="Loading Spinner"
+                                                data-testid="loader"
+                                            />
+                                        ) : outlay.kvittering ? (
                                                 <img className={ÅbenOpgaveCSS.udlægKvitteringImg} src={outlay.kvittering} alt={outlay.beskrivelse} />
                                             ) : (
                                                 <label
@@ -365,6 +391,7 @@ const RedigerPostering = (props) => {
                                             <input
                                                 type="text"
                                                 className={ÅbenOpgaveCSS.udlægInput}
+                                                required
                                                 name="beskrivelse"
                                                 id={`beskrivelse-${index}`}
                                                 value={outlay.beskrivelse}
@@ -376,13 +403,14 @@ const RedigerPostering = (props) => {
                                             <input
                                                 type="number"
                                                 className={ÅbenOpgaveCSS.udlægInput}
+                                                required
                                                 name="beløb"
                                                 id={`beløb-${index}`}
                                                 value={outlay.beløb}
                                                 onChange={(e) => handleOutlayChange(index, e)}
                                             />
                                         </div>
-                                        <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}><img src={CloseIcon} /></button>
+                                        {!kvitteringLoadingStates[index] && <button className={ÅbenOpgaveCSS.sletUdlægButton} onClick={(e) => {e.preventDefault(); deleteOutlay(index)}}><img src={CloseIcon} /></button>}
                                     </div>
                                 ))}
                                 <button className={ÅbenOpgaveCSS.tilføjUdlægButton} onClick={addOutlay}>+ Nyt udlæg</button>
@@ -395,8 +423,8 @@ const RedigerPostering = (props) => {
                                 <h3 className={ÅbenOpgaveCSS.modalHeading4}>Total: {(dynamiskHonorarBeregning ? previewDynamiskHonorar : posteringFastHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}{rabatProcent > 0 && dynamiskHonorarBeregning && <span className={ÅbenOpgaveCSS.overstregetPreview}>{(((previewDynamiskHonorar - previewDynamiskOutlays) / (100 - rabatProcent) * 100) + previewDynamiskOutlays).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>}</h3>
                                 <p className={ÅbenOpgaveCSS.modalSubheading}>Dit honorar for posteringen</p>
                             </div>
-                            <button className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} type="submit">Opdatér postering</button>
-                            <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} type="submit">Opdatér<br />postering</button>
+                            {Object.values(kvitteringLoadingStates).some(Boolean) ? <button className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} style={{background: '#a0a0a0'}} type="submit" disabled>Afventer upload ...</button> : <button className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} type="submit">Opdatér postering</button>}
+                            {Object.values(kvitteringLoadingStates).some(Boolean) ? <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} style={{background: '#a0a0a0'}} type="submit" disabled>Afventer upload ...</button> : <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} type="submit">Opdatér <br />postering</button>}
                         </div>
                     </form>
                 </>

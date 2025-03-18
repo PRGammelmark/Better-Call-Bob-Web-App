@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.13",
+    date: "18. marts 2025",
+    changes: [
+        "Ved oprettelse og redigering af posteringer vil man nu kunne se en loading-spinner, når upload af kvitteringsbilleder er i gang.",
+        "Smårettelser, justeringer og designforbedringer."
+    ]
+},{
     version: "1.1.12",
     date: "17. marts 2025",
     changes: [
