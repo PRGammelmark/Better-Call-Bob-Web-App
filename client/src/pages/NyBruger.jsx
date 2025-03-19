@@ -107,7 +107,7 @@ return (
                     <h2>Bruger oprettet! 🎉</h2>
                     <div className={styles.succesButtonsDiv}>
                         <button className={styles.submitButton} type="button" onClick={startForfra} >Opret ny bruger</button>
-                        <button className={styles.submitButton} type="button" onClick={navigerTilBruger}>Gå til bruger</button>
+                        {/* <button className={styles.submitButton} type="button" onClick={navigerTilBruger}>Gå til bruger</button> */}
                     </div>
                 </div> : <button className={styles.submitButton}>{loading ? "Opretter bruger ..." : "Opret bruger"}</button>}
             </div>

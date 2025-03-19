@@ -1,4 +1,4 @@
-import { createContext, useReducer, useEffect } from "react";
+import { createContext, useReducer, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
@@ -18,6 +18,7 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, {
         user: null
     });
+    const [authIsReady, setAuthIsReady] = useState(false)
 
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user')); // Get user info
@@ -46,10 +47,12 @@ export const AuthContextProvider = ({ children }) => {
             console.log('No user or token found. User is logged out.');
             dispatch({ type: 'LOGOUT' }); // Logout if no token is found
         }
+
+        setAuthIsReady(true);
     }, []);
 
     return (
-        <AuthContext.Provider value={{ ...state, dispatch }}>
+        <AuthContext.Provider value={{ ...state, dispatch, authIsReady }}>
             {children}
         </AuthContext.Provider>
     );

@@ -117,7 +117,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                 </div>
             </div>
         </form>
-        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <input style={{marginTop: 10, marginBottom: 10, textAlign: 'center', paddingRight: 65}} className={ÅbenOpgaveCSS.modalInput} type="tel" name="telefonnummer" id="telefonnummer" placeholder="Indtast evt. alternativt telefonnummer til anmodning" onChange={(e) => setTelefonnummerTilAnmodning(e.target.value)} />}
+        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <input style={{marginTop: 10, marginBottom: 10, textAlign: 'center', paddingRight: 65}} className={ÅbenOpgaveCSS.modalInput} type="tel" name="telefonnummer" id="telefonnummer" placeholder="Indtast evt. andet nummer til anmodning" onChange={(e) => setTelefonnummerTilAnmodning(e.target.value)} />}
         {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalNuKnap} onClick={() => initierAnmodningState()}><span>Send Mobile Pay-anmodning<br /><span style={{fontSize: 13}}>Tlf.: {telefonnummerTilAnmodning ? telefonnummerTilAnmodning : opgave.telefon}</span></span> <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>}
         {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalSenereKnap} onClick={() => setBetalSenereModalState(true)}>Betal senere med faktura – kr. 49,-</button>}
         </PageAnimation>

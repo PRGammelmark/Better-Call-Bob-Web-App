@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "1.1.15",
+    date: "19. marts 2025",
+    changes: [
+        "Rettede et problem, der gjorde, at brugeren kortvarigt ville se loginskærmen selvom man var logget ind når man åbnede app'en. Det sker nu ikke længere.",
+        "Sikrede, at beskrivelsen i input-feltet over Mobile Pay-anmodningsknappen bliver vist i sin helhed selv på små skærme.",
+        "Fjernede fejlbehæftet 'Gå til bruger'-knap, der dukkede op ved oprettelse af ny bruger.",
+        "Akkumuleringsvisninger vises nu altid med to decimaler, hvilket gør det nemmere og mere gennemskueligt for brugere at kopiere data over i eget regnskab.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.14",
     date: "18. marts 2025",
     changes: [

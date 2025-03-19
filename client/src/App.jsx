@@ -27,7 +27,7 @@ import GendanKodeord from './pages/GendanKodeord'
 
 function App() {
 
-  const { user } = useAuthContext();
+  const { user, authIsReady } = useAuthContext();
   const [openedInBrowser, setOpenedInBrowser] = useState(false);
 
   useEffect(() => {
@@ -78,6 +78,10 @@ function App() {
       </>
     )
   )
+
+  if (!authIsReady) {
+    return null; // Prevent flickering (or show a loading spinner)
+  }
 
   return (
     <>

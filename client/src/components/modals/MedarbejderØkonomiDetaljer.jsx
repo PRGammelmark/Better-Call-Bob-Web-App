@@ -25,10 +25,6 @@ const MedarbejderØkonomiDetaljer = (props) => {
     const user = props && props.user
     const opgaver = props && props.opgaver
 
-    useEffect(() => {
-        console.log("kvitteringBillede updated:", kvitteringBillede);
-    }, [kvitteringBillede]);
-
     const getBrugerName = (brugerID) => {
         const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
         return bruger ? bruger.navn : 'Ukendt bruger';
@@ -199,7 +195,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Opstart</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
                 
@@ -208,7 +204,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Handyman</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -217,7 +213,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Tømrer</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -226,7 +222,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Rådgivning</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
                 {handymanAftenTillæg[0]?.antal > 0 && handymanAftenTillæg.map((entry, index) => (
@@ -234,7 +230,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Aftentillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -243,7 +239,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Aftentillæg (tøm.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -252,7 +248,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Aftentillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -261,7 +257,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Nattillæg (hand.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -270,7 +266,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Nattillæg (tøm.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
 
@@ -279,7 +275,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Nattillæg (vejl.)</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
                 {trailerData[0]?.antal > 0 && trailerData.map((entry, index) => (
@@ -287,23 +283,23 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Trailer</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.antal}</p></div>
                         <div className={Styles.lineAlignRight}><p>{entry.sats}</p></div>
-                        <div className={Styles.lineAlignRight}><p>{entry.total} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p>{(entry.total).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 ))}
                 {posteringer && beregnUdlagt(posteringer) > 0 &&
                     <div key={`udlagt`} className={Styles.akkumuleretØkonomiTableLine}>
                         <div><p>Udlæg</p></div>
-                        <div className={Styles.lineAlignRight}><p>-</p></div>
-                        <div className={Styles.lineAlignRight}><p>-</p></div>
-                        <div className={Styles.lineAlignRight}><p>{beregnUdlagt(posteringer)} kr.</p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 }
                 {posteringer && beregnRabat(posteringer) > 0 &&
                     <div key={`rabat`} className={Styles.akkumuleretØkonomiTableLine}>
-                        <div><p>- Rabat</p></div>
-                        <div className={Styles.lineAlignRight}><p>-</p></div>
-                        <div className={Styles.lineAlignRight}><p>-</p></div>
-                        <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringer)} kr.</p></div>
+                        <div><p>Rabat</p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 }
                 <div className={Styles.akkumuleretØkonomiTableTotals}>

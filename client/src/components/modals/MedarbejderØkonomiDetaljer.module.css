@@ -148,14 +148,15 @@
 
 .akkumuleretØkonomiTableHeading {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
     border-bottom: 1px solid black;
     margin-bottom: 10px;
+    font-size: 0.9rem;
 }
 
 .akkumuleretØkonomiTableTotals {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
     border-top: 1px solid black;
     margin-top: 10px;
     padding-top: 5px;
@@ -163,9 +164,10 @@
 
 .akkumuleretØkonomiTableLine {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
     padding-top: 1px;
     padding-bottom: 1px;
+    font-size: 0.9rem;
 }
 
 .lineAlignRight p, .lineAlignRight b {
