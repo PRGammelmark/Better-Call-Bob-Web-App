@@ -35,14 +35,14 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
         {!loadingFakturaSubmission && successFakturaSubmission && 
         <div className={Styles.successSubmission}>
             <h2>Faktura sendt! 🎉</h2>
-            <p>Fakturaen er blevet oprettet, og sendt til kundens e-mail.</p>
+            <p>Fakturaen er blevet oprettet, og sendt til {(opgave.CVR || opgave.virksomhed) ? "regnskabsansvarlig" : "kundens email"}.</p>
         </div>}
         {!loadingFakturaSubmission && !successFakturaSubmission && <>
         <div>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret faktura</h2>
                 <form action="">
                     <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p>
-                    <p>Når fakturaen er oprettet vil den automatisk blive sendt til kundens e-mail.</p>
+                    <p>Når fakturaen er oprettet vil den automatisk blive sendt til {(opgave.CVR || opgave.virksomhed) ? "firmaets regnskabsansvarlige" : "kundens email"}.</p>
                     <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
                         <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
                         <div className={SwitcherStyles.checkboxContainer}>
@@ -73,7 +73,7 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
 
                     {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && cvrKorrekt && 
                     <div> 
-                        <input 
+                        {!(opgave.CVR || opgave.virksomhed) && <input 
                             type="email" 
                             id="alternativEmail" 
                             name="alternativEmail" 
@@ -82,7 +82,7 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                             value={alternativEmail} 
                             onChange={(e) => setAlternativEmail(e.target.value)} 
                             pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
-                        />
+                        />}
                         <button 
                             className={ÅbenOpgaveCSS.opretFaktura} 
                             onClick={(e) => {

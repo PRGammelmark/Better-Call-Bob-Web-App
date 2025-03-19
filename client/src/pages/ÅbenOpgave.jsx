@@ -1448,22 +1448,15 @@ const ÅbenOpgave = () => {
                                 
                                 {/* InfoLines */}
                                 {!opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>}
-                                {opgave.fakturaSendt && <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Åbn</button></a></div>}
+                                {opgave.fakturaSendt && ((opgave.virksomhed || opgave.CVR) ? <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p style={{marginTop: -3}}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Fakturakladde oprettet d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p></div> : <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Åbn</button></a></div>)}
                                 {opgave.opgaveAfsluttet && ((typeof opgave.opgaveAfsluttet === 'boolean') ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>)}
                                 {opgave.opgaveBetaltMedMobilePay && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
                                 {opgave.fakturaBetalt && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
                                 
                                 
-                                {/* Erhvervskunde -> send faktura */}
-                                {(opgave.virksomhed || opgave.CVR) ? (opgave.fakturaSendt 
-                                    ? 
-                                        <div className={ÅbenOpgaveCSS.fakturaDiv}>
-                                            <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => openPDFFromDatabase(opgave.fakturaPDF)}><span style={{fontSize: '1.5rem'}}>🧾</span>Se faktura</button>
-                                            {/* <button className={ÅbenOpgaveCSS.betalFakturaButton} onClick={() => setÅbnBetalFakturaModal(true)}><span style={{fontSize: '1.2rem', marginRight: 10}}>💵</span> Registrer fakturabetaling</button> */}
-                                            {/* <RegistrerBetalFakturaModal åbnBetalFakturaModal={åbnBetalFakturaModal} setÅbnBetalFakturaModal={setÅbnBetalFakturaModal} /> */}
-                                        </div>
-                                    : 
-                                        <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura<br /><span>Kunden er registreret som erhvervskunde</span></button> 
+                                {/* Erhvervskunde -> send faktura || !Erhvervskunde -> Opret regning*/}
+                                {(opgave.virksomhed || opgave.CVR) ? (!opgave.fakturaSendt 
+                                    && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura<br /><span>Kunden er registreret som erhvervskunde</span></button> 
                                 ) : !opgave.fakturaSendt && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
 

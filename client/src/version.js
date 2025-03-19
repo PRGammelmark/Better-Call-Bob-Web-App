@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "1.1.16",
+    date: "19. marts 2025",
+    changes: [
+        "Hvis man afregner med faktura til erhvervskunder vil systemet nu oprette en fakturakladde i stedet for en booket faktura. Fakturakladder kan manuelt gennemses og justeres i fra internt regnskabssystem inden de sendes videre til erhvervskunden. Ved oprettelse af fakturakladde får regnskabsansvarlig besked via mail – kunden får ikke notifikation på oprettelsen af kladden. Fakturakladden kan ikke åbnes via app'en – kun oprettes.",
+        "Afregning med faktura afslutter nu opgaven med det samme. Når opgaven er afsluttet kan den ikke genåbnes i app'en. Fakturabetaling trackes herfra via regnskabssystem, og skal ikke registreres i app'en.",
+        "Hvis man afregner med faktura til privatkunder bliver fakturaen booket og sendt afsted til kunden med det samme. Fakturaen kan åbnes via app'en.",
+        "Rettede en fejl, hvor en afsluttet opgave viste en knap til åbning af faktura, der ikke virkede. Knappen virker nu.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.15",
     date: "19. marts 2025",
     changes: [
