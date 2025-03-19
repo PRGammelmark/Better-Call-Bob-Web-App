@@ -266,12 +266,12 @@ const Indstillinger = () => {
           </Modal>
           </div>
         </div>
-        <div className={Styles.præferencer}>
+        {/* <div className={Styles.præferencer}>
           <p className={Styles.miniheading}>Præferencer:</p>
           <button className={Styles.newButton}><img src={ToolboxIcon} alt="toolbox icon" />Hvad kan du tage med?</button>
           <button className={Styles.newButton}><img src={LocationMarker} alt="location marker" />Hvor kan du arbejde?</button>
           <button className={Styles.newButton}><img src={ClockIcon} alt="clock icon" />Hvornår er du ledig?</button>
-        </div>
+        </div> */}
       </div>
     </PageAnimation>
   )

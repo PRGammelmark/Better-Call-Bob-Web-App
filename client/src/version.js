@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.1.17",
+    date: "19. marts 2025",
+    changes: [
+        "Fjernede ikke-funktionelle knapper og indstillinger på 'Indstillinger'-siden."
+    ]
+},{
     version: "1.1.16",
     date: "19. marts 2025",
     changes: [
