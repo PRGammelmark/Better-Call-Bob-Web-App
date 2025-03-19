@@ -64,68 +64,74 @@ const Team = () => {
   
     return (
         <PageAnimation>
-    <div className={styles.teamContainer}>
-        <h1 className={`bold ${styles.heading}`}>Teamet</h1>
-        <div className={styles.adminDiv}>
-            <h2 className={styles.subheading}>Administratorer ({admins && admins.length})</h2>
-            <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
-            <div className={styles.cardHolder}>
-                {admins && admins.map((bruger)=>{
-                    return (
-                        <div className={styles.card} key={bruger._id}>
-                            <p className={styles.name}>{bruger.navn}</p>
-                            <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                            <div className={styles.kundeKontaktMobile}>
-                                <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
-                                    <img src={PhoneIcon} alt="Phone Icon" />
-                                    <span className={styles.popup}>{bruger.telefon}</span>
-                                    Ring
-                                </a>
-                                <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
-                                    <img src={MailIcon} alt="Mail Icon" />
-                                    <span className={styles.popup}>{bruger.email}</span>
-                                    Skriv
-                                </a>
-                            </div>
-                        </div>
-                    )
-                })}
+            <div className={styles.teamContainer}>
+                <h1 className={`bold ${styles.heading}`}>Teamet</h1>
+                <div className={styles.adminDiv}>
+                    <h2 className={styles.subheading}>Administratorer ({admins && admins.length})</h2>
+                    <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
+                    <div className={styles.cardHolder}>
+                        {admins && admins.map((bruger)=>{
+                            return (
+                                <div className={styles.card} key={bruger._id}>
+                                    <div>
+                                        <p className={styles.name}>{bruger.navn}</p>
+                                        <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
+                                    </div>
+                                    <div className={styles.kundeKontaktMobile}>
+                                        <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
+                                            <img src={PhoneIcon} alt="Phone Icon" />
+                                            <span className={styles.popup}>{bruger.telefon}</span>
+                                            Ring
+                                        </a>
+                                        <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
+                                            <img src={MailIcon} alt="Mail Icon" />
+                                            <span className={styles.popup}>{bruger.email}</span>
+                                            Skriv
+                                        </a>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </div>
+                <div className={styles.medarbejdereDiv}>
+                    <h2 className={styles.subheading}>Medarbejdere ({medarbejdere && medarbejdere.length})</h2>
+                    <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
+                    <div className={styles.cardHolder}>
+                        {medarbejdere && medarbejdere.map((bruger)=>{
+                            return (
+                                <div className={styles.card} key={bruger._id}>
+                                    <div>
+                                        <p className={styles.name}>{bruger.navn}</p>
+                                        <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
+                                    </div>
+                                    <div>
+                                        <div className={styles.kundeKontaktMobile}>
+                                            <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
+                                                <img src={PhoneIcon} alt="Phone Icon" />
+                                                <span className={styles.popup}>{bruger.telefon}</span>
+                                                Ring
+                                            </a>
+                                            <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
+                                                <img src={MailIcon} alt="Mail Icon" />
+                                                <span className={styles.popup}>{bruger.email}</span>
+                                                Skriv
+                                            </a>
+                                        </div>
+                                        <div className={styles.flereMedarbejderDetaljer}>
+                                            {!user.isAdmin && user.id === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>}
+                                            {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                        <RedigerLøntrin trigger={løntrinModal} setTrigger={setLøntrinModal} />
+                    </div>
+                </div>
             </div>
-        </div>
-        <div className={styles.medarbejdereDiv}>
-            <h2 className={styles.subheading}>Medarbejdere ({medarbejdere && medarbejdere.length})</h2>
-            <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
-            <div className={styles.cardHolder}>
-                {medarbejdere && medarbejdere.map((bruger)=>{
-                    return (
-                        <div className={styles.card} key={bruger._id}>
-                            <p className={styles.name}>{bruger.navn}</p>
-                            <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                            <div className={styles.kundeKontaktMobile}>
-                                <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
-                                    <img src={PhoneIcon} alt="Phone Icon" />
-                                    <span className={styles.popup}>{bruger.telefon}</span>
-                                    Ring
-                                </a>
-                                <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
-                                    <img src={MailIcon} alt="Mail Icon" />
-                                    <span className={styles.popup}>{bruger.email}</span>
-                                    Skriv
-                                </a>
-                            </div>
-                            <div className={styles.flereMedarbejderDetaljer}>
-                                {!user.isAdmin && user.id === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>}
-                                {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
-                            </div>
-                        </div>
-                    )
-                })}
-                <RedigerLøntrin trigger={løntrinModal} setTrigger={setLøntrinModal} />
-            </div>
-        </div>
-    </div>
-</PageAnimation>
-  )
+        </PageAnimation>
+    )
 }
 
 export default Team
