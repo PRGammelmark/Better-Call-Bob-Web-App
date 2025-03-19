@@ -20,6 +20,10 @@
     width: 45%;
 }
 
+.disabledButton {
+    color: lightgrey!important;
+}
+
 .removeEndDateButton {
     background: #f0f0f0;
     color: #222222;

@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.19",
+    date: "19. marts 2025",
+    changes: [
+        "Almindelige brugere kunne ved en fejl se alle opgaver i systemet hvis de forsøgte at oprette et besøg på en eksisterende opgave via kalenderen på overblikssiden. Funktionen gav også almindelige brugere mulighed for at oprette nye opgaver. Begge fejl er nu rettet.",
+        "Oprettelse af besøg fra kalenderen på overblikssiden gør nu brugeren opmærksom på hvis der ikke findes eksisterende opgaver at knytte besøget til, og forhindrer brugeren i at gå videre.",
+        "Kalenderen på overblikssiden vil nu for alle ikke-administratorer antage, at det er for brugeren selv at et besøg oprettes. Tidligere hen skulle brugeren specificere det manuelt. Administratorer kan fortsat oprette besøg for alle brugere via kalenderen på overblikssiden."
+    ]
+},{
     version: "1.1.18",
     date: "19. marts 2025",
     changes: [

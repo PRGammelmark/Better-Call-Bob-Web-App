@@ -41,6 +41,8 @@ const AddBesøg = (props) => {
     const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(false);
     const [medarbejdere, setMedarbejdere] = useState([]);
 
+    const userID = user.id;
+
     const resetState = () => {
         setOpretOpgave(false);
         setOprettetOpgave(null);
@@ -72,6 +74,13 @@ const AddBesøg = (props) => {
             console.log(error)
         })
     }, [user])
+
+    useEffect(() => {
+        if(!user?.isAdmin && medarbejdere){
+            const currentUser = medarbejdere.find(bruger => bruger._id === userID);
+            setTilknyttetAnsvarlig(currentUser)
+        }
+    }, [user, medarbejdere, tilknyttetOpgave])
     
     useEffect(() => {
         if (props.trigger.action === "select") {
@@ -96,9 +105,16 @@ const AddBesøg = (props) => {
           }
         })
         .then(response => {
-          const ufærdigeOpgaverUdenAnsvarlige = response.data.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
-          setOpgaver(ufærdigeOpgaverUdenAnsvarlige);
-          setOpgaverLoading(false)
+            if(user.isAdmin) {
+                const ufærdigeOpgaver = response.data.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
+                setOpgaver(ufærdigeOpgaver);
+                setOpgaverLoading(false)
+            }
+            if(!user.isAdmin){
+                const mineUfærdigeOpgaver = response.data.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted && opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID))
+                setOpgaver(mineUfærdigeOpgaver);
+                setOpgaverLoading(false)
+            }
         })
         .catch(error => {
           console.error(error)
@@ -321,11 +337,15 @@ const AddBesøg = (props) => {
         }}>
             <h2 className={ModalStyles.modalHeading}>Tilføj besøg</h2>
             {props.trigger.action === "ledigTidSelect" && <p className={Styles.modalSubheading}>for {props.trigger.ansvarligNavn}<br />ledig d. {dayjs(props.trigger.start).format("DD. MMMM")} fra kl. {dayjs(props.trigger.start).format("HH:mm")}-{dayjs(props.trigger.end).format("HH:mm")}</p>}
-            {user.isAdmin && !isOnTaskPage && !(tilknyttetAnsvarlig && tilknyttetOpgave) && (
+            {!isOnTaskPage && !(tilknyttetAnsvarlig && tilknyttetOpgave) && (
+                    <>
                     <div className={Styles.modalButtonFlexContainer}>
-                        <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setTilknyttetOpgave(null); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Ny opgave</button>
-                        <button className={`${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Eksisterende opgave</button>
+                        {user?.isAdmin && <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setTilknyttetOpgave(null); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Ny opgave</button>}
+                        {user?.isAdmin && <button disabled={opgaver?.length > 0 ? false : true} className={`${opgaver && opgaver.length > 0 ? "" : Styles.disabledButton} ${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Eksisterende opgave</button>}
+                        {!user?.isAdmin && <button disabled={opgaver?.length > 0 ? false : true} className={`${opgaver && opgaver.length > 0 ? "" : Styles.disabledButton} ${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); }}>Eksisterende opgave</button>}
                     </div>
+                    {!user?.isAdmin && (opgaver?.length > 0 ? "" : <p>Du har ikke ansvaret for en åben opgave i øjeblikket, og kan derfor ikke knytte et nyt besøg til en opgave. Vend tilbage senere.</p>)}
+                    </>
                 )}
                 
                 {/* INFORMATIONS-CONTAINER VED EKSISTERENDE OPGAVE */}
@@ -343,8 +363,9 @@ const AddBesøg = (props) => {
                 <div className={`${Styles.vælgOpgaveContainer} ${(tilknytOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgOpgaveContainer : ""}`} style={(tilknytOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? maxHeightStyle : {}}>
                     <VælgOpgaveVedNytBesøg tilknyttetOpgave={tilknyttetOpgave} setTilknyttetOpgave={setTilknyttetOpgave} opgaver={opgaver} opgaverLoading={opgaverLoading} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig}/>
                 </div>
+
                 {/* VÆLG OPGAVE, TRIN 2: VÆLG ANSVARLIG */}
-                <div className={`${Styles.vælgAnsvarligContainer} ${(tilknyttetOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
+                {user?.isAdmin && <div className={`${Styles.vælgAnsvarligContainer} ${(tilknyttetOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
                     <h3 className={Styles.subHeading}>Vælg blandt {vælgAnsvarligBlandtAlleMedarbejdere ? "alle medarbejdere" : "ansvarlige"}:</h3>
                     <div className={Styles.vælgAnsvarligFlexContainer}>
                         {!vælgAnsvarligBlandtAlleMedarbejdere && (
@@ -378,7 +399,9 @@ const AddBesøg = (props) => {
                         {vælgAnsvarligBlandtAlleMedarbejdere && <button className={Styles.ansvarligeStateButton} onClick={() => setVælgAnsvarligBlandtAlleMedarbejdere(false)}>Alle <img src={SwitchArrows} alt="Switch arrows" /></button>}
                     </div>
                     
-                </div>
+                </div>}
+
+                {/* BESØGSDETALJER */}
                 <div className={`${Styles.opretBesøgFraOverblikContainer} ${(tilknyttetAnsvarlig && tilknyttetOpgave) ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
                     <h3 className={Styles.subHeading}>Besøgsdetaljer:</h3>
                     <form action="" onSubmit={submitNewBesøgFromOverblikPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
