@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.20",
+    date: "20. marts 2025",
+    changes: [
+        "Når man åbner et besøg fra kalenderen inde på en opgave vil man nu ikke længere se en ikke-funktionel knap, der forsøger at tage en til samme opgave.",
+        "Designforbedringer på knapperne på besøg-popup'en (nu har man rent faktisk en chance for at ramme dem ordentligt på mobilen).",
+        "Når man vil redigere et besøg fremstår redigeringsvinduet nu med flere relevante detaljer om besøget – bl.a. hvem besøget er hos, hvor det er henne og for hvilken medarbejder besøget er registreret. Dette var ikke tilfældet tidligere."
+    ]
+},{
     version: "1.1.19",
     date: "19. marts 2025",
     changes: [

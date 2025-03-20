@@ -647,10 +647,10 @@ const onRedigerLedigTid = (e) => {
           (
             // Rediger planlagt besøg
             <DivSlideAnimation>
-            <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : ""} besøg</h2>
+            <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : getBrugerName(eventData?.brugerID) + "s"} besøg</h2>
                 <div className={ModalStyles.modalSubheadingContainer}>
-                  <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.navn : "Ingen person"}</h3>
-                  {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid === false && <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.adresse : "Ingen adresse"}</h3>}
+                  <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? <p><b style={{fontFamily: "OmnesBold"}}>Hos: </b> {tilknyttetOpgave.navn}</p>: "Ingen person"}</h3>
+                  {tilknyttetOpgave && !tilknyttetOpgave.objectIsLedigTid && <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? <p><b style={{fontFamily: "OmnesBold"}}>På: </b>{tilknyttetOpgave.adresse}, {tilknyttetOpgave.postnummerOgBy}</p> : "Ingen adresse"}</h3>}
                 </div>
                 <form action="" onSubmit={onRedigerBesøg}>
                     <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
@@ -678,6 +678,7 @@ const onRedigerLedigTid = (e) => {
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(tilknyttetOpgave.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave && tilknyttetOpgave.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>}
         {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
+        {eventData && eventData?.brugerID && <p><b style={{fontFamily: "OmnesBold"}}>Medarbejder:</b> {getBrugerName(eventData?.brugerID)}</p>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({origin: "besøgFraLedigTid", action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
         <br />
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
@@ -685,9 +686,7 @@ const onRedigerLedigTid = (e) => {
         <br />
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
-          <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
-        </Link>}
+
         {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
         fratrækBesøgFraLedigeTider === false && (
           // Knapper til ledig tid
