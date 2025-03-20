@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.21",
+    date: "20. marts 2025",
+    changes: [
+        "Rettede en fejl, hvor ledige tider i kalenderen på opgavesider blev vist med forkerte tider, hvis en opgave for samme medarbejder var blevet oprettet i en del af samme tidsrum som den pågældende ledige tid. Nu vises de korrekte tider.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.20",
     date: "20. marts 2025",
     changes: [
