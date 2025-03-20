@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.1.22",
+    date: "20. marts 2025",
+    changes: [
+        "Når man åbner en kvittering eller et billede i et popup-vindue vil luk-knappen fremover blot lukke billedvisningen – ikke hele popup-vinduet.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.21",
     date: "20. marts 2025",
     changes: [

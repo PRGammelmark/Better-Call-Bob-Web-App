@@ -241,7 +241,7 @@ const RedigerPostering = (props) => {
     };
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}} onClose={() => setKvitteringBillede(null)}>
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}} onClose={() => setKvitteringBillede(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
             {postering && !posteringTilhørerAfsluttetLønperiode(postering) ? (
                 <>
                 {!kvitteringBillede ? <>

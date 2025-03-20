@@ -66,7 +66,7 @@ const PosteringSatserModal = (props) => {
     }
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setKvitteringBillede(null)} style={{backgroundColor: 'red'}}>
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setKvitteringBillede(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
             {!kvitteringBillede ? <>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
             <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID).split(' ')[0]} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>

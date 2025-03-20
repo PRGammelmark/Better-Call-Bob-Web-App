@@ -127,7 +127,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
     };
   
     return (
-    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setPosteringerDetaljer(null)}> 
+    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setPosteringerDetaljer(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}> 
         <div>
             {!kvitteringBillede ? <>
             <h2 className={Styles.adminØkonomiHeading} style={{fontFamily: 'OmnesBold'}}>{navn &&navn.split(' ')[0]}s økonomi <br /><span style={{fontFamily: 'Omnes', fontSize: '16px', color: '#696969'}}>- {props.customMåned.end.format('MMMM YYYY')}</span></h2>

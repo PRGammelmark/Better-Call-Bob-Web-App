@@ -268,7 +268,7 @@ const ØkonomiOverblikModal = (props) => {
     
 
   return (
-    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => {setPosteringerDetaljer([]); setKvitteringBillede(null)}}>
+    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => {setPosteringerDetaljer([]); setKvitteringBillede(null)}} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
         {!posteringerDetaljer.length > 0 
         ? <PageAnimation>
             <h2 className={ModalStyles.modalHeading}>Økonomisk overblik</h2>

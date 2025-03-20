@@ -26,7 +26,7 @@ const desktopAnimation = {
   };
   
 
-const Modal = ({ children, trigger, setTrigger, onClose }) => {
+const Modal = ({ children, trigger, setTrigger, onClose, closeIsBackButton, setBackFunction }) => {
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -121,8 +121,12 @@ const Modal = ({ children, trigger, setTrigger, onClose }) => {
           >
             <button
               onClick={() => {
-                setTrigger(false)
-                onClose()
+                if(!closeIsBackButton){
+                  setTrigger(false)
+                  onClose()
+                } else {
+                  setBackFunction(false)
+                }
               }}
               className={ModalStyles.lukModal}
             >

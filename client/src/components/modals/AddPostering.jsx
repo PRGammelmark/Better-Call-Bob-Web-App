@@ -217,7 +217,7 @@ const AddPostering = (props) => {
     
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} >
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
             {!kvitteringBillede ? <>
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {
@@ -405,12 +405,14 @@ const AddPostering = (props) => {
                     {Object.values(kvitteringLoadingStates).some(Boolean) ? <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} style={{background: '#a0a0a0'}} type="submit" disabled>Afventer upload ...</button> : <button className={ÅbenOpgaveCSS.registrerPosteringButtonMobile} type="submit">Registrér</button>}
                 </div>
             </form>
-            </> : <PageAnimation>
-                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
-                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
-                    </div>
-                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
-                </PageAnimation>}
+            </> 
+            : 
+            <PageAnimation>
+                <div className={ÅbenOpgaveCSS.billedModalHeader}>
+                    <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                </div>
+                <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+            </PageAnimation>}
         </Modal>
     )
 }
