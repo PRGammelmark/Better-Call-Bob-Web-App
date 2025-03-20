@@ -472,6 +472,21 @@ const onRedigerBesøg = (e) => {
   .catch(error => console.log(error))
 }
 
+const sletLedigTid = () => {
+  if (window.confirm("Er du sikker på, at du vil slette denne ledige tid?")) {
+    axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${eventData._id}`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setOpenDialog(false);
+      refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true);
+    })
+    .catch(error => console.log(error));
+  }
+}
+
 const onRedigerLedigTid = (e) => {
   e.preventDefault()
 
@@ -695,82 +710,52 @@ const onRedigerLedigTid = (e) => {
         <br />
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
         {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
-
-        {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
-        fratrækBesøgFraLedigeTider === false && (
+        {(user.isAdmin || (eventData?.brugerID === userID)) && (tilknyttetOpgave?.objectIsLedigTid ? 
+        
           // Knapper til ledig tid
-          <div className={ModalStyles.deleteEditButtons}>
-            {eventData && (
-              <>
+          <div className={ModalStyles.deleteEditButtons} style={{marginTop: -10}}>
                 <button 
                   className={ModalStyles.deleteButton} 
-                  onClick={() => {
-                    if (window.confirm("Er du sikker på, at du vil slette denne ledige tid?")) {
-                      axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${eventData._id}`, {
-                        headers: {
-                          'Authorization': `Bearer ${user.token}`
-                        }
-                      })
-                      .then(res => {
-                        setOpenDialog(false);
-                        refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true);
-                      })
-                      .catch(error => console.log(error));
-                    }
-                  }}
+                  onClick={() => {sletLedigTid()}}
                 >
                   Slet ledig tid
                 </button>
-                <button 
-                  className={ModalStyles.editButton} 
-                  onClick={() => {
-                    openEditDialog();
-                  }}
-                >
-                  Rediger ledig tid
-                </button>
-              </>
-            )}
           </div>
-        )
+        
         : (
           // Knapper til planlagt besøg
           <div className={ModalStyles.deleteEditButtons}>
-            {eventData && (
-              <>
-                <button 
-                  className={ModalStyles.deleteButton} 
-                  onClick={() => {
-                    if (window.confirm("Er du sikker på, at du vil slette dette besøg?")) {
-                      axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, {
-                        headers: {
-                          'Authorization': `Bearer ${user.token}`
-                        }
-                      })
-                      .then(res => {
-                        setOpenDialog(false);
-                        refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
-                      })
-                      .catch(error => console.log(error));
-                    }
-                  }}
-                >
-                  Slet besøg
-                </button>
-                <button 
-                  className={ModalStyles.editButton} 
-                  onClick={() => {
-                    openEditDialog();
-                  }}
-                >
-                  Rediger besøg
-                </button>
-              </>
-            )}
+              <button 
+                className={ModalStyles.deleteButton} 
+                onClick={() => {
+                  if (window.confirm("Er du sikker på, at du vil slette dette besøg?")) {
+                    axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, {
+                      headers: {
+                        'Authorization': `Bearer ${user.token}`
+                      }
+                    })
+                    .then(res => {
+                      setOpenDialog(false);
+                      refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
+                    })
+                    .catch(error => console.log(error));
+                  }
+                }}
+              >
+                Slet besøg
+              </button>
+              <button 
+                className={ModalStyles.editButton} 
+                onClick={() => {
+                  openEditDialog();
+                }}
+              >
+                Rediger besøg
+              </button>
           </div>
-        )}
+        ))}
         </>
-        
+      
       }
       </Modal>
       <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave}/>

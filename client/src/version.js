@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.23",
+    date: "20. marts 2025",
+    changes: [
+        "Rettede en fejl, hvor almindelige brugere fik mulighed for at redigere besøg gennem popup-visning af ledige tider. Nu vises vinduet korrekt.",
+        "Ikke-administratorer kan nu ikke længere slette eller redigere i andres besøg via kalenderen på opgavesiderne – de kan nu kun redigere og slette deres egne besøg. Administratorer kan fortsat oprette, redigere og slette besøg på vegne af medarbejdere.",
+        "Rettede en fejl, hvor brugere i nogle tilfælde kunne oprette besøg via opgavekalenderen på vegne af andre. Det er nu kun administratorer, der kan det."
+    ]
+},{
     version: "1.1.22",
     date: "20. marts 2025",
     changes: [

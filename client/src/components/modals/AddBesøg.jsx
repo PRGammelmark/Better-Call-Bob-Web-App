@@ -76,6 +76,12 @@ const AddBesøg = (props) => {
     }, [user])
 
     useEffect(() => {
+        if(!user.isAdmin){
+            setSelectedAnsvarlig(userID)
+        }
+    }, [user])
+
+    useEffect(() => {
         if(!user?.isAdmin && medarbejdere){
             const currentUser = medarbejdere.find(bruger => bruger._id === userID);
             setTilknyttetAnsvarlig(currentUser)
