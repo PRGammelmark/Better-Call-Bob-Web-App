@@ -10,6 +10,7 @@ import { useNewDocument } from '../../context/NewDocumentContext'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../../firebase.js'
 import {v4} from 'uuid'
+import MoonLoader from "react-spinners/MoonLoader";
 
 const UploadDokumentModal = ({åbnUploadDokumentModal, setÅbnUploadDokumentModal}) => {
 
@@ -23,6 +24,7 @@ const [brugerAdgang, setBrugerAdgang] = useState([]);
 const [dragging, setDragging] = useState(false);
 const [file, setFile] = useState(null);
 const [brugere, setBrugere] = useState([]);
+const [isUploading, setIsUploading] = useState(false)
 
 useEffect(() => {
   axios.get(`${import.meta.env.VITE_API_URL}/brugere`)
@@ -35,6 +37,8 @@ useEffect(() => {
 async function uploadDokument(e) {
   e.preventDefault();
   if (!file) return alert("Vælg en fil først!");
+
+  setIsUploading(true)
 
   const storageRef = ref(storage, `dokumenter/${file.name + v4()}`);
   const uploadTask = uploadBytesResumable(storageRef, file);
@@ -63,7 +67,14 @@ async function uploadDokument(e) {
           headers: { 'Authorization': `Bearer ${user.token}` }
         })
         .then(() => {
+          setIsUploading(false)
           setRefetchDocuments(!refetchDocuments);
+          setFile(null); 
+          setTitel(""); 
+          setBeskrivelse(""); 
+          setKraevSamtykke(false)
+          setBegrænsBrugerAdgang(false); 
+          setBrugerAdgang([])
           setÅbnUploadDokumentModal(false);
         })
         .catch(error => console.log(error));
@@ -75,7 +86,7 @@ async function uploadDokument(e) {
 
 
   return (
-    <Modal trigger={åbnUploadDokumentModal} setTrigger={setÅbnUploadDokumentModal}>
+    <Modal trigger={åbnUploadDokumentModal} setTrigger={setÅbnUploadDokumentModal} onClose={() => {setFile(null); setTitel(""); setBeskrivelse(""); setKraevSamtykke(false); setBegrænsBrugerAdgang(false); setBrugerAdgang([])}}>
         <h2 className={Styles.heading}>Upload dokument</h2>
         <p style={{marginBottom: '15px'}}>Billeder og PDF-filer er tilladte.</p>
         <form onSubmit={(e) => uploadDokument(e)} method="" encType="multipart/form-data">
@@ -155,7 +166,9 @@ async function uploadDokument(e) {
             <b>Kræv samtykke</b>
           </div>
           {kraevSamtykke && <p style={{marginBottom: '15px'}}>Brugere vil blive bedt om samtykke til dokumentets indhold.</p>}
-          <button style={{marginTop: '15px'}} className={Styles.fullWidthButton} type="submit">Upload dokument</button>
+          <div className={Styles.buttonLoadingDiv}>
+            <button className={`${Styles.fullWidthButton} ${isUploading && Styles.disabledButton}`} type="submit" disabled={isUploading}>{isUploading ? <div className={Styles.buttonContent}>Uploader ... <MoonLoader color="#222222" loading={true} size={20} aria-label="Loading Spinner" data-testid="loader"/></div>: <div className={Styles.buttonContent}>Upload dokument</div>}</button>
+          </div>
         </form>
     </Modal>
   )

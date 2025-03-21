@@ -45,6 +45,13 @@ useEffect(() => {
     }
 }, [redigerDokumentModal])
 
+useEffect(() => {
+  if (!begrænsBrugerAdgang) {
+    setBrugerAdgang(brugere.map(bruger => bruger._id)); // Sætter kun bruger-ID'er, uden at tilføje flere
+  }
+}, [begrænsBrugerAdgang, brugere]);
+
+
 function opdaterDokument(e){
   e.preventDefault()
   
@@ -67,24 +74,6 @@ function opdaterDokument(e){
   })
   .catch(error => console.log(error))
 }
-
-// function sletDokument(){
-//     if (window.confirm('Er du sikker på, at du vil slette dette dokument? Dette får konsekvenser for de brugere, der har adgang til det.')) {
-//         axios.delete(`${import.meta.env.VITE_API_URL}/dokumenter-uploads/${redigerDokumentModal._id}`, {
-//             headers: {
-//                 'Authorization': `Bearer ${user.token}`
-//             }
-//         })
-//         .then(res => {
-//             setRefetchDocuments(!refetchDocuments)
-//             setRedigerDokumentModal(false)
-//         })
-//         .catch(error => {
-//             console.log(error);
-//             setRedigerDokumentModal(false);
-//         })
-//     }
-// }
 
 async function sletDokument() {
   if (window.confirm('Er du sikker på, at du vil slette dette dokument? Dette får konsekvenser for de brugere, der har adgang til det.')) {
@@ -127,18 +116,12 @@ async function sletDokument() {
           <input className={ModalStyles.modalInput} type="text" name="beskrivelse" placeholder="Beskrivelse" value={beskrivelse} onChange={(e) => setBeskrivelse(e.target.value)} />
           <div className={SwitcherStyles.checkboxContainer}>
             <label className={SwitcherStyles.switch} htmlFor="begrænsBrugerAdgang">
-              <input type="checkbox" id="begrænsBrugerAdgang" name="begrænsBrugerAdgang" className={SwitcherStyles.checkboxInput} checked={begrænsBrugerAdgang} 
-              onChange={(e) => {
-                if(redigerDokumentModal.samtykkeListe.length > 0){
-                  window.alert("Du kan ikke ændre overordnede brugeradgangsindstillinger for dette dokument, når brugere allerede har underskrevet det.");
-                } else {
-                  setBegrænsBrugerAdgang(e.target.checked)
-                }
-              }} />
+              <input type="checkbox" id="begrænsBrugerAdgang" name="begrænsBrugerAdgang" className={SwitcherStyles.checkboxInput} checked={begrænsBrugerAdgang} onChange={(e) => {setBegrænsBrugerAdgang(e.target.checked)}} />
               <span className={SwitcherStyles.slider}></span>
             </label>
-            <b>Administrer bruger-adgang</b>
+            <b>Begræns bruger-adgang</b>
           </div>
+          {begrænsBrugerAdgang && <p style={{marginTop: 20, marginBottom: -10}}>Vælg hvilke medarbejdere der skal have adgang til dokumentet.</p>}
           {begrænsBrugerAdgang && (
           <div className={Styles.dropdownContainer}>
             <div id="brugerAdgang" className={`${Styles.dropdown}`}>
@@ -148,8 +131,6 @@ async function sletDokument() {
                   className={`${Styles.option} ${brugerAdgang.includes(bruger._id) ? Styles.selected : ''}`} 
                   onClick={() => {
                     if (brugerAdgang.includes(bruger._id)) {
-                      console.log("brugerAdgang", brugerAdgang)
-                      console.log("redigerDokumentModal.samtykkeListe", redigerDokumentModal.samtykkeListe)
                       if(redigerDokumentModal.samtykkeListe.some(samtykke => samtykke.bruger.id === bruger._id)){
                         window.alert("Brugeren har underskrevet dokumentet, og kan ikke få fjernet adgang.");
                       } else {
@@ -174,17 +155,18 @@ async function sletDokument() {
             </label>
             <b>Kræv underskrift</b>
           </div>
-          {kraevSamtykke && <p style={{marginBottom: '15px'}}>Brugere vil blive bedt om samtykke til dokumentets indhold.</p>}
+          {kraevSamtykke && (begrænsBrugerAdgang ? <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Udvalgte brugere</b> vil blive bedt om samtykke (vælg ovenfor).</p> : <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Alle brugere</b> vil blive bedt om samtykke.</p>)}
           {kraevSamtykke && 
           <div className={Styles.samtykkeListe}>
             <b style={{fontFamily: 'OmnesBold', marginBottom: '10px', display: 'block'}}>Underskrift-status:</b>
-            {redigerDokumentModal && redigerDokumentModal.samtykkeListe.length > 0 && redigerDokumentModal.samtykkeListe.map((samtykke) => (
+            {redigerDokumentModal?.samtykkeListe?.length > 0 ? redigerDokumentModal.samtykkeListe.map((samtykke) => (
               <p className={Styles.samtykkeBrugereListe} key={samtykke._id}><img src={Tjek} alt="tjek" style={{width: '15px', height: '15px', marginRight: '5px'}}/>{samtykke.bruger.navn} (underskrevet {dayjs(samtykke.samtykkeDato).format('D. MMMM YYYY')})</p>
-            ))}
-            {console.log("samtykkeListe",redigerDokumentModal.samtykkeListe)}
-            {console.log("brugerAdgang", brugerAdgang)}
-            {redigerDokumentModal && brugerAdgang.length > 0 && brugerAdgang.filter(brugerId => !redigerDokumentModal.samtykkeListe.some(samtykke => samtykke.bruger.id === brugerId)).map(brugerId => (
-              <p className={Styles.samtykkeBrugereListe} key={brugerId}><img src={Mangler} alt="mangler" style={{width: '15px', height: '15px', marginRight: '5px'}}/>{brugere.find(bruger => bruger._id === brugerId).navn}</p>
+            )) 
+            :
+            <p style={{marginBottom: 10}}>Ingen samtykkeerklæringer endnu.</p>
+            }
+            {redigerDokumentModal && brugerAdgang?.length > 0 && brugerAdgang.filter(brugerId => !redigerDokumentModal.samtykkeListe.some(samtykke => samtykke.bruger.id === brugerId)).map(brugerId => (
+              <p className={Styles.samtykkeBrugereListe} key={brugerId?.navn}><img src={Mangler} alt="mangler" style={{width: '15px', height: '15px', marginRight: '5px'}}/>{brugere && brugere.find(bruger => bruger._id === brugerId)?.navn}</p>
             ))}
           </div>}
           <button style={{marginTop: '15px'}} className={Styles.fullWidthButton} type="submit">Opdater dokument</button>

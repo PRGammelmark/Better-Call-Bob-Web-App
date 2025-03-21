@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.24",
+    date: "21. marts 2025",
+    changes: [
+        "Forbedrede brugeroplevelsen ved upload af dokumenter. Nu får man feedback i form af en grå upload-knap samt en loading-spinner, når et upload er i gang.",
+        "Rettede en fejl, der opstod når man vil uploade flere dokumenter i træk. Upload-vinduet antog tidligere, at man ikke var færdig med at uploade eller redigere i det første dokument, når man åbnede vinduet igen for at gå i gang med at uploade et andet.",
+        "Rettede en fejl, der forhindrede en administrator i at begrænse dokument-deling hvis nogle allerede havde underskrevet et dokument. Idéen bag at forhindre begrænsning af dokumentdeling når nogle havde underskrevet var, at et underskrevet dokument ikke skulle kunne gøres utilgængeligt for den medarbejder, der havde underskrevet det. Men for medarbejdere, der alligevel ikke har underskrevet et dokument, skal dokumentet kunne gøres utilgængeligt igen. Fejlen er hermed rettet."
+    ]
+},{
     version: "1.1.23",
     date: "20. marts 2025",
     changes: [
