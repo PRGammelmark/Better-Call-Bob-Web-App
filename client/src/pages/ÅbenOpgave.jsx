@@ -1645,7 +1645,7 @@ const ÅbenOpgave = () => {
                                         <p className={ÅbenOpgaveCSS.kommentarIndhold}>{kommentar.kommentarIndhold}</p>
                                     </div>
                                     <div className={ÅbenOpgaveCSS.kommentarKnapper}>   
-                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>
+                                        {userID === kommentar.brugerID && <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {setOpenCommentModalID(kommentar._id), setEditedComment(kommentar.kommentarIndhold)}}>Rediger</button>}
                                         <Modal trigger={openCommentModalID === kommentar._id} setTrigger={setOpenCommentModalID}>
                                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kommentar</h2>
                                                 <form className={ÅbenOpgaveCSS.editKommentarForm} onSubmit={(e) => {
@@ -1656,7 +1656,7 @@ const ÅbenOpgave = () => {
                                                     <button className={ÅbenOpgaveCSS.registrerPosteringButton} type="submit">Opdater kommentar</button>
                                                 </form>
                                         </Modal>
-                                        <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>
+                                        {(userID === kommentar.brugerID || user.isAdmin) && <button className={ÅbenOpgaveCSS.kommentarKnap} onClick={() => {sletKommentar(kommentar._id)}}>Slet</button>}
                                         <span className={ÅbenOpgaveCSS.kommentarRegigeretMarkør}>{kommentar.createdAt === kommentar.updatedAt ? null : "Redigeret"}</span>
                                     </div>
                                 </div>
