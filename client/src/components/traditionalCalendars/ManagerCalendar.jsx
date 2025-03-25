@@ -574,6 +574,7 @@ const onRedigerBesøg = (e) => {
         
       }
       </Modal>
+      {/* setAddBesøgModal({action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}) */}
       <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} />
     </div>
   )

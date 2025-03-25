@@ -28,6 +28,8 @@ const NyOpgaveFraOpretBesøg = (props) => {
     const [opgaveID, setOpgaveID] = useState("");
     const [medarbejdere, setMedarbejdere] = useState(null);
     const [ansvarlig, setAnsvarlig] = useState("");
+    const setTilknyttetAnsvarlig = props.setTilknyttetAnsvarlig;
+    const tilknyttetAnsvarlig = props.tilknyttetAnsvarlig;
     
     const {user} = useAuthContext()
 
@@ -60,8 +62,8 @@ const NyOpgaveFraOpretBesøg = (props) => {
             telefon,
             email,
             tilbudAfgivet,
-            fakturaOprettesManuelt,
-            ansvarlig
+            fakturaOprettesManuelt
+            // ansvarlig: tilknyttetAnsvarlig || ansvarlig
         }
 
         axios.post(`${import.meta.env.VITE_API_URL}/opgaver`, opgave, {
@@ -74,7 +76,8 @@ const NyOpgaveFraOpretBesøg = (props) => {
             setError(null)
             setOpgaveID(response.data._id)
             props.setTilknyttetOpgave(response.data)
-            props.setTilknyttetAnsvarlig(response.data.ansvarlig[0])
+            // props.setTilknyttetAnsvarlig(response.data.ansvarlig[0])
+            props.setTilknyttetAnsvarlig(tilknyttetAnsvarlig || ansvarlig)
             props.setOpgaveOprettet(true)
         })
         .catch(error => {
@@ -87,8 +90,9 @@ const NyOpgaveFraOpretBesøg = (props) => {
     <PageAnimation>
         <div>
             <form onSubmit={submitOpgave} className={NyOpgaveCSS.form}>
+                {(props?.tilknyttetAnsvarlig && props.fraLedigTid) ? "" : <>
                 <h3 className={NyOpgaveCSS.subHeading}>Vælg ansvarlig:</h3>
-                <select className={ModalStyles.modalInput} id="ansvarlige" value={ansvarlig && JSON.stringify(ansvarlig)} style={{cursor: "pointer"}} required onChange={(e) => {setAnsvarlig(JSON.parse(e.target.value))}}>
+                <select className={ModalStyles.modalInput} id="ansvarlige" value={tilknyttetAnsvarlig && JSON.stringify(tilknyttetAnsvarlig)} style={{cursor: "pointer"}} required onChange={(e) => {setTilknyttetAnsvarlig(JSON.parse(e.target.value))}}>
                     <option value="" disabled hidden selected>Vælg ansvarlig ...</option>
                     {medarbejdere && medarbejdere.length > 0 ? (
                         medarbejdere.map((ansvarlig, index) => (
@@ -98,6 +102,7 @@ const NyOpgaveFraOpretBesøg = (props) => {
                         <option value="">Ingen ansvarlige</option>
                         )}
                 </select>
+                </>}
                 <h3 className={NyOpgaveCSS.subHeading}>Opret ny opgave</h3>
                 <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus="autofocus" name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
                 <div className={NyOpgaveCSS.kolonner}>
@@ -144,7 +149,7 @@ const NyOpgaveFraOpretBesøg = (props) => {
                         <input style={{marginTop: 5}} type="number" name="tilbudAfgivet" className={NyOpgaveCSS.input} onChange={(e) => setTilbudAfgivet(e.target.value)} value={tilbudAfgivet} required/>
                     </div>}
                 </div>
-                <button type="submit" className={NyOpgaveCSS.submitButtonFullWidth}>Opret opgave & tildel ansvarlig</button>
+                <button type="submit" className={NyOpgaveCSS.submitButtonFullWidth}>Opret opgave & tilføj besøg</button>
             </form>
             {error && <div className={NyOpgaveCSS.error}>{error}</div>}
         </div>

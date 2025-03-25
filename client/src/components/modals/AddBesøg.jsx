@@ -148,8 +148,6 @@ const AddBesøg = (props) => {
 
     function submitNewBesøgFromOverblikPage(e){
         e.preventDefault();
-        
-        console.log("Tjek")
 
         const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
         const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
@@ -163,8 +161,6 @@ const AddBesøg = (props) => {
             opgaveID: tilknyttetOpgave._id,
             kommentar: comment ? comment : ""
         }
-
-        console.log(besøg)
 
         if (besøg.datoTidFra >= besøg.datoTidTil) {
             setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
@@ -188,7 +184,6 @@ const AddBesøg = (props) => {
             })
             .then(res => {
                 console.log("Tilknyttet ny ansvarlig til opgaven.")
-                console.log(res)
             })
             .catch(error => {
                 console.log(error)
@@ -205,16 +200,21 @@ const AddBesøg = (props) => {
 
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
             if (besøg.brugerID !== user.id) {
+                const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
+                const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
+                const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
+                const xOpgave = chosenTask || tilknyttetOpgave
+
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                    to: nyAnsvarlig.email,
+                    to: ansvarligEmail,
                     subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                    html: `<p><b>Hej ${nyAnsvarlig.navn.split(' ')[0]},</b></p>
+                    html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
                         <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
-                        <p style="font-size: 1.2rem"><b>${chosenTask.adresse}, ${chosenTask.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
+                        <p style="font-size: 1.2rem"><b>${xOpgave.adresse}, ${xOpgave.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
                         <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
-                        <p><b>Overordnet opgavebeskrivelse:</b><br />${chosenTask.opgaveBeskrivelse}</p>
+                        <p><b>Overordnet opgavebeskrivelse:</b><br />${xOpgave.opgaveBeskrivelse}</p>
                         <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
-                        <p><b>Kundens navn:</b><br />${chosenTask.navn}</p>
+                        <p><b>Kundens navn:</b><br />${xOpgave.navn}</p>
                         <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
                         <p><a href="https://app.bettercallbob.dk">Åbn Better Call Bob-app'en</a> for at se flere detaljer.</p>
                         <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
@@ -294,10 +294,14 @@ const AddBesøg = (props) => {
 
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
             if (besøg.brugerID !== user.id) {
+                const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
+                const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
+                const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
+                // console.log(ansvarligEmail)
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                    to: nyAnsvarlig.email,
+                    to: ansvarligEmail,
                     subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                    html: `<p><b>Hej ${nyAnsvarlig.navn.split(' ')[0]},</b></p>
+                    html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
                         <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
                         <p style="font-size: 1.2rem"><b>${chosenTask.adresse}, ${chosenTask.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
                         <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
@@ -362,7 +366,7 @@ const AddBesøg = (props) => {
 
                 {/* NY OPGAVE, TRIN 1: OPRET OPGAVE */}
                 <div className={`${Styles.opretOpgaveContainer} ${opretOpgave && !(tilknyttetOpgave && tilknyttetAnsvarlig) ? Styles.activeOpretOpgaveContainer : ""}`}>
-                    <NyOpgaveFraOpretBesøg setTilknyttetOpgave={setTilknyttetOpgave} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig} setOpgaveOprettet={setOpgaveOprettet} />
+                    <NyOpgaveFraOpretBesøg setTilknyttetOpgave={setTilknyttetOpgave} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig} tilknyttetAnsvarlig={tilknyttetAnsvarlig} setOpgaveOprettet={setOpgaveOprettet} fraLedigTid={props.trigger.action === "ledigTidSelect"} />
                 </div>
                 
                 {/* VÆLG OPGAVE, TRIN 1: VÆLG OPGAVE */}

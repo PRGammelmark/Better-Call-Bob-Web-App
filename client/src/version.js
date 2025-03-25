@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "1.1.25",
+    date: "25. marts 2025",
+    changes: [
+        "Forsøg på at oprette besøg gennem ledige tider i administratorens overblikskalender skabte nogle gange fejl. Mekanismen er rettet til.",
+        "Rettede en fejl, hvor oprettelse af besøg gennem ledige tider vist i kalenderen på åbne opgavesider ikke sendte e-mailnotifikationer til den pågældende medarbejder, besøget blev oprettet på vegne af.",
+        "Rettede en lignende fejl i email-notifikationerne sendt fra admin-overblikskalenderen.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.1.24",
     date: "21. marts 2025",
     changes: [
