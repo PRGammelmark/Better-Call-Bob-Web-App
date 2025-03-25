@@ -4,7 +4,7 @@
 // ===================================================
 // 
 // Versioneringskonventioner:
-// x.x.(+) => Hotfixes, bugfixes, rettelser og små tilpasninger
+// x.x.(+) => Hotfixes, bugfixes, rettelser og små tilpasninger i design og/eller funktionalitet
 // 
 // x.(+).x => Nye sekundærfunktioner, betydningsfulde designændringer 
 // 
@@ -14,7 +14,16 @@
 // 
 
 const changes = [{
-    version: "1.1.25",
+    version: "1.1.27",
+    date: "25. marts 2025",
+    changes: [
+        "Smårettelser og justeringer.",
+        "Rettede en fejl, der gjorde, at man ikke kunne begrænse brugeradgangen til uploadede dokumenter gennem upload-formularen – kun gennem 'Rediger dokument'-popup'en. Det virker korrekt nu.",
+        "Rettede en fejl, der gjorde, at medarbejdere nogle gange blev bedt om at underskrive et dokument, der ikke skulle underskrives.",
+        "Rettede en fejl, hvor ikke-administratorer fik en fejlmeddelelse når de klikkede på et billede-dokument for at se en forstørret version af billedet."
+    ]
+},{
+    version: "1.1.26",
     date: "25. marts 2025",
     changes: [
         "Rettede en fejl, hvor alle og enhver kunne redigere og slette i både egne og andres opgavekommentarer. Nu kan forfattere til kommentarer kun redigere og slette deres egne. Administratorer kan slette andres kommentarer, men ikke redigere i dem."
