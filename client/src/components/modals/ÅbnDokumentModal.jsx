@@ -93,13 +93,13 @@ function sletDokument(){
             ? 
             <img className={Styles.redigerDokumentPDFIcon} src={PDFIcon} alt={åbnDokumentModal.titel} onClick={() => window.open(åbnDokumentModal.filURL, '_blank')}/>
             :
-            <img className={Styles.redigerDokumentImage} src={åbnDokumentModal.filURL} alt={åbnDokumentModal.titel} onClick={() => window.open(`${import.meta.env.VITE_API_URL}${åbnDokumentModal.filURL}`, '_blank')}/>}
+            <img className={Styles.redigerDokumentImage} src={åbnDokumentModal.filURL} alt={åbnDokumentModal.titel} onClick={() => window.open(`${åbnDokumentModal.filURL}`, '_blank')}/>}
         
         <div style={{marginBottom: '30px', marginTop: '30px'}}>
             <b style={{fontFamily: 'OmnesBold'}}>Beskrivelse:</b>
             <p style={{fontSize: 16, marginBottom: '15px'}}>{åbnDokumentModal.beskrivelse}</p>
         </div>
-        {åbnDokumentModal.kraevSamtykke && åbnDokumentModal.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) ? 
+        {åbnDokumentModal.kraevSamtykke && (åbnDokumentModal.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) ? 
         <b className={Styles.dokumentSamtykkeText} style={{display: 'block', textAlign: 'center', marginBottom: '15px'}}>✔︎ Du har underskrevet dette dokument d. {dayjs(åbnDokumentModal.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D. MMMM YYYY')}.</b>
         : (
         <form onSubmit={(e) => underskrivDokument(e)} method="" encType="multipart/form-data">
@@ -108,7 +108,7 @@ function sletDokument(){
           <input className={ModalStyles.modalInput} type="text" name="underskriv" placeholder="Skriv dit navn her for at underskrive" onChange={(e) => setUnderskriftNavn(e.target.value)} />
           {underskriftNavn && ((underskriftNavn.toLowerCase() === user.navn.toLowerCase()) ? <button style={{marginTop: '15px'}} className={Styles.fullWidthButton} type="submit">Underskriv som {user.navn}</button> : <p style={{fontSize: 12}}>Afventer indtastning af navn ...</p>)}
         </form>
-        )}
+        ))}
     </Modal>
   )
 }

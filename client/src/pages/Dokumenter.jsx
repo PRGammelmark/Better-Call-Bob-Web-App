@@ -48,6 +48,7 @@ const Dokumenter = () => {
   }, [refetchDocuments])
 
   useEffect(() => {
+    const dokumenterMedEksplicitBrugeradgang = dokumenter.filter(dokument => dokument.brugerAdgang.includes(user.id))
     setMineDokumenter(dokumenter.filter(dokument => dokument.brugerAdgang.includes(user.id)))
   }, [dokumenter, user])
 
@@ -61,7 +62,9 @@ const Dokumenter = () => {
         {user.isAdmin && (
           <div className={DokumenterCSS.dokumenterContainer}>
             {dokumenter.map((dokument) => (
+              
               <div className={DokumenterCSS.dokumentContainer} key={dokument._id}>
+                {console.log(dokument)}
                 <div className={DokumenterCSS.dokument} key={dokument._id} onClick={() => setRedigerDokumentModal(dokument)}>
                   <div className={DokumenterCSS.dokumentUpperHalf}>
                     {!dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={dokument.filURL} alt={dokument.titel} />}
@@ -101,11 +104,12 @@ const Dokumenter = () => {
                     <p className={DokumenterCSS.dokumentBeskrivelse}>{dokument.beskrivelse}</p>
                   </div>
                   {dokument.kraevSamtykke && 
-                  dokument.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) 
-                  ? 
-                  <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D/M-YY')}</b>
-                  :
-                  <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: 'red'}}>Mangler din underskrift</b>}
+                    (dokument.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) 
+                    ? 
+                    <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D/M-YY')}</b>
+                    :
+                    <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: 'red'}}>Mangler din underskrift</b>)
+                  }
                 </div>
                 <p className={DokumenterCSS.dokumentTimestamp}>{dayjs(dokument.createdAt).format('D. MMMM YYYY')}</p>
               </div>

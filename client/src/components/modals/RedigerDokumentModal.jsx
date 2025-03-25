@@ -155,7 +155,7 @@ async function sletDokument() {
             </label>
             <b>Kræv underskrift</b>
           </div>
-          {kraevSamtykke && (begrænsBrugerAdgang ? <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Udvalgte brugere</b> vil blive bedt om samtykke (vælg ovenfor).</p> : <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Alle brugere</b> vil blive bedt om samtykke.</p>)}
+          {kraevSamtykke && (begrænsBrugerAdgang ? <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Udvalgte medarbejdere</b> vil blive bedt om samtykke (vælg ovenfor).</p> : <p style={{marginBottom: 15}}><b style={{fontFamily: "OmnesBold"}}>Alle medarbejdere</b> vil blive bedt om samtykke.</p>)}
           {kraevSamtykke && 
           <div className={Styles.samtykkeListe}>
             <b style={{fontFamily: 'OmnesBold', marginBottom: '10px', display: 'block'}}>Underskrift-status:</b>

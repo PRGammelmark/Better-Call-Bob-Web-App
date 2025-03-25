@@ -61,7 +61,7 @@ async function uploadDokument(e) {
           beskrivelse,
           filURL,
           kraevSamtykke,
-          begrænsBrugerAdgang,
+          begraensAdgang: begrænsBrugerAdgang,
           brugerAdgang,
         }, {
           headers: { 'Authorization': `Bearer ${user.token}` }
