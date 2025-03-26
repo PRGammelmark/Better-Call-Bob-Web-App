@@ -1432,6 +1432,7 @@ const ÅbenOpgave = () => {
                         <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
                     </Modal>
                     <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
+                    {opgave.fakturaOprettesManuelt && <p style={{color: "grey", fontSize: 12}}>(Dette er en tilbudsopgave, så afregning sker senere. Du skal blot registrere dine timer i posteringerne som du plejer.)</p>}
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
                             return <Postering key={postering._id} postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering}/>

@@ -244,101 +244,120 @@ const AddBesøg = (props) => {
     function submitNewBesøgFromTaskPage(e){
         e.preventDefault();
 
-        console.log("Well")
-
-        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
-        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
-        const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-        const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-        
-        console.log(props.trigger.ansvarligID)
-        console.log(selectedAnsvarlig)
-
-        const besøg = {
-            datoTidFra: danskDatoTidFra,
-            datoTidTil: danskDatoTidTil,
-            brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
-            opgaveID: chosenTask._id,
-            kommentar: comment ? comment : ""
-        }
-
-        if (besøg.datoTidFra >= besøg.datoTidTil) {
-            setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
-            setTimeout(() => {
-                setOpretBesøgError("")
-            }, 5000)
-            return
-        }
-
-        const nyAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
-        const eksisterendeAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
-
-        if (!eksisterendeAnsvarlig) {
-            const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
-            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${chosenTask._id}`, {
-                ansvarlig: [...chosenTask.ansvarlig, xAnsvarlig]
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .then(res => {
-                // refetchAnsvarlige
-                props.setUpdateOpgave(!props.updateOpgave)
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-        
-        axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${chosenTask._id}`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
         })
         .then(res => {
-            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
+            const opgaveAfsluttet = res.data.opgaveAfsluttet;
+            const opgaveFærdiggjort = res.data.markeretSomFærdig;
 
-            // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
-            if (besøg.brugerID !== user.id) {
+            if(opgaveAfsluttet){
+                window.alert("Denne opgave er blevet afsluttet, og du kan derfor ikke oprette nye besøg på den.")
+                return
+            }
+    
+            if(opgaveFærdiggjort){
+                window.alert("Denne opgave er blevet færdiggjort, og du kan derfor ikke oprette nye besøg på den. Hvis du vil oprette flere besøg skal du genåbne opgaven.")
+                return
+            }
+    
+            const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
+            const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
+            const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            
+            console.log(props.trigger.ansvarligID)
+            console.log(selectedAnsvarlig)
+    
+            const besøg = {
+                datoTidFra: danskDatoTidFra,
+                datoTidTil: danskDatoTidTil,
+                brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
+                opgaveID: chosenTask._id,
+                kommentar: comment ? comment : ""
+            }
+    
+            if (besøg.datoTidFra >= besøg.datoTidTil) {
+                setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
+                setTimeout(() => {
+                    setOpretBesøgError("")
+                }, 5000)
+                return
+            }
+    
+            const nyAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+            const eksisterendeAnsvarlig = chosenTask.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+    
+            if (!eksisterendeAnsvarlig) {
                 const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
-                const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
-                const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
-                // console.log(ansvarligEmail)
-                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                    to: ansvarligEmail,
-                    subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                    html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
-                        <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
-                        <p style="font-size: 1.2rem"><b>${chosenTask.adresse}, ${chosenTask.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
-                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
-                        <p><b>Overordnet opgavebeskrivelse:</b><br />${chosenTask.opgaveBeskrivelse}</p>
-                        <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
-                        <p><b>Kundens navn:</b><br />${chosenTask.navn}</p>
-                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
-                        <p><a href="https://app.bettercallbob.dk">Åbn Better Call Bob-app'en</a> for at se flere detaljer.</p>
-                        <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${chosenTask._id}`, {
+                    ansvarlig: [...chosenTask.ansvarlig, xAnsvarlig]
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
                     }
-                )
-                .then(response => {
-                    console.log("Email-notifikation sendt til medarbejderen.");
+                })
+                .then(res => {
+                    // refetchAnsvarlige
+                    props.setUpdateOpgave(!props.updateOpgave)
                 })
                 .catch(error => {
-                    console.log("Fejl: Kunne ikke sende email-notifikation til medarbejderen.");
-                    console.log(error);
+                    console.log(error)
                 })
             }
-
-            resetState();
+            
+            axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
+    
+                // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
+                if (besøg.brugerID !== user.id) {
+                    const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
+                    const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
+                    const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
+                    // console.log(ansvarligEmail)
+                    axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                        to: ansvarligEmail,
+                        subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
+                        html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
+                            <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
+                            <p style="font-size: 1.2rem"><b>${chosenTask.adresse}, ${chosenTask.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
+                            <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                            <p><b>Overordnet opgavebeskrivelse:</b><br />${chosenTask.opgaveBeskrivelse}</p>
+                            <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
+                            <p><b>Kundens navn:</b><br />${chosenTask.navn}</p>
+                            <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                            <p><a href="https://app.bettercallbob.dk">Åbn Better Call Bob-app'en</a> for at se flere detaljer.</p>
+                            <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${user.token}`
+                            }
+                        }
+                    )
+                    .then(response => {
+                        console.log("Email-notifikation sendt til medarbejderen.");
+                    })
+                    .catch(error => {
+                        console.log("Fejl: Kunne ikke sende email-notifikation til medarbejderen.");
+                        console.log(error);
+                    })
+                }
+    
+                resetState();
+            })
+            .catch(error => console.log(error))
+    
+            setChosenEndDate(null)
+            props.setTrigger(false)
         })
         .catch(error => console.log(error))
-
-        setChosenEndDate(null)
-        props.setTrigger(false)
     }
 
     const calculateTableHeight = (opgaver) => {

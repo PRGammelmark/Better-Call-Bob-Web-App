@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "1.1.29",
+    date: "26. marts 2025",
+    changes: [
+        "Medarbejdere bliver nu gjort opmærksom på hvis opgaven, de arbejder på, er en tilbudsopgave. Tilbudsopgaver afregnes manuelt efter færdiggørelse, og medarbejderen skal derfor ikke selv stå for afregning med kunden. Medarbejderen skal oprette posteringer på tilbudsopgaver som man plejer – det er også beskrevet umiddelbart under 'Posteringer'-sektionen på opgaverne.",
+        "Man kan nu trykke direkte på en postering for at vende den om. Denne funktion virker kun for administratorer.",
+        "Rettede en fejl, hvor man kunne oprette besøg på afsluttede opgaver. Det kan man nu ikke længere.",
+        "Rettede en lignende fejl, hvor man kunne gøre det samme på opgaver, der var færdiggjorte."
+    ]
+},{
     version: "1.1.28",
     date: "26. marts 2025",
     changes: [
