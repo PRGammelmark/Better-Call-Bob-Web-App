@@ -620,8 +620,7 @@
 }
 
 .nyKommentar {
-    width: 100%;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 20px;
     padding: 8px 20px;
     font-family: Omnes;
@@ -1671,7 +1670,51 @@ transform: rotateY(180deg);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 16px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
 }
 
+.kommentarFlexDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+}
+
+.kommentarFlexDiv textarea {
+    width: 90%;
+    max-width: 90%;
+}
+
+.kommentarFlexDiv button {
+    min-width: 90px;
+    max-width: 15%;
+    height: 70px;
+    background: #3c5a3f;
+    color: white;
+    border-radius: 10px;
+    border: none;
+    font-family: "OmnesBold";
+    transition: 0.2s ease;
+    cursor: pointer;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px;
+}
+
+.kommentarFlexDiv button:hover {
+    background: #59bf1a;
+}
+
+.kommentarFlexDiv button:disabled {
+    background: lightgrey;
+    cursor: default;
+}
+
 @media screen and (max-width: 750px) {
+
+    .kommentarFlexDiv textarea {
+        width: 80%;
+    }
+    
+    .kommentarFlexDiv button {
+        min-width: 70px;
+        width: 70px;
+        max-width: 20%;
+    }
 
     .infoLineFaktura {
         display: flex;

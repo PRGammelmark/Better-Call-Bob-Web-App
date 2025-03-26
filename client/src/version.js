@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.28",
+    date: "26. marts 2025",
+    changes: [
+        "Tilføjede en 'Indsend'-knap til kommentarer på opgaver ved siden af tekst-inputfeltet. I nogle tilfælde kunne det nemlig være forvirrende, at den eneste måde at indsende en kommentar på var gennem 'Enter'-knappen, eller via en knap indlejret på det virtuelle tastatur.",
+        "Hvis man førhen ikke tilføjede en beskrivelse til en postering ville denne, når der blev genereret en faktura, i nogle tilfælde koble 'Ingen beskrivelse' efter fx 'Handymanarbejde: ' på den endelige faktura. Det gør den ikke længere.",
+        "Nu kan brugere ikke længere færdiggøre og afregne med kunden for en opgave, hvis der er fremtidige besøg i kalenderen for den pågældende opgave. Dette sikrer, at en opgave løses helt færdig, og at alle posteringer kan oprettes inden afregning foretages med kunden."
+    ]
+},{
     version: "1.1.27",
     date: "25. marts 2025",
     changes: [

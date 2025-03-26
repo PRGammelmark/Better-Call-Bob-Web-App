@@ -4,7 +4,6 @@ import PageAnimation from '../components/PageAnimation'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useReducer } from 'react'
 import BackIcon from "../assets/back.svg"
-import Paperclip from "../assets/paperclip.svg"
 import axios from "axios"
 import dayjs from 'dayjs'
 import { useAuthContext } from '../hooks/useAuthContext'
@@ -16,18 +15,13 @@ import ModalCSS from '../components/Modal.module.css'
 import OpretRegningModal from '../components/modals/OpretRegningModal.jsx'
 import OpretFakturaModal from '../components/modals/OpretFakturaModal.jsx'
 import useBetalMedFaktura from '../hooks/useBetalMedFaktura.js'
-import RegistrerBetalFakturaModal from '../components/modals/RegistrerBetalFakturaModal.jsx'
 import PhoneIcon from "../assets/phone.svg"
 import MailIcon from "../assets/mail.svg"
 import SmsIcon from "../assets/smsIcon.svg"
 import CloseIcon from "../assets/closeIcon.svg"
-import SwitcherStyles from './Switcher.module.css'
 import satser from '../variables'
 import AddPostering from '../components/modals/AddPostering.jsx'
-import PosteringSatserModal from '../components/modals/PosteringSatserModal.jsx'
-import RedigerPostering from '../components/modals/RedigerPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
-import RegistrerBetalingsModal from '../components/modals/RegistrerBetalingsModal.jsx'
 import Postering from '../components/Postering.jsx'
 
 const ÅbenOpgave = () => {
@@ -71,8 +65,8 @@ const ÅbenOpgave = () => {
     const [selectedOpgaveDate, setSelectedOpgaveDate] = useState(null)
     const [planlægBesøgFraTidspunkt, setPlanlægBesøgFraTidspunkt] = useState("08:00")
     const [planlægBesøgTilTidspunkt, setPlanlægBesøgTilTidspunkt] = useState("12:00")
-    const [planlagteOpgaver, setPlanlagteOpgaver] = useState(null)
-    const [triggerPlanlagteOpgaver, setTriggerPlanlagteOpgaver] = useState(false)
+    const [planlagteBesøg, setPlanlagteBesøg] = useState(null)
+    const [triggerPlanlagteBesøg, setTriggerPlanlagteBesøg] = useState(false)
     const [smsSendtTilKundenOmPåVej, setSmsSendtTilKundenOmPåVej] = useState("")
     const [sætPåmindelseSMS, setSætPåmindelseSMS] = useState(false)
     const [smsPåmindelseIndstillet, setSmsPåmindelseIndstillet] = useState("")
@@ -139,10 +133,10 @@ const ÅbenOpgave = () => {
                 const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
                 setEgneBesøg(filterEgneBesøg)
                 const filterOpgaveBesøg = res.data.filter(opgave => opgave.opgaveID === opgaveID);
-                setPlanlagteOpgaver(filterOpgaveBesøg);
+                setPlanlagteBesøg(filterOpgaveBesøg);
             })
             .catch(error => console.log(error))
-    }, [triggerPlanlagteOpgaver])
+    }, [triggerPlanlagteBesøg])
 
     const submitKommentar = () => {
         
@@ -434,14 +428,32 @@ const ÅbenOpgave = () => {
         const færdiggør = {
             markeretSomFærdig: true
         }
-        
-        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
+
+        axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
             }
         })
-        .then(response => {
-            setFærdiggjort(true);
+        .then(res => {
+            const planlagteBesøgForOpgave = res.data.filter(opgave => opgave.opgaveID === opgaveID);
+
+            const fremtidigeBesøg = planlagteBesøgForOpgave.some((opgave) => 
+                dayjs(opgave.datoTidFra).isAfter(dayjs())
+            );
+            
+            if(fremtidigeBesøg){
+                window.alert("Der er planlagt fremtidige besøg for denne opgave, og du kan derfor ikke færdiggøre den. Vent med at færdiggøre opgaven, eller fjern de fremtidige besøg hvis opgaven allerede er løst.")
+            } else {
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(response => {
+                    setFærdiggjort(true);
+                })
+                .catch(error => console.log(error))
+            }
         })
         .catch(error => console.log(error))
     }
@@ -794,142 +806,142 @@ const ÅbenOpgave = () => {
         //             .catch(error => console.log(error));
     }
 
-    function tilføjBesøg () {
+    // function tilføjBesøg () {
     
-        const besøg = {
-            datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
-            datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
-            brugerID: userID,
-            opgaveID: opgave._id
-        }
+    //     const besøg = {
+    //         datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
+    //         datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
+    //         brugerID: userID,
+    //         opgaveID: opgave._id
+    //     }
 
-        if (besøg.datoTidFra >= besøg.datoTidTil) {
-            setOpretBesøgError("'Fra kl.' skal være før 'Til kl.'.")
-            setTimeout(() => {
-                setOpretBesøgError("")
-            }, 5000)
-            return
-        }
+    //     if (besøg.datoTidFra >= besøg.datoTidTil) {
+    //         setOpretBesøgError("'Fra kl.' skal være før 'Til kl.'.")
+    //         setTimeout(() => {
+    //             setOpretBesøgError("")
+    //         }, 5000)
+    //         return
+    //     }
 
-        const egneLedigeTiderIDag = egneLedigeTider.filter(ledigTid => dayjs(ledigTid.datoTidFra).format("YYYY-MM-DD") === dayjs(besøg.datoTidFra).format("YYYY-MM-DD"))
-        console.log(egneLedigeTiderIDag)
+    //     const egneLedigeTiderIDag = egneLedigeTider.filter(ledigTid => dayjs(ledigTid.datoTidFra).format("YYYY-MM-DD") === dayjs(besøg.datoTidFra).format("YYYY-MM-DD"))
+    //     console.log(egneLedigeTiderIDag)
         
-        let isWithinAvailableTime = false;
+    //     let isWithinAvailableTime = false;
 
-        egneLedigeTiderIDag.forEach(ledigTid => {
-            const ledigTidFra = dayjs(ledigTid.datoTidFra);
-            const ledigTidTil = dayjs(ledigTid.datoTidTil);
+    //     egneLedigeTiderIDag.forEach(ledigTid => {
+    //         const ledigTidFra = dayjs(ledigTid.datoTidFra);
+    //         const ledigTidTil = dayjs(ledigTid.datoTidTil);
     
-            const besøgFra = dayjs(besøg.datoTidFra);
-            const besøgTil = dayjs(besøg.datoTidTil);
+    //         const besøgFra = dayjs(besøg.datoTidFra);
+    //         const besøgTil = dayjs(besøg.datoTidTil);
     
-            if (besøgFra >= ledigTidFra && besøgTil <= ledigTidTil) {
-                isWithinAvailableTime = true;
-            }
-        });
+    //         if (besøgFra >= ledigTidFra && besøgTil <= ledigTidTil) {
+    //             isWithinAvailableTime = true;
+    //         }
+    //     });
     
-        if (isWithinAvailableTime) {
-            console.log("Besøget er inden for en ledig tid.");
+    //     if (isWithinAvailableTime) {
+    //         console.log("Besøget er inden for en ledig tid.");
             
-            axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-            })
-            .then(res => {
-                triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
-            })
-            .catch(error => console.log(error))
+    //         axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
+    //         headers: {
+    //             'Authorization': `Bearer ${user.token}`
+    //         }
+    //         })
+    //         .then(res => {
+    //             triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
+    //         })
+    //         .catch(error => console.log(error))
 
-        } else {
+    //     } else {
             
-            setOpretBesøgError(<>Besøg er uden for en ledig tid. <span style={{color:"#59bf1a", cursor:"pointer", fontFamily: "OmnesBold"}} onClick={opretBesøgOgLedighed}>Opret alligevel?</span></>)
-            setTimeout(() => {
-                setOpretBesøgError("");
-            }, 5000);
-        }
-    }
+    //         setOpretBesøgError(<>Besøg er uden for en ledig tid. <span style={{color:"#59bf1a", cursor:"pointer", fontFamily: "OmnesBold"}} onClick={opretBesøgOgLedighed}>Opret alligevel?</span></>)
+    //         setTimeout(() => {
+    //             setOpretBesøgError("");
+    //         }, 5000);
+    //     }
+    // }
 
-    function opretBesøgOgLedighed () {
-        const ledigTid = {
-            datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
-            datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
-            brugerID: userID
-        }
+    // function opretBesøgOgLedighed () {
+    //     const ledigTid = {
+    //         datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
+    //         datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
+    //         brugerID: userID
+    //     }
         
-        const besøg = {
-            datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
-            datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
-            brugerID: userID,
-            opgaveID: opgave._id
-        }
+    //     const besøg = {
+    //         datoTidFra: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgFraTidspunkt + ":00.000",
+    //         datoTidTil: dayjs(selectedOpgaveDate).format("YYYY-MM-DD") + "T" + planlægBesøgTilTidspunkt + ":00.000",
+    //         brugerID: userID,
+    //         opgaveID: opgave._id
+    //     }
 
-        // OPRET LEDIG TID
-        axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, ledigTid, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        })
-        .then(res => {
-            triggerLedigeTiderRefetch ? setTriggerLedigeTiderRefetch(false) : setTriggerLedigeTiderRefetch(true)
-        })
-        .catch(error => console.log(error))
+    //     // OPRET LEDIG TID
+    //     axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, ledigTid, {
+    //       headers: {
+    //         'Authorization': `Bearer ${user.token}`
+    //       }
+    //     })
+    //     .then(res => {
+    //         triggerLedigeTiderRefetch ? setTriggerLedigeTiderRefetch(false) : setTriggerLedigeTiderRefetch(true)
+    //     })
+    //     .catch(error => console.log(error))
 
-        // OPRET BESØG
-        axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(res => {
-            triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
-        })
-        .catch(error => console.log(error))
-    }
+    //     // OPRET BESØG
+    //     axios.post(`${import.meta.env.VITE_API_URL}/besoeg`, besøg, {
+    //         headers: {
+    //             'Authorization': `Bearer ${user.token}`
+    //         }
+    //     })
+    //     .then(res => {
+    //         triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
+    //     })
+    //     .catch(error => console.log(error))
+    // }
 
-    function sletBesøg(besøgID){
-        axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${besøgID}`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(response => {
-            setPlanlagteOpgaver(prevPlanlagteOpg => 
-                prevPlanlagteOpg.filter(opg => opg._id !== besøgID)
-            );
-            triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
-        })
-        .catch(error => {
-            console.error("Der opstod en fejl ved sletning af besøget:", error);
-        });
-    }
+    // function sletBesøg(besøgID){
+    //     axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${besøgID}`, {
+    //         headers: {
+    //             'Authorization': `Bearer ${user.token}`
+    //         }
+    //     })
+    //     .then(response => {
+    //         setPlanlagteOpgaver(prevPlanlagteOpg => 
+    //             prevPlanlagteOpg.filter(opg => opg._id !== besøgID)
+    //         );
+    //         triggerPlanlagteOpgaver ? setTriggerPlanlagteOpgaver(false) : setTriggerPlanlagteOpgaver(true)
+    //     })
+    //     .catch(error => {
+    //         console.error("Der opstod en fejl ved sletning af besøget:", error);
+    //     });
+    // }
 
-    function navigateToOpgave (id) {
-        navigate(`/opgave/${id}`)
-        navigate(0)
-    }
+    // function navigateToOpgave (id) {
+    //     navigate(`/opgave/${id}`)
+    //     navigate(0)
+    // }
 
-    function toggleVisKalender () {
-        visKalender ? setVisKalender(false) : setVisKalender(true)
-    }
+    // function toggleVisKalender () {
+    //     visKalender ? setVisKalender(false) : setVisKalender(true)
+    // }
 
-    const openTableEvent = (besøg) => {
-        const besøgID = besøg.tættesteBesøgID;
-        const besøgTilÅbning = egneBesøg.find(besøg => besøg._id === besøgID);
+    // const openTableEvent = (besøg) => {
+    //     const besøgID = besøg.tættesteBesøgID;
+    //     const besøgTilÅbning = egneBesøg.find(besøg => besøg._id === besøgID);
     
-        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${besøgTilÅbning.opgaveID}`, {
-            headers: {
-              'Authorization': `Bearer ${user.token}`
-            }
-          })
-          .then(res => {
-            setTilknyttetOpgave(res.data)
-          })
-          .catch(error => console.log(error))
+    //     axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${besøgTilÅbning.opgaveID}`, {
+    //         headers: {
+    //           'Authorization': `Bearer ${user.token}`
+    //         }
+    //       })
+    //       .then(res => {
+    //         setTilknyttetOpgave(res.data)
+    //       })
+    //       .catch(error => console.log(error))
     
-        setEventData(besøgTilÅbning);
-        setOpenDialog(true);
-      };
+    //     setEventData(besøgTilÅbning);
+    //     setOpenDialog(true);
+    //   };
 
     // konstater til regnskabsopstillingen -- HONORARER --
     const fasteHonorarerTotal = posteringer && posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskHonorarBeregning ? nuv.fastHonorar : 0), 0);
@@ -1664,20 +1676,23 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     <form>
-                        <textarea 
-                            type="text" 
-                            enterKeyHint="Send"
-                            className={ÅbenOpgaveCSS.nyKommentar} 
-                            placeholder='Skriv en kommentar til opgaven ...' 
-                            value={kommentar} 
-                            onChange={(e) => setKommentar(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter' && !e.shiftKey) {
-                                  e.preventDefault();
-                                  submitKommentar();
-                                }
-                              }}
-                        />
+                        <div className={ÅbenOpgaveCSS.kommentarFlexDiv}>
+                            <textarea 
+                                type="text" 
+                                enterKeyHint="Send"
+                                className={ÅbenOpgaveCSS.nyKommentar} 
+                                placeholder='Skriv en kommentar til opgaven ...' 
+                                value={kommentar} 
+                                onChange={(e) => setKommentar(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    submitKommentar();
+                                    }
+                                }}
+                            />
+                            <button disabled={!kommentar} onClick={(e) => {e.preventDefault(); submitKommentar();}}>Indsend</button>
+                        </div>
                     </form>
                 </div>
 

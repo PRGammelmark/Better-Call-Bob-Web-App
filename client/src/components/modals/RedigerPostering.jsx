@@ -26,7 +26,7 @@ const RedigerPostering = (props) => {
     const [handymantimer, setHandymantimer] = useState(postering.handymanTimer);
     const [tømrertimer, setTømrertimer] = useState(postering.tømrerTimer);
     const [posteringDato, setPosteringDato] = useState(dayjs(postering.dato).format('YYYY-MM-DD'));
-    const [posteringBeskrivelse, setPosteringBeskrivelse] = useState(postering.beskrivelse || "Ingen beskrivelse");
+    const [posteringBeskrivelse, setPosteringBeskrivelse] = useState(postering.beskrivelse || "");
     const [inkluderOpstart, setInkluderOpstart] = useState(postering.opstart);
     const [aftenTillæg, setAftenTillæg] = useState(postering.aftenTillæg)
     const [natTillæg, setNatTillæg] = useState(postering.natTillæg)
@@ -49,7 +49,7 @@ const RedigerPostering = (props) => {
         setHandymantimer(postering.handymanTimer || 0);
         setTømrertimer(postering.tømrerTimer || 0);
         setPosteringDato(dayjs(postering.dato).format('YYYY-MM-DD'));
-        setPosteringBeskrivelse(postering.beskrivelse || "Ingen beskrivelse");
+        setPosteringBeskrivelse(postering.beskrivelse || "");
         setInkluderOpstart(postering.opstart || 0);
         setAftenTillæg(postering.aftenTillæg || false);
         setNatTillæg(postering.natTillæg || false);
