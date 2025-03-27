@@ -113,6 +113,11 @@ const AddPostering = (props) => {
             brugerID: props.userID
         }
 
+        if(!postering.totalHonorar && !postering.totalPris){
+            window.alert("Du kan ikke oprette en postering uden indhold. Tilføj data til posteringen, og prøv igen.")
+            return
+        }
+
         axios.post(`${import.meta.env.VITE_API_URL}/posteringer/`, postering, {
             headers: {
                 'Authorization': `Bearer ${user.token}`

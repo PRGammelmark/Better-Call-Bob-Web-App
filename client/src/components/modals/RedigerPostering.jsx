@@ -125,6 +125,11 @@ const RedigerPostering = (props) => {
             brugerID: postering.brugerID
         }
 
+        if(!editedPostering.totalHonorar && !editedPostering.totalPris){
+            window.alert("Du kan ikke fjerne al indhold fra en postering. Du kan slette posteringen, eller tilføje andet indhold til den.")
+            return
+        }
+
         axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${postering._id}`, editedPostering, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
