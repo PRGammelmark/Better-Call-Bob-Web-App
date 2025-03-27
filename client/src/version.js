@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.1.30",
+    date: "27. marts 2025",
+    changes: [
+        "Implementerede sidestyring under 'Opdateringer', da listen efterhånden er blevet lang."
+    ]
+},{
     version: "1.1.29",
     date: "26. marts 2025",
     changes: [
