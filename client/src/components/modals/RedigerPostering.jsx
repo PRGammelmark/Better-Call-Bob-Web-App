@@ -56,8 +56,8 @@ const RedigerPostering = (props) => {
         setTrailer(postering.trailer || false);
         setRådgivningOpmålingVejledning(postering.rådgivningOpmålingVejledning || 0);
         setAktuelleSatser(postering.satser || satser);
-        setDynamiskHonorarBeregning(postering.dynamiskHonorarBeregning || true);
-        setDynamiskPrisBeregning(postering.dynamiskPrisBeregning || true);
+        setDynamiskHonorarBeregning(postering.dynamiskHonorarBeregning || false);
+        setDynamiskPrisBeregning(postering.dynamiskPrisBeregning || false);
         setPosteringFastHonorar(postering.fastHonorar || 0);
         setPosteringFastPris(postering.fastPris || 0);
         setRabatProcent(postering.rabatProcent || 0);

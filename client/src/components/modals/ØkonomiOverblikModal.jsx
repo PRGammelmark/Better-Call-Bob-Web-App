@@ -89,25 +89,27 @@ const ØkonomiOverblikModal = (props) => {
         return opgave ? opgave.adresse : 'Adresse utilgængelig';
     };
 
-    function beregnAkkumuleredeData(posteringer) {
-        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
-        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning, 0)
-        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
-        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
-        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
-    }
+    // function beregnAkkumuleredeData(posteringer) {
+    //     const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+    //     const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
+    //     const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
+    //     const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning, 0)
+    //     const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
+    //     const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
+    //     const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
+    // }
 
     function grupperPoster(posteringer, antalKey, satsKey) {
         const grupperet = {};
     
         posteringer.forEach(postering => {
-            const sats = postering.satser[satsKey];
-            if (!grupperet[sats]) {
-                grupperet[sats] = 0;
+            if(postering.dynamiskHonorarBeregning){
+                const sats = postering.satser[satsKey];
+                if (!grupperet[sats]) {
+                    grupperet[sats] = 0;
+                }
+                grupperet[sats] += postering[antalKey];
             }
-            grupperet[sats] += postering[antalKey];
         });
     
         return Object.entries(grupperet).map(([sats, antal]) => ({
@@ -121,20 +123,23 @@ const ØkonomiOverblikModal = (props) => {
         const grupperet = {};
     
         posteringer.forEach(postering => {
-            if (!postering[tillægKey]) return; // Skip if tillæg is not applied
-    
-            const tillægProcent = postering.satser[tillægHonorarKey] / 100; // Convert % to decimal
-            const baseSats = postering.satser[baseHonorarKey]; // Base rate (handyman/tømrer/etc.)
-            const ekstraHonorar = baseSats * tillægProcent; // Extra pay per hour
-            const timer = postering[timerKey]; // Hours worked
-            const totalEkstra = ekstraHonorar * timer; // Total extra pay
-    
-            if (!grupperet[ekstraHonorar]) {
-                grupperet[ekstraHonorar] = { total: 0, antal: 0 };
+            if(postering.dynamiskHonorarBeregning){
+                if (!postering[tillægKey]) return; // Skip if tillæg is not applied
+                
+
+                const tillægProcent = postering.satser[tillægHonorarKey] / 100; // Convert % to decimal
+                const baseSats = postering.satser[baseHonorarKey]; // Base rate (handyman/tømrer/etc.)
+                const ekstraHonorar = baseSats * tillægProcent; // Extra pay per hour
+                const timer = postering[timerKey]; // Hours worked
+                const totalEkstra = ekstraHonorar * timer; // Total extra pay
+        
+                if (!grupperet[ekstraHonorar]) {
+                    grupperet[ekstraHonorar] = { total: 0, antal: 0 };
+                }
+        
+                grupperet[ekstraHonorar].total += totalEkstra;
+                grupperet[ekstraHonorar].antal += timer; // Accumulate total hours
             }
-    
-            grupperet[ekstraHonorar].total += totalEkstra;
-            grupperet[ekstraHonorar].antal += timer; // Accumulate total hours
         });
     
         return Object.entries(grupperet).map(([sats, data]) => ({
@@ -143,33 +148,47 @@ const ØkonomiOverblikModal = (props) => {
             antal: data.antal // Total hours worked
         }));
     }  
-    
-    
 
 
-    function beregnAntalOpstart(posteringer){
-        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        return månedensOpstartsgebyrer
-    }
+    // function beregnAntalOpstart(posteringer){
+    //     const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+    //     return månedensOpstartsgebyrer
+    // }
 
-    function beregnSatsOpstart(posteringer){
-        const antalOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-        const akkumuleredeSatser = posteringer.reduce((sum, postering) => sum + postering.satser.opstartsgebyrHonorar, 0)
-        const gennemsnitligSats = antalOpstartsgebyrer === 0 ? akkumuleredeSatser : akkumuleredeSatser / antalOpstartsgebyrer
-        return gennemsnitligSats
-    }
+    // function beregnSatsOpstart(posteringer){
+    //     const antalOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
+    //     const akkumuleredeSatser = posteringer.reduce((sum, postering) => sum + postering.satser.opstartsgebyrHonorar, 0)
+    //     const gennemsnitligSats = antalOpstartsgebyrer === 0 ? akkumuleredeSatser : akkumuleredeSatser / antalOpstartsgebyrer
+    //     return gennemsnitligSats
+    // }
     
+    // function beregnTjent(posteringer) {
+    //     const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
+    //     const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
+    //     const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
+    //     const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
+    //     const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
+    //     const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
+    //     const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
+    //     const tjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer;
+    //     const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
+    //     return tjentFørRabat - månedensRabat;
+    // }
+
     function beregnTjent(posteringer) {
-        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
-        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
-        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
-        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
-        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
-        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
-        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
-        const tjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer;
-        const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
-        return tjentFørRabat - månedensRabat;
+        if(!posteringer) return 0
+        const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.opstart * postering.satser.opstartsgebyrHonorar) : 0), 0)
+        const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.handymanTimer * postering.satser.handymanTimerHonorar) : 0), 0)
+        const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) : 0), 0)
+        const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar) : 0), 0)
+        const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0)) : 0), 0)
+        const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0)) : 0), 0)
+        const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.trailer ? postering.satser.trailerHonorar : 0)) : 0), 0)
+        const månedensTjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
+        const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0)) : 0), 0)
+        const månedensDynamiskeHonorarer = månedensTjentFørRabat - månedensRabat;
+        const månedensFasteHonorarer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? 0 : postering.fastHonorar), 0)
+        return månedensDynamiskeHonorarer + månedensFasteHonorarer;
     }
 
     function beregnRabat(posteringer){
@@ -184,6 +203,11 @@ const ØkonomiOverblikModal = (props) => {
         }, 0);
 
         return månedensUdlæg;
+    }
+
+    function beregnFasteHonorarer(posteringer){
+        const månedensFasteHonorarer = posteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? 0 : postering.fastHonorar), 0)
+        return månedensFasteHonorarer
     }
 
     const opstartData = grupperPoster(posteringer, "opstart", "opstartsgebyrHonorar")
@@ -720,6 +744,14 @@ const ØkonomiOverblikModal = (props) => {
                         <div className={Styles.lineAlignRight}><p></p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
                         <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
+                    </div>
+                }
+                {beregnFasteHonorarer(posteringerDetaljer) > 0 &&
+                    <div key={`fasteHonorarer`} className={Styles.akkumuleretØkonomiTableLine}>
+                        <div><p>Faste honorarer</p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p></p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregnFasteHonorarer(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
                     </div>
                 }
                 <div className={Styles.akkumuleretØkonomiTableTotals}>

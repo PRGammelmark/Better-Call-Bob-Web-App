@@ -1459,6 +1459,7 @@
 
 .dynamiskFastButtonActive {
     background: #59bf1a30!important;
+    border: 1px solid #59bf1a;
 }
 
 .dynamiskFastButton:hover {

@@ -11,6 +11,10 @@ const Version = () => {
   const startIndex = (currentPage - 1) * entriesPerPage;
   const currentChanges = changes?.slice(startIndex, startIndex + entriesPerPage);
 
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
   return (
     <PageAnimation>
         <div className={Styles.content}>
@@ -30,7 +34,7 @@ const Version = () => {
           )))}
           <div className={Styles.pagination}>
             <button 
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))} 
+              onClick={() => handlePageChange(currentPage - 1)} 
               disabled={currentPage === 1}
               className={`${Styles.backNextButtons} ${Styles.backButton}`}
               style={{marginRight: 20}}
@@ -42,7 +46,7 @@ const Version = () => {
             {Array.from({ length: totalPages }, (_, i) => (
               <button
                 key={i + 1}
-                onClick={() => setCurrentPage(i + 1)}
+                onClick={() => handlePageChange(i + 1)}
                 className={`${currentPage === i + 1 ? Styles.activePageButton : ''} ${Styles.pageButton}`}
               >
                 {i + 1}
@@ -50,7 +54,7 @@ const Version = () => {
             ))}
 
             <button 
-              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))} 
+              onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className={`${Styles.backNextButtons} ${Styles.nextButton}`}
               style={{marginLeft: 20}}

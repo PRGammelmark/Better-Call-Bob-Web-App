@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.1.31",
+    date: "27. marts 2025",
+    changes: [
+        "Smårettelser og justeringer.",
+        "Rettede en fejl, hvor det ikke fremgik af en postering, at den enten arbejdede med fast honorar eller fast pris når man åbnede en eksisterende postering for at redigere i den.",
+        "Rettede en fejl, hvor faste honorarer for indeværende måned ikke fremgik korrekt af overblikssidens akkumulerede økonomiske overblik – hverken for medarbejdere eller for administratorer. Det gør de nu."
+    ]
+},{
     version: "1.1.30",
     date: "27. marts 2025",
     changes: [
