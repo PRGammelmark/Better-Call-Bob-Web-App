@@ -460,7 +460,7 @@
 
 .modalInput {
     width: 100%;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 20px;
     padding: 8px 20px;
     font-family: Omnes;
@@ -1703,6 +1703,46 @@ transform: rotateY(180deg);
 .kommentarFlexDiv button:disabled {
     background: lightgrey;
     cursor: default;
+}
+
+.subheadingTextButton {
+    color: #222222;
+    background: #e9e9e9;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: flex;
+    border: 1px solid #f0f0f0;
+    transition: 0.2s ease;
+    cursor: pointer;
+    margin-bottom: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subheadingTextButton:hover {
+    border: 1px solid #222222;
+}
+
+.subheadingTextButton img {
+    height: 15px;
+    width: 15px;
+}
+
+.modalHeadingFlexContainer {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.subheadingTextButtonActive {
+    border: 1px solid #59bf1a;
+    background: #59bf1a30;
+}
+
+.subheadingTextButtonActive:hover{
+    border: 1px solid #59bf1a;
 }
 
 @media screen and (max-width: 750px) {

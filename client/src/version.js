@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.2",
+    date: "31. marts 2025",
+    changes: [
+        "Sektionen 'Udgifter' på opgavesiderne viste i nogle tilfælde beregninger baseret på standardsatser i stedet for medarbejdernes faktiske lønsatser. Fejlen er nu rettet.",
+        "Nu kan administratorer oprette posteringer på vegne af medarbejdere på åbne opgaver, hvor den pågældende medarbejder er listet som ansvarlig. Vælger man en anden medarbejder justerer posteringen automatisk beregningen efter den pågældende medarbejders aktuelle lønsatser.",
+        "Små designforbedringer i 'Opret postering'- og 'Rediger postering'-vinduet."
+    ]
+},{
     version: "1.1.31",
     date: "27. marts 2025",
     changes: [

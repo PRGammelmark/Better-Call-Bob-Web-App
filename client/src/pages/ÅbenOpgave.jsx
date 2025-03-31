@@ -945,11 +945,11 @@ const ÅbenOpgave = () => {
 
     // konstater til regnskabsopstillingen -- HONORARER --
     const fasteHonorarerTotal = posteringer && posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskHonorarBeregning ? nuv.fastHonorar : 0), 0);
-    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.opstart * satser.opstartsgebyrHonorar) : 0), 0);
-    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.handymanTimer * satser.handymanTimerHonorar) : 0), 0));
-    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.tømrerTimer * satser.tømrerTimerHonorar) : 0), 0));
-    const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningHonorar) : 0), 0));
-    const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * satser.trailerHonorar) : 0), 0));
+    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrHonorar) : 0), 0);
+    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerHonorar) : 0), 0));
+    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) : 0), 0));
+    const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar) : 0), 0));
+    const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * nuv.satser.trailerHonorar) : 0), 0));
     const aftenTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.aftenTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.aftenTillægHonorar / 100)) : 0) : 0), 0));
     const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.natTillægHonorar / 100)) : 0) : 0), 0));
     const udlægTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {

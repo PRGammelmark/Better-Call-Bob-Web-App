@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Modal from '../Modal.jsx'
 import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
+import ModalStyles from '../Modal.module.css'
 import SwitcherStyles from '../../pages/Switcher.module.css'
 import dayjs from 'dayjs'
 import satser from '../../variables'
@@ -20,6 +21,9 @@ const AddPostering = (props) => {
 
     const {user} = useAuthContext()
 
+    const [opretPosteringPåVegneAfEnAnden, setOpretPosteringPåVegneAfEnAnden] = useState(false)
+    const [medarbejdere, setMedarbejdere] = useState([])
+    const [valgtMedarbejder, setValgtMedarbejder] = useState("")
     const [outlays, setOutlays] = useState([]);
     const [kvitteringLoadingStates, setKvitteringLoadingStates] = useState({});
     const [handymantimer, setHandymantimer] = useState(0);
@@ -31,7 +35,7 @@ const AddPostering = (props) => {
     const [natTillæg, setNatTillæg] = useState(false)
     const [trailer, setTrailer] = useState(false)
     const [rådgivningOpmålingVejledning, setRådgivningOpmålingVejledning] = useState(0)
-    const [aktuelleSatser, setAktuelleSatser] = useState(user && user.satser ? user.satser : satser);
+    const [aktuelleSatser, setAktuelleSatser] = useState(user?.satser || satser);
     const [dynamiskHonorarBeregning, setDynamiskHonorarBeregning] = useState(true);
     const [dynamiskPrisBeregning, setDynamiskPrisBeregning] = useState(true);
     const [posteringFastHonorar, setPosteringFastHonorar] = useState(0);
@@ -58,6 +62,26 @@ const AddPostering = (props) => {
         setPreviewDynamiskHonorar(xPosteringDynamiskHonorar)
         setPreviewDynamiskOutlays(xOutlays)
     }, [handymantimer, tømrertimer, aftenTillæg, natTillæg, inkluderOpstart, outlays, trailer, rådgivningOpmålingVejledning, aktuelleSatser, rabatProcent]);
+
+    useEffect(() => {
+        if(valgtMedarbejder){
+            setAktuelleSatser(valgtMedarbejder?.satser)
+        }
+    }, [valgtMedarbejder])
+
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            setMedarbejdere(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }, [user])
 
     function tilføjPostering (e) {
 
@@ -110,7 +134,7 @@ const AddPostering = (props) => {
             totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: props.opgaveID,
-            brugerID: props.userID
+            brugerID: opretPosteringPåVegneAfEnAnden ? valgtMedarbejder?._id : props.userID
         }
 
         if(!postering.totalHonorar && !postering.totalPris){
@@ -141,6 +165,9 @@ const AddPostering = (props) => {
             setDynamiskHonorarBeregning(true);
             setDynamiskPrisBeregning(true);
             setRabatProcent(0);
+            setOpretPosteringPåVegneAfEnAnden(false)
+            setValgtMedarbejder("")
+            setMedarbejdere([])
         })
         .catch(error => console.log(error))
     }
@@ -224,15 +251,25 @@ const AddPostering = (props) => {
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
             {!kvitteringBillede ? <>
-            <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
+                <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {
                 e.preventDefault();
                 tilføjPostering();
             }}>
                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
                 <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
+                {opretPosteringPåVegneAfEnAnden && <>
+                    <label className={ModalStyles.modalLabel} htmlFor="medarbejder">Vælg medarbejder</label>
+                    <select className={ModalStyles.modalInput} id="medarbejder" value={JSON.stringify(valgtMedarbejder)}  onChange={(e) => setValgtMedarbejder(JSON.parse(e.target.value))}>
+                        <option disabled value="">Vælg medarbejder ...</option>
+                        {medarbejdere?.length > 0 && medarbejdere.map((medarbejder, index) => (
+                            <option key={index} value={JSON.stringify(medarbejder)}>{medarbejder.navn}</option>
+                        ))}
+                    </select>
+                </>}
                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
+                {user.isAdmin && <button type="button" className={`${ÅbenOpgaveCSS.subheadingTextButton} ${opretPosteringPåVegneAfEnAnden ? ÅbenOpgaveCSS.subheadingTextButtonActive : ""}`} onClick={() => {setOpretPosteringPåVegneAfEnAnden(!opretPosteringPåVegneAfEnAnden); setValgtMedarbejder("")}}>{opretPosteringPåVegneAfEnAnden ? "Opret postering for en medarbejder" : "Opret postering for dig selv"}<img src={SwithArrowsBlack} alt="switch" /></button>}
                 <div className={ÅbenOpgaveCSS.dynamiskFastButtonsDiv}>
                     <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskHonorarBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskHonorarBeregning(!dynamiskHonorarBeregning)}>{dynamiskHonorarBeregning ? 'Dynamisk honorar' : 'Fast honorar'}<img src={SwithArrowsBlack} alt="switch" /></button>
                     <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskPrisBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskPrisBeregning(!dynamiskPrisBeregning)}>{dynamiskPrisBeregning ? 'Dynamisk pris' : 'Fast pris'}<img src={SwithArrowsBlack} alt="switch" /></button>
