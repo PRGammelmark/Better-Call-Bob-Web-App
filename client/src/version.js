@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.2.1",
+    date: "31. marts 2025",
+    changes: [
+        "Når en administrator opretter en postering på en opgave på vegne af en anden medarbejder vil den pågældende medarbejder nu automatisk blive tilføjet som ansvarlig til opgaven, hvis medarbejderen ikke i forvejen er det. Medarbejderen vil også modtage en mail-notifikation om, at vedkommende er blevet tilknyttet en ny opgave.",
+        "Når en administrator booker et besøg for en medarbejder fra overblikskalenderen, og tilknytter besøget til en eksisterende opgave, så vil administratoren nu i udgangspunktet kunne vælge mellem alle medarbejdere at knytte til besøget – ikke blot dem, som i forvejen står som værende ansvarlige på opgaven."
+    ]
+},{
     version: "1.2",
     date: "31. marts 2025",
     changes: [

@@ -1439,7 +1439,7 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} />
+                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave}/>
                     <div>
                     {!opgave.isDeleted && opgave.fakturaOprettesManuelt && (færdiggjort ? 
                         <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>

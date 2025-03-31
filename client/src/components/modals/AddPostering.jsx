@@ -20,6 +20,8 @@ import BackArrow from '../../assets/back.svg'
 const AddPostering = (props) => {
 
     const {user} = useAuthContext()
+    const nuværendeAnsvarlige = props.nuværendeAnsvarlige;
+    const opgave = props.opgave;
 
     const [opretPosteringPåVegneAfEnAnden, setOpretPosteringPåVegneAfEnAnden] = useState(false)
     const [medarbejdere, setMedarbejdere] = useState([])
@@ -148,6 +150,31 @@ const AddPostering = (props) => {
             }
         })
         .then(res => {
+            if(opretPosteringPåVegneAfEnAnden && (!nuværendeAnsvarlige.some(ansvarlig => ansvarlig._id === valgtMedarbejder._id))){
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${props.opgaveID}`, {
+                    ansvarlig: [...nuværendeAnsvarlige, valgtMedarbejder],
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(res => {
+                    props.setNuværendeAnsvarlige([...nuværendeAnsvarlige, valgtMedarbejder]);
+                    console.log("Medarbejderen for hvem posteringen er blevet oprettet var ikke ansvarlig for opgaven – vedkommende er blevet tilføjet som ansvarlig.")
+                    axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                        to: valgtMedarbejder?.email,
+                        subject: "Du har fået tildelt en ny opgave",
+                        body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + opgave.navn + "\n\nAdresse: " + opgave.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
+                        html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + opgave.navn + "<br />Adresse: " + opgave.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
+                    })
+                    .then(res => {
+                        console.log("Email-notifikation sendt til medarbejderen.")
+                    })
+                    .catch(error => console.log(error))
+                })
+                .catch(error => console.log(error));
+            }
+            
             props.setTrigger(false);
             setPosteringDato(dayjs().format('YYYY-MM-DD'));
             setInkluderOpstart(1);

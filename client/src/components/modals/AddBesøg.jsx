@@ -38,7 +38,7 @@ const AddBesøg = (props) => {
     const [opgaverLoading, setOpgaverLoading] = useState(true);
     const [opgaveID, setOpgaveID] = useState(null);
     const [opgaveOprettet, setOpgaveOprettet] = useState(false);
-    const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(false);
+    const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(true);
     const [medarbejdere, setMedarbejdere] = useState([]);
 
     const userID = user.id;
