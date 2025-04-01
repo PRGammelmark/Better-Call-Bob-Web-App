@@ -32,6 +32,7 @@ const NyOpgave = () => {
     const [tilbudAfgivet, setTilbudAfgivet] = useState("");
     const [error, setError] = useState(null);
     const [ansvarlig, setAnsvarlig] = useState("");
+    const [isEnglish, setIsEnglish] = useState("");
     const [succes, setSucces] = useState(false);
     const [loading, setLoading] = useState(false);
     const [opgaveID, setOpgaveID] = useState("");
@@ -52,7 +53,8 @@ const NyOpgave = () => {
             telefon,
             email,
             tilbudAfgivet,
-            fakturaOprettesManuelt
+            fakturaOprettesManuelt,
+            isEnglish
         }
 
         const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -138,11 +140,19 @@ const NyOpgave = () => {
                 </div>
                 <div className={NyOpgaveCSS.manuelFakturaOprettelseDiv}>
                     <div className={SwitcherStyles.checkboxContainer}>
+                        <label className={SwitcherStyles.switch} htmlFor="isEnglish">
+                            <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={isEnglish} onChange={(e) => setIsEnglish(e.target.checked)} />
+                            <span className={SwitcherStyles.slider}></span>
+                        </label>
+                        <b>Engelsk kunde</b>
+                    </div>
+                    <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
+                    <div className={SwitcherStyles.checkboxContainer}>
                         <label className={SwitcherStyles.switch} htmlFor="fakturaOprettesManuelt">
                             <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
                             <span className={SwitcherStyles.slider}></span>
                         </label>
-                        <b>Opret faktura manuelt?</b>
+                        <b>Opret faktura manuelt</b>
                     </div>
                     <p style={{marginTop: 10, fontSize: 13}}>(Hvis du fx har talt med kunden om rammer for prisen på forhånd.)</p>
                     {fakturaOprettesManuelt && 

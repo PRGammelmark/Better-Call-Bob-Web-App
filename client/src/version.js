@@ -14,8 +14,19 @@
 // 
 
 const changes = [{
+    version: "1.2.3",
+    date: "1. april 2025",
+    changes: [
+        "Rettede en fejl, hvor posteringer med faste priser ikke blev medtaget korrekt på den autogenererede faktura. Det gør de nu.",
+        "Rettede en fejl, hvor privatkunder ville blive faktureret 49 kr. i administrationsgebyr pr. postering i stedet for i alt, hvis de ville betale via faktura i stedet for med Mobile Pay.",
+        "Når man opretter en opgave kan man nu registrere om det er en opgave for en engelsk-talende kunde. I dette tilfælde vil al automatisk kommunikation med kunden – fx e-mails, SMS'er, regninger, osv. – være på engelsk.",
+        "Man kan nu ændre kundens sprog-indstillinger under 'Rediger kundeinformationer' på åbne opgaver.",
+        "Når en Mobile Pay-betaling er registreret afsluttes opgaven nu med det samme. Det krævede før en opdatering af opgave-siden.",
+        "Rettede en fejl, der gjorde, at 'Opret regning' stadig var synlig efter en afsluttet Mobile Pay-betaling."
+    ]
+},{
     version: "1.2.2",
-    date: "31. marts 2025",
+    date: "1. april 2025",
     changes: [
         "Rettede en fejl, der tidligere gjorde det muligt for almindelige medarbejdere at slette, redigere i og se satser for andre medarbejderes posteringer. Dette er nu ikke længere muligt. Fremover kan medarbejdere slette, redigere i og se satser udelukkende for egne posteringer. Administratorer kan fortsat både redigere, slette og se satser for alles posteringer.",
         "Smårettelser og justeringer.",

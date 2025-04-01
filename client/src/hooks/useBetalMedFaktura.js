@@ -4,7 +4,7 @@ import useEconomicLines from "./useEconomicLines.js";
 import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr) => {
+const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -15,9 +15,9 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
         'X-AppSecretToken': import.meta.env.VITE_BCBSECRETTOKEN,
         'X-AgreementGrantToken': import.meta.env.VITE_BCBAGREEMENTGRANTTOKEN
     }
-    
+
     // Importer linjer til faktura fra posteringer
-    const economicLines = useEconomicLines(posteringer, bekræftAdmGebyr);
+    const economicLines = useEconomicLines(posteringer, bekræftAdmGebyr, isEnglish);
 
     const cvrNummer = opgave.CVR ? ("corporateIdentificationNumber: opgave.CVR") : "";
 
@@ -206,7 +206,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                                                 "to": `${opgave.telefon}`,
                                                 "countryHint": "45",
                                                 "respectBlacklist": true,
-                                                "text": `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
+                                                "text": `${isEnglish ? `Dear ${opgave.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`,
                                                 "from": "Bob",
                                                 "flash": false,
                                                 "encoding": "gsm7"
@@ -233,8 +233,8 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                                 // 6) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
                                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                                     to: alternativEmail ? alternativEmail : opgave.email,
-                                    subject: `Faktura fra Better Call Bob`,
-                                    body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din faktura her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`
+                                    subject: `${isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob"}`,
+                                    body: `${isEnglish ? `Dear ${opgave.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`
                                 }, {
                                     headers: {
                                         'Authorization': `Bearer ${user.token}`

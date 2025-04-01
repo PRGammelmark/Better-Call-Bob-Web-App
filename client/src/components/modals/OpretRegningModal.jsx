@@ -13,7 +13,7 @@ import PageAnimation from '../../components/PageAnimation'
 import axios from 'axios'
 
 
-const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, totalFaktura}) => {
+const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, totalFaktura, isEnglish}) => {
     // const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
     // const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
     const [betalSenereModalState, setBetalSenereModalState] = useState(false)
@@ -51,7 +51,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
     function initierAnmodningState() {
         setBetalNuMedAnmodningModalState(true)
         setLoadingMobilePaySubmission(true)
-        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal)
+        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish)
     }
 
   return (
@@ -152,7 +152,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
                 const alternativEmail = opgave && opgave.email
-                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr)        
+                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish)        
             }}>Betal senere med faktura – kr. 49,-</button>}
         </PageAnimation>
         </>

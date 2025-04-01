@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import satser from "../variables";
 import BCBLogo from "../assets/mobilePay.png";
 
-const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal) => {
+const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish) => {
 
     console.log("Betaling med Mobile Pay via anmodning igangsættes.")
 
@@ -60,85 +60,85 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
     // ===== OPSÆTNING AF KVITTERINGSLINJER =====
     const opstartsgebyrLinje = antalOpstartsgebyrer > 0 ? `
         <tr>
-            <td>${antalOpstartsgebyrer} opstartsgebyr(er):</td>
+            <td>${antalOpstartsgebyrer} ${isEnglish ? "start-up fees" : "opstartsgebyr(er)"}:</td>
             <td style="text-align: right;">${(totalOpstartsgebyrer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const handymanTimerLinje = antalHandymanTimer > 0 ? `
         <tr>
-            <td>${antalHandymanTimer} handymantimer:</td>
+            <td>${antalHandymanTimer} ${isEnglish ? "handyman hours" : "handymantimer"}:</td>
             <td style="text-align: right;">${(totalHandymanTimer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const tømrerTimerLinje = antalTømrerTimer > 0 ? `
         <tr>
-            <td>${antalTømrerTimer} tømrertimer:</td>
+            <td>${antalTømrerTimer} ${isEnglish ? "carpenter hours" : "tømrertimer"}:</td>
             <td style="text-align: right;">${(totalTømrerTimer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const rådgivningOpmålingVejledningLinje = antalRådgivningOpmålingVejledning > 0 ? `
         <tr>
-            <td>${antalRådgivningOpmålingVejledning} rådgivnings- og vejledningstimer:</td>
+            <td>${antalRådgivningOpmålingVejledning} ${isEnglish ? "counseling hours" : "rådgivnings- og vejledningstimer"}:</td>
             <td style="text-align: right;">${(totalRådgivningOpmålingVejledning * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const handymanTimerInklAftenTillægLinje = antalHandymanTimerAftenTillæg > 0 ? `
     <tr>
-        <td>${antalHandymanTimerAftenTillæg} handymantimer (inkl. aftentillæg):</td>
+        <td>${antalHandymanTimerAftenTillæg} ${isEnglish ? "handyman hours (plus evening fee)" : "handymantimer (inkl. aftentillæg)"}:</td>
         <td style="text-align: right;">${(totalHandymanTimerAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
     </tr>` : '';
 
     const tømrerTimerInklAftenTillægLinje = antalTømrerTimerAftenTillæg > 0 ? `
         <tr>
-            <td>${antalTømrerTimerAftenTillæg} tømrertimer (inkl. aftentillæg):</td>
+            <td>${antalTømrerTimerAftenTillæg} ${isEnglish ? "carpenter hours (plus evening fee)" : "tømrertimer (inkl. aftentillæg)"}:</td>
             <td style="text-align: right;">${(totalTømrerTimerAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const rådgivningOpmålingVejledningInklAftenTillægLinje = antalRådgivningOpmålingVejledningAftenTillæg > 0 ? `
         <tr>
-            <td>${antalRådgivningOpmålingVejledningAftenTillæg} rådgivnings- og vejledningstimer (inkl. aftentillæg):</td>
+            <td>${antalRådgivningOpmålingVejledningAftenTillæg} ${isEnglish ? "counseling hours (plus evening fee)" : "rådgivnings- og vejledningstimer (inkl. aftentillæg)"}:</td>
             <td style="text-align: right;">${(totalRådgivningOpmålingVejledningAftenTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const handymanTimerInklNatTillægLinje = antalHandymanTimerNatTillæg > 0 ? `
     <tr>
-        <td>${antalHandymanTimerNatTillæg} handymantimer (inkl. nattillæg):</td>
+        <td>${antalHandymanTimerNatTillæg} ${isEnglish ? "handyman hours (plus night fee)" : "handymantimer (inkl. nattillæg)"}:</td>
         <td style="text-align: right;">${(totalHandymanTimerNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
     </tr>` : '';
 
     const tømrerTimerInklNatTillægLinje = antalTømrerTimerNatTillæg > 0 ? `
         <tr>
-            <td>${antalTømrerTimerNatTillæg} tømrertimer (inkl. nattillæg):</td>
+            <td>${antalTømrerTimerNatTillæg} ${isEnglish ? "carpenter hours (plus night fee)" : "tømrertimer (inkl. nattillæg)"}:</td>
             <td style="text-align: right;">${(totalTømrerTimerNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const rådgivningOpmålingVejledningInklNatTillægLinje = antalRådgivningOpmålingVejledningNatTillæg > 0 ? `
         <tr>
-            <td>${antalRådgivningOpmålingVejledningNatTillæg} rådgivnings- og vejledningstimer (inkl. nattillæg):</td>
+            <td>${antalRådgivningOpmålingVejledningNatTillæg} ${isEnglish ? "counseling hours (plus night fee)" : "rådgivnings- og vejledningstimer (inkl. nattillæg)"}:</td>
             <td style="text-align: right;">${(totalRådgivningOpmålingVejledningNatTillæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const trailerLinje = antalTrailer > 0 ? `
         <tr>
-            <td>${antalTrailer} x trailerbrug:</td>
+            <td>${antalTrailer} x ${isEnglish ? "trailer use" : "trailerbrug"}:</td>
             <td style="text-align: right;">${(totalTrailer * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const rabatLinje = totalRabat > 0 ? `
         <tr>
-            <td>Rabat:</td>
+            <td>${isEnglish ? "Discount" : "Rabat"}:</td>
             <td style="text-align: right;">${(totalRabat * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const materialerLinje = totalUdlæg > 0 ? `
         <tr>
-            <td>Udlæg & materialer, i alt:</td>
+            <td>${isEnglish ? "Total outlays and materials" : "Udlæg & materialer, i alt"}:</td>
             <td style="text-align: right;">${(totalUdlæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const materialeHeader = `
         <tr>
-            <td style="padding-top: 10px;">Udlæg & materialer:</td>
+            <td style="padding-top: 10px;">${isEnglish ? "Outlays & materials" : "Udlæg & materialer"}:</td>
         </tr>
         `
     
@@ -156,23 +156,23 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
 
     const momsLinje = `
         <tr>
-            <td style="opacity: 0.5;">Heraf moms:</td>
+            <td style="opacity: 0.5;">${isEnglish ? "VAT" : "Heraf moms"}:</td>
             <td style="text-align: right; opacity: 0.5;">${(momsAfTotal).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>`;
 
     const tableHeadings = `
         <tr style="font-size: 1.3rem; border: 1px solid white; padding-bottom: 20px;">
-            <th style="text-align: left;"><b>Beskrivelse</b></th>
-            <th style="text-align: right;"><b>Beløb</b></th>
+            <th style="text-align: left;"><b>${isEnglish ? "Description" : "Beskrivelse"}</b></th>
+            <th style="text-align: right;"><b>${isEnglish ? "Amount" : "Beløb"}</b></th>
         </tr>`;
 
     const kvittering = `
         <div style="background-color: #fff; color: #000; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
             <img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 150px; height: auto; margin-top: -20px; display: flex; justify-content: flex-end;" />
             <div>
-                <p style="font-size: 1.2rem;">Kvittering for arbejde på adressen <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${opgave.adresse}</b><br />${opgave.postnummerOgBy}</p>
-                <p><b>Dato:</b> ${dayjs().format('DD. MMMM YYYY')}<br />
-                <b>Udført af:</b> ${opgave.ansvarlig.length > 0 ? opgave.ansvarlig.map(ansvarlig => ansvarlig.navn).join(', ') : 'Bob'}</p>
+                <p style="font-size: 1.2rem;">${isEnglish ? "Receipt for work done at" : "Kvittering for arbejde på adressen"} <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${opgave.adresse}</b><br />${opgave.postnummerOgBy}</p>
+                <p><b>${isEnglish ? "Date" : "Dato"}:</b> ${dayjs().format('DD. MMMM YYYY')}<br />
+                <b>${isEnglish ? "Done by" : "Udført af"}:</b> ${opgave.ansvarlig.length > 0 ? opgave.ansvarlig.map(ansvarlig => ansvarlig.navn).join(', ') : 'Bob'}</p>
             </div>
             <hr style="border: 1px solid black; margin: 20px 0;" />
             <table style="width: 250px;">
@@ -223,7 +223,6 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
         .then(response => {
             console.log(response.data)
             if (response.data === 'AUTHORIZED') {
-                setOpgaveAfsluttet(dayjs().format('YYYY-MM-DD'))
                 setQrPaymentAuthorized(true)
                 setLoadingMobilePaySubmission(false)
                 setSuccessMobilePaySubmission(true)
@@ -235,18 +234,32 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                     headers: authHeaders
                 })
                 .then(response => {
-                    console.log('Opgave betalt dato sat:', response.data);
-                    
-                    // ===== SEND KVITTERING PÅ MAIL =====
-                    axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                        to: opgave && opgave.email,
-                        subject: `Kvittering fra Better Call Bob`,
-                        html: `<p>Kære ${opgave.navn},</p>
+                    console.log('Opgaven er afsluttet.');
+                    setOpgave(response.data)
+
+                    let html = ""
+
+                    if(isEnglish){
+                        html = `<p>Dear ${opgave.navn},</p>
+                            <p>Thank you for being a customer at Better Call Bob.</p>
+                            <p>You will find details about your purchase of our service below:</p>
+                            ${kvittering}
+                            <p>We look forward to helping you again! You are always welcome.</p>
+                            <p>Best regards,<br/>Better Call Bob<br/>Phone: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`
+                    } else {
+                        html = `<p>Kære ${opgave.navn},</p>
                             <p>Tak fordi du valgte at være kunde hos Better Call Bob.</p>
                             <p>Herunder kan du se detaljer om dit køb af vores service:</p>
                             ${kvittering}
                             <p>Vi glæder os til at hjælpe dig igen! Du er altid velkommen.</p>
-                            <p>Dbh.,<br/>Better Call Bob<br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`,
+                            <p>Dbh.,<br/>Better Call Bob<br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`
+                    }
+                    
+                    // ===== SEND KVITTERING PÅ MAIL =====
+                    axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                        to: opgave && opgave.email,
+                        subject: `${isEnglish ? "Receipt from Better Call Bob" : "Kvittering fra Better Call Bob"}`,
+                        html: html
                     }, {
                         headers: authHeaders
                     })

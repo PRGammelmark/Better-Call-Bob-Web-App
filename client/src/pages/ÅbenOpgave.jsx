@@ -23,6 +23,7 @@ import satser from '../variables'
 import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
+import SwitcherStyles from './Switcher.module.css'
 
 const ÅbenOpgave = () => {
     
@@ -91,6 +92,7 @@ const ÅbenOpgave = () => {
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
     const [sletOpgaveInput, setSletOpgaveInput] = useState("")
     const [redigerKundeModal, setRedigerKundeModal] = useState(false) 
+    const [isEnglish, setIsEnglish] = useState(false)
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [tvingAfslutOpgaveModal, setTvingAfslutOpgaveModal] = useState(false)
@@ -205,6 +207,7 @@ const ÅbenOpgave = () => {
             setEmail(res.data.email);
             setFærdiggjort(res.data.markeretSomFærdig);
             setOpgaveAfsluttet(res.data.opgaveAfsluttet);
+            setIsEnglish(res.data.isEnglish)
             setLoading(false);
         })
         .catch(error => console.log(error))
@@ -1074,7 +1077,8 @@ const ÅbenOpgave = () => {
             telefon: nyeKundeinformationer.telefon,
             email: nyeKundeinformationer.email,
             virksomhed: nyeKundeinformationer.virksomhed,
-            CVR: nyeKundeinformationer.CVR
+            CVR: nyeKundeinformationer.CVR,
+            isEnglish: nyeKundeinformationer.isEnglish
         }, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -1116,7 +1120,7 @@ const ÅbenOpgave = () => {
                     "to": `${opgave.telefon}`,
                     "countryHint": "45",
                     "respectBlacklist": true,
-                    "text": `Kære ${opgave.navn},\n\nVi vil blot informere dig om, at vores medarbejder ${getBrugerName(userID)} nu er på vej ud til dig for at løse din opgave. Vi er hos dig inden længe.\n\nVi glæder os til at hjælpe dig! \n\nDbh.,\nBetter Call Bob`,
+                    "text": `${isEnglish ? `Dear ${opgave.navn},\n\nWe would like to inform you that our employee, ${getBrugerName(userID)}, is now on their way to you in order to help you with your task. We will be at your place in a moment.\n\nWe look forward to helping you! \n\nBest regards,\nBetter Call Bob}` : `Kære ${opgave.navn},\n\nVi vil blot informere dig om, at vores medarbejder ${getBrugerName(userID)} nu er på vej ud til dig for at løse din opgave. Vi er hos dig inden længe.\n\nVi glæder os til at hjælpe dig! \n\nDbh.,\nBetter Call Bob`}`,
                     "from": "Bob",
                     "flash": false,
                     "encoding": "gsm7"
@@ -1277,6 +1281,14 @@ const ÅbenOpgave = () => {
                                     <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} />
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
                                     <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value})} />
+                                    <div className={SwitcherStyles.checkboxContainer}>
+                                        <label className={SwitcherStyles.switch} htmlFor="isEnglish">
+                                            <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={nyeKundeinformationer.isEnglish} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, isEnglish: e.target.checked})} />
+                                            <span className={SwitcherStyles.slider}></span>
+                                        </label>
+                                        <b>Engelsk kunde</b>
+                                    </div>
+                                    <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
                                     <button className={ModalCSS.buttonFullWidth} type="submit">Opdater kunde</button>
                                 </form>
                             </Modal>
@@ -1470,7 +1482,7 @@ const ÅbenOpgave = () => {
                                 {/* Erhvervskunde -> send faktura || !Erhvervskunde -> Opret regning*/}
                                 {(opgave.virksomhed || opgave.CVR) ? (!opgave.fakturaSendt 
                                     && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura<br /><span>Kunden er registreret som erhvervskunde</span></button> 
-                                ) : !opgave.fakturaSendt && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning<br /><span>Kunden er registreret som privatkunde</span></button>
+                                ) : (!opgave.fakturaSendt && !opgave.opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
 
                                 {/* <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/> */}
@@ -1488,8 +1500,8 @@ const ÅbenOpgave = () => {
                                 <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
                         )
                     }
-                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} />}
-                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} />}
+                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} isEnglish={isEnglish} />}
+                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}
                     </div>
                 </div>
                 <AfslutUdenBetaling trigger={tvingAfslutOpgaveModal} setTrigger={setTvingAfslutOpgaveModal} opgave={opgave} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave} />

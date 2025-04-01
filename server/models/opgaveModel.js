@@ -119,7 +119,11 @@ const opgaverSchema = new Schema({
     posteringer: [{
         type: Array,
         required: false
-    }]
+    }],
+    isEnglish: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true })
 
 const model = mongoose.model('Opgave', opgaverSchema);
