@@ -63,7 +63,7 @@
 .opgavebeskrivelse {
     width: 100%;
     border-radius: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     padding: 8px 20px;
     font-family: Omnes;
     font-size: 0.9rem;
@@ -1743,6 +1743,33 @@ transform: rotateY(180deg);
 
 .subheadingTextButtonActive:hover{
     border: 1px solid #59bf1a;
+}
+
+.infoPillsDiv {
+    display: flex;
+    padding: 0px 20px;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.infoPillsDiv div {
+    font-size: 0.8rem;
+    border-radius: 50px;
+    padding: 4px 12px;
+    background: #f0f0f0;
+    border: 1px solid #22222280;
+}
+
+.harIkkeStige {
+    border: 1px solid #FF0000!important;
+}
+
+.harStige {
+    border: 1px solid #59bf1a!important;
 }
 
 @media screen and (max-width: 750px) {

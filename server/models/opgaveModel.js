@@ -41,7 +41,7 @@ const opgaverSchema = new Schema({
     },
     harStige: {
         type: Boolean,
-        required: false
+        default: false
     },
     status: {
         type: String,

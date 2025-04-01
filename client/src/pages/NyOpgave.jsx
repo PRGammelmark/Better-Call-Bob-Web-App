@@ -24,7 +24,7 @@ const NyOpgave = () => {
     const [adresse, setAdresse] = useState("");
     const [postnummerOgBy, setPostnummerOgBy] = useState("");
     const [onsketDato, setOnsketDato] = useState("");
-    const [harStige, setHarStige] = useState(true);
+    const [harStige, setHarStige] = useState(false);
     const [telefon, setTelefon] = useState("");
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState("");
@@ -32,7 +32,7 @@ const NyOpgave = () => {
     const [tilbudAfgivet, setTilbudAfgivet] = useState("");
     const [error, setError] = useState(null);
     const [ansvarlig, setAnsvarlig] = useState("");
-    const [isEnglish, setIsEnglish] = useState("");
+    const [isEnglish, setIsEnglish] = useState(false);
     const [succes, setSucces] = useState(false);
     const [loading, setLoading] = useState(false);
     const [opgaveID, setOpgaveID] = useState("");
@@ -121,10 +121,10 @@ const NyOpgave = () => {
                         <input type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={NyOpgaveCSS.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required/>
                         <label className={NyOpgaveCSS.label}>Hvornår ønskes opgaven udført?</label>
                         <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} required/>
-                        <div className={NyOpgaveCSS.checkboxContainer}>
+                        {/* <div className={NyOpgaveCSS.checkboxContainer}>
                             <input type="checkbox" name="harStige" className={NyOpgaveCSS.checkbox} onChange={(e) => setHarStige(e.target.checked)} checked={harStige}/>  
                             <label className={NyOpgaveCSS.label}>Har kunden en stige?</label>
-                        </div>
+                        </div> */}
                         
                     </div>
                     <div className={NyOpgaveCSS.kolonneTo}>
@@ -140,13 +140,21 @@ const NyOpgave = () => {
                 </div>
                 <div className={NyOpgaveCSS.manuelFakturaOprettelseDiv}>
                     <div className={SwitcherStyles.checkboxContainer}>
+                        <label className={SwitcherStyles.switch} htmlFor="harStige">
+                            <input type="checkbox" id="harStige" name="harStige" className={SwitcherStyles.checkboxInput} checked={harStige} onChange={(e) => setHarStige(e.target.checked)} />
+                            <span className={SwitcherStyles.slider}></span>
+                        </label>
+                        <b>Kunden har egen stige</b>
+                    </div>
+                    <p style={{marginTop: 8, marginBottom: 20, fontSize: 13}}>(Relevant hvis opgaven kræver, at medarbejderen skal op i højden.)</p>
+                    <div className={SwitcherStyles.checkboxContainer}>
                         <label className={SwitcherStyles.switch} htmlFor="isEnglish">
                             <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={isEnglish} onChange={(e) => setIsEnglish(e.target.checked)} />
                             <span className={SwitcherStyles.slider}></span>
                         </label>
                         <b>Engelsk kunde</b>
                     </div>
-                    <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
+                    <p style={{marginTop: 8, marginBottom: 20, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
                     <div className={SwitcherStyles.checkboxContainer}>
                         <label className={SwitcherStyles.switch} htmlFor="fakturaOprettesManuelt">
                             <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
@@ -154,7 +162,7 @@ const NyOpgave = () => {
                         </label>
                         <b>Opret faktura manuelt</b>
                     </div>
-                    <p style={{marginTop: 10, fontSize: 13}}>(Hvis du fx har talt med kunden om rammer for prisen på forhånd.)</p>
+                    <p style={{marginTop: 8, fontSize: 13}}>(Hvis du fx har talt med kunden om rammer for prisen på forhånd.)</p>
                     {fakturaOprettesManuelt && 
                     <div style={{marginTop: 20}}>
                         <label className={NyOpgaveCSS.label}>Indtast evt. aftalt tilbudspris i kr.</label>

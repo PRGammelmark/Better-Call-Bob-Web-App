@@ -14,6 +14,19 @@
 // 
 
 const changes = [{
+    version: "1.2.4",
+    date: "1. april 2025",
+    changes: [
+        "Åbne opgaver indeholder nu info-piller under opgavebeskrivelsen. Infopillerne giver hurtige, nyttige informationer om opgaven – bl.a. om hvorvidt kunden er en erhvervskunde eller en privatkunde, og om hvorvidt kunden har egen stige eller ikke."
+    ]
+},{
+    version: "1.2.3",
+    date: "1. april 2025",
+    changes: [
+        "Smårettelser og justeringer på 'Opret opgave'-siden.",
+        "Hvis kunden har egen stige kan man nu se det umiddelbart under opgavebeskrivelsen."
+    ]
+},{
     version: "1.2.3",
     date: "1. april 2025",
     changes: [
