@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.2.2",
+    date: "31. marts 2025",
+    changes: [
+        "Rettede en fejl, der tidligere gjorde det muligt for almindelige medarbejdere at slette, redigere i og se satser for andre medarbejderes posteringer. Dette er nu ikke længere muligt. Fremover kan medarbejdere slette, redigere i og se satser udelukkende for egne posteringer. Administratorer kan fortsat både redigere, slette og se satser for alles posteringer.",
+        "Smårettelser og justeringer.",
+        "App'en sender nu mails fra 'hej@bettercallbob.dk' istedet for 'kontakt@bettercallbob.dk'."
+    ]
+},{
     version: "1.2.1",
     date: "31. marts 2025",
     changes: [

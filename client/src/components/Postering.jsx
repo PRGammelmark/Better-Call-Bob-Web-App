@@ -164,13 +164,13 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                     </div>
                     <div className={`${ÅbenOpgaveCSS.posteringKnapper} ${!honorarVisning && ÅbenOpgaveCSS.posteringKnapperFadeOut}`}>
                         {user.isAdmin && <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Honorar</button>}
-                        <div>
+                        {(user.isAdmin || user.id === postering.brugerID) && <div>
                             <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
                             <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
                             {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id)}}>Rediger</button>}
                             <RedigerPostering trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID} postering={postering} />
                             {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
-                        </div>
+                        </div>}
                     </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringBack}>
