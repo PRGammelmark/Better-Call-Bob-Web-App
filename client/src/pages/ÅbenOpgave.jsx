@@ -776,12 +776,12 @@ const ÅbenOpgave = () => {
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                     <div className={ÅbenOpgaveCSS.infoPillsDiv}>
                         {(opgave.CVR || opgave.virksomhed) ? <div className={ÅbenOpgaveCSS.infoPill}>Erhvervskunde</div> : <div className={ÅbenOpgaveCSS.infoPill}>Privatkunde</div>}
-                        {opgave.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Kunden har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Kunden har ikke egen stige ❗️</div>}
-
+                        {opgave.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
+                        {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}
                     </div>
                     
                 </form>}
-                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden </p>}            
+                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej </p>}            
 
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>

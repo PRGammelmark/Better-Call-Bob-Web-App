@@ -19,26 +19,31 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
     }
 
     function beregnRabat(postering) {
-        const rabatProcent = postering.rabatProcent > 0 ? postering.rabatProcent * postering.totalPris : 0;
-        const samledeUdlæg = postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0);
-        const totalRabat = (postering.totalPris - samledeUdlæg) * (1 - (rabatProcent / 100));
-        return totalRabat;
+        if(postering.rabatProcent > 0) {
+            const samledeUdlæg = postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0);
+            const totalEfterRabat = postering.totalPris - samledeUdlæg;
+            const totalFørRabat = totalEfterRabat / (1 - (postering.rabatProcent / 100))
+            const totalRabat = totalFørRabat - totalEfterRabat;
+            return totalRabat;
+        } else {
+            return 0
+        }
     }
 
     // ===== BEREGNINGER TIL KVITTERING =====
-    const antalOpstartsgebyrer = posteringer.reduce((total, postering) => total + ((postering.opstart) || 0), 0);
-    const antalHandymanTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.handymanTimer), 0);
-    const antalTømrerTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.tømrerTimer), 0);
-    const antalRådgivningOpmålingVejledning = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg) ? 0 : postering.rådgivningOpmålingVejledning), 0);
-    const antalHandymanTimerAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.handymanTimer) : 0), 0);
-    const antalTømrerTimerAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.tømrerTimer) : 0), 0);
-    const antalRådgivningOpmålingVejledningAftenTillæg = posteringer.reduce((total, postering) => total + (postering.aftenTillæg ? (postering.rådgivningOpmålingVejledning) : 0), 0);
-    const antalHandymanTimerNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.handymanTimer) : 0), 0);
-    const antalTømrerTimerNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.tømrerTimer) : 0), 0);
-    const antalRådgivningOpmålingVejledningNatTillæg = posteringer.reduce((total, postering) => total + (postering.natTillæg ? (postering.rådgivningOpmålingVejledning) : 0), 0);
-    const antalTrailer = posteringer.reduce((total, postering) => total + (postering.trailer ? 1 : 0), 0);
+    const antalOpstartsgebyrer = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.opstart) || 0), 0);
+    const antalHandymanTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg || !postering.dynamiskPrisBeregning) ? 0 : postering.handymanTimer), 0);
+    const antalTømrerTimer = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg || !postering.dynamiskPrisBeregning) ? 0 : postering.tømrerTimer), 0);
+    const antalRådgivningOpmålingVejledning = posteringer.reduce((total, postering) => total + ((postering.aftenTillæg || postering.natTillæg || !postering.dynamiskPrisBeregning) ? 0 : postering.rådgivningOpmålingVejledning), 0);
+    const antalHandymanTimerAftenTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.aftenTillæg) ? (postering.handymanTimer) : 0), 0);
+    const antalTømrerTimerAftenTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.aftenTillæg) ? (postering.tømrerTimer) : 0), 0);
+    const antalRådgivningOpmålingVejledningAftenTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.aftenTillæg) ? (postering.rådgivningOpmålingVejledning) : 0), 0);
+    const antalHandymanTimerNatTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.natTillæg) ? (postering.handymanTimer) : 0), 0);
+    const antalTømrerTimerNatTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.natTillæg) ? (postering.tømrerTimer) : 0), 0);
+    const antalRådgivningOpmålingVejledningNatTillæg = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.natTillæg) ? (postering.rådgivningOpmålingVejledning) : 0), 0);
+    const antalTrailer = posteringer.reduce((total, postering) => total + ((postering.dynamiskPrisBeregning && postering.trailer) ? 1 : 0), 0);
     
-    const totalOpstartsgebyrer = antalOpstartsgebyrer * satser.opstartPris
+    const totalOpstartsgebyrer = antalOpstartsgebyrer * satser.opstartsgebyrPris
     const totalHandymanTimer = antalHandymanTimer * satser.handymanTimerPris
     const totalTømrerTimer = antalTømrerTimer * satser.tømrerTimerPris
     const totalRådgivningOpmålingVejledning = antalRådgivningOpmålingVejledning * satser.rådgivningOpmålingVejledningPris
@@ -52,6 +57,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
 
     const totalRabat = posteringer.reduce((total, postering) => total + beregnRabat(postering), 0);
     const totalUdlæg = posteringer.reduce((total, postering) => total + (Array.isArray(postering.udlæg) ? postering.udlæg.reduce((sum, udlæg) => sum + (udlæg.beløb), 0) : 0), 0);
+    const totalFastPris = posteringer.reduce((total, postering) => total + (postering.dynamiskPrisBeregning ? 0 : postering.fastPris), 0);
     
     const total = posteringer.reduce((total, postering) => total + postering.totalPris, 0);
     const totalInklMoms = total * 1.25
@@ -127,7 +133,13 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
     const rabatLinje = totalRabat > 0 ? `
         <tr>
             <td>${isEnglish ? "Discount" : "Rabat"}:</td>
-            <td style="text-align: right;">${(totalRabat * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+            <td style="text-align: right;">-${(totalRabat * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
+        </tr>` : '';
+
+    const fastPrisLinje = totalFastPris > 0 ? `
+        <tr>
+            <td>${isEnglish ? "Fixed price" : "Fast pris"}:</td>
+            <td style="text-align: right;">${(totalFastPris * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
     const materialerLinje = totalUdlæg > 0 ? `
@@ -136,11 +148,10 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
             <td style="text-align: right;">${(totalUdlæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
 
-    const materialeHeader = `
-        <tr>
-            <td style="padding-top: 10px;">${isEnglish ? "Outlays & materials" : "Udlæg & materialer"}:</td>
-        </tr>
-        `
+    // const materialeHeader = totalUdlæg > 0 ? `
+    //     <tr>
+    //         <td style="padding-top: 10px;">${isEnglish ? "Outlays & materials" : "Udlæg & materialer"}:</td>
+    //     </tr>` : '';
     
     const materialeudlægDetaljer = posteringer.map(postering => postering.udlæg.map(udlæg => `
         <tr>
@@ -189,7 +200,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                 ${rådgivningOpmålingVejledningInklNatTillægLinje}
                 ${trailerLinje}
                 ${rabatLinje}
-                ${materialeHeader}
+                ${fastPrisLinje}
                 ${materialerLinje}
                 ${materialeudlægDetaljer}
                 ${totalLinje}
@@ -197,7 +208,29 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
             </table>
         </div>`;
 
-//  body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nHerunder kan du se din kvittering:\n\n ${kvittering} \n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
+        // TEST
+        // const html = `<p>Kære ${opgave.navn},</p>
+        //                     <p>Tak fordi du valgte at være kunde hos Better Call Bob.</p>
+        //                     <p>Herunder kan du se detaljer om dit køb af vores service:</p>
+        //                     ${kvittering}
+        //                     <p>Vi glæder os til at hjælpe dig igen! Du er altid velkommen.</p>
+        //                     <p>Dbh.,<br/>Better Call Bob<br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`
+
+        // axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+        //     to: opgave && opgave.email,
+        //     subject: `${isEnglish ? "Receipt from Better Call Bob" : "Kvittering fra Better Call Bob"}`,
+        //     html: html
+        // }, {
+        //     headers: authHeaders
+        // })
+        // .then(response => {
+        //     console.log("Email med kvittering sendt til kunden.");
+        // })
+        // .catch(error => {
+        //     console.log("Fejl: Kunne ikke sende email til kunden.");
+        //     console.log(error);
+        // })
+        // return
 
     // REQUEST SERVER TO GET QR CODE
     axios.post(`${import.meta.env.VITE_API_URL}/mobilepay/get-qr-code`, paymentInformation, {

@@ -14,13 +14,25 @@
 // 
 
 const changes = [{
-    version: "1.2.4",
+    version: "1.2.6",
+    date: "2. april 2025",
+    changes: [
+        "Alle infopiller har nu samme højde.",
+        "Hvis en mobilskærm ikke kan vise alle tilgængelige infopiller på een gang, så kan man nu scrolle horisontalt på dem.",
+        "Tilføjet en infopille, der giver informationer om hvornår en kunde ønsker arbejdet starter.",
+        "Infopillen, der viser om kunden har egen stige, lyser nu rød hvis kunden ikke har stige.",
+        "Foretog flere rettelser i den automatiske email-kvittering, som kunden får tilsendt når vedkommende har betalt for en opgave via Mobile Pay. Bl.a. viste kvitteringen overflødige linjer for udlæg, manglede et minus foran rabat-linjen, og så indeholdt beregningen af hhv. rabatter og opstartsgebyrer fejl, som nu alle er rettet.",
+        "Rettede desuden en fejl i email-kvitteringen, hvor posteringer med faste priser blev korrekt medregnet i totalbeløbet, men ikke listet korrekt i kvitteringsoversigten. Det gør de nu.",
+        "Små designjusteringer på 'Tilføj postering'-popup'en."
+    ]
+},{
+    version: "1.2.5",
     date: "1. april 2025",
     changes: [
         "Åbne opgaver indeholder nu info-piller under opgavebeskrivelsen. Infopillerne giver hurtige, nyttige informationer om opgaven – bl.a. om hvorvidt kunden er en erhvervskunde eller en privatkunde, og om hvorvidt kunden har egen stige eller ikke."
     ]
 },{
-    version: "1.2.3",
+    version: "1.2.4",
     date: "1. april 2025",
     changes: [
         "Smårettelser og justeringer på 'Opret opgave'-siden.",

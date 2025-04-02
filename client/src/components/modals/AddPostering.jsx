@@ -286,7 +286,7 @@ const AddPostering = (props) => {
                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Vælg dato ...</label>
                 <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                 {opretPosteringPåVegneAfEnAnden && <>
-                    <label className={ModalStyles.modalLabel} htmlFor="medarbejder">Vælg medarbejder</label>
+                    <label className={ÅbenOpgaveCSS.prefix} htmlFor="medarbejder">Vælg medarbejder</label>
                     <select className={ModalStyles.modalInput} id="medarbejder" value={JSON.stringify(valgtMedarbejder)}  onChange={(e) => setValgtMedarbejder(JSON.parse(e.target.value))}>
                         <option disabled value="">Vælg medarbejder ...</option>
                         {medarbejdere?.length > 0 && medarbejdere.map((medarbejder, index) => (
