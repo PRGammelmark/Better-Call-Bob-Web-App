@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.2.7",
+    date: "7. april 2025",
+    changes: [
+        "De første forberedelser til system-integration med Better Call Bob's websites er sat i søen. Da hjemmesidens besøgende ikke er logget ind i systemet får de adgang til en åben formular, der kan oprette opgaver direkte i app'en. Til gengæld er andre sikkerhedsforanstaltninger blevet opsat for disse formularer. Maks 5 opgaver kan oprettes i minuttet, og maks 100 opgaver kan oprettes om dagen. Inputs til nye opgaver valideres både på klienten og på serveren, og så er der opsat en usynlig ReCAPTCHA.",
+        "Byggede en frontend-kopi af den aktuelle formular på Better Call Bob's website som et Wordpress-plugin."
+    ]
+},{
     version: "1.2.6",
     date: "2. april 2025",
     changes: [
@@ -73,7 +80,7 @@ const changes = [{
         "Små designforbedringer i 'Opret postering'- og 'Rediger postering'-vinduet."
     ]
 },{
-    version: "1.1.31",
+    version: "1.1.32",
     date: "27. marts 2025",
     changes: [
         "Rettede en fejl, der gjorde det muligt at oprette posteringer uden indhold. Ligeledes kan man nu heller ikke fjerne al indhold fra en eksisterende postering."

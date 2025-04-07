@@ -21,7 +21,8 @@
 .cardHolder {
     display: flex;
     gap: 20px;
-
+    white-space: wrap;
+    flex-wrap: wrap;
 }
 
 .card {

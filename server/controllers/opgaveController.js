@@ -1,6 +1,32 @@
 import Opgave from '../models/opgaveModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
+import Joi from "joi"
+import axios from 'axios'
+
+const opgaveSchema = Joi.object({
+    opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
+    navn: Joi.string().min(2).max(100).required(),
+    adresse: Joi.string().min(5).max(200).required(),
+    postnummerOgBy: Joi.string().pattern(/^\d{4}\s[a-zA-ZæøåÆØÅ\s\-]+$/).required(),
+    onsketDato: Joi.date().iso().required(),
+    telefon: Joi.string().pattern(/^\d{8}$/).required(),
+    email: Joi.string().email().required(),
+    CVR: Joi.string().length(8).pattern(/^\d+$/).allow("", null),
+    virksomhed: Joi.string().max(100).allow("", null),
+    recaptchaToken: Joi.string().required()
+})
+
+const verifyCaptcha = async (token) => {
+    const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
+    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+      params: {
+        secret,
+        response: token
+      }
+    })
+    return response.data
+}
 
 const getOpgaver = async (req, res) => {
     try {
@@ -54,6 +80,36 @@ const createOpgave = async (req, res) => {
     );
 
     const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige } = req.body;
+    try {
+        const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige})
+        res.status(200).json(opgave)
+    } catch (error) {
+        res.status(400).json({error: error.message})
+    }
+}
+
+// CREATE en opgave (åben route)
+const openCreateOpgave = async (req, res) => {
+    
+    const { error } = opgaveSchema.validate(req.body)
+
+    if (error) {
+        return res.status(400).json({ message: "Ugyldigt input", details: error.details })
+    }
+
+    const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, recaptchaToken } = req.body;
+    const captchaRes = await verifyCaptcha(recaptchaToken)
+
+    if (!captchaRes.success || captchaRes.score < 0.5) {
+        return res.status(403).json({ message: "Captcha verificering fejlede. Din captcha-score: " + captchaRes.score + "!" })
+    }
+
+    const counter = await Counter.findOneAndUpdate(
+        { name: 'opgaveID' },
+        { $inc: { value: 1 } },
+        { new: true, upsert: true }
+    );
+
     try {
         const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige})
         res.status(200).json(opgave)
@@ -117,6 +173,7 @@ const updateOpgave = async (req, res) => {
 
 export {
     getOpgaver,
+    openCreateOpgave,
     createOpgave,
     getOpgave,
     deleteOpgave,
