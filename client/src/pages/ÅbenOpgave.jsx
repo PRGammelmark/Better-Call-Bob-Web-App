@@ -942,8 +942,8 @@ const ÅbenOpgave = () => {
         }
     }
 
-    const handleTouchStart = (billede, index, event) => {
-        event.preventDefault(); // Prevent default browser behavior (like image marking)
+    const handleTouchStart = (event) => {
+        // event.preventDefault(); // Prevent default browser behavior (like image marking)
         setIsOnMobile(true); // Prevent opening image onClick on mobile
         setTouchStartTime(Date.now()); // Track the start time of the touch
     
