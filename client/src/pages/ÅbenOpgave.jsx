@@ -108,11 +108,7 @@ const ÅbenOpgave = () => {
     const [opgaveBilleder, setOpgaveBilleder] = useState([])
     const [uploadingImages, setUploadingImages] = useState([])
     const [åbnBillede, setÅbnBillede] = useState("")
-    // touch states for images
-    const [isTouching, setIsTouching] = useState(false);
-    const [touchStartTime, setTouchStartTime] = useState(null);
-    const [isOnMobile, setIsOnMobile] = useState(false);
-    const [hapticTimeout, setHapticTimeout] = useState(null);
+    const [imageIndex, setImageIndex] = useState(null)
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -936,84 +932,11 @@ const ÅbenOpgave = () => {
             // Slet fil fra Firebase Storage
             await deleteObject(fileRef);
             console.log("Fil slettet fra Firebase Storage");
-    
+            if(åbnBillede){
+                setÅbnBillede(null)
+            }
         } catch (error) {
             console.error("Fejl ved sletning af billede:", error);
-        }
-    }
-
-    const handleTouchStart = (event) => {
-        // event.preventDefault(); // Prevent default browser behavior (like image marking)
-        setIsOnMobile(true); // Prevent opening image onClick on mobile
-        setTouchStartTime(Date.now()); // Track the start time of the touch
-    
-        // Clear any previous haptic feedback timeouts
-        if (hapticTimeout) {
-            clearTimeout(hapticTimeout);
-        }
-    
-        // Set up the haptic feedback to trigger after 1 second
-        const timeout = setTimeout(() => {
-            // Trigger haptic feedback if touch lasts more than 1 second
-            if (navigator.vibrate) {
-                navigator.vibrate(100); // Vibrate for 100ms
-            }
-        }, 1000); // 1 second delay
-    
-        setHapticTimeout(timeout); // Store the timeout ID to clear if needed
-    };
-    
-    const handleTouchEnd = (billede, index) => {
-        const touchDuration = Date.now() - touchStartTime;
-    
-        // If touch is more than 1 second, trigger the delete action
-        if (touchDuration < 750) {
-                    // If the touch is less than 1 second, open the image modal
-                    setÅbnBillede(billede);
-                } else {
-                    // If the touch is more than 1 second, trigger the delete
-                    handleDeleteFile(billede, index);
-                }
-    
-        // Clear the timeout for haptic feedback if the touch ends before 1 second
-        if (hapticTimeout) {
-            clearTimeout(hapticTimeout);
-        }
-    
-        // Reset states
-        setTouchStartTime(null);
-        setHapticTimeout(null);
-    };
-
-    // // Touch handlers when touching and holding on images
-    // const handleTouchStart = (event) => {
-    //     event.preventDefault();
-    //     setIsOnMobile(true)
-    //     setTouchStartTime(Date.now()); // Track the start time of the touch
-        
-    //     // Set isTouching to true for UI feedback (optional)
-    //     setIsTouching(true);
-    // };
-    
-    // const handleTouchEnd = (billede, index) => {
-    //     const touchDuration = Date.now() - touchStartTime;
-    
-    //     if (touchDuration < 1000) {
-    //         // If the touch is less than 1 second, open the image modal
-    //         setÅbnBillede(billede);
-    //     } else {
-    //         // If the touch is more than 1 second, trigger the delete
-    //         handleDeleteFile(billede, index);
-    //     }
-    
-    //     // Reset states
-    //     setIsTouching(false);
-    //     setTouchStartTime(null);
-    // };
-
-    const handleOpenBillede = (billede) => {
-        if(!isOnMobile){
-            setÅbnBillede(billede)
         }
     }
     
@@ -1078,12 +1001,12 @@ const ÅbenOpgave = () => {
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
                         {opgaveBilleder?.length > 0 && opgaveBilleder.map((billede, index) => (
-                            <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} onTouchStart={(event) => handleTouchStart(billede, index, event)} onTouchEnd={(index) => handleTouchEnd(billede, index)}>
+                            <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} >
                                 <img 
                                     src={billede} 
                                     alt={`Preview ${index + 1}`} 
                                     className={ÅbenOpgaveCSS.imagePreview}
-                                    onClick={() => handleOpenBillede(billede)}
+                                    onClick={() => {setÅbnBillede(billede); setImageIndex(index)}}
                                 />
                                 <button
                                     type="button"
@@ -1116,7 +1039,7 @@ const ÅbenOpgave = () => {
                             />
                         </div>}
                     </div>
-                    <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede}/>
+                    <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede} handleDeleteFile={handleDeleteFile} index={imageIndex} />
                 </form>}
                 {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></p>}            
 

@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.3.1",
+    date: "8. april 2025",
+    changes: [
+        "Tilrettede metoden man sletter opgavebilleder på på mobilen. Når man trykker ind på et billede har man nu muligheden for at slette den i popup'en, i stedet for, at man bliver promptet når man holder et billede nede i overblikket."
+    ]
+},{
     version: "1.3",
     date: "8. april 2025",
     changes: [

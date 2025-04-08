@@ -3,3 +3,21 @@
     border: 1px solid #00000030;
     border-radius: 10px;
 }
+
+.sletButton {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #FF000000;
+    transition: 0.2s ease;
+    border-radius: 10px;
+    background: #FF000030;
+    color: #222222;
+    font-family: "OmnesBold";
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.sletButton:hover {
+    border: 1px solid #FF0000;
+    /* color: #FF0000; */
+}
