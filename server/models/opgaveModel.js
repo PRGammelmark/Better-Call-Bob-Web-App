@@ -120,6 +120,10 @@ const opgaverSchema = new Schema({
         type: Array,
         required: false
     }],
+    opgaveBilleder: {
+        type: [String],
+        required: false
+    },
     isEnglish: {
         type: Boolean,
         default: false

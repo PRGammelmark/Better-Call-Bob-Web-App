@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "1.3",
+    date: "8. april 2025",
+    changes: [
+        "Nu kan man uploade billeder til en opgave. Upload af billeder er p.t. muligt når man er inde på en allerede oprettet opgave. Umiddelbart under opgavebeskrivelsen er der et billedfelt med et '+'-ikon. På mobilen kan man både vælge mellem billeder på telefonen såvel som at bruge telefonens kamera. På computer kan man enten vælge billeder fra sit arkiv, eller man kan trække-og-slippe et billede fra en mappe på computeren og i billedfeltet. Alle billeder vil blive komprimeret før upload for at spare plads og båndbredde. Op til fem billeder er tilladt pr. opgave. Tilknyttede billeder vises i en række under opgavebeskrivelsen. Man kan trykke dem store, og både almindelige medarbejdere og administratorer kan slette eksisterende billeder og uploade nye. Sletning kan lade sig gøre ved at klikke på skraldespanden når man bevæger musen over et billede, eller ved på mobilen at trykke og holde på det billede, man vil slette. På sigt vil billedupload også være muligt fra 'Opret opgave'-siden.",
+        "Når man tømmer papirkurven under 'Slettede opgaver' skal man nu ikke længere opdatere siden før papirkurven nu også rent faktisk præsenterer sig selv som tømt.",
+        "Rettede en fejl på infopillerne, der på computerskærme gjorde, at man kunne scrolle horisontalt på åbne opgaver. Det kan man ikke længere.",
+        "Tilføjede et navigations-ikon til 'Find vej'-knappen på åbne opgavesider."
+    ]
+},{
     version: "1.2.7",
     date: "7. april 2025",
     changes: [

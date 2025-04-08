@@ -24,6 +24,13 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
+import { ImagePlus, Trash2, Navigation } from 'lucide-react';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
+import { storage } from '../firebase.js'
+import imageCompression from 'browser-image-compression';
+import {v4} from 'uuid'
+import MoonLoader from "react-spinners/MoonLoader";
+import VisBilledeModal from '../components/modals/VisBillede.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -97,6 +104,15 @@ const ÅbenOpgave = () => {
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [tvingAfslutOpgaveModal, setTvingAfslutOpgaveModal] = useState(false)
     const [registrerBetalingsModal, setRegistrerBetalingsModal] = useState(false)
+    const [dragging, setDragging] = useState(false)
+    const [opgaveBilleder, setOpgaveBilleder] = useState([])
+    const [uploadingImages, setUploadingImages] = useState([])
+    const [åbnBillede, setÅbnBillede] = useState("")
+    // touch states for images
+    const [isTouching, setIsTouching] = useState(false);
+    const [touchStartTime, setTouchStartTime] = useState(null);
+    const [isOnMobile, setIsOnMobile] = useState(false);
+    const [hapticTimeout, setHapticTimeout] = useState(null);
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -208,6 +224,7 @@ const ÅbenOpgave = () => {
             setFærdiggjort(res.data.markeretSomFærdig);
             setOpgaveAfsluttet(res.data.opgaveAfsluttet);
             setIsEnglish(res.data.isEnglish)
+            setOpgaveBilleder(res.data.opgaveBilleder)
             setLoading(false);
         })
         .catch(error => console.log(error))
@@ -718,7 +735,288 @@ const ÅbenOpgave = () => {
         } else {
           window.location.href = googleMapsUrl;
         }
-      }
+    }
+
+    const handleFileDrop = async (e) => {
+        e.preventDefault();
+        setDragging(false);
+    
+        const droppedFiles = e.dataTransfer.files;
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
+    
+        const validFiles = Array.from(droppedFiles).filter(file =>
+            allowedTypes.includes(file.type)
+        );
+
+        if(opgaveBilleder.length + validFiles.length > 5){
+            window.alert("Du må højst uploade fem billeder.")
+            return
+        }
+
+        if (validFiles.length > 0) {
+            let compressedFiles = [];
+            for (let file of validFiles) {
+              try {
+                // Compress image
+                const compressedFile = await imageCompression(file, {
+                  maxSizeMB: 1, // Adjust as needed (1MB is a good starting point)
+                  maxWidthOrHeight: 1000, // You can change this to a specific size you want
+                  useWebWorker: true,
+                });
+                compressedFiles.push(compressedFile);
+              } catch (error) {
+                console.error("Image compression failed", error);
+              }
+            }
+            
+            try {
+                // Prepare to upload all files
+                const uploadedFilesPromises = compressedFiles.map((file) => {
+                    const storageRef = ref(storage, `opgaver/${file.name + v4()}`);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    setUploadingImages(prevUploadingImages => [...prevUploadingImages, file]);
+            
+                    return new Promise((resolve, reject) => {
+                        uploadTask.on(
+                            "state_changed",
+                            (snapshot) => {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            },
+                            (error) => {
+                                reject(error); // Reject if there's an error uploading
+                            },
+                            () => {
+                                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                                    resolve(downloadURL); // Resolve with the download URL
+                                });
+                                // Remove the last element from the uploadingImages array
+                                setUploadingImages(prevUploadingImages => prevUploadingImages.slice(0, -1));
+                            }
+                        );
+                    });
+                });
+            
+                // Wait for all files to upload and get their download URLs
+                const downloadURLs = await Promise.all(uploadedFilesPromises);
+                let newFileArray = [...opgaveBilleder, ...downloadURLs];
+            
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                    opgaveBilleder: newFileArray
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(res => {
+                    setOpgaveBilleder(newFileArray)
+                })
+                .catch(error => console.log(error))
+
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
+
+    const handleFileChange = async (e) => {        
+        const selectedFiles = e.target.files;
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
+        
+        const validFiles = Array.from(selectedFiles).filter(file =>
+            allowedTypes.includes(file.type)
+        );
+
+        if(opgaveBilleder.length + validFiles.length > 5){
+            window.alert("Du må højst uploade fem billeder.")
+            return
+        }
+        
+        if (validFiles.length > 0) {
+            let compressedFiles = [];
+            for (let file of validFiles) {
+              try {
+                // Compress image
+                const compressedFile = await imageCompression(file, {
+                  maxSizeMB: 1, // Adjust as needed (1MB is a good starting point)
+                  maxWidthOrHeight: 1000, // You can change this to a specific size you want
+                  useWebWorker: true,
+                });
+                compressedFiles.push(compressedFile);
+              } catch (error) {
+                console.error("Image compression failed", error);
+              }
+            }
+            
+            try {
+                // Prepare to upload all files
+                const uploadedFilesPromises = compressedFiles.map((file) => {
+                    const storageRef = ref(storage, `opgaver/${file.name + v4()}`);
+                    const uploadTask = uploadBytesResumable(storageRef, file);
+
+                    setUploadingImages(prevUploadingImages => [...prevUploadingImages, file]);
+            
+                    return new Promise((resolve, reject) => {
+                        uploadTask.on(
+                            "state_changed",
+                            (snapshot) => {
+                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                            },
+                            (error) => {
+                                reject(error); // Reject if there's an error uploading
+                            },
+                            () => {
+                                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                                    resolve(downloadURL); // Resolve with the download URL
+                                });
+                                // Remove the last element from the uploadingImages array
+                                setUploadingImages(prevUploadingImages => prevUploadingImages.slice(0, -1));
+                            }
+                        );
+                    });
+                });
+            
+                // Wait for all files to upload and get their download URLs
+                const downloadURLs = await Promise.all(uploadedFilesPromises);
+                let newFileArray = [...opgaveBilleder, ...downloadURLs];
+            
+                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                    opgaveBilleder: newFileArray
+                }, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                })
+                .then(res => {
+                    setOpgaveBilleder(newFileArray)
+                })
+                .catch(error => console.log(error))
+
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
+
+    const handleDeleteFile = async (billede, index) => {
+        if(!window.confirm("Er du sikker på, at du vil slette dette billede?")){
+            return
+        }
+        
+        const storage = getStorage();
+        const fileRef = ref(storage, billede); // Reference til filen i Firebase
+    
+        // Find the index of the image URL in the opgaveBilleder array
+        // const index = opgaveBilleder.indexOf(billede); 
+        let nyeOpgaveBilleder = [...opgaveBilleder];
+    
+        // If the image exists in the array, remove it using splice
+        if (index !== -1) {
+            nyeOpgaveBilleder.splice(index, 1);
+        } else {
+            console.log("Billede ikke fundet i opgaveBilleder array");
+            return;
+        }
+    
+        try {
+            
+            // Patch the array of URL's in the database
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                opgaveBilleder: nyeOpgaveBilleder
+            }, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                setOpgaveBilleder(nyeOpgaveBilleder)
+            })
+            .catch(error => console.log(error))
+            
+            // Slet fil fra Firebase Storage
+            await deleteObject(fileRef);
+            console.log("Fil slettet fra Firebase Storage");
+    
+        } catch (error) {
+            console.error("Fejl ved sletning af billede:", error);
+        }
+    }
+
+    const handleTouchStart = (billede, index, event) => {
+        event.preventDefault(); // Prevent default browser behavior (like image marking)
+        setIsOnMobile(true); // Prevent opening image onClick on mobile
+        setTouchStartTime(Date.now()); // Track the start time of the touch
+    
+        // Clear any previous haptic feedback timeouts
+        if (hapticTimeout) {
+            clearTimeout(hapticTimeout);
+        }
+    
+        // Set up the haptic feedback to trigger after 1 second
+        const timeout = setTimeout(() => {
+            // Trigger haptic feedback if touch lasts more than 1 second
+            if (navigator.vibrate) {
+                navigator.vibrate(100); // Vibrate for 100ms
+            }
+        }, 1000); // 1 second delay
+    
+        setHapticTimeout(timeout); // Store the timeout ID to clear if needed
+    };
+    
+    const handleTouchEnd = (billede, index) => {
+        const touchDuration = Date.now() - touchStartTime;
+    
+        // If touch is more than 1 second, trigger the delete action
+        if (touchDuration < 750) {
+                    // If the touch is less than 1 second, open the image modal
+                    setÅbnBillede(billede);
+                } else {
+                    // If the touch is more than 1 second, trigger the delete
+                    handleDeleteFile(billede, index);
+                }
+    
+        // Clear the timeout for haptic feedback if the touch ends before 1 second
+        if (hapticTimeout) {
+            clearTimeout(hapticTimeout);
+        }
+    
+        // Reset states
+        setTouchStartTime(null);
+        setHapticTimeout(null);
+    };
+
+    // // Touch handlers when touching and holding on images
+    // const handleTouchStart = (event) => {
+    //     event.preventDefault();
+    //     setIsOnMobile(true)
+    //     setTouchStartTime(Date.now()); // Track the start time of the touch
+        
+    //     // Set isTouching to true for UI feedback (optional)
+    //     setIsTouching(true);
+    // };
+    
+    // const handleTouchEnd = (billede, index) => {
+    //     const touchDuration = Date.now() - touchStartTime;
+    
+    //     if (touchDuration < 1000) {
+    //         // If the touch is less than 1 second, open the image modal
+    //         setÅbnBillede(billede);
+    //     } else {
+    //         // If the touch is more than 1 second, trigger the delete
+    //         handleDeleteFile(billede, index);
+    //     }
+    
+    //     // Reset states
+    //     setIsTouching(false);
+    //     setTouchStartTime(null);
+    // };
+
+    const handleOpenBillede = (billede) => {
+        if(!isOnMobile){
+            setÅbnBillede(billede)
+        }
+    }
+    
 
     return (
     
@@ -730,7 +1028,6 @@ const ÅbenOpgave = () => {
                     <b className={`${ÅbenOpgaveCSS.opgaveIDHeader} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
                     <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{opgave.adresse}</h2>
                     <div className={ÅbenOpgaveCSS.kortLinkContainer}>
-                        {/* <a href={`https://maps.google.com/?q=${opgave.adresse}`} target="_blank" className={ÅbenOpgaveCSS.kortLink}>Find vej til kunden</a> */}
                         {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
                         <p className={ÅbenOpgaveCSS.smsSendtTekst}>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
                         {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
@@ -779,9 +1076,49 @@ const ÅbenOpgave = () => {
                         {opgave.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
                         {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}
                     </div>
-                    
+                    <div className={ÅbenOpgaveCSS.billederDiv}>
+                        {opgaveBilleder?.length > 0 && opgaveBilleder.map((billede, index) => (
+                            <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} onTouchStart={(event) => handleTouchStart(billede, index, event)} onTouchEnd={(index) => handleTouchEnd(billede, index)}>
+                                <img 
+                                    src={billede} 
+                                    alt={`Preview ${index + 1}`} 
+                                    className={ÅbenOpgaveCSS.imagePreview}
+                                    onClick={() => handleOpenBillede(billede)}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => handleDeleteFile(billede, index)}
+                                    className={ÅbenOpgaveCSS.deleteButton}
+                                >
+                                    <Trash2 />
+                                </button>
+                            </div>
+                        ))}
+                        {uploadingImages?.length > 0 && uploadingImages.map(image => (
+                            <div className={ÅbenOpgaveCSS.spinnerDiv}>
+                                <MoonLoader size="20px"/>
+                            </div>
+                        ))}
+                        {!((uploadingImages?.length + opgaveBilleder?.length) > 4) && <div 
+                            className={`${ÅbenOpgaveCSS.fileInput} ${dragging ? ÅbenOpgaveCSS.dragover : ''}`} 
+                            onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
+                            onDragLeave={() => setDragging(false)} 
+                            onDrop={handleFileDrop}
+                        >
+                            <ImagePlus />
+                            <input 
+                            type="file" 
+                            name="file" 
+                            accept=".jpg, .jpeg, .png, .heic" 
+                            onChange={handleFileChange} 
+                            multiple 
+                            style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
+                            />
+                        </div>}
+                    </div>
+                    <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede}/>
                 </form>}
-                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej </p>}            
+                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></p>}            
 
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>

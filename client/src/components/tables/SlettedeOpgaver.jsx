@@ -7,33 +7,10 @@ import BarLoader from '../loaders/BarLoader.js'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 
-const SlettedeOpgaver = () => {
+const SlettedeOpgaver = ({slettedeOpgaver, setSlettedeOpgaver, isLoading, setIsLoading}) => {
 
   const navigate = useNavigate()
-  const [slettedeOpgaver, setSlettedeOpgaver] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
-
-  useEffect(()=>{
-    const fetchOpgaver = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      const json = await response.json();
-
-      if (response.ok) {
-        const opgaverDerErSlettet = json.filter(opgave => opgave.isDeleted != null);
-        setSlettedeOpgaver(opgaverDerErSlettet);
-        setIsLoading(false)
-      }
-    }
-
-    if (user) {
-      fetchOpgaver()
-    }
-  }, [user])
 
   return (
     <>
