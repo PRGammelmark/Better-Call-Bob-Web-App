@@ -1788,7 +1788,6 @@ transform: rotateY(180deg);
 }
 
 .fileInput {
-    margin-bottom: 15px;
     border: 1px dashed #3c5a4080;
     color: grey;
     border-radius: 10px;
@@ -1896,15 +1895,25 @@ transform: rotateY(180deg);
 @media screen and (max-width: 750px) {
 
     .spinnerDiv {
-        min-width: 20%;
+        width: calc(20% - 10px);
+        min-width: calc(20% - 10px);
+        max-width: calc(20% - 10px);
     }
-    
+
     .billederDiv {
+        display: flex;
+        flex-direction: row;
+        /* overflow-x: auto; */
+        gap: 10px;
+        margin-top: -10px;
+        margin-bottom: 20px;
         overflow: hidden;
     }
     
     .uploadetBillede {
-        width: 20%;
+        width: calc(20% - 10px);
+        min-width: calc(20% - 10px);
+        max-width: calc(20% - 10px);
         height: 90px;
     }
 
@@ -1923,7 +1932,10 @@ transform: rotateY(180deg);
 
     .fileInput {
         width: 20%;
+        min-width: 20%;
+        max-width: 20%;
         height: 90px;
+        margin-bottom: 0;
     }
     
     .infoPillsDiv {
