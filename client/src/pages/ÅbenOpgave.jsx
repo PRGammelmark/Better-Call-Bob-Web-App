@@ -24,13 +24,15 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
-import { ImagePlus, Trash2, Navigation } from 'lucide-react';
+import { ImagePlus, Trash2, Navigation, CirclePlay } from 'lucide-react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../firebase.js'
 import imageCompression from 'browser-image-compression';
 import {v4} from 'uuid'
 import MoonLoader from "react-spinners/MoonLoader";
 import VisBilledeModal from '../components/modals/VisBillede.jsx'
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { fetchFile } from '@ffmpeg/util';
 
 const ÅbenOpgave = () => {
     
@@ -109,6 +111,8 @@ const ÅbenOpgave = () => {
     const [uploadingImages, setUploadingImages] = useState([])
     const [åbnBillede, setÅbnBillede] = useState("")
     const [imageIndex, setImageIndex] = useState(null)
+    const [errorIndexes, setErrorIndexes] = useState(new Set());
+    const [isCompressingVideo, setIsCompressingVideo] = useState(false)
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -817,40 +821,97 @@ const ÅbenOpgave = () => {
 
     const handleFileChange = async (e) => {        
         const selectedFiles = e.target.files;
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
-        
-        const validFiles = Array.from(selectedFiles).filter(file =>
-            allowedTypes.includes(file.type)
+        const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
+        const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime'];
+
+        const validFiles = Array.from(selectedFiles).filter(file => 
+            allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type)
         );
 
-        if(opgaveBilleder.length + validFiles.length > 5){
-            window.alert("Du må højst uploade fem billeder.")
+        if(opgaveBilleder.length + validFiles.length > 10){
+            window.alert("Du må højst uploade 10 billede- eller videofiler til opgaven.")
             return
         }
         
         if (validFiles.length > 0) {
+            setUploadingImages(prevUploadingImages => [...prevUploadingImages, ...validFiles]);
+            let filesToUpload = [];
+        
+            // Separate image and video files
+            const imageFiles = validFiles.filter(file => allowedImageTypes.includes(file.type));
+            const videoFiles = validFiles.filter(file => allowedVideoTypes.includes(file.type));
+            
+            // Compress image files (if any)
             let compressedFiles = [];
-            for (let file of validFiles) {
-              try {
-                // Compress image
-                const compressedFile = await imageCompression(file, {
-                  maxSizeMB: 1, // Adjust as needed (1MB is a good starting point)
-                  maxWidthOrHeight: 1000, // You can change this to a specific size you want
-                  useWebWorker: true,
-                });
-                compressedFiles.push(compressedFile);
-              } catch (error) {
-                console.error("Image compression failed", error);
-              }
+            if(imageFiles.length > 0) {
+                for (let file of imageFiles) {
+                    try {
+                      const compressedFile = await imageCompression(file, {
+                        maxSizeMB: 1, // Adjust as needed (1MB is a good starting point)
+                        maxWidthOrHeight: 1000, // You can change this to a specific size you want
+                        useWebWorker: true,
+                      });
+                      compressedFiles.push(compressedFile);
+                    } catch (error) {
+                      console.error("Image compression failed", error);
+                    }
+                  }
             }
+
+            // Compress video files (if any)
+            let compressedVideos = [];
+            if (videoFiles.length > 0) {
+                setIsCompressingVideo(true)
+                console.log("Video file detected.")
+                const ffmpeg = new FFmpeg({ log: true }); // Create an FFmpeg instance
+                console.log("Created FFMPEG.")
+                await ffmpeg.load(); // Load FFmpeg (this may take a moment)
+                console.log("FFMPEG loaded.")
+
+                for (let file of videoFiles) {
+                    try {
+                        const fileName = file.name;
+                        const videoData = await fetchFile(file); // Fetch the video data
+                        // Write the video file to the FFmpeg virtual file system
+                        await ffmpeg.writeFile(fileName, videoData);
+                        console.log("Compressing file ...")
+                        
+                        // Compress the video (e.g., reducing the resolution and bitrate)
+                        await ffmpeg.exec([
+                            '-i', fileName,
+                            '-vcodec', 'libx264', 
+                            '-crf', '40', 
+                            '-b:v', '1000k', 
+                            '-preset', 'ultrafast', 
+                            '-acodec', 'copy',
+                            'output.mp4'
+                        ]);
+
+                        console.log("Reading the compressed file ...")
+                        // Read the compressed video from FFmpeg's virtual file system
+                        const compressedVideo = await ffmpeg.readFile('output.mp4');
+                        console.log("Creating blot ...")
+                        // Create a Blob from the compressed video data
+                        const videoBlob = new Blob([compressedVideo.buffer], { type: 'video/mp4' });
+                        console.log("Pushing the file to compressed videos array ...")
+                        // Push the compressed video file to the upload array
+                        compressedVideos.push(videoBlob);
+                        setIsCompressingVideo(false)
+                    } catch (error) {
+                        console.error("Video compression failed", error);
+                        setIsCompressingVideo(false)
+                    }
+                }
+            }
+
+            // Combine compressed images and videos for upload
+            filesToUpload = [...compressedFiles, ...compressedVideos];
             
             try {
                 // Prepare to upload all files
-                const uploadedFilesPromises = compressedFiles.map((file) => {
+                const uploadedFilesPromises = filesToUpload.map((file) => {
                     const storageRef = ref(storage, `opgaver/${file.name + v4()}`);
                     const uploadTask = uploadBytesResumable(storageRef, file);
-
-                    setUploadingImages(prevUploadingImages => [...prevUploadingImages, file]);
             
                     return new Promise((resolve, reject) => {
                         uploadTask.on(
@@ -865,8 +926,6 @@ const ÅbenOpgave = () => {
                                 getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
                                     resolve(downloadURL); // Resolve with the download URL
                                 });
-                                // Remove the last element from the uploadingImages array
-                                setUploadingImages(prevUploadingImages => prevUploadingImages.slice(0, -1));
                             }
                         );
                     });
@@ -874,33 +933,46 @@ const ÅbenOpgave = () => {
             
                 // Wait for all files to upload and get their download URLs
                 const downloadURLs = await Promise.all(uploadedFilesPromises);
-                let newFileArray = [...opgaveBilleder, ...downloadURLs];
-            
-                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                    opgaveBilleder: newFileArray
-                }, {
+                
+                // Update database with most recent information
+                axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
                     }
                 })
                 .then(res => {
-                    setOpgaveBilleder(newFileArray)
+                    let nuværendeOpgaveMedier = res.data.opgaveBilleder;
+                    let nyeOpgaveMedier = [...nuværendeOpgaveMedier, ...downloadURLs];
+
+                    axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+                        opgaveBilleder: nyeOpgaveMedier
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(res => {
+                        setUploadingImages(prevUploadingImages => 
+                            prevUploadingImages.slice(0, prevUploadingImages.length - validFiles.length)
+                        );
+                        setOpgaveBilleder(nyeOpgaveMedier)
+                    })
+                    .catch(error => console.log(error))
                 })
                 .catch(error => console.log(error))
-
             } catch (err) {
                 console.log(err);
             }
         }
     }
 
-    const handleDeleteFile = async (billede, index) => {
-        if(!window.confirm("Er du sikker på, at du vil slette dette billede?")){
+    const handleDeleteFile = async (medie, index) => {
+        if(!window.confirm("Er du sikker på, at du vil slette dette medie?")){
             return
         }
         
         const storage = getStorage();
-        const fileRef = ref(storage, billede); // Reference til filen i Firebase
+        const fileRef = ref(storage, medie); // Reference til filen i Firebase
     
         // Find the index of the image URL in the opgaveBilleder array
         // const index = opgaveBilleder.indexOf(billede); 
@@ -910,7 +982,7 @@ const ÅbenOpgave = () => {
         if (index !== -1) {
             nyeOpgaveBilleder.splice(index, 1);
         } else {
-            console.log("Billede ikke fundet i opgaveBilleder array");
+            console.log("Medie ikke fundet i opgaveBilleder array");
             return;
         }
     
@@ -931,14 +1003,18 @@ const ÅbenOpgave = () => {
             
             // Slet fil fra Firebase Storage
             await deleteObject(fileRef);
-            console.log("Fil slettet fra Firebase Storage");
+            console.log("Medie slettet fra Firebase Storage");
             if(åbnBillede){
                 setÅbnBillede(null)
             }
         } catch (error) {
-            console.error("Fejl ved sletning af billede:", error);
+            console.error("Fejl ved sletning af medie:", error);
         }
     }
+
+    const handleError = (index) => {
+        setErrorIndexes(prev => new Set(prev.add(index)));
+      };
     
 
     return (
@@ -1000,29 +1076,43 @@ const ÅbenOpgave = () => {
                         {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
-                        {opgaveBilleder?.length > 0 && opgaveBilleder.map((billede, index) => (
+                        {opgaveBilleder?.length > 0 && opgaveBilleder.map((medie, index) => {
+
+                            return (
                             <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} >
-                                <img 
-                                    src={billede} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className={ÅbenOpgaveCSS.imagePreview}
-                                    onClick={() => {setÅbnBillede(billede); setImageIndex(index)}}
-                                />
+                                {errorIndexes.has(index) ? 
+                                    <a href={medie} target='_blank'>
+                                        <div className={ÅbenOpgaveCSS.playVideoPlaceholder}>
+                                            <CirclePlay />
+                                        </div>
+                                    </a>
+                                    : 
+                                    <img 
+                                        src={medie} 
+                                        alt={`Preview ${index + 1}`} 
+                                        className={ÅbenOpgaveCSS.imagePreview}
+                                        onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                        onError={() => handleError(index)}
+                                    />
+                                }
                                 <button
                                     type="button"
-                                    onClick={() => handleDeleteFile(billede, index)}
+                                    onClick={() => handleDeleteFile(medie, index)}
                                     className={ÅbenOpgaveCSS.deleteButton}
                                 >
                                     <Trash2 />
                                 </button>
                             </div>
-                        ))}
+                            )
+                        })}
+
                         {uploadingImages?.length > 0 && uploadingImages.map(image => (
                             <div className={ÅbenOpgaveCSS.spinnerDiv}>
                                 <MoonLoader size="20px"/>
+                                {isCompressingVideo && <p style={{fontSize: 8, textAlign: "center"}}>Behandler video <br />– vent venligst ...</p>}
                             </div>
                         ))}
-                        {!((uploadingImages?.length + opgaveBilleder?.length) > 4) && <div 
+                        {!((uploadingImages?.length + opgaveBilleder?.length) > 10) && <div 
                             className={`${ÅbenOpgaveCSS.fileInput} ${dragging ? ÅbenOpgaveCSS.dragover : ''}`} 
                             onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
                             onDragLeave={() => setDragging(false)} 
@@ -1030,12 +1120,12 @@ const ÅbenOpgave = () => {
                         >
                             <ImagePlus />
                             <input 
-                            type="file" 
-                            name="file" 
-                            accept=".jpg, .jpeg, .png, .heic" 
-                            onChange={handleFileChange} 
-                            multiple 
-                            style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
+                                type="file" 
+                                name="file" 
+                                accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc" 
+                                onChange={handleFileChange} 
+                                multiple 
+                                style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
                             />
                         </div>}
                     </div>

@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "1.3.3",
+    date: "9. april 2025",
+    changes: [
+        "Ændrede antallet af billeder man kan uploade pr. opgave fra 5 til 10.",
+        "Nu kan man også uploade videofiler.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.3.2",
     date: "8. april 2025",
     changes: [

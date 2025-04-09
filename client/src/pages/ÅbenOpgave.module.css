@@ -16,6 +16,13 @@
     font-family: "OmnesBold";
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
     gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.kortLink:hover {
+    color: #fff;
+    background: #3c5a3f;
 }
 
 .tilbageKnap {
@@ -1887,8 +1894,23 @@ transform: rotateY(180deg);
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
+    gap: 10px;
     /* transform: translateY(-10px); */
     min-width: 50px;
+}
+
+.playVideoPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    transition: 0.1s ease;
+    flex-direction: column;
+}
+
+.playVideoPlaceholder:hover {
+    color: #59bf1a;
 }
 
 
