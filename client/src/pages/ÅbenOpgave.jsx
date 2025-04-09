@@ -880,7 +880,7 @@ const ÅbenOpgave = () => {
                         await ffmpeg.exec([
                             '-i', fileName,
                             '-vcodec', 'libx264', 
-                            '-crf', '40', 
+                            '-crf', '30', 
                             '-b:v', '1000k', 
                             '-preset', 'ultrafast', 
                             '-acodec', 'copy',

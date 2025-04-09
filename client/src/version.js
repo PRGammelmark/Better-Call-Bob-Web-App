@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.3.4",
+    date: "9. april 2025",
+    changes: [
+        "Opjusterede kvaliteten af uploadede videoer efter komprimering."
+    ]
+},{
     version: "1.3.3",
     date: "9. april 2025",
     changes: [
