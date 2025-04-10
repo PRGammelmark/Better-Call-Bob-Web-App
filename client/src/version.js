@@ -14,8 +14,8 @@
 // 
 
 const changes = [{
-    version: "1.3.4",
-    date: "9. april 2025",
+    version: "1.3.5",
+    date: "10. april 2025",
     changes: [
         "Forbedrede visning af videoer på opgavesider.",
         "Fejlrettelser og justeringer."
