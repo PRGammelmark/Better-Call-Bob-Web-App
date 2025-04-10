@@ -111,7 +111,7 @@ const ÅbenOpgave = () => {
     const [uploadingImages, setUploadingImages] = useState([])
     const [åbnBillede, setÅbnBillede] = useState("")
     const [imageIndex, setImageIndex] = useState(null)
-    const [errorIndexes, setErrorIndexes] = useState(new Set());
+    // const [errorIndexes, setErrorIndexes] = useState(new Set());
     const [isCompressingVideo, setIsCompressingVideo] = useState(false)
 
     useEffect(() => {
@@ -748,8 +748,8 @@ const ÅbenOpgave = () => {
             allowedTypes.includes(file.type)
         );
 
-        if(opgaveBilleder.length + validFiles.length > 5){
-            window.alert("Du må højst uploade fem billeder.")
+        if(opgaveBilleder.length + validFiles.length > 10){
+            window.alert("Du må højst uploade 10 billeder.")
             return
         }
 
@@ -871,10 +871,13 @@ const ÅbenOpgave = () => {
                 for (let file of videoFiles) {
                     try {
                         const fileName = file.name;
+                        console.log(fileName)
                         const videoData = await fetchFile(file); // Fetch the video data
                         // Write the video file to the FFmpeg virtual file system
                         await ffmpeg.writeFile(fileName, videoData);
                         console.log("Compressing file ...")
+
+                        const outputFileName = fileName.replace(/\.[^/.]+$/, '') + '_compressed_video.mp4';
                         
                         // Compress the video (e.g., reducing the resolution and bitrate)
                         await ffmpeg.exec([
@@ -884,18 +887,18 @@ const ÅbenOpgave = () => {
                             '-b:v', '1000k', 
                             '-preset', 'ultrafast', 
                             '-acodec', 'copy',
-                            'output.mp4'
+                            outputFileName
                         ]);
 
                         console.log("Reading the compressed file ...")
                         // Read the compressed video from FFmpeg's virtual file system
-                        const compressedVideo = await ffmpeg.readFile('output.mp4');
-                        console.log("Creating blot ...")
+                        const compressedVideo = await ffmpeg.readFile(outputFileName);
+                        console.log("Creating blob ...")
                         // Create a Blob from the compressed video data
-                        const videoBlob = new Blob([compressedVideo.buffer], { type: 'video/mp4' });
+                        const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4', name: outputFileName });
                         console.log("Pushing the file to compressed videos array ...")
                         // Push the compressed video file to the upload array
-                        compressedVideos.push(videoBlob);
+                        compressedVideos.push(compressedFile);
                         setIsCompressingVideo(false)
                     } catch (error) {
                         console.error("Video compression failed", error);
@@ -906,11 +909,12 @@ const ÅbenOpgave = () => {
 
             // Combine compressed images and videos for upload
             filesToUpload = [...compressedFiles, ...compressedVideos];
+            console.log(filesToUpload)
             
             try {
                 // Prepare to upload all files
                 const uploadedFilesPromises = filesToUpload.map((file) => {
-                    const storageRef = ref(storage, `opgaver/${file.name + v4()}`);
+                    const storageRef = ref(storage, `opgaver/${file.type + v4()}`);
                     const uploadTask = uploadBytesResumable(storageRef, file);
             
                     return new Promise((resolve, reject) => {
@@ -1012,9 +1016,9 @@ const ÅbenOpgave = () => {
         }
     }
 
-    const handleError = (index) => {
-        setErrorIndexes(prev => new Set(prev.add(index)));
-      };
+    // const handleError = (index) => {
+    //     setErrorIndexes(prev => new Set(prev.add(index)));
+    //   };
     
 
     return (
@@ -1077,32 +1081,34 @@ const ÅbenOpgave = () => {
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
                         {opgaveBilleder?.length > 0 && opgaveBilleder.map((medie, index) => {
-
                             return (
-                            <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} >
-                                {errorIndexes.has(index) ? 
-                                    <a href={medie} target='_blank'>
-                                        <div className={ÅbenOpgaveCSS.playVideoPlaceholder}>
-                                            <CirclePlay />
-                                        </div>
-                                    </a>
-                                    : 
-                                    <img 
-                                        src={medie} 
-                                        alt={`Preview ${index + 1}`} 
-                                        className={ÅbenOpgaveCSS.imagePreview}
-                                        onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
-                                        onError={() => handleError(index)}
-                                    />
-                                }
-                                <button
-                                    type="button"
-                                    onClick={() => handleDeleteFile(medie, index)}
-                                    className={ÅbenOpgaveCSS.deleteButton}
-                                >
-                                    <Trash2 />
-                                </button>
-                            </div>
+                                <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} >
+                                    {medie.includes("video%") 
+                                    ?
+                                        <video 
+                                            className={ÅbenOpgaveCSS.playVideoPlaceholder} 
+                                            src={medie} 
+                                            autoPlay 
+                                            loop 
+                                            muted 
+                                            onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                        />
+                                    :
+                                        <img 
+                                            src={medie} 
+                                            alt={`Preview ${index + 1}`} 
+                                            className={ÅbenOpgaveCSS.imagePreview}
+                                            onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                        />
+                                    }
+                                    <button
+                                        type="button"
+                                        onClick={() => handleDeleteFile(medie, index)}
+                                        className={ÅbenOpgaveCSS.deleteButton}
+                                    >
+                                        <Trash2 />
+                                    </button>
+                                </div>
                             )
                         })}
 
@@ -1112,7 +1118,7 @@ const ÅbenOpgave = () => {
                                 {isCompressingVideo && <p style={{fontSize: 8, textAlign: "center"}}>Behandler video <br />– vent venligst ...</p>}
                             </div>
                         ))}
-                        {!((uploadingImages?.length + opgaveBilleder?.length) > 10) && <div 
+                        {!((uploadingImages?.length + opgaveBilleder?.length) > 9) && <div 
                             className={`${ÅbenOpgaveCSS.fileInput} ${dragging ? ÅbenOpgaveCSS.dragover : ''}`} 
                             onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
                             onDragLeave={() => setDragging(false)} 

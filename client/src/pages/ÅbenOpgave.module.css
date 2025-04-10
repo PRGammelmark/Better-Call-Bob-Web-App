@@ -1837,6 +1837,7 @@ transform: rotateY(180deg);
     gap: 10px;
     margin-top: -10px;
     margin-bottom: 20px;
+    flex-wrap: wrap
 }
 
 .uploadetBillede {
@@ -1904,9 +1905,12 @@ transform: rotateY(180deg);
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 100%;
     transition: 0.1s ease;
     flex-direction: column;
+    border-radius: 9px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .playVideoPlaceholder:hover {
@@ -1933,9 +1937,9 @@ transform: rotateY(180deg);
     }
     
     .uploadetBillede {
-        width: calc(20% - 10px);
-        min-width: calc(20% - 10px);
-        max-width: calc(20% - 10px);
+        width: calc(20% - 8px);
+        min-width: calc(20% - 8px);
+        max-width: calc(20% - 8px);
         height: 90px;
     }
 
@@ -1953,9 +1957,9 @@ transform: rotateY(180deg);
     }
 
     .fileInput {
-        width: 20%;
-        min-width: 20%;
-        max-width: 20%;
+        width: calc(20% - 8px);
+        min-width: calc(20% - 8px);
+        max-width: calc(20% - 8px);
         height: 90px;
         margin-bottom: 0;
     }
