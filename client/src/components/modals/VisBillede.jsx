@@ -12,7 +12,6 @@ const VisBillede = (props) => {
             <video 
                 className={Styles.video} 
                 src={props.trigger} 
-                autoPlay 
                 controls 
             />
             : 

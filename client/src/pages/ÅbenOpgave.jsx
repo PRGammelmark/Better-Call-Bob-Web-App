@@ -1088,8 +1088,6 @@ const ÅbenOpgave = () => {
                                         <video 
                                             className={ÅbenOpgaveCSS.playVideoPlaceholder} 
                                             src={medie} 
-                                            autoPlay 
-                                            loop 
                                             muted 
                                             onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
                                         />
