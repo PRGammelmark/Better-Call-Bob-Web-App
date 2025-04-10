@@ -6,7 +6,7 @@ const VisBillede = (props) => {
 
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} handleDeleteFile={() => props?.handleDeleteFile() || null} index={props?.imageIndex}>
-            {props.trigger && props.trigger.includes("video%") ? <h2>Vis <video src=""></video></h2> : <h2>Vis billede</h2>}
+            {props.trigger && props.trigger.includes("video%") ? <h2>Vis video</h2> : <h2>Vis billede</h2>}
             {props.trigger && props.trigger.includes("video%") 
             ? 
             <video 
