@@ -1922,7 +1922,7 @@ transform: rotateY(180deg);
 
 @media screen and (max-width: 750px) {
 
-    .ansvarligDiv:last-child {
+    .ansvarligDivEkstraBottomMargin:last-child {
         margin-bottom: 20px;
     }
     

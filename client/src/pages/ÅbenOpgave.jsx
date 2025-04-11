@@ -1300,20 +1300,20 @@ const ÅbenOpgave = () => {
                             <div className={ÅbenOpgaveCSS.ansvarlige}>
                             {nuværendeAnsvarlige && nuværendeAnsvarlige.length > 0 ? nuværendeAnsvarlige.map((ansvarlig) => {
                                 return (
-                                    <div key={ansvarlig._id} className={ÅbenOpgaveCSS.ansvarligDiv}>
+                                    <div key={ansvarlig._id} className={`${ÅbenOpgaveCSS.ansvarligDiv} ${(user.isAdmin && !færdiggjort) && ÅbenOpgaveCSS.ansvarligDivEkstraBottomMargin}`}>
                                         <p>{ansvarlig.navn}</p>
                                         {user.isAdmin && (færdiggjort ? null : <button className={ÅbenOpgaveCSS.fjernAnsvarlig} onClick={() => {fjernAnsvarlig(ansvarlig)}}><img src={CloseIcon} alt="Close Icon" className={ÅbenOpgaveCSS.closeIcon} /></button>)}
                                     </div>
                                 )
                             }) : <p>Der er ikke udpeget en ansvarlig til opgaven.</p>}
                             </div>
-                            <button 
+                            {user.isAdmin && (færdiggjort ? null : <button 
                                 type="button" 
                                 onClick={handleTildelAnsvarKlik} 
                                 className={ÅbenOpgaveCSS.customSelectAnsvarligKnap}
                             >
                                 <UserRoundPlus size="20px" />
-                            </button>
+                            </button>)}
                         </div>
                     </div>
                 </div>
