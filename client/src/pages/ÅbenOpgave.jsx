@@ -2,7 +2,7 @@ import React from 'react'
 import ÅbenOpgaveCSS from './ÅbenOpgave.module.css'
 import PageAnimation from '../components/PageAnimation'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useState, useEffect, useReducer } from 'react'
+import { useState, useEffect, useReducer, useRef } from 'react'
 import BackIcon from "../assets/back.svg"
 import axios from "axios"
 import dayjs from 'dayjs'
@@ -24,7 +24,7 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
-import { ImagePlus, Trash2, Navigation, CirclePlay } from 'lucide-react';
+import { ImagePlus, Trash2, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, Clock5, UserRoundPlus, Send } from 'lucide-react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../firebase.js'
 import imageCompression from 'browser-image-compression';
@@ -43,6 +43,8 @@ const ÅbenOpgave = () => {
     if (!user) {
         return
     }
+
+    const selectRef = useRef(null);
 
     // state managers
     const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
@@ -303,8 +305,6 @@ const ÅbenOpgave = () => {
         } else {
             setSætPåmindelseSMS(false);
         }
-
-        const syncOpgavestatus = e.target.value;
         
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             status: syncOpgavestatus
@@ -313,7 +313,9 @@ const ÅbenOpgave = () => {
                 'Authorization': `Bearer ${user.token}`
             }
         })
-        .then(res => console.log(res.data))
+        .then(res => {
+            console.log(res.data)
+        })
         .catch(error => console.log(error))
     }
 
@@ -1019,6 +1021,12 @@ const ÅbenOpgave = () => {
     // const handleError = (index) => {
     //     setErrorIndexes(prev => new Set(prev.add(index)));
     //   };
+
+    const handleTildelAnsvarKlik = () => {
+        if (selectRef.current) {
+            selectRef.current.focus();
+        }
+    };
     
 
     return (
@@ -1138,7 +1146,7 @@ const ÅbenOpgave = () => {
                     </div>
                     <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede} handleDeleteFile={handleDeleteFile} index={imageIndex} />
                 </form>}
-                {!færdiggjort && <p onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></p>}            
+                {!færdiggjort && <b onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></b>}            
 
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>
@@ -1182,15 +1190,15 @@ const ÅbenOpgave = () => {
                                 {opgave.CVR ? <p className={ÅbenOpgaveCSS.virksomhedTekst}>CVR: {opgave.CVR}</p> : null}
                             </div>}
                             <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
-                                <p className={`${ÅbenOpgaveCSS.marginTop10}`}>📞 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
-                                <p>✉️ <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
+                                <p className={`${ÅbenOpgaveCSS.marginTop10}`}><Phone size="20px" /> <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
+                                <p><Mail size="20px" /> <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
                             </div>
                             <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}><img src={PhoneIcon} alt="Phone Icon" /> {opgave.telefon}</a>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + opgave.telefon + "&body=Hej%20" + opgave.navn.split(" ")[0] + ", "}><img src={SmsIcon} alt="SMS Icon" /> SMS</a>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}><img src={MailIcon} alt="Mail Icon" /> Mail</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}><Phone size="20px"/> {opgave.telefon}</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + opgave.telefon + "&body=Hej%20" + opgave.navn.split(" ")[0] + ", "}><MessageCircle size="20px" /> SMS</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}><Mail size="20px" /> Mail</a>
                             </div>
-                            <br /><button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>
+                            <button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>
                         </div>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
@@ -1222,11 +1230,24 @@ const ÅbenOpgave = () => {
                         </div>  
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
                             {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
-                                <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
+                                {/* <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
                                     <option value="Modtaget">Status: Opgave modtaget</option>
                                     <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
                                     <option value="Dato aftalt">Status: Dato aftalt</option>
-                                </select>
+                                </select> */}
+                                <div className={ÅbenOpgaveCSS.mobileOpgaveStatusContainer}>
+                                    <select name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
+                                        <option value="Modtaget">Opgave modtaget</option>
+                                        <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
+                                        <option value="Dato aftalt">Status: Dato aftalt</option>
+                                    </select>
+                                    <div className={ÅbenOpgaveCSS.mobileOpgaveStatusIcon}>
+                                        {status === "Modtaget" && <CircleCheck size="20px" />}
+                                        {status === "Afventer svar" && <Clock5 size="20px" />}
+                                        {status === "Dato aftalt" && <Handshake size="20px" />}
+                                    </div>
+                                    
+                                </div>
                             </form>}
                             
                         </div>
@@ -1264,15 +1285,14 @@ const ÅbenOpgave = () => {
                     </div>
                     <div className={`${ÅbenOpgaveCSS.uddelegeringMobile}`}>
                         {user.isAdmin && (færdiggjort ? null : <form className={ÅbenOpgaveCSS.tildelAnsvarligeForm} action="">
-
-                            <select className={ÅbenOpgaveCSS.tildelAnsvarlige} defaultValue="Tildel ansvarlige til opgaven ..." name="vælgBob" onChange={tildelAnsvar}>
-                                <option disabled>Tildel ansvarlige til opgaven ...</option>
-                                {brugere && brugere.map((ledigAnsvarlig) => {
-                                    return(
-                                        <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
-                                    )
-                                })}
-                            </select>
+                                <select ref={selectRef} className={`${ÅbenOpgaveCSS.tildelAnsvarlige} ${ÅbenOpgaveCSS.hiddenSelect}`} defaultValue="Tildel ansvarlige til opgaven ..." name="vælgBob" onChange={tildelAnsvar}>
+                                    <option disabled>Tildel ansvarlige til opgaven ...</option>
+                                    {brugere && brugere.map((ledigAnsvarlig) => {
+                                        return(
+                                            <option key={ledigAnsvarlig._id} value={ledigAnsvarlig._id}>{ledigAnsvarlig.navn}</option>
+                                        )
+                                    })}
+                                </select>
                         </form>)}
                         
                         <div className={ÅbenOpgaveCSS.ansvarshavendeListe}>
@@ -1287,6 +1307,13 @@ const ÅbenOpgave = () => {
                                 )
                             }) : <p>Der er ikke udpeget en ansvarlig til opgaven.</p>}
                             </div>
+                            <button 
+                                type="button" 
+                                onClick={handleTildelAnsvarKlik} 
+                                className={ÅbenOpgaveCSS.customSelectAnsvarligKnap}
+                            >
+                                <UserRoundPlus size="20px" />
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1586,7 +1613,7 @@ const ÅbenOpgave = () => {
                                     }
                                 }}
                             />
-                            <button disabled={!kommentar} onClick={(e) => {e.preventDefault(); submitKommentar();}}>Indsend</button>
+                            <button disabled={!kommentar} onClick={(e) => {e.preventDefault(); submitKommentar();}}><Send size="20px"/></button>
                         </div>
                     </form>
                 </div>

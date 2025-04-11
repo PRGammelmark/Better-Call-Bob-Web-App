@@ -7,12 +7,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 5px;
+    margin-top: 30px;
     text-decoration: none;
-    color: #222222;
-    background-color: #f0f0f0;
+    color: #fff;
+    background-color: #3c5a3f;
     padding: 8px 20px;
-    border-radius: 20px;
+    border-radius: 10px;
     font-family: "OmnesBold";
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
     gap: 10px;
@@ -69,7 +69,7 @@
 
 .opgavebeskrivelse {
     width: 100%;
-    border-radius: 15px;
+    border-radius: 10px;
     margin-bottom: 0px;
     padding: 8px 20px;
     font-family: Omnes;
@@ -88,7 +88,7 @@
 
 .opgavestatus {
     width: 100%;
-    border-radius: 15px;
+    border-radius: 10px;
     padding: 4px 15px;
     font-family: Omnes;
     font-size: 0.9rem;
@@ -157,6 +157,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    position: relative;
 }
 
 .ansvarlige {
@@ -564,6 +565,7 @@
     color: #59bf1a;
     transition: 0.2s ease;
     transform: translateY(-4px);
+    margin-top: 20px;
 }
 
 .kommentarListe {
@@ -1318,7 +1320,7 @@
     right: 0;
     padding: 10px 20px;
     color: #FF0000;
-    border-radius: 15px;
+    border-radius: 10px;
     font-family: OmnesBold;
     font-size: 0.9rem;
     transition: 0.2s ease;
@@ -1695,7 +1697,7 @@ transform: rotateY(180deg);
     height: 70px;
     background: #3c5a3f;
     color: white;
-    border-radius: 10px;
+    border-radius: 30px;
     border: none;
     font-family: "OmnesBold";
     transition: 0.2s ease;
@@ -1920,6 +1922,10 @@ transform: rotateY(180deg);
 
 @media screen and (max-width: 750px) {
 
+    .ansvarligDiv:last-child {
+        margin-bottom: 20px;
+    }
+    
     .spinnerDiv {
         width: calc(20% - 10px);
         min-width: calc(20% - 10px);
@@ -1975,9 +1981,13 @@ transform: rotateY(180deg);
     }
     
     .kommentarFlexDiv button {
-        min-width: 70px;
-        width: 70px;
-        max-width: 20%;
+        min-width: 40px;
+        width: 40px;
+        height: 40px;
+        align-items: center;
+        justify-content: center;
+        padding-top: 5px;
+        padding-right: 3px;
     }
 
     .infoLineFaktura {
@@ -2091,7 +2101,7 @@ transform: rotateY(180deg);
         gap: 10px;
         justify-content: start;
         margin-top: 20px;
-        justify-content: space-between;
+        justify-content: center;
     }
 
     .kundeKontaktMobile a.link {
@@ -2100,16 +2110,21 @@ transform: rotateY(180deg);
         font-weight: 600;
         display: flex;
         align-items: center;
+        min-width: 30%;
+        flex-grow: 1;
         gap: 10px;
-        padding: 8px 15px;
-        background-color: #59bf1a28;
-        color: #59bf1a;
+        /* padding: 8px 20px; */
+        padding-top: 8px;
+        padding-bottom: 8px;
+        background-color: #f0f0f0;
+        color: #222222;
         text-align: center;
+        justify-content: center;
         border-radius: 10px;
         cursor: pointer;
-        font-family: OmnesBold;
+        font-family: Omnes;
         font-size: 0.8rem;
-        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(89,191,26,0.55) 0px 0px 0px 1px;
+        box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(34,34,34,0.19) 0px 0px 0px 1px;
     }
 
     .kundeKontaktMobile a.link img {
@@ -2135,13 +2150,63 @@ transform: rotateY(180deg);
         padding-left: 32px;
         font-size: 0.85rem;
         font-weight: 800;
-        border-radius: 10px;
+        border-radius: 10px 0px 0px 10px;
         margin-top: 0px;
+        background: #3c5a3f;
+        color: #fff;
+        border: none;
+        box-shadow: none;
+        font-family: "OmnesBold"
+    }
+
+    .mobileOpgaveStatusContainer {
+        display: flex;
+        gap: 0;
+        align-items: center;
+        height: 40px;
+    }
+
+    .hiddenSelect {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+        width: 0;
+        height: 0;
+    }
+
+    .mobileOpgaveStatusIcon {
+        height: 100%;
+        padding-left: 0px;
+        padding-right: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background: #3c5a3f;
+        border-radius: 0px 10px 10px 0px;
+    }
+
+    .customSelectAnsvarligKnap {
+        position: absolute;
+        height: 50px;
+        width: 50px;
+        border-radius: 100px;
+        bottom: -25px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-left: 4px;
+        color: #222222;
+        background: #f0f0f0;
+        border: 1px solid #1f1f1f30;
+        cursor: pointer;
     }
 
     .kundeinformationer {
         padding-top: 40px;
-        margin-top: 40px;
+        margin-top: 30px;
         padding-bottom: 40px;
         margin-bottom: 40px;
     }
