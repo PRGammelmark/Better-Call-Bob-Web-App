@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.3.6",
+    date: "11. april 2025",
+    changes: [
+        "Rettede en fejl, hvor videoer på opgavesider automatisk ville åbne så snart man åbnede opgavesiden. Det gør de nu ikke længere."
+    ]
+},{
     version: "1.3.5",
     date: "10. april 2025",
     changes: [
