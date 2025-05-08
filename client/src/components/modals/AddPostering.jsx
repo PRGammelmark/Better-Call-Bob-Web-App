@@ -305,14 +305,16 @@ const AddPostering = (props) => {
                 <div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast honorar</h3>
                     <div>
-                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastHonorar} onChange={(e) => setPosteringFastHonorar(e.target.value)} type="decimal" min="0" inputMode="numeric" pattern="[0-9]*" />
+                        {/* <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastHonorar} onChange={(e) => setPosteringFastHonorar(e.target.value)} type="decimal" min="0" inputMode="decimal" pattern="[0-9]*" /> */}
+                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastHonorar} onChange={(e) => {const value = e.target.value.replace(',', '.'); setPosteringFastHonorar(value);}} type="decimal" min="0" inputMode="decimal" />
                     </div>
                 </div>}
                 {!dynamiskPrisBeregning && 
                 <div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Fast pris (ekskl. moms)</h3>
                     <div>
-                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="decimal" min="0" inputMode="numeric" pattern="[0-9]*" />
+                        {/* <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="decimal" min="0" inputMode="decimal" pattern="[0-9]*" /> */}
+                        <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => {const value = e.target.value.replace(',', '.'); setPosteringFastPris(value)}} type="decimal" min="0" inputMode="decimal" />
                     </div>
                 </div>}
                 {(dynamiskHonorarBeregning || dynamiskPrisBeregning) && 

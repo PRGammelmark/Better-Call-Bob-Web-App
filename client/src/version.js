@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "1.3.8",
+    date: "8. maj 2025",
+    changes: [
+        "Nogle kunder oplevede, at logoet ikke blev ordentligt vedhæftet på mailkvitteringer. Implementerede rettelser, der fremover øger sandsynligheden for korrekt visning af logoet på alle kunders mailklienter.",
+        "Tilføjede mulighed for at bruge decimaltal når man indtaster fast honorar eller fast pris på en postering.",
+        "Alle medarbejdere har nu mulighed for at vende posteringer, så man både kan se hvad kunden skal betale såvel som hvad posteringen har registreret af kommende honorarbetalinger for det pågældende arbejde.",
+        "Posteringer på opgaver viser nu indtægter i udgangspunktet. For at se ens honorarbetaling skal man nu vende posteringen om."
+    ]
+},{
     version: "1.3.7",
     date: "11. april 2025",
     changes: [

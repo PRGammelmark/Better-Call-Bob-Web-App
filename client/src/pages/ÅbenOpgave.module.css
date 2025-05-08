@@ -1622,20 +1622,20 @@
 transform: rotateY(180deg);
 }
 
-.posteringBack .posteringCard {
+.posteringFront .posteringCard {
         background: #3c5a3f;
         border: 1px solid #22222299;
 }
 
-.posteringBack .posteringCard * {
+.posteringFront .posteringCard * {
     color: white;
 }
 
-.posteringBack .posteringListe {
+.posteringFront .posteringListe {
     border-top: 1px solid #ffffff50;
 }
 
-.posteringBack .totalRække {
+.posteringFront .totalRække {
     border-top: 1px solid #ffffff50;
 }
 

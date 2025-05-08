@@ -2,6 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import satser from "../variables";
 import BCBLogo from "../assets/mobilePay.png";
+import Logo from "../assets/bcb-logo.svg"
 
 const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish) => {
 
@@ -147,11 +148,6 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
             <td>${isEnglish ? "Total outlays and materials" : "Udlæg & materialer, i alt"}:</td>
             <td style="text-align: right;">${(totalUdlæg * 1.25).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</td>
         </tr>` : '';
-
-    // const materialeHeader = totalUdlæg > 0 ? `
-    //     <tr>
-    //         <td style="padding-top: 10px;">${isEnglish ? "Outlays & materials" : "Udlæg & materialer"}:</td>
-    //     </tr>` : '';
     
     const materialeudlægDetaljer = posteringer.map(postering => postering.udlæg.map(udlæg => `
         <tr>
@@ -177,9 +173,11 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
             <th style="text-align: right;"><b>${isEnglish ? "Amount" : "Beløb"}</b></th>
         </tr>`;
 
+    // <img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo via hjemmeside" style="width: 150px; height: auto; margin-top: -20px; display: flex; justify-content: flex-end;" />
+
     const kvittering = `
         <div style="background-color: #fff; color: #000; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
-            <img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 150px; height: auto; margin-top: -20px; display: flex; justify-content: flex-end;" />
+            <img src="https://bettercallbob.dk/wp-content/uploads/2025/05/bcb-logo.png" alt="BCB Logo via hjemmeside" style="width: 150px; height: auto; margin-top: -20px;" />
             <div>
                 <p style="font-size: 1.2rem;">${isEnglish ? "Receipt for work done at" : "Kvittering for arbejde på adressen"} <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${opgave.adresse}</b><br />${opgave.postnummerOgBy}</p>
                 <p><b>${isEnglish ? "Date" : "Dato"}:</b> ${dayjs().format('DD. MMMM YYYY')}<br />

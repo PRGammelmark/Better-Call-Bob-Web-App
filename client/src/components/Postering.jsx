@@ -12,7 +12,7 @@ import { ref, uploadBytesResumable, getDownloadURL, getStorage, deleteObject } f
 const Postering = ({ postering, brugere, user, posteringer, setPosteringer, færdiggjort, openPosteringModalID, setOpenPosteringModalID }) => {
 
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
-    const [honorarVisning, setHonorarVisning] = useState(true)
+    const [honorarVisning, setHonorarVisning] = useState(false)
     const [kvitteringBillede, setKvitteringBillede] = useState("")
     const aftenTillægMultiplikator = postering.aftenTillæg ? (postering.satser.aftenTillægHonorar / 100) : 1;
     const natTillægMultiplikator = postering.natTillæg ? (postering.satser.natTillægHonorar / 100) : 1;
@@ -71,7 +71,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
         <div className={ÅbenOpgaveCSS.posteringFlipContainer}>
             <div className={`${ÅbenOpgaveCSS.posteringFlipper} ${honorarVisning ? '' : ÅbenOpgaveCSS.flipped}`}>
                 <div className={ÅbenOpgaveCSS.posteringFront}>
-                    <div className={ÅbenOpgaveCSS.posteringCard} onClick={() => user.isAdmin && setHonorarVisning(!honorarVisning)}>
+                    <div className={ÅbenOpgaveCSS.posteringCard} onClick={() => setHonorarVisning(!honorarVisning)}>
                         {user.isAdmin && <div className={`${ÅbenOpgaveCSS.dækningsbidragPill} ${honorarVisning ? ÅbenOpgaveCSS.dækningsbidragPillActive : ''}`}>
                             <p>{(postering.totalPris - postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         </div>}
@@ -163,7 +163,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                         </div>
                     </div>
                     <div className={`${ÅbenOpgaveCSS.posteringKnapper} ${!honorarVisning && ÅbenOpgaveCSS.posteringKnapperFadeOut}`}>
-                        {user.isAdmin && <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Honorar</button>}
+                        <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Honorar</button>
                         {(user.isAdmin || user.id === postering.brugerID) && <div>
                             <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
                             <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
@@ -174,7 +174,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                     </div>
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringBack}>
-                    <div className={ÅbenOpgaveCSS.posteringCard} onClick={() => user.isAdmin && setHonorarVisning(!honorarVisning)}>
+                    <div className={ÅbenOpgaveCSS.posteringCard} onClick={() => setHonorarVisning(!honorarVisning)}>
                         {user.isAdmin && <div className={`${ÅbenOpgaveCSS.dækningsbidragPill} ${honorarVisning ? '' : ÅbenOpgaveCSS.dækningsbidragPillActive}`}>
                             <p>{(postering.totalPris - postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
                         </div>}
@@ -266,7 +266,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                         </div>
                     </div>
                     <div className={`${ÅbenOpgaveCSS.posteringKnapper} ${honorarVisning && ÅbenOpgaveCSS.posteringKnapperFadeOut}`}>
-                        {user.isAdmin && <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Indtægt</button>}
+                        <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Indtægt</button>
                         <div>
                             {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id)}}>Rediger</button>}
                             {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {sletPostering(postering._id)}}>Slet</button>}
