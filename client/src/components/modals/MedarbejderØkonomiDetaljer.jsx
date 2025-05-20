@@ -9,7 +9,7 @@ import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import Modal from '../Modal.jsx'
 import satser from '../../variables'
 import PageAnimation from '../PageAnimation.jsx'
-
+import * as beregn from '../../utils/beregninger.js'
 
 
 const MedarbejderØkonomiDetaljer = (props) => {
@@ -32,20 +32,6 @@ const MedarbejderØkonomiDetaljer = (props) => {
 
     const navn = posteringer.length > 0 && getBrugerName(posteringer[0].brugerID)
     const opgaverForBruger = opgaver && uniqueOpgaveIDs && opgaver.filter(opgave => uniqueOpgaveIDs.includes(opgave._id))
-
-    // function beregnTjent(posteringer) {
-    //     if(!posteringer) return 0
-    //     const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart * postering.satser.opstartsgebyrHonorar, 0)
-    //     const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer * postering.satser.handymanTimerHonorar, 0)
-    //     const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer * postering.satser.tømrerTimerHonorar, 0)
-    //     const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar, 0)
-    //     const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
-    //     const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
-    //     const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
-    //     const månedensTjentFørRabat = månedensOpstartsgebyrer + månedensHandymantimer + månedensTømrertimer + månedensRådgivningOpmålingVejledning + månedensAftenTillæg + månedensNatTillæg + månedensTrailer
-    //     const månedensRabat = posteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
-    //     return månedensTjentFørRabat - månedensRabat;
-    // }
 
     function beregnTjent(posteringer) {
         if(!posteringer) return 0
@@ -155,7 +141,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
     <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setPosteringerDetaljer(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}> 
         <div>
             {!kvitteringBillede ? <>
-            <h2 className={Styles.adminØkonomiHeading} style={{fontFamily: 'OmnesBold'}}>{navn &&navn.split(' ')[0]}s økonomi <br /><span style={{fontFamily: 'Omnes', fontSize: '16px', color: '#696969'}}>- {props.customMåned.end.format('MMMM YYYY')}</span></h2>
+            <h2 className={Styles.adminØkonomiHeading} style={{fontFamily: 'OmnesBold'}}>{navn && navn.split(' ')[0]}s økonomi <br /><span style={{fontFamily: 'Omnes', fontSize: '16px', color: '#696969'}}>- {props.customMåned.end.format('MMMM YYYY')}</span></h2>
             <div className={Styles.adminØkonomiContainer}>
                 <div style={{borderTopLeftRadius: '10px', borderTopRightRadius: '10px'}} className={`${Styles.adminØkonomiHeadings} ${Styles.adminØkonomiHeadingsDesktop}`}>
                     <div>
@@ -187,15 +173,15 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikDesktop}`}>
                     <p>{navn && navn.split(' ')[0]}</p>
-                    <p>{posteringer && beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{posteringer && beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{(beregn.totalHonorar(posteringer, 2, false)?.beløb - beregn.udlægHonorar(posteringer, 2, false)?.beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p>{beregn.udlægHonorar(posteringer, 2, false)?.formateret}</p>
+                    <p>{beregn.totalHonorar(posteringer, 2, false)?.formateret}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${Styles.månedOverblikMobile}`}>
                     <p>{navn && navn.split(' ')[0]}</p>
-                    <p>{beregnTjent(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p>{posteringer && beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p>{(beregn.totalHonorar(posteringer, 0, false)?.beløb - beregn.udlægHonorar(posteringer, 0, false)?.beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0})}</p>
+                    <p>{(beregn.udlægHonorar(posteringer, 2, false)?.beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0})}</p>
+                    <p>{beregn.totalHonorar(posteringer, 2, false)?.beløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0})}</p>
                 </div>
             </div>
             <div className={Styles.akkumuleretContainer}>
@@ -316,7 +302,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Udlæg</p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
-                        <div className={Styles.lineAlignRight}><p>{beregnUdlagt(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregn.udlægHonorar(posteringer, 2, false)?.formateret}</p></div>
                     </div>
                 }
                 {posteringer && beregnRabat(posteringer) > 0 &&
@@ -324,7 +310,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Rabat</p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
-                        <div className={Styles.lineAlignRight}><p>- {beregnRabat(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
+                        <div className={Styles.lineAlignRight}><p>- {beregn.rabatHonorar(posteringer, 2, false)?.formateret}</p></div>
                     </div>
                 }
                 {posteringer && beregnFasteHonorarer(posteringer) > 0 && 
@@ -332,7 +318,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div><p>Faste honorarer</p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
                         <div className={Styles.lineAlignRight}><p></p></div>
-                        <div className={Styles.lineAlignRight}><p>{beregnFasteHonorarer(posteringer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p></div>
+                        <div className={Styles.lineAlignRight}><p>{beregn.fastHonorar(posteringer, 2, false)?.formateret}</p></div>
                     </div>
                 }
                 <div className={Styles.akkumuleretØkonomiTableTotals}>
@@ -346,7 +332,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <b></b>
                     </div>
                     <div className={Styles.lineAlignRight}>
-                        <b style={{fontFamily: "OmnesBold"}}>{posteringer && ((beregnTjent(posteringer) + beregnUdlagt(posteringer))).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                        <b style={{fontFamily: "OmnesBold"}}>{beregn.totalHonorar(posteringer, 2, false)?.formateret}</b>
                     </div>
                 </div>
             </div>
@@ -387,14 +373,14 @@ const MedarbejderØkonomiDetaljer = (props) => {
                         <div className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeDesktop} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
                             <p>{opgave.adresse}</p>
                             <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay || opgave.opgaveAfsluttet) ? "✅ Betalt" : "❗️ Åben"}</p>
-                            <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p>{beregn.totalHonorar(posteringerForOpgave, 2, false)?.formateret}</p>
                             <p><button onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
                             <p><button onClick={() => navigate(`/opgave/${opgave._id}`)}>Gå til opgave</button></p>
                         </div>
                         <div onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeMobile} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
                             <p>{opgave.adresse}</p>
                             <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay || opgave.opgaveAfsluttet) ? "✅ Betalt" : "❗️ Åben"}</p>
-                            <p>{(beregnTjent(posteringerForOpgave)+beregnUdlagt(posteringerForOpgave)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                            <p>{beregn.totalHonorar(posteringerForOpgave, 2, false)?.formateret}</p>
                         </div>
                     </div>
                     )
@@ -429,66 +415,66 @@ const MedarbejderØkonomiDetaljer = (props) => {
                                     {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
-                                            <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.opstartHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
-                                            <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.handymanHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
-                                            <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.tømrerHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
-                                            <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.rådgivningHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg (+50% pr. time) </span>
-                                            <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.aftenTillægHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.natTillæg && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg (+100% pr. time) </span>
-                                            <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.natTillægHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.trailer && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
-                                            <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.trailerHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
-                                            <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.udlægHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                            <span>- {(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>- {beregn.rabatHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     {!postering.dynamiskHonorarBeregning && (
                                         <div className={ÅbenOpgaveCSS.posteringRække}>
                                             <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
-                                            <span>{postering.fastHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                            <span>{beregn.fastHonorar(postering, 0, false)?.formateret}</span>
                                         </div>
                                     )}
                                     <div className={ÅbenOpgaveCSS.totalRække}>
                                         <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                        <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
+                                        <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{beregn.totalHonorar(postering, 2, false)?.formateret}</b>
                                     </div>
                                 </div>
                             </div>

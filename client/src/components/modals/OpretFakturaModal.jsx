@@ -41,8 +41,15 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
         <div>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret faktura</h2>
                 <form action="">
-                    <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p>
-                    <p>Når fakturaen er oprettet vil den automatisk blive sendt til {(opgave.CVR || opgave.virksomhed) ? "firmaets regnskabsansvarlige" : "kundens email"}.</p>
+                    {/* <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{(opgave.virksomhed || opgave.CVR) ? totalFaktura.toLocaleString('da-DK') + " kr. ekskl. moms (" + } kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p> */}
+                    {(opgave.virksomhed || opgave.CVR) && <>
+                        <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr. ekskl. moms</b> ({(totalFaktura * 1.25)?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr. inkl. moms.)</p>
+                        <p>Da kunden er en erhvervskunde vil systemet oprette en fakturakladde til manuel gennemgang. Kunden modtager derfor ikke fakturaen med det samme.</p>
+                    </>}
+                    {!(opgave.virksomhed || opgave.CVR) && <>
+                        <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{(totalFaktura * 1.25)?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr. inkl. moms</b> ({totalFaktura?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr. ekskl. moms.)</p>
+                        <p>Fakturaen vil automatisk blive sendt til kundens registrerede email.</p>
+                    </>}
                     <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
                         <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
                         <div className={SwitcherStyles.checkboxContainer}>
@@ -96,7 +103,8 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                                 }
                             }}
                         >
-                        Opret og send faktura
+                        Opret {(opgave.virksomhed || opgave.CVR) ? ("fakturakladde (" + (totalFaktura?.toLocaleString('da-DK')) + " kr. ekskl. moms)") : ("og send faktura (" +(totalFaktura * 1.25)?.toLocaleString('da-DK') + " kr. ekskl. moms)")}<br />
+                        <span>Sendes til manuel gennemgang</span>
                         </button>
                     </div>
                     }

@@ -264,13 +264,14 @@
 .posteringRække {
     display: flex;
     justify-content: space-between;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     gap: 25px;
 }
 
 .totalRække {
     display: flex;
     justify-content: space-between;
+    font-size: 0.9rem;
     gap: 25px;
     margin-top: 5px;
     padding-top: 5px;
@@ -283,6 +284,17 @@
 
 .totalRækkeResultat {
     font-family: OmnesBold;
+}
+
+.headerSwitcherDiv {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 40px!important;
+}
+
+.headerSwitcherDiv .checkboxContainer {
+    margin-top: 0!important;
 }
 
 .paperclip {
@@ -735,11 +747,16 @@
     background: #3c5a3f;
     cursor: pointer;
     color: #fff;
-    transition: 0.2s ease
+    transition: 0.2s ease;
+    font-size: 1rem;
 }
 
 .markerSomFærdigKnap:hover {
     background: #59bf1a;
+}
+
+.markerSomFærdigKnapPrisHeadline {
+    font-size: 0.8rem;
 }
 
 .posteringCheckbox {
@@ -931,6 +948,7 @@
     padding: 10px 20px;
     border-radius: 15px;
     font-family: OmnesBold;
+    font-size: 1.1rem;
     margin-top: 0px;
     background: #3c5a3f;
     border: 2px solid #3c5a3f;
@@ -938,6 +956,12 @@
     color: #fff;
     transition: 0.2s ease;
     width: 100%;
+}
+
+.opretFaktura span {
+    font-size: 0.9rem;
+    color: #fefefe;
+    font-weight: 300;
 }
 
 .opretFaktura:hover {
@@ -1697,8 +1721,8 @@ transform: rotateY(180deg);
     height: 70px;
     background: #3c5a3f;
     color: white;
-    border-radius: 30px;
-    border: none;
+    border-radius: 10px!important;
+    border: 1px solid #3c5a3f40;
     font-family: "OmnesBold";
     transition: 0.2s ease;
     cursor: pointer;
@@ -1988,6 +2012,7 @@ transform: rotateY(180deg);
         justify-content: center;
         padding-top: 5px;
         padding-right: 3px;
+        border-radius: 10px;
     }
 
     .infoLineFaktura {

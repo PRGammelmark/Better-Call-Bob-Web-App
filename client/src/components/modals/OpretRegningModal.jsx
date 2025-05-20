@@ -25,6 +25,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
     const [qrTimer, setQrTimer] = useState(0)
     const [qrErrorMessage, setQrErrorMessage] = useState('')
     const [bekræftAdmGebyr, setBekræftAdmGebyr] = useState(false)
+    const [inklAdministrationsGebyr, setInklAdministrationsGebyr] = useState(true)
     const [telefonnummerTilAnmodning, setTelefonnummerTilAnmodning] = useState(opgave && opgave.telefon ? opgave.telefon : '')
     const [loadingFakturaSubmission, setLoadingFakturaSubmission] = useState(false)
     const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
@@ -97,7 +98,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
         <PageAnimation>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
             <form action="">
-            <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? (totalFaktura * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? totalFaktura.toLocaleString('da-DK') : '0'} kr. ekskl. moms).</p>
+            <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en regning til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{(totalFaktura * 1.25)?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr.</b> inkl. moms ({totalFaktura?.toLocaleString('da-DK', {maximumFractionDigits: 2, minimumFractionDigits: 2})} kr. ekskl. moms).</p>
             <p>Når regningen er oprettet vil den automatisk blive sendt via sms og/eller e-mail til kunden.</p>
             <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
                 <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
@@ -132,28 +133,27 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                 <img src={BackButton} className={Styles.backButton} onClick={() => setBetalSenereModalState(false)} alt="Tilbage" /><h2 className={ÅbenOpgaveCSS.modalHeading}>Betal senere med faktura</h2>
             </div>
             <form action="">
-                <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{totalFaktura ? ((totalFaktura + 49) * 1.25).toLocaleString('da-DK') : '0'} kr.</b> inkl. moms ({totalFaktura ? (totalFaktura + 49).toLocaleString('da-DK') : '0'} kr. ekskl. moms), inkl. administrationsgebyr på 49 kr.</p>
-                <p>Fakturaen skal betales senest 8 dage efter oprettelsen.</p>
+                <p className={ÅbenOpgaveCSS.bottomMargin10}>Du er ved at oprette en faktura til kunden på i alt <b className={ÅbenOpgaveCSS.bold}>{((totalFaktura + (inklAdministrationsGebyr ? 49 : 0)) * 1.25)?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr.</b> inkl. moms ({(totalFaktura + (inklAdministrationsGebyr ? 49 : 0))?.toLocaleString('da-DK', {minimumFractionDigits: 2, maximumFractionDigits: 2})} kr. ekskl. moms){inklAdministrationsGebyr ? ", inkl. administrationsgebyr på 49 kr" : ""}.</p>
+                <p>{inklAdministrationsGebyr && "Husk at gøre kunden opmærksom på administrationsgebyret. "}Fakturaen skal betales senest 8 dage efter oprettelsen.</p>
                 <div className={ÅbenOpgaveCSS.bekræftIndsendelseDiv}>
-                    <b className={ÅbenOpgaveCSS.bold}>Bekræft følgende:</b>
+                    <b className={ÅbenOpgaveCSS.bold}>Valgmuligheder:</b>
                     <div className={SwitcherStyles.checkboxContainer}>
-                        <label className={SwitcherStyles.switch} htmlFor="bekræftAdmGebyr">
-                            <input type="checkbox" id="bekræftAdmGebyr" name="bekræftAdmGebyr" className={SwitcherStyles.checkboxInput} required checked={bekræftAdmGebyr} onChange={(e) => setBekræftAdmGebyr(e.target.checked)} />
+                        <label className={SwitcherStyles.switch} htmlFor="fritagForAdministrationsgebyr">
+                            <input type="checkbox" id="fritagForAdministrationsgebyr" name="fritagForAdministrationsgebyr" className={SwitcherStyles.checkboxInput} checked={!inklAdministrationsGebyr} onChange={(e) => setInklAdministrationsGebyr(!e.target.checked)} />
                             <span className={SwitcherStyles.slider}></span>
                         </label>
-                        <b>Kunden er indforstået med, at denne løsning indeholder et administrationsgebyr på 49 kr.</b>
+                        <b>Fjern administrationsgebyr på 49kr.</b>
                     </div>
                 </div>
             </form>
-            {bekræftAdmGebyr && 
             <button 
             className={Styles.betalMedFakturaKnap} 
             onClick={(e) => {
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
                 const alternativEmail = opgave && opgave.email
-                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish)        
-            }}>Betal senere med faktura – kr. 49,-</button>}
+                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish)        
+            }}>Betal senere med faktura {inklAdministrationsGebyr ? "(+ 49 kr.)" : "(intet gebyr)"}</button>
         </PageAnimation>
         </>
         }

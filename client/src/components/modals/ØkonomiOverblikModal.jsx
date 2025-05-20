@@ -10,6 +10,7 @@ import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
 import satser from '../../variables'
 import BackArrow from '../../assets/back.svg'
 import axios from 'axios'
+import * as beregn from '../../utils/beregninger.js'
 
 const ØkonomiOverblikModal = (props) => {
 
@@ -17,28 +18,40 @@ const ØkonomiOverblikModal = (props) => {
     const [år, setÅr] = useState(dayjs().year())
     const [tjentJanuar, setTjentJanuar] = useState(0)
     const [udlagtJanuar, setUdlagtJanuar] = useState(0)
+    const [udbetalingJanuar, setUdbetalingJanuar] = useState(0)
     const [tjentFebruar, setTjentFebruar] = useState(0)
     const [udlagtFebruar, setUdlagtFebruar] = useState(0)
+    const [udbetalingFebruar, setUdbetalingFebruar] = useState(0)
     const [tjentMarts, setTjentMarts] = useState(0)
     const [udlagtMarts, setUdlagtMarts] = useState(0)
+    const [udbetalingMarts, setUdbetalingMarts] = useState(0)
     const [tjentApril, setTjentApril] = useState(0)
     const [udlagtApril, setUdlagtApril] = useState(0)
+    const [udbetalingApril, setUdbetalingApril] = useState(0)
     const [tjentMaj, setTjentMaj] = useState(0)
     const [udlagtMaj, setUdlagtMaj] = useState(0)
+    const [udbetalingMaj, setUdbetalingMaj] = useState(0)
     const [tjentJuni, setTjentJuni] = useState(0)
     const [udlagtJuni, setUdlagtJuni] = useState(0)
+    const [udbetalingJuni, setUdbetalingJuni] = useState(0)
     const [tjentJuli, setTjentJuli] = useState(0)
     const [udlagtJuli, setUdlagtJuli] = useState(0)
+    const [udbetalingJuli, setUdbetalingJuli] = useState(0)
     const [tjentAugust, setTjentAugust] = useState(0)
     const [udlagtAugust, setUdlagtAugust] = useState(0)
+    const [udbetalingAugust, setUdbetalingAugust] = useState(0)
     const [tjentSeptember, setTjentSeptember] = useState(0)
     const [udlagtSeptember, setUdlagtSeptember] = useState(0)
+    const [udbetalingSeptember, setUdbetalingSeptember] = useState(0)
     const [tjentOktober, setTjentOktober] = useState(0)
     const [udlagtOktober, setUdlagtOktober] = useState(0)
+    const [udbetalingOktober, setUdbetalingOktober] = useState(0)
     const [tjentNovember, setTjentNovember] = useState(0)
     const [udlagtNovember, setUdlagtNovember] = useState(0)
+    const [udbetalingNovember, setUdbetalingNovember] = useState(0)
     const [tjentDecember, setTjentDecember] = useState(0)
     const [udlagtDecember, setUdlagtDecember] = useState(0)
+    const [udbetalingDecember, setUdbetalingDecember] = useState(0)
     const [januarPosteringer, setJanuarPosteringer] = useState([])
     const [februarPosteringer, setFebruarPosteringer] = useState([])
     const [martsPosteringer, setMartsPosteringer] = useState([])
@@ -51,6 +64,7 @@ const ØkonomiOverblikModal = (props) => {
     const [oktoberPosteringer, setOktoberPosteringer] = useState([])
     const [novemberPosteringer, setNovemberPosteringer] = useState([])
     const [decemberPosteringer, setDecemberPosteringer] = useState([])
+    const [åretsPosteringer, setÅretsPosteringer] = useState([])
     const [valgtMåned, setValgtMåned] = useState(null)
     const [posteringerDetaljer, setPosteringerDetaljer] = useState([])
     const [brugere, setBrugere] = useState([])
@@ -233,7 +247,7 @@ const ØkonomiOverblikModal = (props) => {
     let septemberPosteringerX = []
     let oktoberPosteringerX = []
     let novemberPosteringerX = []
-    let decemberPosteringerX = []
+    let decemberPosteringerX = []  
 
     useEffect(() => {
         januarPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år-1}-12-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-01-19`).format('YYYY-MM-DD')))
@@ -261,31 +275,57 @@ const ØkonomiOverblikModal = (props) => {
         setOktoberPosteringer(oktoberPosteringerX)
         setNovemberPosteringer(novemberPosteringerX)
         setDecemberPosteringer(decemberPosteringerX)
+        setÅretsPosteringer([
+            ...januarPosteringerX,
+            ...februarPosteringerX,
+            ...martsPosteringerX,
+            ...aprilPosteringerX,
+            ...majPosteringerX,
+            ...juniPosteringerX,
+            ...juliPosteringerX,
+            ...augustPosteringerX,
+            ...septemberPosteringerX,
+            ...oktoberPosteringerX,
+            ...novemberPosteringerX,
+            ...decemberPosteringerX,
+          ])
 
-        setTjentJanuar(beregnTjent(januarPosteringerX))
-        setUdlagtJanuar(beregnUdlagt(januarPosteringerX))
-        setTjentFebruar(beregnTjent(februarPosteringerX))
-        setUdlagtFebruar(beregnUdlagt(februarPosteringerX))
-        setTjentMarts(beregnTjent(martsPosteringerX))
-        setUdlagtMarts(beregnUdlagt(martsPosteringerX))
-        setTjentApril(beregnTjent(aprilPosteringerX))
-        setUdlagtApril(beregnUdlagt(aprilPosteringerX))
-        setTjentMaj(beregnTjent(majPosteringerX))
-        setUdlagtMaj(beregnUdlagt(majPosteringerX))
-        setTjentJuni(beregnTjent(juniPosteringerX))
-        setUdlagtJuni(beregnUdlagt(juniPosteringerX))
-        setTjentJuli(beregnTjent(juliPosteringerX))
-        setUdlagtJuli(beregnUdlagt(juliPosteringerX))
-        setTjentAugust(beregnTjent(augustPosteringerX))
-        setUdlagtAugust(beregnUdlagt(augustPosteringerX))
-        setTjentSeptember(beregnTjent(septemberPosteringerX))
-        setUdlagtSeptember(beregnUdlagt(septemberPosteringerX))
-        setTjentOktober(beregnTjent(oktoberPosteringerX))
-        setUdlagtOktober(beregnUdlagt(oktoberPosteringerX))
-        setTjentNovember(beregnTjent(novemberPosteringerX))
-        setUdlagtNovember(beregnUdlagt(novemberPosteringerX))
-        setTjentDecember(beregnTjent(decemberPosteringerX))
-        setUdlagtDecember(beregnUdlagt(decemberPosteringerX))
+        setTjentJanuar(beregn.totalHonorar(januarPosteringerX)?.beløb - beregn.udlægHonorar(januarPosteringerX)?.beløb)
+        setUdlagtJanuar(beregn.udlægHonorar(januarPosteringerX)?.beløb)
+        setUdbetalingJanuar(beregn.totalHonorar(januarPosteringerX)?.beløb)
+        setTjentFebruar(beregn.totalHonorar(februarPosteringerX)?.beløb - beregn.udlægHonorar(februarPosteringerX)?.beløb)
+        setUdlagtFebruar(beregn.udlægHonorar(februarPosteringerX)?.beløb)
+        setUdbetalingFebruar(beregn.totalHonorar(februarPosteringerX)?.beløb)
+        setTjentMarts(beregn.totalHonorar(martsPosteringerX)?.beløb - beregn.udlægHonorar(martsPosteringerX)?.beløb)
+        setUdlagtMarts(beregn.udlægHonorar(martsPosteringerX)?.beløb)
+        setUdbetalingMarts(beregn.totalHonorar(martsPosteringerX)?.beløb)
+        setTjentApril(beregn.totalHonorar(aprilPosteringerX)?.beløb - beregn.udlægHonorar(aprilPosteringerX)?.beløb)
+        setUdlagtApril(beregn.udlægHonorar(aprilPosteringerX)?.beløb)
+        setUdbetalingApril(beregn.totalHonorar(aprilPosteringerX)?.beløb)
+        setTjentMaj(beregn.totalHonorar(majPosteringerX)?.beløb - beregn.udlægHonorar(majPosteringerX)?.beløb)
+        setUdlagtMaj(beregn.udlægHonorar(majPosteringerX)?.beløb)
+        setUdbetalingMaj(beregn.totalHonorar(majPosteringerX)?.beløb)
+        setTjentJuni(beregn.totalHonorar(juniPosteringerX)?.beløb - beregn.udlægHonorar(juniPosteringerX)?.beløb)
+        setUdlagtJuni(beregn.udlægHonorar(juniPosteringerX)?.beløb)
+        setUdbetalingJuni(beregn.totalHonorar(juniPosteringerX)?.beløb)
+        setTjentJuli(beregn.totalHonorar(juliPosteringerX)?.beløb - beregn.udlægHonorar(juliPosteringerX)?.beløb)
+        setUdlagtJuli(beregn.udlægHonorar(juliPosteringerX)?.beløb)
+        setUdbetalingJuli(beregn.totalHonorar(juliPosteringerX)?.beløb)
+        setTjentAugust(beregn.totalHonorar(augustPosteringerX)?.beløb - beregn.udlægHonorar(augustPosteringerX)?.beløb)
+        setUdlagtAugust(beregn.udlægHonorar(augustPosteringerX)?.beløb)
+        setUdbetalingAugust(beregn.totalHonorar(augustPosteringerX)?.beløb)
+        setTjentSeptember(beregn.totalHonorar(septemberPosteringerX)?.beløb - beregn.udlægHonorar(septemberPosteringerX)?.beløb)
+        setUdlagtSeptember(beregn.udlægHonorar(septemberPosteringerX)?.beløb)
+        setUdbetalingSeptember(beregn.totalHonorar(septemberPosteringerX)?.beløb)
+        setTjentOktober(beregn.totalHonorar(oktoberPosteringerX)?.beløb - beregn.udlægHonorar(oktoberPosteringerX)?.beløb)
+        setUdlagtOktober(beregn.udlægHonorar(oktoberPosteringerX)?.beløb)
+        setUdbetalingOktober(beregn.totalHonorar(oktoberPosteringerX)?.beløb)
+        setTjentNovember(beregn.totalHonorar(novemberPosteringerX)?.beløb - beregn.udlægHonorar(novemberPosteringerX)?.beløb)
+        setUdlagtNovember(beregn.udlægHonorar(novemberPosteringerX)?.beløb)
+        setUdbetalingNovember(beregn.totalHonorar(novemberPosteringerX)?.beløb)
+        setTjentDecember(beregn.totalHonorar(decemberPosteringerX)?.beløb - beregn.udlægHonorar(decemberPosteringerX)?.beløb)
+        setUdlagtDecember(beregn.udlægHonorar(decemberPosteringerX)?.beløb)
+        setUdbetalingDecember(beregn.totalHonorar(decemberPosteringerX)?.beløb)
 
     }, [år, props.posteringer])
 
@@ -328,91 +368,91 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Januar</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentJanuar + udlagtJanuar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {januarPosteringer && januarPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(januarPosteringer); setValgtMåned("januar")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>Februar</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentFebruar + udlagtFebruar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {februarPosteringer && februarPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(februarPosteringer); setValgtMåned("februar")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
                     <p>Marts</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentMarts + udlagtMarts).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {martsPosteringer && martsPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(martsPosteringer); setValgtMåned("marts")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>April</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentApril + udlagtApril).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {aprilPosteringer && aprilPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(aprilPosteringer); setValgtMåned("april")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
                     <p>Maj</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentMaj + udlagtMaj).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {majPosteringer && majPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(majPosteringer); setValgtMåned("maj")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>Juni</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentJuni + udlagtJuni).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {juniPosteringer && juniPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(juniPosteringer); setValgtMåned("juni")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
                     <p>Juli</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentJuli + udlagtJuli).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {juliPosteringer && juliPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(juliPosteringer); setValgtMåned("juli")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>August</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentAugust + udlagtAugust).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {augustPosteringer && augustPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(augustPosteringer); setValgtMåned("august")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
                     <p>September</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentSeptember + udlagtSeptember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {septemberPosteringer && septemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(septemberPosteringer); setValgtMåned("september")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>Oktober</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentOktober + udlagtOktober).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {oktoberPosteringer && oktoberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(oktoberPosteringer); setValgtMåned("oktober")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned}`}>
                     <p>November</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentNovember + udlagtNovember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {novemberPosteringer && novemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(novemberPosteringer); setValgtMåned("november")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>December</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p>{udbetalingDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
                     {decemberPosteringer && decemberPosteringer.length > 0 ? <button onClick={() => {setPosteringerDetaljer(decemberPosteringer); setValgtMåned("december")}}>Posteringer</button> : <span style={{color: '#222222'}}>–</span>}
                 </div>
                 <div className={`${Styles.totalRække}`}>
                     <b>I alt, {år}</b>
-                    <b>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                    <b>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
-                    <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</b>
+                    <b>{(beregn.totalHonorar(åretsPosteringer, 2, false).beløb - beregn.udlægHonorar(åretsPosteringer, 2, false).beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK'})}</b>
+                    <b>{beregn.udlægHonorar(åretsPosteringer, 2, false)?.formateret}</b>
+                    <b>{beregn.totalHonorar(åretsPosteringer, 2, false)?.formateret}</b>
                 </div>
             </div>
             <div className={`${Styles.måneder} ${Styles.månederMobile}`}>
@@ -434,7 +474,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Jan</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJanuar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentJanuar + udlagtJanuar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingJanuar?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${februarPosteringer && februarPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (februarPosteringer && februarPosteringer.length > 0) {
@@ -445,7 +485,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Feb</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtFebruar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentFebruar + udlagtFebruar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingFebruar?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${martsPosteringer && martsPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (martsPosteringer && martsPosteringer.length > 0) {
@@ -456,7 +496,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Mar</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMarts.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentMarts + udlagtMarts).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingMarts?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${aprilPosteringer && aprilPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (aprilPosteringer && aprilPosteringer.length > 0) {
@@ -467,7 +507,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Apr</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtApril.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentApril + udlagtApril).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingApril?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${majPosteringer && majPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (majPosteringer && majPosteringer.length > 0) {
@@ -478,7 +518,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Maj</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtMaj.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentMaj + udlagtMaj).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingMaj?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${juniPosteringer && juniPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (juniPosteringer && juniPosteringer.length > 0) {
@@ -489,7 +529,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Jun</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentJuni + udlagtJuni).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingJuni.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${juliPosteringer && juliPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (juliPosteringer && juliPosteringer.length > 0) {
@@ -500,7 +540,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Jul</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtJuli.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentJuli + udlagtJuli).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingJuli?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${augustPosteringer && augustPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (augustPosteringer && augustPosteringer.length > 0) {
@@ -511,7 +551,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Aug</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtAugust.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentAugust + udlagtAugust).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingAugust?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${septemberPosteringer && septemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (septemberPosteringer && septemberPosteringer.length > 0) {
@@ -522,7 +562,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Sep</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtSeptember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentSeptember + udlagtSeptember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingSeptember?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${oktoberPosteringer && oktoberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (oktoberPosteringer && oktoberPosteringer.length > 0) {
@@ -533,7 +573,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Okt</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtOktober.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentOktober + udlagtOktober).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingOktober?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.uligeMåned} ${novemberPosteringer && novemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (novemberPosteringer && novemberPosteringer.length > 0) {
@@ -544,7 +584,7 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Nov</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtNovember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentNovember + udlagtNovember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingNovember?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.måned} ${Styles.ligeMåned} ${decemberPosteringer && decemberPosteringer.length > 0 ? Styles.mobilPosteringIndikator : null}`} onClick={() => {
                     if (decemberPosteringer && decemberPosteringer.length > 0) {
@@ -555,13 +595,13 @@ const ØkonomiOverblikModal = (props) => {
                     <p>Dec</p>
                     <p className={Styles.økonomiDetaljerTjent}>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                     <p className={Styles.økonomiDetaljerUdlagt}>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
-                    <p>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
+                    <p>{udbetalingDecember?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</p>
                 </div>
                 <div className={`${Styles.totalRække}`}>
                     <b>I alt</b>
-                    <b>{tjentDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
-                    <b>{udlagtDecember.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</b>
-                    <b>{(tjentDecember + udlagtDecember).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0  })}</b>
+                    <b>{(beregn.totalHonorar(åretsPosteringer, 2, false).beløb - beregn.udlægHonorar(åretsPosteringer, 2, false).beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK'})}</b>
+                    <b>{beregn.udlægHonorar(åretsPosteringer, 2, false)?.formateret}</b>
+                    <b>{beregn.totalHonorar(åretsPosteringer, 2, false)?.formateret}</b>
                 </div>
             </div>
         </PageAnimation>
@@ -590,9 +630,9 @@ const ØkonomiOverblikModal = (props) => {
                 </div>
                 <div style={{borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px', marginBottom: '20px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>{valgtMåned}</p>
-                    <p className={Styles.økonomiDetaljerTjent}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p className={Styles.økonomiDetaljerUdlagt}>{beregnUdlagt(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
-                    <p>{(beregnTjent(posteringerDetaljer)+beregnUdlagt(posteringerDetaljer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{(beregn.totalHonorar(posteringerDetaljer, 2, false)?.beløb - beregn.udlægHonorar(posteringerDetaljer, 2, false)?.beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{(beregn.udlægHonorar(posteringerDetaljer, 2, false)?.formateret)}</p>
+                    <p>{(beregn.totalHonorar(posteringerDetaljer, 2, false)?.formateret)}</p>
                 </div>
             </div>
             <div className={Styles.posteringDetaljerMobile}>
@@ -612,9 +652,9 @@ const ØkonomiOverblikModal = (props) => {
                 </div>
                 <div style={{borderBottomLeftRadius: '10px', borderBottomRightRadius: '10px', marginBottom: '20px', gridTemplateColumns: '1fr 1fr 1fr 1fr'}} className={`${Styles.måned} ${Styles.ligeMåned}`}>
                     <p>{valgtMåned.slice(0, 3)}</p>
-                    <p className={Styles.økonomiDetaljerTjent}>{beregnTjent(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p className={Styles.økonomiDetaljerUdlagt}>{beregnUdlagt(posteringerDetaljer).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
-                    <p>{(beregnTjent(posteringerDetaljer)+beregnUdlagt(posteringerDetaljer)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p className={Styles.økonomiDetaljerTjent}>{(beregn.totalHonorar(posteringerDetaljer, 2, false)?.beløb - beregn.udlægHonorar(posteringerDetaljer, 2, false)?.beløb)?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</p>
+                    <p className={Styles.økonomiDetaljerUdlagt}>{(beregn.udlægHonorar(posteringerDetaljer, 0, false)?.formateret)}</p>
+                    <p>{(beregn.totalHonorar(posteringerDetaljer, 0, false)?.formateret)}</p>
                 </div>
             </div>
             <div className={Styles.akkumuleretContainer}>
@@ -800,66 +840,66 @@ const ØkonomiOverblikModal = (props) => {
                                 {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
-                                        <span>{(postering.opstart * postering.satser.opstartsgebyrHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.opstartHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
-                                        <span>{(postering.handymanTimer * postering.satser.handymanTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.handymanHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
-                                        <span>{(postering.tømrerTimer * postering.satser.tømrerTimerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.tømrerHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
-                                        <span>{(postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.rådgivningHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg (+50% pr. time) </span>
-                                        <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.aftenTillægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.natTillæg && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg (+ 100% pr. time) </span>
-                                        <span>{(((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.natTillægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.trailer && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
-                                        <span>{(postering.satser.trailerHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.trailerHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
-                                        <span>{(postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.udlægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                        <span>- {(((postering.totalHonorar - postering.udlæg.reduce((sum, item) => sum + Number(item.beløb), 0)) / (100 - postering.rabatProcent) * 100) * (postering.rabatProcent/100)).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>- {beregn.rabatHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {!postering.dynamiskHonorarBeregning && (
                                     <div className={ÅbenOpgaveCSS.posteringRække}>
                                         <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
-                                        <span>{postering.fastHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                        <span>{beregn.fastHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 <div className={ÅbenOpgaveCSS.totalRække}>
                                     <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                    <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(postering.totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
+                                    <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(beregn.totalHonorar(postering, 0, false)?.beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                                 </div>
                             </div>
                         </div>

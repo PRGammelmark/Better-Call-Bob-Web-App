@@ -33,6 +33,7 @@ import MoonLoader from "react-spinners/MoonLoader";
 import VisBilledeModal from '../components/modals/VisBillede.jsx'
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
+import * as beregn from '../utils/beregninger.js'
 
 const ÅbenOpgave = () => {
     
@@ -107,7 +108,7 @@ const ÅbenOpgave = () => {
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState(null)
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [tvingAfslutOpgaveModal, setTvingAfslutOpgaveModal] = useState(false)
-    const [registrerBetalingsModal, setRegistrerBetalingsModal] = useState(false)
+    const [visInklMoms, setVisInklMoms] = useState(true)
     const [dragging, setDragging] = useState(false)
     const [opgaveBilleder, setOpgaveBilleder] = useState([])
     const [uploadingImages, setUploadingImages] = useState([])
@@ -116,6 +117,14 @@ const ÅbenOpgave = () => {
     // const [errorIndexes, setErrorIndexes] = useState(new Set());
     const [isCompressingVideo, setIsCompressingVideo] = useState(false)
 
+    useEffect(() => {
+        if(opgave?.CVR || opgave?.virksomhed){
+            setVisInklMoms(false)
+        } else {
+            setVisInklMoms(true)
+        }
+    }, [opgave])
+    
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
             headers: {
@@ -488,47 +497,6 @@ const ÅbenOpgave = () => {
             .catch(error => console.log(error))
         }
     }
-
-    // konstater til regnskabsopstillingen -- HONORARER --
-    const fasteHonorarerTotal = posteringer && posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskHonorarBeregning ? nuv.fastHonorar : 0), 0);
-    const opstartTotalHonorar = posteringer && posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrHonorar) : 0), 0);
-    const handymanTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerHonorar) : 0), 0));
-    const tømrerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) : 0), 0));
-    const rådgivningOpmålingVejledningTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar) : 0), 0));
-    const trailerTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * nuv.satser.trailerHonorar) : 0), 0));
-    const aftenTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.aftenTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.aftenTillægHonorar / 100)) : 0) : 0), 0));
-    const natTillægTotalHonorar = posteringer && (posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.natTillægHonorar / 100)) : 0) : 0), 0));
-    const udlægTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
-        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + (nuv.dynamiskHonorarBeregning ? udlægSum : 0);
-    }, 0);
-    const rabatterTotalHonorar = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
-        const rabatProcent = nuv.rabatProcent || 0;
-        const totalHonorarEksklUdlæg = (nuv.totalHonorar - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
-        return akk + (nuv.dynamiskHonorarBeregning ? ((totalHonorarEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
-    }, 0);
-    const totalHonorar = Number(fasteHonorarerTotal) + Number(opstartTotalHonorar) + Number(handymanTotalHonorar) + Number(tømrerTotalHonorar) + Number(rådgivningOpmålingVejledningTotalHonorar) + Number(trailerTotalHonorar) + Number(aftenTillægTotalHonorar) + Number(natTillægTotalHonorar) + Number(udlægTotalHonorar) - Number(rabatterTotalHonorar);
-
-    // konstanter til regnskabsopstillingen -- FAKTURA --
-    const fastPrisTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (!nuv.dynamiskPrisBeregning ? nuv.fastPris : 0), 0)));
-    const opstartTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrPris) : 0), 0)));
-    const handymanTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPris) : 0), 0)));
-    const tømrerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) : 0), 0)));
-    const rådgivningOpmålingVejledningTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris) : 0), 0)));
-    const trailerTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.trailer * nuv.satser.trailerPris) : 0), 0)));
-    const aftenTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0)));
-    const natTillægTotalFaktura = posteringer && Math.round((posteringer.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0)));
-    const udlægTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv) => {
-        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + (nuv.dynamiskPrisBeregning ? udlægSum : 0);
-    }, 0);
-    const rabatterTotalFaktura = posteringer && posteringer.length > 0 && posteringer.reduce((akk, nuv, index) => {
-        const rabatProcent = nuv.rabatProcent || 0;
-        const totalPrisEksklUdlæg = nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        const rabatBeregning = (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
-        return akk + rabatBeregning;
-    }, 0);
-    const totalFaktura = Number(fastPrisTotalFaktura) + Number(opstartTotalFaktura) + Number(handymanTotalFaktura) + Number(tømrerTotalFaktura) + Number(rådgivningOpmålingVejledningTotalFaktura) + Number(trailerTotalFaktura) + Number(aftenTillægTotalFaktura) + Number(natTillægTotalFaktura) + Number(udlægTotalFaktura) - Number(rabatterTotalFaktura);
 
     function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
         if (opgave && opgave.fakturaPDFUrl) {
@@ -1348,15 +1316,20 @@ const ÅbenOpgave = () => {
                         />
                 </div>
                 <div className={ÅbenOpgaveCSS.posteringer}>
-                    <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
-                        <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>
-                        <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
-                    </Modal>
-                    <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
+                    <div className={ÅbenOpgaveCSS.headerSwitcherDiv}>
+                        <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
+                        <div className={`${SwitcherStyles.checkboxContainer} ${ÅbenOpgaveCSS.checkboxContainer}`}>
+                            <label className={SwitcherStyles.switch} htmlFor="isEnglish">
+                                <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={visInklMoms} onChange={(e) => {setVisInklMoms(e.target.checked); console.log(visInklMoms)}} />
+                                <span className={SwitcherStyles.slider}></span>
+                            </label>
+                            <b className={ÅbenOpgaveCSS.prefix}>Inkl. moms</b>
+                        </div>
+                    </div>
                     {opgave.fakturaOprettesManuelt && <p style={{color: "grey", fontSize: 12}}>(Dette er en tilbudsopgave, så afregning sker senere. Du skal blot registrere dine timer i posteringerne som du plejer.)</p>}
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
-                            return <Postering key={postering._id} postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering}/>
+                            return <Postering key={postering._id} postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering} visInklMoms={visInklMoms}/>
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
@@ -1373,7 +1346,7 @@ const ÅbenOpgave = () => {
                         </div>
                         :
                         posteringer.length > 0 && 
-                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
+                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}><b className={ÅbenOpgaveCSS.markerSomFærdigKnapPrisHeadline}>Pris ({visInklMoms ? "inkl. moms": "ekskl. moms"}): {beregn.totalPris(posteringer, 2, visInklMoms).formateret}</b><br />Markér opgave som færdig</button>
                     )}
                     {!opgave.isDeleted && !opgave.fakturaOprettesManuelt && 
                         (færdiggjort
@@ -1390,8 +1363,8 @@ const ÅbenOpgave = () => {
                                 
                                 {/* Erhvervskunde -> send faktura || !Erhvervskunde -> Opret regning*/}
                                 {(opgave.virksomhed || opgave.CVR) ? (!opgave.fakturaSendt 
-                                    && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura<br /><span>Kunden er registreret som erhvervskunde</span></button> 
-                                ) : (!opgave.fakturaSendt && !opgave.opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning<br /><span>Kunden er registreret som privatkunde</span></button>
+                                    && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som erhvervskunde</span></button> 
+                                ) : (!opgave.fakturaSendt && !opgave.opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
 
                                 {/* <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/> */}
@@ -1406,18 +1379,31 @@ const ÅbenOpgave = () => {
                             </div> 
                             : 
                             posteringer.length > 0 && 
-                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}>Markér opgave som færdig</button>
+                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}><b className={ÅbenOpgaveCSS.markerSomFærdigKnapPrisHeadline}>Pris ({visInklMoms ? "inkl. moms": "ekskl. moms"}): {beregn.totalPris(posteringer, 2, visInklMoms).formateret}</b><br />Markér opgave som færdig</button>
                         )
                     }
-                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} isEnglish={isEnglish} />}
-                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={totalFaktura} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}
+                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} isEnglish={isEnglish} />}
+                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}
                     </div>
+                    <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
+                        <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>
+                        <img src={`${import.meta.env.VITE_API_URL}${kvitteringBillede}`} alt="Kvittering" className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                    </Modal>
                 </div>
                 <AfslutUdenBetaling trigger={tvingAfslutOpgaveModal} setTrigger={setTvingAfslutOpgaveModal} opgave={opgave} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave} />
                 {posteringer.length > 0 && user.isAdmin && <div className={ÅbenOpgaveCSS.økonomiDiv}>
-                    <b className={ÅbenOpgaveCSS.prefix}>Opgavens økonomi</b>
+                <div className={ÅbenOpgaveCSS.headerSwitcherDiv}>
+                        <b className={ÅbenOpgaveCSS.prefix}>Opgavens økonomi</b>
+                        <div className={`${SwitcherStyles.checkboxContainer} ${ÅbenOpgaveCSS.checkboxContainer}`}>
+                            <label className={SwitcherStyles.switch} htmlFor="isEnglish">
+                                <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={visInklMoms} onChange={(e) => {setVisInklMoms(e.target.checked); console.log(visInklMoms)}} />
+                                <span className={SwitcherStyles.slider}></span>
+                            </label>
+                            <b className={ÅbenOpgaveCSS.prefix}>Inkl. moms</b>
+                        </div>
+                    </div>
                     <div className={ÅbenOpgaveCSS.regnskabContainer}>
-                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter</b>
+                        <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Indtægter ({visInklMoms ? "inkl." : "ekskl."} moms)</b>
                         <p className={ÅbenOpgaveCSS.opgaveØkonomiGreenSubheading}>(kunden skal betale)</p>
                         {opgave.fakturaOprettesManuelt ? 
                         <>
@@ -1439,99 +1425,99 @@ const ÅbenOpgave = () => {
                         </>
                         :
                         <>
-                            {fastPrisTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.fastPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Faste priser (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{fastPrisTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.fastPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {opstartTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.opstartPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.opstartPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {handymanTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.handymanPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.handymanPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {tømrerTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.tømrerPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.tømrerPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {rådgivningOpmålingVejledningTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.rådgivningPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Rådgivning, opmåling og vejledning (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{rådgivningOpmålingVejledningTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.rådgivningPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {aftenTillægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.aftenTillægPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Aftentillæg (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{aftenTillægTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.aftenTillægPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {natTillægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.natTillægPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Nattilæg (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{natTillægTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.natTillægPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {trailerTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.trailerPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Trailer (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{trailerTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.trailerPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {udlægTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.udlægPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.udlægPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
-                            {rabatterTotalFaktura > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                            {beregn.rabatPris(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Rabat (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>- {rabatterTotalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>- {beregn.rabatPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>}
                             <div className={`${ÅbenOpgaveCSS.subtotalRække} ${ÅbenOpgaveCSS.totalFakturaRække}`}>
                                 <span className={ÅbenOpgaveCSS.subtotalFaktura}>Indtægter, i alt:</span>
-                                <span className={ÅbenOpgaveCSS.subtotalFaktura}>{totalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.subtotalFaktura}>{beregn.totalPris(posteringer, 2, visInklMoms).formateret}</span>
                             </div>
                         </>}
                         <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Udgifter</b>
                         <p className={ÅbenOpgaveCSS.opgaveØkonomiRedSubheading}>{opgave && opgave.ansvarlig.length > 1 ? "(medarbejderne skal have)" : "(medarbejderen skal have)"}</p>
-                        {fasteHonorarerTotal > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.fastHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                                 <span className={ÅbenOpgaveCSS.regnskabTekst}>Faste honorarer (i alt):</span>
-                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{fasteHonorarerTotal.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.fastHonorar(posteringer).formateret}</span>
                         </div>}
-                        {opstartTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.opstartHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Opstartsgebyrer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{opstartTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.opstartHonorar(posteringer).formateret}</span>
                         </div>}
-                        {handymanTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.handymanHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Handymantimer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{handymanTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.handymanHonorar(posteringer).formateret}</span>
                         </div>}
-                        {tømrerTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.tømrerHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Tømrertimer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{tømrerTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.tømrerHonorar(posteringer).formateret}</span>
                         </div>}
-                        {rådgivningOpmålingVejledningTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.rådgivningHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Rådgivning, opmåling og vejledning (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{rådgivningOpmålingVejledningTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.rådgivningHonorar(posteringer).formateret}</span>
                         </div>}
-                        {aftenTillægTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.aftenTillægHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Aftentillæg (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{aftenTillægTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.aftenTillægHonorar(posteringer).formateret}</span>
                         </div>}
-                        {natTillægTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.natTillægHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Nattilæg (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{natTillægTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.natTillægHonorar(posteringer).formateret}</span>
                         </div>}
-                        {trailerTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.trailerHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Trailer (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{trailerTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.trailerHonorar(posteringer).formateret}</span>
                         </div>}
-                        {udlægTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.udlægHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Udlæg (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{udlægTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>{beregn.udlægHonorar(posteringer).formateret}</span>
                         </div>}
-                        {rabatterTotalHonorar > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
+                        {beregn.rabatHonorar(posteringer).beløb > 0 && <div className={ÅbenOpgaveCSS.regnskabRække}>
                             <span className={ÅbenOpgaveCSS.regnskabTekst}>Rabat (i alt):</span>
-                            <span className={ÅbenOpgaveCSS.regnskabTekst}>- {rabatterTotalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.regnskabTekst}>-{beregn.rabatHonorar(posteringer).formateret}</span>
                         </div>}
                         <div className={`${ÅbenOpgaveCSS.subtotalRække} ${ÅbenOpgaveCSS.totalHonorarRække}`}>
                             <span className={ÅbenOpgaveCSS.subtotalHonorar}>Udgifter, i alt:</span>
-                            <span className={ÅbenOpgaveCSS.subtotalHonorar}>{totalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                            <span className={ÅbenOpgaveCSS.subtotalHonorar}>{beregn.totalHonorar(posteringer).formateret}</span>
                         </div>
                         {user.isAdmin && <>
-                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Total</b>
+                            <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.bottomMargin10}`}>Total (ekskl. moms)</b>
                             {opgave.fakturaOprettesManuelt ? 
                             <>
                                 <div className={ÅbenOpgaveCSS.regnskabRække}>
@@ -1540,26 +1526,26 @@ const ÅbenOpgave = () => {
                                 </div>
                                 <div className={ÅbenOpgaveCSS.regnskabRække}>
                                     <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Udgifter:</span>
-                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{beregn.totalHonorar(posteringer).formateret}</span>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
                                     <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
-                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{opgave.tilbudAfgivet ? (opgave.tilbudAfgivet - totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 }) : (0 - totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{opgave.tilbudAfgivet ? (opgave.tilbudAfgivet - beregn.totalHonorar(posteringer).beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 2, maximumFractionDigits: 2 }) : (0 - beregn.totalHonorar(posteringer).beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             </>
                             :
                             <>
                                 <div className={ÅbenOpgaveCSS.regnskabRække}>
                                     <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>Fakturabeløb:</span>
-                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{totalFaktura.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.grønTekst}`}>{beregn.totalPris(posteringer, 2, false).formateret}</span>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.regnskabRække}>
                                     <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>Honorarbeløb:</span>
-                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{totalHonorar.toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={`${ÅbenOpgaveCSS.regnskabTekst} ${ÅbenOpgaveCSS.rødTekst}`}>{beregn.totalHonorar(posteringer).formateret}</span>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.dækningsbidragRække}>
                                     <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>Dækningsbidrag:</span>
-                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{(totalFaktura - totalHonorar).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</span>
+                                    <span className={`${ÅbenOpgaveCSS.subtotalFaktura} ${ÅbenOpgaveCSS.sortTekst}`}>{(beregn.totalPris(posteringer, 2, false).beløb - beregn.totalHonorar(posteringer).beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                                 </div>
                             </>}
                         </>}

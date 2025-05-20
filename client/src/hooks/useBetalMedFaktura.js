@@ -4,7 +4,7 @@ import useEconomicLines from "./useEconomicLines.js";
 import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish) => {
+const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -17,7 +17,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
     }
 
     // Importer linjer til faktura fra posteringer
-    const economicLines = useEconomicLines(posteringer, bekræftAdmGebyr, isEnglish);
+    const economicLines = useEconomicLines(posteringer, inklAdministrationsGebyr, isEnglish);
 
     const cvrNummer = opgave.CVR ? ("corporateIdentificationNumber: opgave.CVR") : "";
 

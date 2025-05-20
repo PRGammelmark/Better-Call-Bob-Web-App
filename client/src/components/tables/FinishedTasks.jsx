@@ -6,6 +6,7 @@ import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import * as beregn from '../../utils/beregninger.js'
 
 const FinishedTasks = () => {
 
@@ -67,14 +68,24 @@ const FinishedTasks = () => {
             <div className={`${TableCSS.opgaveBody} ${FinishedTasksCSS.finishedTasksBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
+                let momsvisning;
+                
+                if(opgave.virksomhed || opgave.CVR) {
+                  console.log("Erhvervskunde")
+                  momsvisning = false;
+                } else {
+                  console.log("Privatkunde")
+                  momsvisning = true;
+                }
+                
+                const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.formateret;
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                       <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                       <li>{opgave.adresse}</li>
-                      <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                      <li>{fakturabeløbForOpgave}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
                     <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
@@ -101,12 +112,22 @@ const FinishedTasks = () => {
             <div className={`${TableCSS.opgaveBody} ${FinishedTasksCSS.finishedTasksBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
+                let momsvisning;
+                
+                if(opgave.virksomhed || opgave.CVR) {
+                  console.log("Erhvervskunde")
+                  momsvisning = false;
+                } else {
+                  console.log("Privatkunde")
+                  momsvisning = true;
+                }
+                
+                const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.formateret;
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                     <ul>
                       <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                      <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                      <li>{fakturabeløbForOpgave}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
                   </div>

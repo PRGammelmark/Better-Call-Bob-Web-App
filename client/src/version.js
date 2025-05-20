@@ -14,6 +14,22 @@
 // 
 
 const changes = [{
+    version: "1.4",
+    date: "19. maj 2025",
+    changes: [
+        "Alle økonomiske beregninger i app'en er blevet centraliseret. Dette sikrer større overensstemmelse mellem app'ens forskellige beregninger af indtægter og udgifter på opgaver og til medarbejdere.",
+        "Nu vises alle tal i app'en i udgangspunktet med to decimaler.",
+        "Op til nu blev alle priser på opgaver vist ekskl. moms. Dette er nu ændret, så prisen i udgangspunktet vil blive vist inkl. moms ved privatkunder, og ekskl. moms ved erhvervskunder. Vil man ændre i momsvisningen er der nu kommet to knapper til dette på åbne opgaver – ved hhv. posteringer-sektionen og sektionen med det økonomiske overblik.",
+        "Er kunden registreret som erhvervskunde vil priserne i udgangspunktet vises uden moms. Man kan stadig slå inkl. moms-visningen til manuelt.",
+        "Knappen 'Markér opgave som færdig' forhåndsviser nu den samlede pris som kunden skal betale for udførelsen af opgaven. Det samme gør knappen 'Opret regning.'",
+        "'Indsend'-knappen ved kommentarfeltet har fået et nyt design.",
+        "Når man er ved at oprette en faktura vil popup'en nu i udgangspunktet vise prisen ekskl. moms, hvis der er tale om en erhvervskunde, og prisen inkl. moms hvis der er tale om en privatkunde. Tidligere viste popup'en blot prisen inkl. moms i begyndelsen, og efterfølgende prisen ekskl. moms i en parentes uanset om der var tale om en erhvervs- eller privatkunde.",
+        "Rettede en fejl, hvor betalingsflowet ikke afspejlede om en oprettet faktura ville blive sendt til manuel gennemgang (ved erhvervskunder) eller sendt direkte til kunden (ved privatkunder). Det fremgår nu af informationerne i app'en når man fremover opretter en faktura.",
+        "Når man opretter en faktura til en privatkunde kan man nu vælge at fritage kunden for at betale administrationsgebyr på 49 kr. Dette var tidligere ikke muligt.",
+        "Oversigtens opgavetabeller, der viser fakturabeløb, viser nu fakturabeløbet inkl. moms for privatkunder, og ekskl. moms for erhvervskunder, så dette tal altid matcher standardindstillingerne for momsvisning, når man åbner opgaven.",
+        "Rettede en fejl, hvor medarbejderes personlige økonomiske overblik for året ikke akkumulerede i bunden af tabellen. Det gør det nu."
+    ]
+},{
     version: "1.3.8",
     date: "8. maj 2025",
     changes: [

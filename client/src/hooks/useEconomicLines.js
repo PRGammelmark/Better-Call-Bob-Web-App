@@ -1,6 +1,6 @@
 // import satser from "../variables.js";
 
-const useEconomicLines = (posteringer, bekræftAdmGebyr, isEnglish) => {
+const useEconomicLines = (posteringer, inklAdministrationsGebyr, isEnglish) => {
 
     const lines = []; 
 
@@ -179,7 +179,7 @@ const useEconomicLines = (posteringer, bekræftAdmGebyr, isEnglish) => {
         }
     })
 
-    if (bekræftAdmGebyr) {
+    if (inklAdministrationsGebyr) {
         lines.push({
             lineNumber: lineNumber++,
             description: `${isEnglish ? "Administration fee" : "Administrationsgebyr"}`,

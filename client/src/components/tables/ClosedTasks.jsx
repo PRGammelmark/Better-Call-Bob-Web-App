@@ -6,6 +6,7 @@ import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import * as beregn from '../../utils/beregninger.js'
 
 const ClosedTasks = () => {
 
@@ -69,17 +70,26 @@ const ClosedTasks = () => {
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : afsluttedeOpgaver.length > 0 ? afsluttedeOpgaver.map((opgave) => {
                   
                   const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                  const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
-                  const honorarBeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalHonorar, 0) : 0;
-                  const dbBeløb = fakturabeløbForOpgave - honorarBeløbForOpgave;
+                  let momsvisning;
+                
+                  if(opgave.virksomhed || opgave.CVR) {
+                    momsvisning = false;
+                  } else {
+                    momsvisning = true;
+                  }
+                  
+                  const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.beløb;
+                  const fakturabeløbForOpgaveEksklMoms = beregn.totalPris(posteringerForOpgave, 2, false)?.beløb;
+                  const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
+                  const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
                         <li>{new Date(opgave.opgaveAfsluttet).toLocaleDateString()}</li>
-                        <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
-                        <li>{dbBeløb.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                        <li>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                        <li>{dbBeløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                       </ul>
                       <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
                         <button className={TableCSS.button}>Åbn</button>
@@ -106,16 +116,25 @@ const ClosedTasks = () => {
               <div className={`${TableCSS.opgaveBody} ${ClosedTasksCSS.closedTasksBody}`}>
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : afsluttedeOpgaver.length > 0 ? afsluttedeOpgaver.map((opgave) => {
                   const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
-                  const fakturabeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalPris, 0) : 0;
-                  const honorarBeløbForOpgave = posteringerForOpgave ? posteringerForOpgave.reduce((sum, postering) => sum + postering.totalHonorar, 0) : 0;
-                  const dbBeløb = fakturabeløbForOpgave - honorarBeløbForOpgave;
+                  let momsvisning;
+                
+                  if(opgave.virksomhed || opgave.CVR) {
+                    momsvisning = false;
+                  } else {
+                    momsvisning = true;
+                  }
+                  
+                  const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.beløb;
+                  const fakturabeløbForOpgaveEksklMoms = beregn.totalPris(posteringerForOpgave, 2, false)?.beløb;
+                  const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
+                  const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li>{new Date(opgave.opgaveAfsluttet).toLocaleDateString()}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                        <li>{fakturabeløbForOpgave.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
-                        <li>{dbBeløb.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                        <li>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
+                        <li>{dbBeløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                       </ul>
                     </div>
                   )
