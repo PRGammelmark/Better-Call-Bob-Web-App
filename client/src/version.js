@@ -15,7 +15,7 @@
 
 const changes = [{
     version: "1.4",
-    date: "19. maj 2025",
+    date: "20. maj 2025",
     changes: [
         "Alle økonomiske beregninger i app'en er blevet centraliseret. Dette sikrer større overensstemmelse mellem app'ens forskellige beregninger af indtægter og udgifter på opgaver og til medarbejdere.",
         "Nu vises alle tal i app'en i udgangspunktet med to decimaler.",
