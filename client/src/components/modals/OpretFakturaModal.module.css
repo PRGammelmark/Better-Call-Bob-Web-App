@@ -15,3 +15,13 @@
     gap: 30px;
     padding-bottom: 20px;
 }
+
+.loadingSubmission h2 {
+    width: 100%;
+    margin-bottom: 0px;
+}
+
+.successSubmission h2 {
+    width: 100%;
+    margin-bottom: 0px;
+}

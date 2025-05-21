@@ -28,7 +28,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
         vatZone: {
             vatZoneNumber: 1
         },
-        cvrNummer,
+        ...(opgave.CVR && { corporateIdentificationNumber: opgave.CVR }),
         currency: "DKK",
         customerGroup: {
             customerGroupNumber: 1

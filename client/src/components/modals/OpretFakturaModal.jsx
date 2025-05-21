@@ -32,10 +32,15 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                 wrapperClass=""
             />
         </div>}
-        {!loadingFakturaSubmission && successFakturaSubmission && 
+        {!loadingFakturaSubmission && successFakturaSubmission && (opgave.CVR || opgave.virksomhed) &&
+        <div className={Styles.successSubmission}>
+            <h2>Fakturakladde oprettet 👍</h2>
+            <p>En fakturakladde er blevet oprettet, og sendt videre til manuel gennemgang. Du kan nu lukke dette vindue.</p>
+        </div>}
+        {!loadingFakturaSubmission && successFakturaSubmission && !(opgave.CVR || opgave.virksomhed) &&
         <div className={Styles.successSubmission}>
             <h2>Faktura sendt! 🎉</h2>
-            <p>Fakturaen er blevet oprettet, og sendt til {(opgave.CVR || opgave.virksomhed) ? "regnskabsansvarlig" : "kundens email"}.</p>
+            <p>Fakturaen er blevet oprettet, og sendt til kundens email ({opgave.email}).</p>
         </div>}
         {!loadingFakturaSubmission && !successFakturaSubmission && <>
         <div>
@@ -103,8 +108,8 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
                                 }
                             }}
                         >
-                        Opret {(opgave.virksomhed || opgave.CVR) ? ("fakturakladde (" + (totalFaktura?.toLocaleString('da-DK')) + " kr. ekskl. moms)") : ("og send faktura (" +(totalFaktura * 1.25)?.toLocaleString('da-DK') + " kr. ekskl. moms)")}<br />
-                        <span>Sendes til manuel gennemgang</span>
+                            Opret {(opgave.virksomhed || opgave.CVR) ? ("fakturakladde (" + (totalFaktura?.toLocaleString('da-DK')) + " kr. ekskl. moms)") : ("og send faktura (" +(totalFaktura * 1.25)?.toLocaleString('da-DK') + " kr. ekskl. moms)")}<br />
+                            {(opgave.virksomhed || opgave.CVR) && <span>Sendes til manuel gennemgang</span>}
                         </button>
                     </div>
                     }

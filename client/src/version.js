@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "1.4.1",
+    date: "21. maj 2025",
+    changes: [
+        "Små designjusteringer og forbedringer i loading- og succes-popup's når man sender faktura.",
+        "Rettede en fejl, hvor CVR-nummeret ikke blev givet korrekt videre til regnskabssystemet når man oprettede erhvervskunder.",
+        "Fjernede link til app'en fra automailen, som medarbejdere får når de er blevet tildelt en opgave.",
+        "Når man opretter en fakturakladde til erhvervskunder fremgår det nu også korrekt i de efterfølgende popup's. Tidligere stod der, at fakturaen var blevet sendt til kunden, hvilket ikke var tilfældet."
+    ]
+},{
     version: "1.4",
     date: "20. maj 2025",
     changes: [
