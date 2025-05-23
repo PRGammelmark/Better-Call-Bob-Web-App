@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.4.3",
+    date: "23. maj 2025",
+    changes: [
+        "Tidligere hen kunne man ikke få lov til at færdiggøre en opgave hvis der var registreret besøg med opstart ude i fremtiden. Nu får man blot en advarsel hvis det er tilfældet, men som medarbejder kan man godt omgå den."
+    ]
+},{
     version: "1.4.2",
     date: "23. maj 2025",
     changes: [

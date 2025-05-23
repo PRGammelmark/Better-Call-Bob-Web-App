@@ -108,7 +108,7 @@ const NyOpgave = () => {
         <div>
             <span className={NyOpgaveCSS.headingSpan}><h1 className={NyOpgaveCSS.overskrift}>📋 Opret ny opgave</h1></span>
             <form onSubmit={submitOpgave} className={NyOpgaveCSS.form}>
-                <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus="autofocus" name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
+                <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
                 <div className={NyOpgaveCSS.kolonner}>
                     <div className={NyOpgaveCSS.kolonneEt}>
                         <label className={NyOpgaveCSS.label}>Fornavn</label>
