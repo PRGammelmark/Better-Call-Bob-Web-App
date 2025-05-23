@@ -42,6 +42,7 @@ const AddPostering = (props) => {
     const [dynamiskPrisBeregning, setDynamiskPrisBeregning] = useState(true);
     const [posteringFastHonorar, setPosteringFastHonorar] = useState(0);
     const [posteringFastPris, setPosteringFastPris] = useState(0);
+    const [fastPrisInfobox, setFastPrisInfobox] = useState(false);
     const [previewDynamiskHonorar, setPreviewDynamiskHonorar] = useState(0);
     const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
     const [rabatProcent, setRabatProcent] = useState(0);
@@ -67,7 +68,7 @@ const AddPostering = (props) => {
 
     useEffect(() => {
         if(valgtMedarbejder){
-            setAktuelleSatser(valgtMedarbejder?.satser)
+            setAktuelleSatser(valgtMedarbejder?.satser || satser)
         }
     }, [valgtMedarbejder])
 
@@ -136,7 +137,7 @@ const AddPostering = (props) => {
             totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: props.opgaveID,
-            brugerID: opretPosteringPåVegneAfEnAnden ? valgtMedarbejder?._id : props.userID
+            brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID
         }
 
         if(!postering.totalHonorar && !postering.totalPris){
@@ -194,10 +195,23 @@ const AddPostering = (props) => {
             setRabatProcent(0);
             setOpretPosteringPåVegneAfEnAnden(false)
             setValgtMedarbejder("")
-            setMedarbejdere([])
+            // setMedarbejdere([])
         })
         .catch(error => console.log(error))
     }
+
+    useEffect(() => {
+        if((!props.posteringer?.length > 0) && (props.opgave?.fakturaOprettesManuelt)){
+            console.log("Der er 0 posteringer, og opgaven er en tilbudsopgave.")
+            // Hvis posteringen er den første på en opgave, hvor der er givet fast tilbud, så skal initial state være med en fast pris på tilbudsprisen
+            setDynamiskPrisBeregning(false)
+            setPosteringFastPris(Number(props.opgave.tilbudAfgivet))
+            setFastPrisInfobox(true)
+        } else {
+            setFastPrisInfobox(false)
+        }
+    }, [props.posteringer])
+    
 
     const handleOutlayChange = (index, event) => {
         const newOutlays = [...outlays];
@@ -287,7 +301,7 @@ const AddPostering = (props) => {
                 <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                 {opretPosteringPåVegneAfEnAnden && <>
                     <label className={ÅbenOpgaveCSS.prefix} htmlFor="medarbejder">Vælg medarbejder</label>
-                    <select className={ModalStyles.modalInput} id="medarbejder" value={JSON.stringify(valgtMedarbejder)}  onChange={(e) => setValgtMedarbejder(JSON.parse(e.target.value))}>
+                    <select className={ModalStyles.modalInput} id="medarbejder" value={valgtMedarbejder ? JSON.stringify(valgtMedarbejder) : ""}  onChange={(e) => setValgtMedarbejder(JSON.parse(e.target.value))}>
                         <option disabled value="">Vælg medarbejder ...</option>
                         {medarbejdere?.length > 0 && medarbejdere.map((medarbejder, index) => (
                             <option key={index} value={JSON.stringify(medarbejder)}>{medarbejder.navn}</option>
@@ -296,7 +310,7 @@ const AddPostering = (props) => {
                 </>}
                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
-                {user.isAdmin && <button type="button" className={`${ÅbenOpgaveCSS.subheadingTextButton} ${opretPosteringPåVegneAfEnAnden ? ÅbenOpgaveCSS.subheadingTextButtonActive : ""}`} onClick={() => {setOpretPosteringPåVegneAfEnAnden(!opretPosteringPåVegneAfEnAnden); setValgtMedarbejder("")}}>{opretPosteringPåVegneAfEnAnden ? "Opret postering for en medarbejder" : "Opret postering for dig selv"}<img src={SwithArrowsBlack} alt="switch" /></button>}
+                {user.isAdmin && <button type="button" className={`${ÅbenOpgaveCSS.subheadingTextButton} ${opretPosteringPåVegneAfEnAnden ? ÅbenOpgaveCSS.subheadingTextButtonActive : ""}`} onClick={() => {setOpretPosteringPåVegneAfEnAnden(!opretPosteringPåVegneAfEnAnden); setValgtMedarbejder(null)}}>{opretPosteringPåVegneAfEnAnden ? "Opret postering for en medarbejder" : "Opret postering for dig selv"}<img src={SwithArrowsBlack} alt="switch" /></button>}
                 <div className={ÅbenOpgaveCSS.dynamiskFastButtonsDiv}>
                     <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskHonorarBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskHonorarBeregning(!dynamiskHonorarBeregning)}>{dynamiskHonorarBeregning ? 'Dynamisk honorar' : 'Fast honorar'}<img src={SwithArrowsBlack} alt="switch" /></button>
                     <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskPrisBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskPrisBeregning(!dynamiskPrisBeregning)}>{dynamiskPrisBeregning ? 'Dynamisk pris' : 'Fast pris'}<img src={SwithArrowsBlack} alt="switch" /></button>
@@ -316,6 +330,10 @@ const AddPostering = (props) => {
                         {/* <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => setPosteringFastPris(e.target.value)} type="decimal" min="0" inputMode="decimal" pattern="[0-9]*" /> */}
                         <input className={ÅbenOpgaveCSS.modalInput} value={posteringFastPris} onChange={(e) => {const value = e.target.value.replace(',', '.'); setPosteringFastPris(value)}} type="decimal" min="0" inputMode="decimal" />
                     </div>
+                </div>}
+                {fastPrisInfobox && 
+                <div className={ÅbenOpgaveCSS.fastPrisInfoBox}>
+                    <p>Dette er den første postering på en opgave, hvor der allerede er lavet et fast tilbud til kunden. Den faste pris ovenfor er sat derefter – men du kan godt ændre i den.</p>
                 </div>}
                 {(dynamiskHonorarBeregning || dynamiskPrisBeregning) && 
                 <div>

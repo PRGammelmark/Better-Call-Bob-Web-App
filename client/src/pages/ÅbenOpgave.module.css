@@ -964,6 +964,16 @@
     font-weight: 300;
 }
 
+.fastPrisInfoBox {
+    background: #e0f2d9;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.fastPrisInfoBox p {
+    font-size: 0.9rem;
+}
+
 .opretFaktura:hover {
     background: #59bf1a;
     color: #fff;

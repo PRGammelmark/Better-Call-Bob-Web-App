@@ -440,15 +440,17 @@ const ÅbenOpgave = () => {
             }
         })
         .then(res => {
-            const planlagteBesøgForOpgave = res.data.filter(opgave => opgave.opgaveID === opgaveID);
+            const planlagteBesøgForOpgave = res.data.filter(besøg => besøg.opgaveID === opgaveID);
 
-            const fremtidigeBesøg = planlagteBesøgForOpgave.some((opgave) => 
-                dayjs(opgave.datoTidFra).isAfter(dayjs())
+            const fremtidigeBesøg = planlagteBesøgForOpgave.some((besøg) => 
+                dayjs(besøg.datoTidFra).isAfter(dayjs())
             );
             
-            if(fremtidigeBesøg){
-                window.alert("Der er planlagt fremtidige besøg for denne opgave, og du kan derfor ikke færdiggøre den. Vent med at færdiggøre opgaven, eller fjern de fremtidige besøg hvis opgaven allerede er løst.")
-            } else {
+            const proceed = !fremtidigeBesøg || window.confirm(
+                "Du eller andre har planlagt fremtidige besøg på denne opgave. Er du sikker på, at du vil færdiggøre den alligevel?"
+            );
+            
+            if (proceed) {
                 axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, færdiggør, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
@@ -457,8 +459,9 @@ const ÅbenOpgave = () => {
                 .then(response => {
                     setFærdiggjort(true);
                 })
-                .catch(error => console.log(error))
+                .catch(error => console.log(error));
             }
+            
         })
         .catch(error => console.log(error))
     }
@@ -1326,14 +1329,14 @@ const ÅbenOpgave = () => {
                             <b className={ÅbenOpgaveCSS.prefix}>Inkl. moms</b>
                         </div>
                     </div>
-                    {opgave.fakturaOprettesManuelt && <p style={{color: "grey", fontSize: 12}}>(Dette er en tilbudsopgave, så afregning sker senere. Du skal blot registrere dine timer i posteringerne som du plejer.)</p>}
+                    {opgave.fakturaOprettesManuelt && <p style={{color: "grey", fontSize: 12}}>(Kunden har fået et fast tilbud på denne opgave, så afregning sker senere via faktura. Du skal blot registrere dine timer i posteringerne som du plejer.)</p>}
                     <div className={ÅbenOpgaveCSS.aktuellePosteringer}>
                         {posteringer && posteringer.map((postering) => {
                             return <Postering key={postering._id} postering={postering} brugere={brugere} user={user} posteringer={posteringer} setPosteringer={setPosteringer} færdiggjort={færdiggjort} openPosteringModalID={openPosteringModalID} setOpenPosteringModalID={setOpenPosteringModalID} editedPostering={editedPostering} setEditedPostering={setEditedPostering} visInklMoms={visInklMoms}/>
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave}/>
+                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave} posteringer={posteringer}/>
                     <div>
                     {!opgave.isDeleted && opgave.fakturaOprettesManuelt && (færdiggjort ? 
                         <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
@@ -1346,7 +1349,7 @@ const ÅbenOpgave = () => {
                         </div>
                         :
                         posteringer.length > 0 && 
-                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave()}><b className={ÅbenOpgaveCSS.markerSomFærdigKnapPrisHeadline}>Pris ({visInklMoms ? "inkl. moms": "ekskl. moms"}): {beregn.totalPris(posteringer, 2, visInklMoms).formateret}</b><br />Markér opgave som færdig</button>
+                                <button className={ÅbenOpgaveCSS.markerSomFærdigKnap} onClick={() => færdiggørOpgave(tilbudsopgave)}><b className={ÅbenOpgaveCSS.markerSomFærdigKnapPrisHeadline}>Pris ({visInklMoms ? "inkl. moms": "ekskl. moms"}): {beregn.totalPris(posteringer, 2, visInklMoms).formateret}</b><br />Markér opgave som færdig</button>
                     )}
                     {!opgave.isDeleted && !opgave.fakturaOprettesManuelt && 
                         (færdiggjort

@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "1.4.2",
+    date: "23. maj 2025",
+    changes: [
+        "Den første postering oprettet på en opgave, hvor der på forhånd er givet et fast tilbud til kunden, vil nu i udgangspunktet være med en fast pris på tilbudsprisen.",
+        "Rettede en fejl, hvor oprettelse af nye posteringer ikke altid registrerede brugeren for hvem posteringen blev oprettet, hvis en administrator oprettede posteringen på vegne af en anden.",
+        "Oprettelse af nye posteringer på vegne af andre medarbejdere kunne i nogle tilfælde lede til en fejl, hvis den anden medarbejders honorarsatser afveg fra administratorens egne registrerede satser. Fejlen er nu rettet.",
+        "Hvis man tidligere oprettede en postering på en opgave for umiddelbart efter at oprette en mere uden i mellemtiden at opdatere siden ville man støde på en fejl, hvor man som administrator ikke kunne vælge at oprette den nye postering på vegne af andre medarbejdere. Denne fejl er nu fikset.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.4.1",
     date: "21. maj 2025",
     changes: [
