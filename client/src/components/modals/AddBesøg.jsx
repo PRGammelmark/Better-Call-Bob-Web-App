@@ -91,10 +91,10 @@ const AddBesøg = (props) => {
     }, [user, medarbejdere, tilknyttetOpgave])
     
     useEffect(() => {
-        if (props.trigger.action === "select") {
+        if (props?.trigger?.action === "select") {
             setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
             setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
-        } else if (props.trigger.action === "ledigTidSelect") {
+        } else if (props?.trigger?.action === "ledigTidSelect") {
             const ansvarlig = medarbejdere ? medarbejdere.find(bruger => bruger._id === props.trigger.ansvarligID) : null;
             setTilknyttetAnsvarlig(ansvarlig)
             setChosenDate(dayjs(props.trigger.start).format("YYYY-MM-DD"))
@@ -104,7 +104,7 @@ const AddBesøg = (props) => {
             setSelectedTimeFrom("08:00")
             setSelectedTimeTo("12:00")
         }
-    }, [props.trigger, medarbejdere])
+    }, [props, medarbejdere])
 
     useEffect(()=>{
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -151,14 +151,19 @@ const AddBesøg = (props) => {
     function submitNewBesøgFromOverblikPage(e){
         e.preventDefault();
 
-        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
-        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
+        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
+        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
         const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
         const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+        // console.log(datoTidFra)
+        // console.log(datoTidTil)
+        // console.log(selectedTimeFrom)
+        // console.log(selectedTimeTo)
+        // return
 
         const besøg = {
-            datoTidFra: danskDatoTidFra,
-            datoTidTil: danskDatoTidTil,
+            datoTidFra: datoTidFra,
+            datoTidTil: datoTidTil,
             brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
             opgaveID: tilknyttetOpgave._id,
             kommentar: comment ? comment : ""
@@ -263,18 +268,20 @@ const AddBesøg = (props) => {
                 return
             }
     
-            const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
-            const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
-            const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-            const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
+            const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
+            const danskDatoTidFra = dayjs(datoTidFra).subtract(2, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            const danskDatoTidTil = dayjs(datoTidTil).subtract(2, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
             
             const besøg = {
-                datoTidFra: danskDatoTidFra,
-                datoTidTil: danskDatoTidTil,
-                brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
+                datoTidFra: datoTidFra,
+                datoTidTil: datoTidTil,
+                brugerID: selectedAnsvarlig || props.trigger.ansvarligID,
                 opgaveID: chosenTask._id,
                 kommentar: comment ? comment : ""
             }
+
+            console.log(besøg)
     
             if (besøg.datoTidFra >= besøg.datoTidTil) {
                 setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
