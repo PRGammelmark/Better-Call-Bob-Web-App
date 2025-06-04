@@ -17,7 +17,9 @@ const changes = [{
     version: "1.4.4",
     date: "4. juni 2025",
     changes: [
-        "Hotfix: Nu vil nyoprettede besøg fra opgavesiderne vise de korrekte tider i kalenderen."
+        "Hotfix: Nu vil nyoprettede besøg fra opgavesiderne vise de korrekte tider i kalenderen.",
+        "Det samme gør sig gældende når man forsøger at redigere et besøg.",
+        "Rettede en fejl, hvor det i nogle tilfælde var den forkerte medarbejder, der blev tilknyttet et besøg."
     ]
 },
     {
