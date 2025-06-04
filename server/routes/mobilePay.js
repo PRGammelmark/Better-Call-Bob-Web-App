@@ -104,7 +104,7 @@ router.post('/get-qr-code', async (req, res) => {
                 "type":"WALLET"
             },
             "reference": `bcb-${uuidv4()}`,
-            "paymentDescription": `Opgavebeskrivelse: ${opgave.opgaveBeskrivelse}`,
+            "paymentDescription": `Opgave: ${opgave.opgaveBeskrivelse.slice(0, 80)}`,
             "userFlow": "PUSH_MESSAGE"
         }, {
             headers: {

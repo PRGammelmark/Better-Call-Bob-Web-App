@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.4.5",
+    date: "4. juni 2025",
+    changes: [
+        "Rettede en fejl, hvor betalinger via Mobile Pay ikke kunne gennemføres hvis opgavebeskrivelsen var for lang."
+    ]
+},{
     version: "1.4.4",
     date: "4. juni 2025",
     changes: [
