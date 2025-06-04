@@ -265,12 +265,9 @@ const AddBesøg = (props) => {
     
             const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`;
             const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`;
-            const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-            const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            const danskDatoTidFra = dayjs(datoTidFra).subtract(0, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
+            const danskDatoTidTil = dayjs(datoTidTil).subtract(0, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
             
-            console.log(props.trigger.ansvarligID)
-            console.log(selectedAnsvarlig)
-    
             const besøg = {
                 datoTidFra: danskDatoTidFra,
                 datoTidTil: danskDatoTidTil,
