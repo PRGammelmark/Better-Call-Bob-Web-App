@@ -17,6 +17,9 @@ const AddBesøg = (props) => {
     const { user } = useAuthContext();
     const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg } = useBesøg();
+
+    const userID = user.id;
+
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [opretOpgave, setOpretOpgave] = useState(false);
     const [oprettetOpgave, setOprettetOpgave] = useState(null);
@@ -26,7 +29,7 @@ const AddBesøg = (props) => {
     const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState("");
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
+    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask?.ansvarlig?.length > 0 && chosenTask.ansvarlig[0]._id || userID);
     const [selectedTimeFrom, setSelectedTimeFrom] = useState("08:00");
     const [selectedTimeTo, setSelectedTimeTo] = useState("09:00");
     const [comment, setComment] = useState("");
@@ -41,7 +44,7 @@ const AddBesøg = (props) => {
     const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(true);
     const [medarbejdere, setMedarbejdere] = useState([]);
 
-    const userID = user.id;
+    console.log("ChosenTask: ", chosenTask)
 
     const resetState = () => {
         setOpretOpgave(false);
@@ -53,6 +56,12 @@ const AddBesøg = (props) => {
         // setSelectedAnsvarlig()
         setComment("");
     }
+
+    useEffect(() => {
+        if (chosenTask) {
+            setSelectedAnsvarlig(chosenTask?.ansvarlig?.length > 0 && chosenTask.ansvarlig[0]._id || userID)
+        }
+    }, [chosenTask])
 
     useEffect(() => {
         if (props.trigger) {
@@ -127,7 +136,7 @@ const AddBesøg = (props) => {
         .catch(error => {
           console.error(error)
         })
-      }, [user])
+    }, [user])
     
     useEffect(() => {
         setIsOnTaskPage(window.location.pathname.includes("/opgave/"));
@@ -153,13 +162,6 @@ const AddBesøg = (props) => {
 
         const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
         const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
-        const danskDatoTidFra = dayjs(datoTidFra).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-        const danskDatoTidTil = dayjs(datoTidTil).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-        // console.log(datoTidFra)
-        // console.log(datoTidTil)
-        // console.log(selectedTimeFrom)
-        // console.log(selectedTimeTo)
-        // return
 
         const besøg = {
             datoTidFra: datoTidFra,
@@ -270,18 +272,14 @@ const AddBesøg = (props) => {
     
             const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
             const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
-            const danskDatoTidFra = dayjs(datoTidFra).subtract(2, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-            const danskDatoTidTil = dayjs(datoTidTil).subtract(2, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS");
-            
+
             const besøg = {
                 datoTidFra: datoTidFra,
                 datoTidTil: datoTidTil,
-                brugerID: selectedAnsvarlig || props.trigger.ansvarligID,
+                brugerID: props.trigger.ansvarligID || selectedAnsvarlig,
                 opgaveID: chosenTask._id,
                 kommentar: comment ? comment : ""
             }
-
-            console.log(besøg)
     
             if (besøg.datoTidFra >= besøg.datoTidTil) {
                 setOpretBesøgError("Fra-tidspunktet skal være tidligere end til-tidspunktet.")
@@ -499,6 +497,7 @@ const AddBesøg = (props) => {
                 {user.isAdmin && isOnTaskPage && props.trigger.origin !== "besøgFraLedigTid" && (
                     <>
                     <label className={ModalStyles.modalLabel} htmlFor="ansvarlige">Vælg medarbejder</label>
+                    {console.log("SelectedAnsvarlig: ", selectedAnsvarlig)}
                     <select className={ModalStyles.modalInput} id="ansvarlige" value={selectedAnsvarlig} onChange={(e) => {setSelectedAnsvarlig(e.target.value)}}>
                         {chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 ? (
                             chosenTask.ansvarlig.map((ansvarlig, index) => (

@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.4.6",
+    date: "4. juni 2025",
+    changes: [
+        "Om igen: Rettede en fejl, hvor det i nogle tilfælde var den forkerte medarbejder, der blev tilknyttet et besøg."
+    ]
+},{
     version: "1.4.5",
     date: "4. juni 2025",
     changes: [
