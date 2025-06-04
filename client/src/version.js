@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.4.4",
+    date: "4. juni 2025",
+    changes: [
+        "Hotfix: Nu vil nyoprettede besøg fra opgavesiderne vise de korrekte tider i kalenderen."
+    ]
+},
+    {
     version: "1.4.3",
     date: "23. maj 2025",
     changes: [
