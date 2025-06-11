@@ -20,9 +20,11 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
     const economicLines = useEconomicLines(posteringer, inklAdministrationsGebyr, isEnglish);
 
     const cvrNummer = opgave.CVR ? ("corporateIdentificationNumber: opgave.CVR") : "";
+    const erErhvervskunde = opgave.CVR || opgave.virksomhed;
 
     const nyKundeObject = {
-        name: opgave.navn ? opgave.navn : "Intet navn oplyst",
+        ...(erErhvervskunde && { name: opgave.virksomhed ? opgave.virksomhed : "Virksomhedsnavn ikke oplyst" }),
+        ...(!erErhvervskunde && { name: opgave.navn ? opgave.navn : "Intet navn oplyst" }),
         address: opgave.adresse ? opgave.adresse : "Ingen adresse oplyst",
         email: alternativEmail ? alternativEmail : opgave.email ? opgave.email : null,
         vatZone: {
@@ -58,7 +60,8 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                 layoutNumber: 3
             },
             recipient: {
-                name: `${opgave.navn}`,
+                ...(erErhvervskunde && { name: opgave.virksomhed ? opgave.virksomhed : "Virksomhedsnavn ikke oplyst" }),
+                ...(!erErhvervskunde && { name: opgave.navn ? opgave.navn : "Intet navn oplyst" }),
                 address: `${opgave.adresse}`,
                 city: `${opgave.postnummerOgBy ? opgave.postnummerOgBy : "1000 København"}`,
                 country: "Danmark",

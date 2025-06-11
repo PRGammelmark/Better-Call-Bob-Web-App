@@ -14,11 +14,17 @@
 // 
 
 const changes = [{
+    version: "1.4.8",
+    date: "11. juni 2025",
+    changes: [
+        "Hvis en kunde er registreret som erhvervskunde (CVR- og/eller virksomhedsfeltet udfyldt) vil fakturaen nu blive oprettet med virksomhedens navn på fakturaen i stedet for kontaktpersonens navn."
+    ]
+},{
     version: "1.4.7",
     date: "11. juni 2025",
     changes: [
         "Rettede en fejl, hvor en postering nogle gange kunne blive oprettet med forkerte satser for medarbejderens honorar.",
-        
+        "Nu starter alle nye medarbejdere som hovedregel på løntrin 10."
     ]
 },{
     version: "1.4.6",
