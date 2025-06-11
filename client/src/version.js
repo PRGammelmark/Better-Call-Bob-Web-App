@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "1.4.7",
+    date: "11. juni 2025",
+    changes: [
+        "Rettede en fejl, hvor en postering nogle gange kunne blive oprettet med forkerte satser for medarbejderens honorar.",
+        
+    ]
+},{
     version: "1.4.6",
     date: "4. juni 2025",
     changes: [

@@ -44,19 +44,19 @@ function navigerTilBruger(){
     navigate(`../brugere/${brugerID}`)
 }
 
-useEffect(() => {
-    const satserForNyeBrugere = {
-        handymanTimerHonorar: Math.round(satser.handymanTimerHonorar * 0.5),
-        tømrerTimerHonorar: Math.round(satser.tømrerTimerHonorar * 0.5),
-        rådgivningOpmålingVejledningHonorar: Math.round(satser.rådgivningOpmålingVejledningHonorar * 0.5),
-        opstartsgebyrHonorar: Math.round(satser.opstartsgebyrHonorar * 0.5),
-        aftenTillægHonorar: Math.round(satser.aftenTillægHonorar * 0.5),
-        natTillægHonorar: Math.round(satser.natTillægHonorar * 0.5),
-        trailerHonorar: Math.round(satser.trailerHonorar * 0.5),
-    }
+// useEffect(() => {
+//     const satserForNyeBrugere = {
+//         handymanTimerHonorar: Math.round(satser.handymanTimerHonorar * 0.5),
+//         tømrerTimerHonorar: Math.round(satser.tømrerTimerHonorar * 0.5),
+//         rådgivningOpmålingVejledningHonorar: Math.round(satser.rådgivningOpmålingVejledningHonorar * 0.5),
+//         opstartsgebyrHonorar: Math.round(satser.opstartsgebyrHonorar * 0.5),
+//         aftenTillægHonorar: Math.round(satser.aftenTillægHonorar * 0.5),
+//         natTillægHonorar: Math.round(satser.natTillægHonorar * 0.5),
+//         trailerHonorar: Math.round(satser.trailerHonorar * 0.5),
+//     }
 
-    setSatser(satserForNyeBrugere)
-}, [])
+//     setSatser(satserForNyeBrugere)
+// }, [])
 
 function autoKode(){
     let randomPassword = ""
@@ -107,12 +107,10 @@ return (
                     <h2>Bruger oprettet! 🎉</h2>
                     <div className={styles.succesButtonsDiv}>
                         <button className={styles.submitButton} type="button" onClick={startForfra} >Opret ny bruger</button>
-                        {/* <button className={styles.submitButton} type="button" onClick={navigerTilBruger}>Gå til bruger</button> */}
                     </div>
                 </div> : <button className={styles.submitButton}>{loading ? "Opretter bruger ..." : "Opret bruger"}</button>}
             </div>
         </form>
-        {console.log(satser)}
         {error && <div className={styles.error}>{error}</div>}
     </div>
 </PageAnimation>
