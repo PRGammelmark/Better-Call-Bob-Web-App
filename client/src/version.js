@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "1.4.9",
+    date: "16. juni 2025",
+    changes: [
+        "Nu kan administratorer genåbne afsluttede opgaver. Dette gøres ved at trykke på knappen 'Genåbn afsluttet opgave' på åbne opgaver."
+    ]
+},{
     version: "1.4.8",
     date: "11. juni 2025",
     changes: [
