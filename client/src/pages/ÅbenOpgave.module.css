@@ -819,6 +819,19 @@
     border: 2px solid #59bf1a;
 }
 
+.genåbnButtonFullWidth {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: OmnesBold;
+    margin-top: 20px;
+    background: #3c5a3f;
+    border: 2px solid #3c5a3f;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s ease;
+    width: 100%;
+}
+
 .informerKundenOmPåVej {
     display: block;
     margin-top: 5px;
