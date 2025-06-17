@@ -195,7 +195,7 @@ const NyKunde = () => {
                             <h2>Kunde oprettet! 🎉</h2>
                             <div className={styles.succesButtonsDiv}>
                                 <button className={styles.submitButton} type="button" onClick={startForfra} >Opret ny kunde</button>
-                                {kundeID ? <button className={styles.submitButton} type="button" onClick={() => navigate(`/kunder/${kundeID}`)} >Gå til kunde</button> : ""}
+                                {kundeID ? <button className={styles.submitButton} type="button" onClick={() => navigate(`/kunde/${kundeID}`)} >Gå til kunde</button> : ""}
                             </div>
                         </div> : 
                         <button className={styles.submitButton} disabled={loading}>

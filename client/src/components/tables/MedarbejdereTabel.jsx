@@ -73,10 +73,10 @@ const MedarbejdereTabel = ({search, filter, vælgMedarbejder, setValgtMedarbejde
           return postnummer >= start && postnummer <= end;
         }));
       } else {
-        setSearchedMedarbejdere((filteredMedarbejdere.filter(medarbejder => medarbejder?.navn?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.titel?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.adresse?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.email?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.telefon?.toString().includes(search))).slice(0, 5))
+        setSearchedMedarbejdere((filteredMedarbejdere.filter(medarbejder => medarbejder?.navn?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.titel?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.adresse?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.email?.toLowerCase().includes(search.toLowerCase()) || medarbejder?.telefon?.toString().includes(search))).slice(0, 15))
       }
     } else {
-        setSearchedMedarbejdere(filteredMedarbejdere.slice(0, 5))
+        setSearchedMedarbejdere(filteredMedarbejdere.slice(0, 15))
     }
   }, [search, filteredMedarbejdere])
 

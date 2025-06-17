@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "2.0.2",
+    date: "17. juni 2025",
+    changes: [
+        "Opjusterede antallet af medarbejdere, der i udgangspunktet vises i søgeresultaterne i medarbejdertabellen.",
+        "Rettede en fejl, hvor knappen der leder til en ny kunde efter oprettelse af den pågældende kunde ikke virkede korrekt."
+    ]
+},{
     version: "2.0.1",
     date: "17. juni 2025",
     changes: [
