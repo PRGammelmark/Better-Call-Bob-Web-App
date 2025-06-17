@@ -88,7 +88,7 @@ const KunderTabel = ({search, filter, vælgKunde, setValgtKunde, valgtKunde}) =>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${Styles.kundeHeader}`}>
               <ul>
-                <li>Navn</li>
+                <li>Kunde</li>
                 <li>Adresse</li>
                 <li>Opgaver</li>
               </ul>
@@ -132,36 +132,39 @@ const KunderTabel = ({search, filter, vælgKunde, setValgtKunde, valgtKunde}) =>
             <div className={`${TableCSS.opgaveHeader} ${Styles.kundeHeader}`}>
               <ul>
                 <li>Kunde</li>
-                <li>Fakturabeløb</li>
-                <li>Ansvarlige</li>
+                <li>Adresse</li>
+                <li>Opgaver</li>
               </ul>
             </div>
             <div className={`${TableCSS.opgaveBody} ${Styles.kundeBody}`}>
-              {searchedKunder && searchedKunder.length > 0 && searchedKunder.map(kunde => {
+            {searchedKunder && searchedKunder.length > 0 && searchedKunder.map(kunde => {
 
-                const kundensOpgaver = opgaver.filter(opg => opg.kundeID === kunde._id);
-                const kundeErValgt = kunde._id === valgtKunde?._id;
+              const kundensOpgaver = opgaver?.filter(opg => opg.kundeID === kunde._id);
+              const kundensAfsluttedeOpgaver = kundensOpgaver?.filter(opg => opg.opgaveAfsluttet);
+              const kundensÅbneOpgaver = kundensOpgaver?.filter(opg => !opg.opgaveAfsluttet);
+              const kundeErValgt = kunde._id === valgtKunde?._id;
 
-                return (
-                  <div className={`${TableCSS.opgaveListing} ${Styles.clickableListingItem} ${kundeErValgt ? Styles.valgtKunde : ""}`} key={kunde._id} onClick={() => {
-                    if (vælgKunde) {
-                      if(valgtKunde?._id === kunde._id) {
-                        setValgtKunde(null)
-                      } else {
-                        setValgtKunde(kunde)
-                      }
+              return (
+                <div className={`${TableCSS.opgaveListing} ${Styles.clickableListingItem} ${kundeErValgt ? Styles.valgtKunde : ""}`} key={kunde._id} onClick={() => {
+                  if (vælgKunde) {
+                    if(valgtKunde?._id === kunde._id) {
+                      setValgtKunde(null)
                     } else {
-                      navigate(`../kunde/${kunde._id}`)
+                      setValgtKunde(kunde)
                     }
-                  }}>
-                    <ul>
-                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde.fornavn + " " + kunde.efternavn}{(kunde.virksomhed || kunde.CVR) && <br />}<span className={Styles.kundeVirksomhedNavn}>{(kunde.virksomhed || kunde.CVR) && ((kunde?.virksomhed) + " " + (kunde?.CVR && ("(CVR.: " + kunde.CVR + ")")))}</span></li>
-                      <li>{kunde.adresse}</li>
-                      <li>{kundensOpgaver?.length > 0 && kundensOpgaver.length || 0}</li>
-                    </ul>
-                  </div>
-                )
-              })}        
+                  } else {
+                    navigate(`../kunde/${kunde._id}`)
+                  }
+                }}>
+                  <ul>
+                    <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde.fornavn + " " + kunde.efternavn}{(kunde.virksomhed || kunde.CVR) && <br />}<span className={Styles.kundeVirksomhedNavn}>{(kunde.virksomhed || kunde.CVR) && ((kunde?.virksomhed) + " " + (kunde?.CVR && ("(CVR.: " + kunde.CVR + ")")))}</span></li>
+                    <li>{kunde.adresse}, {kunde.postnummerOgBy}</li>
+                    <li><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: "6px"}}>{kundensÅbneOpgaver?.length > 0 ? (<p className={Styles.igangværendeOpgaver}>{(kundensÅbneOpgaver.length + " igangværende")}</p>) : ""}{kundensAfsluttedeOpgaver?.length > 0 ? (<p className={Styles.afsluttedeOpgaver}>{(kundensAfsluttedeOpgaver.length + (kundensAfsluttedeOpgaver.length > 1 ? " afsluttede" : " afsluttet"))}</p>) : ""}</div></li>
+                  </ul>
+                </div>
+              )
+              })}
+              {searchedKunder && searchedKunder.length === 0 && <p className={Styles.ingenKunderFundet}>Ingen kunder matcher dine kriterier.</p>}      
             </div>
           </div>
         </div>
