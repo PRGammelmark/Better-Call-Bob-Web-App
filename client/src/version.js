@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "2.0.3",
+    date: "17. juni 2025",
+    changes: [
+        "Rettede en fejl, hvor knappen 'Beskriv opgaven ...' på 'Ny opgave'-flowet ikke blev vist korrekt når en kunde er valgt på forhånd før opgavebeskrivelsen er blevet udfyldt.",
+        "Implementerede flere forskellige tiltag, der skal gøre det nemmere for brugere på mobilen at klikke/trykke sig ind på input-felter og knapper."
+    ]
+},{
     version: "2.0.2",
     date: "17. juni 2025",
     changes: [

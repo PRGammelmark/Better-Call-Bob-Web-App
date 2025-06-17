@@ -410,7 +410,8 @@ const NyOpgave = () => {
                                 <input style={{marginTop: 5}} type="number" name="tilbudAfgivet" className={NyOpgaveCSS.input} onChange={(e) => setTilbudAfgivet(e.target.value)} value={tilbudAfgivet} required/>
                             </div>
                         }
-                        {!kundeUdfyldt &&<button disabled={!opgaveUdfyldt} type="button" className={NyOpgaveCSS.fremButton} onClick={() => {setTrinToKunde(true); setTrinEtOpgave(false)}}>{opgaveUdfyldt ? "Udfyld kundeoplysninger" : "Beskriv opgaven ..."} {opgaveUdfyldt && <ArrowRight style={{width: 20, height: 20}}/>}</button>}
+                        {!kundeUdfyldt && <button disabled={!opgaveUdfyldt} type="button" className={NyOpgaveCSS.fremButton} onClick={() => {setTrinToKunde(true); setTrinEtOpgave(false)}}>{opgaveUdfyldt ? "Udfyld kundeoplysninger" : "Beskriv opgaven ..."} {opgaveUdfyldt && <ArrowRight style={{width: 20, height: 20}}/>}</button>}
+                        {kundeUdfyldt && <button disabled={true} type="button" className={`${NyOpgaveCSS.beskrivOpgavenDisabledButton} ${opgaveUdfyldt ? NyOpgaveCSS.beskrivOpgavenDisabledButtonRemoved : ""}`}>{"Beskriv opgaven ..."}</button>}
                     </div>}
 
                     {trinToKunde && <div>

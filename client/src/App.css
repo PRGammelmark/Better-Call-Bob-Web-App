@@ -44,3 +44,10 @@ ul li a.active {
     font-family: OmnesBold;
     src: url(./fonts/OmnesBold.ttf);
 }
+
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  touch-action: manipulation;
+}
