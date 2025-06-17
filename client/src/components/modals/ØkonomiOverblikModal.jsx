@@ -69,6 +69,7 @@ const ØkonomiOverblikModal = (props) => {
     const [posteringerDetaljer, setPosteringerDetaljer] = useState([])
     const [brugere, setBrugere] = useState([])
     const [opgaver, setOpgaver] = useState([])
+    const [kunder, setKunder] = useState([])
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
     
     const user = props.user
@@ -98,20 +99,23 @@ const ØkonomiOverblikModal = (props) => {
         .catch(error => console.log(error))
     }, [])
 
-    const getOpgaveAdresse = (opgaveID) => {
-        const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
-        return opgave ? opgave.adresse : 'Adresse utilgængelig';
-    };
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setKunder(res.data);
+        })
+        .catch(error => console.log(error))
+    }, [])
 
-    // function beregnAkkumuleredeData(posteringer) {
-    //     const månedensOpstartsgebyrer = posteringer.reduce((sum, postering) => sum + postering.opstart, 0)
-    //     const månedensHandymantimer = posteringer.reduce((sum, postering) => sum + postering.handymanTimer, 0)
-    //     const månedensTømrertimer = posteringer.reduce((sum, postering) => sum + postering.tømrerTimer, 0)
-    //     const månedensRådgivningOpmålingVejledning = posteringer.reduce((sum, postering) => sum + postering.rådgivningOpmålingVejledning, 0)
-    //     const månedensAftenTillæg = posteringer.reduce((sum, postering) => sum + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0), 0)
-    //     const månedensNatTillæg = posteringer.reduce((sum, postering) => sum + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0), 0)
-    //     const månedensTrailer = posteringer.reduce((sum, postering) => sum + (postering.trailer ? postering.satser.trailerHonorar : 0), 0)
-    // }
+    const getOpgaveAdresse = (opgaveID) => {
+        const opgave = opgaver && opgaver?.find(opgave => opgave._id === opgaveID);
+        const kunde = kunder && kunder?.find(kunde => kunde._id === opgave.kundeID);
+        return kunde?.adresse || 'Adresse utilgængelig';
+    };
 
     function grupperPoster(posteringer, antalKey, satsKey) {
         const grupperet = {};

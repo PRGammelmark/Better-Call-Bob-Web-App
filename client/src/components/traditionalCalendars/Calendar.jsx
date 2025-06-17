@@ -31,7 +31,7 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg}) => {
+const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg, eventData, setEventData, aktueltBesøg}) => {
 
   const userID = user.id;
   
@@ -45,11 +45,14 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
 
     const [egneBesøg, setEgneBesøg] = useState([]);
     const [egneLedighedTider, setEgneLedighedTider] = useState([])
+    const [kundeTilknyttetBesøg, setKundeTilknyttetBesøg] = useState(null)
+    const [kunder, setKunder] = useState([])
 
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
-        setTilknyttetOpgave(null)
+        setOpgaveTilknyttetBesøg
+    (null)
       }
     }, [openDialog]);
 
@@ -66,9 +69,7 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
         console.log(filterEgneBesøg)
       })
       .catch(error => console.log(error))
-    }, [])
 
-    useEffect(() => {
       axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
@@ -79,6 +80,16 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
         setEgneLedighedTider(filterEgneLedigeTider)
         console.log("Egne ledige tider:")
         console.log(filterEgneLedigeTider)
+      })
+      .catch(error => console.log(error))
+
+      axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(res => {
+        setKunder(res.data)
       })
       .catch(error => console.log(error))
     }, [])
@@ -106,13 +117,14 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
           }
         })
         .then(res => {
-          setTilknyttetOpgave(res.data)
+          setOpgaveTilknyttetBesøg(res.data)
+          setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === res.data.kundeID))
         })
         .catch(error => console.log(error))
 
       setEventData(callEvent);
       setOpenDialog(true);
-}, [openDialog]);
+}, [openDialog, kunder]);
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   const newEventBorders = {
@@ -167,14 +179,14 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
         onEventResize={flytEllerÆndreEvent}
       />
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
-        <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave || aktueltBesøg) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
-        <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>
+        <h2 className={ModalStyles.modalHeading}>{(opgaveTilknyttetBesøg || aktueltBesøg) ? "Planlagt besøg på " + (kundeTilknyttetBesøg?.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
+        <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p>
         <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>
         <br />
         <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>
-        <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>
-        <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
-          <button className={ModalStyles.buttonFullWidth}>Gå til opgave {tilknyttetOpgave ? "#" + tilknyttetOpgave._id.slice(-3) : null}</button>
+        <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>
+        <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
+          <button className={ModalStyles.buttonFullWidth}>Gå til opgave {opgaveTilknyttetBesøg ? "#" + opgaveTilknyttetBesøg._id.slice(-3) : null}</button>
         </Link>
       </Modal>
     </div>

@@ -7,16 +7,27 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 
 import relativeTime from 'dayjs/plugin/relativeTime' // ES 2015
-
-
 dayjs.extend(relativeTime)
 
 const VælgOpgaveVedNytBesøg = (props) => {
   const [isLoading, setIsLoading] = useState(true)
+  const [kunder, setKunder] = useState([])
   const {user} = useAuthContext()
 
   const opgaver = props.opgaver
   const opgaverLoading = props.opgaverLoading
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(error => console.log(error))
+  }, [])
 
   return (
     <>
@@ -34,14 +45,16 @@ const VælgOpgaveVedNytBesøg = (props) => {
               </div>
               <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
                 {opgaverLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                  
                   return (
-                    <div className={`${TableCSS.opgaveListing} ${props.tilknyttetOpgave && props.tilknyttetOpgave._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} style={{cursor: "pointer"}} onClick={() => {
-                      props.setTilknyttetOpgave(opgave)
+                    <div className={`${TableCSS.opgaveListing} ${props.opgaveTilknyttetBesøg && props.opgaveTilknyttetBesøg._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} style={{cursor: "pointer"}} onClick={() => {
+                      props.setOpgaveTilknyttetBesøg(opgave)
                     }}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                        <li>{opgave.adresse}</li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                        <li>{kunde?.adresse}</li>
                         <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                       </ul>
                     </div>
@@ -64,14 +77,16 @@ const VælgOpgaveVedNytBesøg = (props) => {
               </div>
               <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
                 {opgaverLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                  
                   return (
-                    <div className={`${TableCSS.opgaveListing} ${props.tilknyttetOpgave && props.tilknyttetOpgave._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} onClick={() => {
-                      props.setTilknyttetOpgave(opgave)
+                    <div className={`${TableCSS.opgaveListing} ${props.opgaveTilknyttetBesøg && props.opgaveTilknyttetBesøg._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} onClick={() => {
+                      props.setOpgaveTilknyttetBesøg(opgave)
                       props.setTilknyttetAnsvarlig("")
                     }}>
                       <ul>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                        <li>{opgave.adresse}</li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                        <li>{kunde?.adresse}</li>
                         <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                       </ul>
                     </div>
@@ -82,7 +97,6 @@ const VælgOpgaveVedNytBesøg = (props) => {
           </div>
         </div>
     </>
-      
   )
 }
 

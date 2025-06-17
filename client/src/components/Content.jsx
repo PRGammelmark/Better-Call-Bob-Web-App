@@ -25,6 +25,7 @@ const Content = () => {
               <li><NavLink to="/">Overblik</NavLink></li>
               {user.isAdmin && <li><NavLink to="alle-opgaver">Alle opgaver</NavLink></li>}
               {!user.isAdmin && <li><NavLink to="mine-opgaver">Mine opgaver</NavLink></li>}
+              {user.isAdmin && <li><NavLink to="kunder">Kunder</NavLink></li>}
               <li><NavLink to="team">Team</NavLink></li>
               <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
               <li><NavLink to="indstillinger">Indstillinger</NavLink></li>

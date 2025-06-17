@@ -6,11 +6,27 @@ import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const SlettedeOpgaver = ({slettedeOpgaver, setSlettedeOpgaver, isLoading, setIsLoading}) => {
 
   const navigate = useNavigate()
   const {user} = useAuthContext()
+  const [kunder, setKunder] = useState(null)
+  
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }, [user])
 
   return (
     <>
@@ -28,12 +44,13 @@ const SlettedeOpgaver = ({slettedeOpgaver, setSlettedeOpgaver, isLoading, setIsL
             </div>
             <div className={`${TableCSS.opgaveBody} ${SlettedeOpgaverCSS.slettedeOpgaverBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : slettedeOpgaver.length > 0 ? slettedeOpgaver.map((opgave) => {
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={SlettedeOpgaverCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                      <li>{opgave.adresse}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={SlettedeOpgaverCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li>{kunde?.adresse}</li>
                       <li>{dayjs(opgave.isDeleted).fromNow()}</li>
                     </ul>
                     <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
@@ -59,11 +76,12 @@ const SlettedeOpgaver = ({slettedeOpgaver, setSlettedeOpgaver, isLoading, setIsL
             </div>
             <div className={`${TableCSS.opgaveBody} ${SlettedeOpgaverCSS.slettedeOpgaverBody}`}>
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : slettedeOpgaver.length > 0 ? slettedeOpgaver.map((opgave) => {
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                     <ul>
-                    <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={SlettedeOpgaverCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                      <li>{opgave.adresse}</li>
+                    <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={SlettedeOpgaverCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li>{kunde?.adresse}</li>
                       <li>{dayjs(opgave.isDeleted).fromNow()}</li>
                     </ul>
                   </div>

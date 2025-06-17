@@ -18,12 +18,15 @@ import Version from './pages/Version'
 import ÅbenOpgave from './pages/ÅbenOpgave'
 import NyOpgave from './pages/NyOpgave'
 import NyBruger from './pages/NyBruger'
+import NyKunde from './pages/NyKunde'
 import Login from './pages/Login'
 import Team from './pages/Team'
+import Kunder from './pages/Kunder'
 import ErrorPage from './pages/ErrorPage'
 import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
 import SlettedeOpgaver from './pages/SlettedeOpgaver'
 import GendanKodeord from './pages/GendanKodeord'
+import Kunde from './pages/Kunde'
 
 function App() {
 
@@ -66,12 +69,16 @@ function App() {
           <Route path="slettede-opgaver" element={<SlettedeOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="mine-opgaver" element={<MineOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
+          <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
           <Route path="indstillinger" element={<Indstillinger />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-opgave" element={<NyOpgave />} errorElement={<ErrorPage />}/>
+          <Route path="ny-opgave/kunde/:kundeID" element={<NyOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-bruger" element={<NyBruger />} errorElement={<ErrorPage />}/>
+          <Route path="ny-kunde" element={<NyKunde />} errorElement={<ErrorPage />}/>
+          <Route path="kunde/:kundeID" element={<Kunde />} errorElement={<ErrorPage />}/>
           <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
         </Route>
         <Route path="gendan-kodeord" element={<GendanKodeord />}/>

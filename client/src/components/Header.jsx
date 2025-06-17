@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, matchPath } from 'react-router-dom'
 import Logo from '../assets/bcb-logo.svg'
 import HamburgerIcon from '../assets/hamburgerIcon.svg'
 import BackIcon from '../assets/backMobile.svg'
@@ -10,6 +10,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { currentVersion, changes } from '../version.js'
+
 
 const Header = () => {
 
@@ -30,8 +31,11 @@ const Header = () => {
     '/slettede-opgaver': "🗑️ Papirkurv",
     '/mine-opgaver': "📌 Mine opgaver",
     '/team': "🤝 Teamet",
+    '/kunder': "👥 Kunder",
+    '/kunde/:kundeID': "Kunde",
     '/dokumenter': "📄 Dokumenter",
     '/indstillinger': "⚙️ Indstillinger",
+    '/ny-kunde': "👥 Opret ny kunde",
     '/version': `Ændringslog (v${currentVersion})`,
     '/opgave/:opgaveID': "OpgaveID",
     '/ny-opgave': "📋 Opret ny opgave",
@@ -39,25 +43,50 @@ const Header = () => {
     '/login': "Log ind"
   }
 
-  const routesWithBackIcon = ['/opgave', '/ny-opgave', '/ny-bruger'];
+  // const routesWithBackIcon = ['/opgave', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID'];
 
-  // Set titles on location update
-  useEffect(() => {
-    if (location.pathname.startsWith('/opgave/')) {
-      const opgaveID = location.pathname.split('/').pop() || ""
-      const lastThreeChars = opgaveID.slice(-3)
-      setNavTitle(`📋 Opgave #${lastThreeChars}`)
-      setShowBackIcon(true); // Show back icon for dynamic opgave route
-    } else if (routesWithBackIcon.includes(location.pathname)) {
-      const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
-      setNavTitle(currentTitle)
-      setShowBackIcon(true); // Show back icon for specific routes
-    } else {
-      const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
-      setNavTitle(currentTitle)
-      setShowBackIcon(false); // Hide back icon for other routes
-    }
-  }, [location.pathname])
+  // // Set titles on location update
+  // useEffect(() => {
+  //   if (location.pathname.startsWith('/opgave/')) {
+  //     const opgaveID = location.pathname.split('/').pop() || ""
+  //     const lastThreeChars = opgaveID.slice(-3)
+  //     setNavTitle(`📋 Opgave #${lastThreeChars}`)
+  //     setShowBackIcon(true); // Show back icon for dynamic opgave route
+  //   } else if (routesWithBackIcon.includes(location.pathname)) {
+  //     const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
+  //     setNavTitle(currentTitle)
+  //     setShowBackIcon(true); // Show back icon for specific routes
+  //   } else {
+  //     const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
+  //     setNavTitle(currentTitle)
+  //     setShowBackIcon(false); // Hide back icon for other routes
+  //   }
+  // }, [location.pathname])
+
+  const showBackIconRoutes = ['/opgave/:opgaveID', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID', '/ny-kunde'];
+
+const matchedRoute = showBackIconRoutes.find(route =>
+  matchPath({ path: route, end: false }, location.pathname)
+);
+
+const currentTitleRoute = Object.keys(routeTitles).find(route =>
+  matchPath({ path: route, end: true }, location.pathname)
+);
+
+useEffect(() => {
+  if (location.pathname.startsWith('/opgave/')) {
+    const opgaveID = location.pathname.split('/').pop() || "";
+    const lastThreeChars = opgaveID.slice(-3);
+    setNavTitle(`📋 Opgave #${lastThreeChars}`);
+  } else if (currentTitleRoute) {
+    setNavTitle(routeTitles[currentTitleRoute]);
+  } else {
+    setNavTitle("Ingen titel");
+  }
+
+  setShowBackIcon(!!matchedRoute);
+}, [location.pathname]);
+
 
   const handleLogout = () => {
     logout()

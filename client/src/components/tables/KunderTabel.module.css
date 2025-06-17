@@ -1,0 +1,99 @@
+.kundeHeader ul li:nth-child(1), .kundeBody div ul li:nth-child(1) {
+    width: 35%;
+    min-width: 35%;
+    max-width: 35%;
+}
+
+.kundeHeader ul li:nth-child(2), .kundeBody div ul li:nth-child(2) {
+    width: 35%;
+    min-width: 35%;
+    max-width: 35%;
+}
+
+.kundeHeader ul li:nth-child(3), .kundeBody div ul li:nth-child(3) {
+    width: 30%;
+    min-width: 30%;
+    max-width: 30%;
+}
+
+.mobileTable {
+    display: none;
+}
+
+.kundeVirksomhedNavn {
+    font-size: 0.65rem;
+    color: #696969;
+}
+
+.kundeHeader ul {
+    max-width: 100%!important;
+}
+
+.clickableListingItem {
+    cursor: pointer;
+    transition: 0.2s ease;
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+}
+
+.clickableListingItem:hover {
+    background: #cae4ca;
+}
+
+.valgtKunde {
+    background: #cae4ca;
+    border-left: 2px solid #59bf1a;
+    border-right: 2px solid #59bf1a;
+}
+
+.igangværendeOpgaver {
+    color: #3b5a3f;
+    background: #d9dfd9;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.afsluttedeOpgaver {
+    color: #bf1a1a;
+    background: #eddbda;
+    padding: 2px 5px;
+    border-radius: 5px;
+}
+
+.ingenKunderFundet {
+    color: #696969;
+    font-size: 0.8rem;
+    text-align: center;
+    padding: 10px;
+}
+
+@media (max-width: 750px) {
+    .mobileTable {
+        display: block;
+    }
+
+    .desktopTable {
+        display: none;
+    }
+
+    .kundeHeader ul li:nth-child(1), .kundeBody div ul li:nth-child(1) {
+        width: 40%;
+    }
+    
+    .kundeHeader ul li:nth-child(2), .kundeBody div ul li:nth-child(2) {
+        width: 30%;
+    }
+    
+    .kundeHeader ul li:nth-child(3), .kundeBody div ul li:nth-child(3) {
+        width: 30%;
+    }
+
+    .kundeBody div {
+        cursor: pointer;
+        border-right: 4px solid #59bf1a;
+    }
+
+    .searchInput {
+        margin-top: 0px!important;
+    }
+}

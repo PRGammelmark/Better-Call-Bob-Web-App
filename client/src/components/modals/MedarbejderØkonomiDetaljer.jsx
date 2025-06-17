@@ -16,6 +16,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
 
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
     const [posteringerDetaljer, setPosteringerDetaljer] = useState(null)
+    const [kunder, setKunder] = useState(null)
 
     const navigate = useNavigate()
     
@@ -25,6 +26,20 @@ const MedarbejderØkonomiDetaljer = (props) => {
     const user = props && props.user
     const opgaver = props && props.opgaver
 
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            setKunder(response.data)
+        })
+        .catch(error => {
+            console.log(error)
+        })
+    }, [])
+    
     const getBrugerName = (brugerID) => {
         const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
         return bruger ? bruger.navn : 'Ukendt bruger';
@@ -134,7 +149,8 @@ const MedarbejderØkonomiDetaljer = (props) => {
 
     const getOpgaveAdresse = (opgaveID) => {
         const opgave = opgaver && opgaver.find(opgave => opgave._id === opgaveID);
-        return opgave ? opgave.adresse : 'Adresse utilgængelig';
+        const kunde = kunder && kunder.find(kunde => kunde._id === opgave.kundeID);
+        return kunde?.adresse || 'Adresse utilgængelig';
     };
   
     return (
@@ -371,14 +387,14 @@ const MedarbejderØkonomiDetaljer = (props) => {
                     return ( 
                     <div key={opgave._id}>
                         <div className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeDesktop} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
-                            <p>{opgave.adresse}</p>
+                            <p>{getOpgaveAdresse(opgave._id)}</p>
                             <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay || opgave.opgaveAfsluttet) ? "✅ Betalt" : "❗️ Åben"}</p>
                             <p>{beregn.totalHonorar(posteringerForOpgave, 2, false)?.formateret}</p>
                             <p><button onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={Styles.sePosteringerButton}>Se posteringer</button></p>
                             <p><button onClick={() => navigate(`/opgave/${opgave._id}`)}>Gå til opgave</button></p>
                         </div>
                         <div onClick={() => posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? setPosteringerDetaljer(null) : setPosteringerDetaljer(posteringerForOpgave)} className={`${Styles.opgaver} ${Styles.uligeMåned} ${Styles.adminØkonomiOpgaverRækkeMobile} ${posteringerDetaljer && posteringerDetaljer[0].opgaveID === opgave._id ? Styles.selectedOpgave : ''}`}>
-                            <p>{opgave.adresse}</p>
+                            <p>{getOpgaveAdresse(opgave._id)}</p>
                             <p>{(opgave.fakturaBetalt || opgave.opgaveBetaltMedMobilePay || opgave.opgaveAfsluttet) ? "✅ Betalt" : "❗️ Åben"}</p>
                             <p>{beregn.totalHonorar(posteringerForOpgave, 2, false)?.formateret}</p>
                         </div>

@@ -75,7 +75,7 @@ const NyOpgaveFraOpretBesøg = (props) => {
             setLoading(false)
             setError(null)
             setOpgaveID(response.data._id)
-            props.setTilknyttetOpgave(response.data)
+            props.setOpgaveTilknyttetBesøg(response.data)
             // props.setTilknyttetAnsvarlig(response.data.ansvarlig[0])
             props.setTilknyttetAnsvarlig(tilknyttetAnsvarlig || ansvarlig)
             props.setOpgaveOprettet(true)

@@ -19,6 +19,10 @@ const besøgSchema = new Schema({
         type: String,
         required: true
     },
+    kundeID: {
+        type: String,
+        required: false
+    },
     kommentar: {
         type: String,
         required: false

@@ -39,6 +39,9 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                 {!user.isAdmin && <Link style={linkStyles} to={'mine-opgaver'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Mine opgaver</h2>
                 </Link>}
+                {user.isAdmin && <Link style={linkStyles} to={'kunder'} onClick={() => setShowNavMenu(false)}>
+                    <h2 className={Styles.mobileNavItem}>Kunder</h2>
+                </Link>}
                 <Link style={linkStyles} to={'team'} onClick={() => setShowNavMenu(false)}>
                     <h2 className={Styles.mobileNavItem}>Team</h2>
                 </Link>

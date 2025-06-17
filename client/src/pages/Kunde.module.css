@@ -1,0 +1,309 @@
+.bold {
+    font-family: "OmnesBold";
+}
+
+.kundeNavn {
+    font-family: "OmnesBold"
+}
+
+.kundeType {
+    font-family: "Omnes";
+    color: #666;
+}
+
+.kundeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kortLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+    text-decoration: none;
+    color: #fff;
+    background-color: #3c5a3f;
+    padding: 15px 20px;
+    border-radius: 10px;
+    font-family: "OmnesBold";
+    /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px; */
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.kortLink:hover {
+    color: #fff;
+    background: #59bf1a;
+}
+
+.redigerKundeKnap {
+    background-color: #f6f9d2;
+    color: #B37400D9;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: "Omnes";
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(179, 116, 0, 0.25) 0px 0px 0px 1px;
+    transition: 0.2s ease;
+}
+
+.redigerKundeKnap:hover {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(179, 116, 0, 0.65) 0px 0px 0px 1px;
+}
+
+.infoPillsDiv {
+    display: flex;
+    padding: 0px 20px;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    width: 100%;
+    transform: translateX(-20px);
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer/Edge */
+}
+
+.infoPillsDiv::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+}
+
+.infoPillsDiv div {
+    font-size: 0.8rem;
+    border-radius: 50px;
+    padding: 0px 12px;
+    height: 26px;
+    line-height: 26px;
+    white-space: nowrap;
+    background: #f0f0f0;
+    border: 1px solid #22222230;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.harIkkeStige {
+    border: 1px solid #FF0000!important;
+    background: #FF000015!important;
+}
+
+.harStige {
+    border: 1px solid #59bf1a!important;
+}
+
+.vilIkkeKontaktesMedReklame {
+    border: 1px solid #FF0000!important;
+    background: #FF000015!important;
+}
+
+.vilGerneKontaktesMedReklame {
+    border: 1px solid #59bf1a!important;
+    background: #59bf1a15!important;
+}
+
+.kundeKontaktContainer {
+    margin-top: 40px;
+}
+
+.kundeKontaktMobile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: start;
+    margin-top: 20px;
+    justify-content: center;
+}
+
+.kundeKontaktMobile a.link {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    min-width: 30%;
+    flex-grow: 1;
+    gap: 10px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    background-color: #f0f0f0;
+    color: #222222;
+    text-align: center;
+    justify-content: center;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(34,34,34,0.19) 0px 0px 0px 1px;
+    transition: 0.2s ease;
+    border: 1px solid #ffffff00;
+}
+
+.kundeKontaktMobile a.link:hover {
+    box-shadow: rgba(0, 0, 0, 0) 0px 6px 24px 0px, rgba(34,34,34,0) 0px 0px 0px 1px;
+    border: 1px solid #59bf1a!important;
+}
+
+.kundeKontaktMobile a.link img {
+    width: 20px;
+    height: 20px;
+}
+
+.kundeKontaktMobile > .marginTop10 {
+    margin-top: 0px;
+}
+
+.tilbageKnap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #666;
+    font-family: "OmnesBold";
+    font-size: 16px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.virksomhedInfo {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 0px;
+    background: #f0f0f0;
+    padding: 10px 60px 10px 15px;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.virksomhedHeading {
+    margin-bottom: 5px;
+}
+
+.virksomhedTekst {
+    font-size: 0.8rem;
+}
+
+.noterInput {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 120px;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+}
+
+.noterInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.kundeOpgaver {
+    margin-top: 40px;
+}
+
+.kundeOpgaver h2 {
+    margin-bottom: 20px;
+}
+
+.kundeBetalinger {
+    margin-top: 40px;
+}
+
+.kundeBetalinger h2 {
+    margin-bottom: 20px;
+}
+
+.sletKundeKnap {
+    background-color: #FF000030;
+    color: #FF0000;
+    border: 1px solid #FF000050;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: "Omnes";
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.sletKundeKnap:hover {
+    background-color: #FF000040;
+    color: #FF0000;
+    border: 1px solid #FF0000;
+}
+
+.kundeOpgaverHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.kundeOpgaverHeader h2 {
+    margin-bottom: 10px;
+}
+
+.opretOpgaveKnap {
+    background-color: #f0f0f0;
+    color: #222222;
+    border: 1px solid #22222220;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: "OmnesBold";
+    font-size: 16px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+.opretOpgaveKnap:hover {
+    background-color: #59bf1a;
+    color: #fff;
+    border: 1px solid #59bf1a;
+}
+
+.sletRedigerKundeDiv {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+@media (max-width: 750px) {
+    .kundeHeader {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .tilbageKnap {
+        display: none;
+    }
+
+    h1.kundeNavn {
+        display: block;
+        font-size: 1.5rem;
+        margin-top: 40px;
+    }
+
+    .sletRedigerKundeDiv {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+}

@@ -16,7 +16,8 @@ const opgaveSchema = Joi.object({
     CVR: Joi.string().length(8).pattern(/^\d+$/).allow("", null),
     virksomhed: Joi.string().max(100).allow("", null),
     harStige: Joi.boolean().required(),
-    recaptchaToken: Joi.string().required()
+    recaptchaToken: Joi.string().required(),
+    kundeID: Joi.string().required()
 })
 
 const verifyCaptcha = async (token) => {
@@ -45,6 +46,18 @@ const getOpgaver = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+const getOpgaverForKunde = async (req, res) => {
+    const { id } = req.params;
+    const opgaver = await Opgave.find({ kundeID: id });
+    res.status(200).json(opgaver);
+}
+
+const getOpgaverForMedarbejder = async (req, res) => {
+    const { id } = req.params;
+    const opgaver = await Opgave.find({ ansvarlig: id });
+    res.status(200).json(opgaver);
+}
 
 const getOpgave = async (req, res) => {
     const { id } = req.params;
@@ -81,9 +94,9 @@ const createOpgave = async (req, res) => {
         { new: true, upsert: true }
     );
 
-    const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, opgaveBilleder } = req.body;
+    const { opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID } = req.body;
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, opgaveBilleder})
+        const opgave = await Opgave.create({opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID})
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -99,7 +112,7 @@ const openCreateOpgave = async (req, res) => {
         return res.status(400).json({ message: "Ugyldigt input", details: error.details })
     }
 
-    const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, recaptchaToken, opgaveBilleder } = req.body;
+    const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, harStige, recaptchaToken, opgaveBilleder, kundeID } = req.body;
     const captchaRes = await verifyCaptcha(recaptchaToken)
 
     if (!captchaRes.success || captchaRes.score < 0.5) {
@@ -179,5 +192,7 @@ export {
     createOpgave,
     getOpgave,
     deleteOpgave,
-    updateOpgave
+    updateOpgave,
+    getOpgaverForKunde,
+    getOpgaverForMedarbejder
 }

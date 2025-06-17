@@ -50,6 +50,7 @@ const ÅbenOpgave = () => {
     // state managers
     const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
     const [opgave, setOpgave] = useState(null);
+    const [kunde, setKunde] = useState({});
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
     const [updateOpgave, setUpdateOpgave] = useState(false);
@@ -98,7 +99,7 @@ const ÅbenOpgave = () => {
     const [, forceUpdate] = useReducer(x => x + 1, 0);
     const [openDialog, setOpenDialog] = useState(false)
     const [eventData, setEventData] = useState(null)
-    const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
+    const [opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg] = useState(null)
     const [aktueltBesøg, setAktueltBesøg] = useState(null)
     const [sletOpgaveModal, setSletOpgaveModal] = useState(false)
     const [genåbnOpgaveModal, setGenåbnOpgaveModal] = useState(false)
@@ -118,12 +119,12 @@ const ÅbenOpgave = () => {
     const [isCompressingVideo, setIsCompressingVideo] = useState(false)
 
     useEffect(() => {
-        if(opgave?.CVR || opgave?.virksomhed){
+        if(kunde?.CVR || kunde?.virksomhed){
             setVisInklMoms(false)
         } else {
             setVisInklMoms(true)
         }
-    }, [opgave])
+    }, [kunde])
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere`, {
@@ -215,6 +216,20 @@ const ÅbenOpgave = () => {
         }
       }, [opgave]);
 
+    useEffect(() => {
+        if(opgave?.kundeID){
+            axios.get(`${import.meta.env.VITE_API_URL}/kunder/${opgave?.kundeID}`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                setKunde(res.data)
+            })
+            .catch(error => console.log(error))
+        }
+    }, [opgave])
+    
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
             headers: {
@@ -363,8 +378,8 @@ const ÅbenOpgave = () => {
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                     to: nyAnsvarlig.email,
                     subject: "Du har fået tildelt en ny opgave",
-                    body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + opgave.navn + "\n\nAdresse: " + opgave.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
-                    html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + opgave.navn + "<br />Adresse: " + opgave.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
+                    body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + kunde?.navn + "\n\nAdresse: " + kunde?.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
+                    html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + kunde?.navn + "<br />Adresse: " + kunde?.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
                 })
                 .then(res => console.log(res.data))
                 .catch(error => console.log(error))
@@ -462,6 +477,22 @@ const ÅbenOpgave = () => {
                 .catch(error => console.log(error));
             }
             
+        })
+        .catch(error => console.log(error))
+    }
+
+    function åbnAfsluttetOpgave () {
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+            markeretSomFærdig: false,
+            opgaveAfsluttet: false
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Opgave genåbnet:', response.data);
+            setUpdateOpgave(!updateOpgave);
         })
         .catch(error => console.log(error))
     }
@@ -631,10 +662,10 @@ const ÅbenOpgave = () => {
         const smsData = {
             "messages": [
                 {
-                    "to": `${opgave.telefon}`,
+                    "to": `${kunde?.telefon}`,
                     "countryHint": "45",
                     "respectBlacklist": true,
-                    "text": `${isEnglish ? `Dear ${opgave.navn},\n\nWe would like to inform you that our employee, ${getBrugerName(userID)}, is now on their way to you in order to help you with your task. We will be at your place in a moment.\n\nWe look forward to helping you! \n\nBest regards,\nBetter Call Bob}` : `Kære ${opgave.navn},\n\nVi vil blot informere dig om, at vores medarbejder ${getBrugerName(userID)} nu er på vej ud til dig for at løse din opgave. Vi er hos dig inden længe.\n\nVi glæder os til at hjælpe dig! \n\nDbh.,\nBetter Call Bob`}`,
+                    "text": `${kunde.engelskKunde ? `Dear ${kunde.navn},\n\nWe would like to inform you that our employee, ${getBrugerName(userID)}, is now on their way to you in order to help you with your task. We will be at your place in a moment.\n\nWe look forward to helping you! \n\nBest regards,\nBetter Call Bob}` : `Kære ${kunde.navn},\n\nVi vil blot informere dig om, at vores medarbejder ${getBrugerName(userID)} nu er på vej ud til dig for at løse din opgave. Vi er hos dig inden længe.\n\nVi glæder os til at hjælpe dig! \n\nDbh.,\nBetter Call Bob`}`,
                     "from": "Bob",
                     "flash": false,
                     "encoding": "gsm7"
@@ -673,7 +704,7 @@ const ÅbenOpgave = () => {
                     "to": `${user.telefon}`,
                     "countryHint": "45",
                     "respectBlacklist": true,
-                    "text": `Automatisk ${timer} timers reminder: Følg op på kontakt til kunde ${opgave.navn}.\n\nKontaktinfo:\n\nTelefon: ${opgave.telefon}\nE-mail: ${opgave.email}${opgave.virksomhed && "\nVirksomhed: " + opgave.virksomhed}\n\nDbh.,\nBetter Call Bob`,
+                    "text": `Automatisk ${timer} timers reminder: Følg op på kontakt til kunde ${kunde?.navn}.\n\nKontaktinfo:\n\nTelefon: ${kunde?.telefon}\nE-mail: ${kunde?.email}${kunde?.virksomhed && "\nVirksomhed: " + kunde?.virksomhed}\n\nDbh.,\nBetter Call Bob`,
                     "from": "BobReminders",
                     "sendTime": `${dayjs().add(timer - 1, 'hour').format('YYYY-MM-DDTHH:mm:ss') + "Z"}`,
                     "flash": false,
@@ -698,9 +729,8 @@ const ÅbenOpgave = () => {
     }
 
     function åbnKortLink() {
-        const appleMapsUrl = `maps://maps.apple.com/?q=${opgave.adresse}, Denmark`;
-        const googleMapsUrl = `https://maps.google.com/?q=${opgave.adresse}, Denmark`;
-        console.log("no")
+        const appleMapsUrl = `maps://maps.apple.com/?q=${kunde?.adresse}, Denmark`;
+        const googleMapsUrl = `https://maps.google.com/?q=${kunde?.adresse}, Denmark`;
       
         // Tjek om det er en iOS-enhed
         if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
@@ -1008,11 +1038,11 @@ const ÅbenOpgave = () => {
                 <img src={BackIcon} alt="" onClick={() => navigate(-1)} className={ÅbenOpgaveCSS.tilbageKnap} />
                 <div className={ÅbenOpgaveCSS.headerContainer}>
                     <b className={`${ÅbenOpgaveCSS.opgaveIDHeader} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>Opgave #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)} på</b>
-                    <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{opgave.adresse}</h2>
+                    <h2 className={`${ÅbenOpgaveCSS.adresseHeading} ${opgave.isDeleted ? ÅbenOpgaveCSS.slettetOverstregning : null}`}>{kunde?.adresse}</h2>
                     <div className={ÅbenOpgaveCSS.kortLinkContainer}>
-                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && kunde?.telefon && (smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) && 
                         <p className={ÅbenOpgaveCSS.smsSendtTekst}>✔︎ {smsSendtTilKundenOmPåVej ? smsSendtTilKundenOmPåVej : "SMS sendt kl. " + dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).format("HH:mm") + " om, at du er på vej."}</p>}
-                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && opgave.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
+                        {egneBesøg && egneBesøg.some(besøg => besøg.opgaveID === opgaveID && Math.abs(dayjs(besøg.datoTidFra).diff(dayjs(), 'hour')) <= 1) && kunde?.telefon && !(smsSendtTilKundenOmPåVej || (opgave.sidsteSMSSendtTilKundenOmPåVej && Math.abs(dayjs(opgave.sidsteSMSSendtTilKundenOmPåVej).diff(dayjs(), 'hour')) <= 1 )) &&
                         <button className={ÅbenOpgaveCSS.informerKundenOmPåVej} onClick={() => {informerKundenOmPåVej()}}>Fortæl kunden du er på vej 💬 </button>}
                     </div>
                 </div>
@@ -1054,8 +1084,8 @@ const ÅbenOpgave = () => {
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                     <div className={ÅbenOpgaveCSS.infoPillsDiv}>
-                        {(opgave.CVR || opgave.virksomhed) ? <div className={ÅbenOpgaveCSS.infoPill}>Erhvervskunde</div> : <div className={ÅbenOpgaveCSS.infoPill}>Privatkunde</div>}
-                        {opgave.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
+                        {(kunde?.CVR || kunde?.virksomhed) ? <div className={ÅbenOpgaveCSS.infoPill}>Erhvervskunde</div> : <div className={ÅbenOpgaveCSS.infoPill}>Privatkunde</div>}
+                        {kunde?.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
                         {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
@@ -1123,11 +1153,11 @@ const ÅbenOpgave = () => {
                     <div className={ÅbenOpgaveCSS.kolonner}>
                         <div className={ÅbenOpgaveCSS.kundeInformationerContainer}>
                             <div className={ÅbenOpgaveCSS.kundeHeadingContainer}>
-                                <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.kundeHeading}`}>{opgave.navn}</b>
-                                {(!opgave.CVR && !opgave.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Erhvervskunde</p>}
-                                <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button>
+                                <b className={ÅbenOpgaveCSS.kundeHeading} onClick={() => navigate(`/kunde/${kunde?._id}`)}>{kunde?.virksomhed ? kunde?.virksomhed : kunde?.navn}</b>
+                                {(!kunde?.CVR && !kunde?.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>CVR: {kunde?.CVR} • Erhvervskunde</p>}
+                                {/* <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button> */}
                             </div>
-                            <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
+                            {/* <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
                                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>
                                 <form className={ÅbenOpgaveCSS.redigerKundeForm} onSubmit={redigerKunde}>
                                     <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Navn</label>
@@ -1152,24 +1182,26 @@ const ÅbenOpgave = () => {
                                     <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
                                     <button className={ModalCSS.buttonFullWidth} type="submit">Opdater kunde</button>
                                 </form>
-                            </Modal>
-                            <p className={ÅbenOpgaveCSS.adresseTekst}>{opgave.adresse}, {opgave.postnummerOgBy}</p>
-                            {(opgave.virksomhed || opgave.CVR) && 
+                            </Modal> */}
+                            <p className={ÅbenOpgaveCSS.adresseTekst}>{kunde?.adresse}, {kunde?.postnummerOgBy}</p>
+                            {(kunde?.virksomhed || kunde?.CVR) && 
                             <div className={ÅbenOpgaveCSS.virksomhedInfo}>
-                                <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.virksomhedHeading}`}>Virksomhed</b>
-                                {opgave.virksomhed ? <p className={ÅbenOpgaveCSS.virksomhedTekst}>{opgave.virksomhed}</p> : null}
-                                {opgave.CVR ? <p className={ÅbenOpgaveCSS.virksomhedTekst}>CVR: {opgave.CVR}</p> : null}
+                                <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.virksomhedHeading}`}>Kontaktperson</b>
+                                {kunde?.navn ? <p className={ÅbenOpgaveCSS.virksomhedTekst}>{kunde?.navn}</p> : null}
+                                <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
+                                    <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>
+                                    <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>
+                                </div>
                             </div>}
-                            <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
-                                <p className={`${ÅbenOpgaveCSS.marginTop10}`}><Phone size="20px" /> <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}>{opgave.telefon}</a></p>
-                                <p><Mail size="20px" /> <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}>{opgave.email}</a></p>
-                            </div>
+                            {!(kunde?.virksomhed || kunde?.CVR) && <div className={ÅbenOpgaveCSS.privatKundeKontaktDesktop}>
+                                <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>
+                                <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>
+                            </div>}
                             <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + opgave.telefon}><Phone size="20px"/> {opgave.telefon}</a>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + opgave.telefon + "&body=Hej%20" + opgave.navn.split(" ")[0] + ", "}><MessageCircle size="20px" /> SMS</a>
-                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + opgave.email}><Mail size="20px" /> Mail</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + kunde?.telefon}><Phone size="20px"/> {kunde?.telefon}</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + kunde?.telefon + "&body=Hej%20" + kunde?.fornavn + ", "}><MessageCircle size="20px" /> SMS</a>
+                                <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + kunde?.email}><Mail size="20px" /> Mail</a>
                             </div>
-                            <button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>
                         </div>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
@@ -1291,8 +1323,8 @@ const ÅbenOpgave = () => {
                 <div className={ÅbenOpgaveCSS.planDiv}>
                     <ÅbenOpgaveCalendar 
                         user={user} 
-                        tilknyttetOpgave={tilknyttetOpgave}
-                        setTilknyttetOpgave={setTilknyttetOpgave}
+                        opgaveTilknyttetBesøg={opgaveTilknyttetBesøg}
+                        setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg}
                         openDialog={openDialog}
                         setOpenDialog={setOpenDialog}
                         eventData={eventData}
@@ -1357,14 +1389,14 @@ const ÅbenOpgave = () => {
                                 
                                 {/* InfoLines */}
                                 {!opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>}
-                                {opgave.fakturaSendt && ((opgave.virksomhed || opgave.CVR) ? <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p style={{marginTop: -3}}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Fakturakladde oprettet d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p></div> : <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Åbn</button></a></div>)}
+                                {opgave.fakturaSendt && ((kunde?.virksomhed || kunde?.CVR) ? <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p style={{marginTop: -3}}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Fakturakladde oprettet d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p></div> : <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Åbn</button></a></div>)}
                                 {opgave.opgaveAfsluttet && ((typeof opgave.opgaveAfsluttet === 'boolean') ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>)}
                                 {opgave.opgaveBetaltMedMobilePay && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
                                 {opgave.fakturaBetalt && <p style={{marginTop: 10}} className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>💵</span> Faktura betalt d. {new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>}
                                 
                                 
                                 {/* Erhvervskunde -> send faktura || !Erhvervskunde -> Opret regning*/}
-                                {(opgave.virksomhed || opgave.CVR) ? (!opgave.fakturaSendt 
+                                {(kunde?.virksomhed || kunde?.CVR) ? (!opgave.fakturaSendt 
                                     && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som erhvervskunde</span></button> 
                                 ) : (!opgave.fakturaSendt && !opgave.opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
@@ -1388,8 +1420,9 @@ const ÅbenOpgave = () => {
                     {/* Genåbn afsluttet opgave */}
                     {!opgave.isDeleted && opgave.opgaveAfsluttet && user.isAdmin && <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} onClick={() => åbnForÆndringer()}>Genåbn afsluttet opgave</button>}
                    
-                    {!opgave.virksomhed && !opgave.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} isEnglish={isEnglish} />}
-                    {(opgave.virksomhed || opgave.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}
+                    {/* Opret regning eller faktura modals */}
+                    {!kunde.virksomhed && !kunde.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} isEnglish={isEnglish} />}
+                    {(kunde.virksomhed || kunde.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}
                     </div>
                     <Modal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}>
                         <h2 className={ÅbenOpgaveCSS.modalHeading}>Billede fra postering</h2>

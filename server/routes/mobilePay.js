@@ -80,6 +80,7 @@ router.post('/get-qr-code', async (req, res) => {
 
     const paymentInformationObject = req.body;
     const opgave = paymentInformationObject.opgave;
+    const kunde = paymentInformationObject.kunde;
     const telefonnummerTilAnmodning = paymentInformationObject.telefonnummerTilAnmodning;
     
     // STEP 1: GET ACCESS TOKEN
@@ -98,7 +99,7 @@ router.post('/get-qr-code', async (req, res) => {
                 "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
             },
             "customer": {
-                "phoneNumber":`45${telefonnummerTilAnmodning ||opgave.telefon}`
+                "phoneNumber":`45${telefonnummerTilAnmodning || kunde?.telefon || opgave?.telefon}`
             },
             "paymentMethod": {
                 "type":"WALLET"

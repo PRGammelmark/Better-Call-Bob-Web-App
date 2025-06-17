@@ -1,5 +1,5 @@
 import express from "express"
-import { getOpgaver, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave } from "../controllers/opgaveController.js"
+import { getOpgaver, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder } from "../controllers/opgaveController.js"
 import requireAuth from "../middleware/requireAuth.js";
 import { shortTermLimiter, dailyLimiter } from "../middleware/rateLimit.js"
 
@@ -12,6 +12,12 @@ router.get("/", requireAuth, getOpgaver)
 
 // GET en enkelt opgave
 router.get('/:id', requireAuth, getOpgave)
+
+// GET alle opgaver for en kunde
+router.get('/kunde/:id', requireAuth, getOpgaverForKunde)
+
+// GET alle opgaver for en medarbejder
+router.get('/medarbejder/:id', requireAuth, getOpgaverForMedarbejder)
 
 // POST en ny opgave (fra app'en)
 router.post('/', requireAuth, createOpgave)

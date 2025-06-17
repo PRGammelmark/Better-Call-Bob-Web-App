@@ -1457,7 +1457,7 @@
     flex-direction: column;
     gap: 0px;
     background: #f0f0f0;
-    padding: 10px 60px 10px 15px;
+    padding: 10px 15px 10px 15px;
     border-radius: 10px;
     margin-top: 20px;
     margin-bottom: 10px;
@@ -1966,8 +1966,71 @@ transform: rotateY(180deg);
     color: #59bf1a;
 }
 
+.kundeHeading {
+    cursor: pointer;
+    font-family: OmnesBold;
+    font-size: 1.1rem;
+}
+
+.kundeKontaktDesktop {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    margin-top: 10px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
+.kundeKontaktDesktop a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #222222;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+    background: #d8d8d8;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #d8d8d8;
+    min-width: 50%;
+}
+
+.privatKundeKontaktDesktop a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    text-decoration: none;
+    color: #222222;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    transition: 0.2s ease;
+    background: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    border: 1px solid #d8d8d8;
+    min-width: 50%;
+    margin-top: 6px;
+}
+
+.kundeKontaktDesktop a:hover {
+    color: #59bf1a;
+    border: 1px solid #59bf1a;
+    background: #59bf1a30;
+}
+
+.privatKundeKontaktDesktop a:hover {
+    color: #59bf1a;
+    border: 1px solid #59bf1a;
+    background: #59bf1a30;
+}
 
 @media screen and (max-width: 750px) {
+
+    .privatKundeKontaktDesktop {
+        display: none;
+    }
 
     .ansvarligDivEkstraBottomMargin:last-child {
         margin-bottom: 20px;

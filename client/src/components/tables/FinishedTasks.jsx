@@ -14,8 +14,23 @@ const FinishedTasks = () => {
   const [færdiggjorteOpgaver, setFærdiggjorteOpgaver] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [posteringer, setPosteringer] = useState(null)
+  const [kunder, setKunder] = useState(null)
   const {user} = useAuthContext()
 
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }, [user])
+  
   useEffect(()=>{
     const fetchOpgaver = async () => {
       const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -69,8 +84,9 @@ const FinishedTasks = () => {
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
                 let momsvisning;
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 
-                if(opgave.virksomhed || opgave.CVR) {
+                if(kunde?.virksomhed || kunde?.CVR) {
                   console.log("Erhvervskunde")
                   momsvisning = false;
                 } else {
@@ -79,12 +95,13 @@ const FinishedTasks = () => {
                 }
                 
                 const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.formateret;
+
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id}>
                     <ul>
                       <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                      <li>{opgave.adresse}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li>{kunde?.adresse}</li>
                       <li>{fakturabeløbForOpgave}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>
@@ -113,8 +130,9 @@ const FinishedTasks = () => {
               {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : færdiggjorteOpgaver.length > 0 ? færdiggjorteOpgaver.map((opgave) => {
                 const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
                 let momsvisning;
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 
-                if(opgave.virksomhed || opgave.CVR) {
+                if(kunde?.virksomhed || kunde?.CVR) {
                   console.log("Erhvervskunde")
                   momsvisning = false;
                 } else {
@@ -123,10 +141,11 @@ const FinishedTasks = () => {
                 }
                 
                 const fakturabeløbForOpgave = beregn.totalPris(posteringerForOpgave, 2, momsvisning)?.formateret;
+
                 return (
                   <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                     <ul>
-                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={FinishedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
                       <li>{fakturabeløbForOpgave}</li>
                       <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + flere..." : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
                     </ul>

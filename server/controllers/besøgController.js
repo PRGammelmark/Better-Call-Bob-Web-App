@@ -40,9 +40,9 @@ const getEtBesøg = async (req,res) => {
 
 // CREATE et besøg
 const createBesøg = async (req, res) => {
-    const { datoTidFra, datoTidTil, brugerID, opgaveID, kommentar, eventColor } = req.body;
+    const { datoTidFra, datoTidTil, brugerID, opgaveID, kundeID, kommentar, eventColor } = req.body;
     try {
-        const besøg = await Besøg.create({ datoTidFra, datoTidTil, brugerID, opgaveID, kommentar, eventColor })
+        const besøg = await Besøg.create({ datoTidFra, datoTidTil, brugerID, opgaveID, kundeID, kommentar, eventColor })
         res.status(200).json(besøg)
     } catch (error) {
         res.status(400).json({error: error.message})

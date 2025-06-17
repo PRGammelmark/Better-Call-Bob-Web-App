@@ -14,9 +14,23 @@ const MyTasks = ({openTableEvent}) => {
   const [mineBesøg, setMineBesøg] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
-
+  const [kunder, setKunder] = useState(null)
   const userID = user.id;
 
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }, [user])
+  
   useEffect(()=>{
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
         headers: {
@@ -78,14 +92,15 @@ const findTættesteBesøg = (opgaveID) => {
                     {mineAktuelleOpgaver && mineAktuelleOpgaver.map((opgave) => {
                         const besøg = findTættesteBesøg(opgave._id);
                         const { tættesteBesøg, tættesteBesøgID } = besøg || {};
+                        const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
 
                         return (
                         <div className={TableCSS.opgaveListing} key={opgave._id}>
                             <ul>
                             <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                             <li>{tættesteBesøg ? <span onClick={() => openTableEvent(besøg)} className={Styles.planlagtBesøgButton}>{dayjs(tættesteBesøg).format('D/MM, [kl.] HH:mm')}</span> : <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}><span className={Styles.planlægBesøgButton}>Planlæg besøg</span></Link>}</li>
-                            <li>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}{(opgave.virksomhed && "@ " + opgave.virksomhed) || (opgave.CVR && "@ cvr.: " + opgave.CVR)}</li>
-                            <li>{opgave.adresse}</li>
+                            <li>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}{(kunde?.virksomhed && "@ " + kunde?.virksomhed) || (kunde?.CVR && "@ cvr.: " + kunde?.CVR)}</li>
+                            <li>{kunde?.adresse}</li>
                             </ul>
                             <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
                             <button className={TableCSS.button}>Åbn</button>

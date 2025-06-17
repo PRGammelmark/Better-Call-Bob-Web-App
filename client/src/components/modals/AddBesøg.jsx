@@ -15,7 +15,7 @@ import SwitchArrows from "../../assets/switchArrowsBlack.svg"
 const AddBesøg = (props) => {
 
     const { user } = useAuthContext();
-    const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate } = useTaskAndDate();
+    const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate, customerForChosenTask } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg } = useBesøg();
 
     const userID = user.id;
@@ -24,7 +24,7 @@ const AddBesøg = (props) => {
     const [opretOpgave, setOpretOpgave] = useState(false);
     const [oprettetOpgave, setOprettetOpgave] = useState(null);
     const [tilknytOpgave, setTilknytOpgave] = useState(false);
-    const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null);
+    const [opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg] = useState(null);
     const [tilknytAnsvarlig, setTilknytAnsvarlig] = useState(false);
     const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState("");
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
@@ -44,16 +44,13 @@ const AddBesøg = (props) => {
     const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(true);
     const [medarbejdere, setMedarbejdere] = useState([]);
 
-    console.log("ChosenTask: ", chosenTask)
-
     const resetState = () => {
         setOpretOpgave(false);
         setOprettetOpgave(null);
         setTilknytOpgave(false);
-        setTilknyttetOpgave(null);
+        setOpgaveTilknyttetBesøg(null);
         setTilknytAnsvarlig(false);
         setTilknyttetAnsvarlig(null);
-        // setSelectedAnsvarlig()
         setComment("");
     }
 
@@ -97,7 +94,7 @@ const AddBesøg = (props) => {
             const currentUser = medarbejdere.find(bruger => bruger._id === userID);
             setTilknyttetAnsvarlig(currentUser)
         }
-    }, [user, medarbejdere, tilknyttetOpgave])
+    }, [user, medarbejdere, opgaveTilknyttetBesøg])
     
     useEffect(() => {
         if (props?.trigger?.action === "select") {
@@ -167,7 +164,7 @@ const AddBesøg = (props) => {
             datoTidFra: datoTidFra,
             datoTidTil: datoTidTil,
             brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
-            opgaveID: tilknyttetOpgave._id,
+            opgaveID: opgaveTilknyttetBesøg._id,
             kommentar: comment ? comment : ""
         }
 
@@ -179,13 +176,13 @@ const AddBesøg = (props) => {
             return
         }
 
-        const nyAnsvarlig = tilknyttetOpgave.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
-        const eksisterendeAnsvarlig = tilknyttetOpgave.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+        const nyAnsvarlig = opgaveTilknyttetBesøg.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
+        const eksisterendeAnsvarlig = opgaveTilknyttetBesøg.ansvarlig.find(medarbejder => medarbejder._id === besøg.brugerID);
 
         if (!eksisterendeAnsvarlig) {
             const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
-            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${tilknyttetOpgave._id}`, {
-                ansvarlig: [...tilknyttetOpgave.ansvarlig, xAnsvarlig]
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg._id}`, {
+                ansvarlig: [...opgaveTilknyttetBesøg.ansvarlig, xAnsvarlig]
             }, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -212,32 +209,45 @@ const AddBesøg = (props) => {
                 const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
                 const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
                 const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
-                const xOpgave = chosenTask || tilknyttetOpgave
+                const xOpgave = chosenTask || opgaveTilknyttetBesøg
 
-                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                    to: ansvarligEmail,
-                    subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                    html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
-                        <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
-                        <p style="font-size: 1.2rem"><b>${xOpgave.adresse}, ${xOpgave.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
-                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
-                        <p><b>Overordnet opgavebeskrivelse:</b><br />${xOpgave.opgaveBeskrivelse}</p>
-                        <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
-                        <p><b>Kundens navn:</b><br />${xOpgave.navn}</p>
-                        <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
-                        <p>Åbn Better Call Bob-app'en for at se flere detaljer.</p>
-                        <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
+                axios.get(`${import.meta.env.VITE_API_URL}/kunder/${xOpgave.kundeID}`, {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
                     }
-                )
-                .then(response => {
-                    console.log("Email-notifikation sendt til medarbejderen.");
+                })
+                .then(res => {
+                    const kunde = res.data
+
+                    axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+                        to: ansvarligEmail,
+                        subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
+                        html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
+                            <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
+                            <p style="font-size: 1.2rem"><b>${kunde?.adresse}, ${kunde?.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
+                            <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                            <p><b>Overordnet opgavebeskrivelse:</b><br />${xOpgave.opgaveBeskrivelse}</p>
+                            <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
+                            <p><b>Kundens navn:</b><br />${kunde?.navn}</p>
+                            <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
+                            <p>Åbn Better Call Bob-app'en for at se flere detaljer.</p>
+                            <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
+                        }, {
+                            headers: {
+                                'Authorization': `Bearer ${user.token}`
+                            }
+                        }
+                    )
+                    .then(response => {
+                        console.log("Email-notifikation sendt til medarbejderen.");
+                    })
+                    .catch(error => {
+                        console.log("Fejl: Kunne ikke sende email-notifikation til medarbejderen.");
+                        console.log(error);
+                    })
                 })
                 .catch(error => {
-                    console.log("Fejl: Kunne ikke sende email-notifikation til medarbejderen.");
+                    console.log("Fejl: Kunne ikke hente kunde-informationer.");
                     console.log(error);
                 })
             }
@@ -329,11 +339,11 @@ const AddBesøg = (props) => {
                         subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
                         html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
                             <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
-                            <p style="font-size: 1.2rem"><b>${chosenTask.adresse}, ${chosenTask.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
+                            <p style="font-size: 1.2rem"><b>${customerForChosenTask?.adresse}, ${customerForChosenTask?.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
                             <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
                             <p><b>Overordnet opgavebeskrivelse:</b><br />${chosenTask.opgaveBeskrivelse}</p>
                             <p><b>Kommentar til besøget:</b><br />${besøg.kommentar ? besøg.kommentar : "Ingen kommentar til besøget."}</p>
-                            <p><b>Kundens navn:</b><br />${chosenTask.navn}</p>
+                            <p><b>Kundens navn:</b><br />${customerForChosenTask.navn}</p>
                             <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
                             <p>Åbn Better Call Bob-app'en for at se flere detaljer.</p>
                             <p>Dbh.,<br/><b>Better Call Bob</b><br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a><br /><a href="https://app.bettercallbob.dk"><img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 200px; height: auto; display: flex; justify-content: flex-start; padding: 10px 20px 20px 20px; cursor: pointer; border-radius: 10px; margin-top: 20px; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;" /></a> <span style="color: #fff">.</span></p>`,
@@ -377,10 +387,10 @@ const AddBesøg = (props) => {
         }}>
             <h2 className={ModalStyles.modalHeading}>Tilføj besøg</h2>
             {props.trigger.action === "ledigTidSelect" && <p className={Styles.modalSubheading}>for {props.trigger.ansvarligNavn}<br />ledig d. {dayjs(props.trigger.start).format("DD. MMMM")} fra kl. {dayjs(props.trigger.start).format("HH:mm")}-{dayjs(props.trigger.end).format("HH:mm")}</p>}
-            {!isOnTaskPage && !(tilknyttetAnsvarlig && tilknyttetOpgave) && (
+            {!isOnTaskPage && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) && (
                     <>
                     <div className={Styles.modalButtonFlexContainer}>
-                        {user?.isAdmin && <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setTilknyttetOpgave(null); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Ny opgave</button>}
+                        {/* {user?.isAdmin && <button className={`${Styles.stateButton} ${opretOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(true); setTilknytOpgave(false); setOpgaveTilknyttetBesøg(null); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Ny opgave</button>} */}
                         {user?.isAdmin && <button disabled={opgaver?.length > 0 ? false : true} className={`${opgaver && opgaver.length > 0 ? "" : Styles.disabledButton} ${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); setTilknyttetAnsvarlig(props.trigger.action === "ledigTidSelect" ? props.trigger.ansvarligID : "")}}>Eksisterende opgave</button>}
                         {!user?.isAdmin && <button disabled={opgaver?.length > 0 ? false : true} className={`${opgaver && opgaver.length > 0 ? "" : Styles.disabledButton} ${Styles.stateButton} ${tilknytOpgave ? Styles.activeStateButton : ""}`} onClick={() => {setOpretOpgave(false); setTilknytOpgave(true); }}>Eksisterende opgave</button>}
                     </div>
@@ -389,23 +399,23 @@ const AddBesøg = (props) => {
                 )}
                 
                 {/* INFORMATIONS-CONTAINER VED EKSISTERENDE OPGAVE */}
-                <div className={`${Styles.infoContainer} ${(tilknyttetAnsvarlig && tilknyttetOpgave) ? Styles.activeInfoContainer : ""}`}>
+                <div className={`${Styles.infoContainer} ${(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) ? Styles.activeInfoContainer : ""}`}>
                     {opgaveOprettet && <p className={Styles.infoSuccessMessage}>Opgave oprettet! 🥳 </p>}
-                    {(tilknyttetAnsvarlig && tilknyttetOpgave) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig.navn || props.trigger.ansvarligNavn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.adresse}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{tilknyttetOpgave.navn}</b>.</p>}
+                    {(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig.navn || props.trigger.ansvarligNavn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{opgaveTilknyttetBesøg.adresse}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{opgaveTilknyttetBesøg.navn}</b>.</p>}
                 </div>
 
                 {/* NY OPGAVE, TRIN 1: OPRET OPGAVE */}
-                <div className={`${Styles.opretOpgaveContainer} ${opretOpgave && !(tilknyttetOpgave && tilknyttetAnsvarlig) ? Styles.activeOpretOpgaveContainer : ""}`}>
-                    <NyOpgaveFraOpretBesøg setTilknyttetOpgave={setTilknyttetOpgave} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig} tilknyttetAnsvarlig={tilknyttetAnsvarlig} setOpgaveOprettet={setOpgaveOprettet} fraLedigTid={props.trigger.action === "ledigTidSelect"} />
+                <div className={`${Styles.opretOpgaveContainer} ${opretOpgave && !(opgaveTilknyttetBesøg && tilknyttetAnsvarlig) ? Styles.activeOpretOpgaveContainer : ""}`}>
+                    <NyOpgaveFraOpretBesøg setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig} tilknyttetAnsvarlig={tilknyttetAnsvarlig} setOpgaveOprettet={setOpgaveOprettet} fraLedigTid={props.trigger.action === "ledigTidSelect"} />
                 </div>
                 
                 {/* VÆLG OPGAVE, TRIN 1: VÆLG OPGAVE */}
-                <div className={`${Styles.vælgOpgaveContainer} ${(tilknytOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgOpgaveContainer : ""}`} style={(tilknytOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? maxHeightStyle : {}}>
-                    <VælgOpgaveVedNytBesøg tilknyttetOpgave={tilknyttetOpgave} setTilknyttetOpgave={setTilknyttetOpgave} opgaver={opgaver} opgaverLoading={opgaverLoading} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig}/>
+                <div className={`${Styles.vælgOpgaveContainer} ${(tilknytOpgave && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg)) ? Styles.activeVælgOpgaveContainer : ""}`} style={(tilknytOpgave && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg)) ? maxHeightStyle : {}}>
+                    <VælgOpgaveVedNytBesøg opgaveTilknyttetBesøg={opgaveTilknyttetBesøg} setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg} opgaver={opgaver} opgaverLoading={opgaverLoading} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig}/>
                 </div>
 
                 {/* VÆLG OPGAVE, TRIN 2: VÆLG ANSVARLIG */}
-                {user?.isAdmin && <div className={`${Styles.vælgAnsvarligContainer} ${(tilknyttetOpgave && !(tilknyttetAnsvarlig && tilknyttetOpgave)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
+                {user?.isAdmin && <div className={`${Styles.vælgAnsvarligContainer} ${(opgaveTilknyttetBesøg && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg)) ? Styles.activeVælgAnsvarligContainer : ""}`} >
                     <h3 className={Styles.subHeading}>Vælg blandt {vælgAnsvarligBlandtAlleMedarbejdere ? "alle medarbejdere" : "ansvarlige"}:</h3>
                     <div className={Styles.vælgAnsvarligFlexContainer}>
                         {!vælgAnsvarligBlandtAlleMedarbejdere && (
@@ -417,8 +427,8 @@ const AddBesøg = (props) => {
                                 onChange={(e) => setTilknyttetAnsvarlig(JSON.parse(e.target.value))}
                             >
                                 <option value="" disabled hidden>Vælg ansvarlig ...</option>
-                                {tilknyttetOpgave?.ansvarlig?.length > 0 ? (
-                                    tilknyttetOpgave.ansvarlig.map((ansvarlig, index) => (
+                                {opgaveTilknyttetBesøg?.ansvarlig?.length > 0 ? (
+                                    opgaveTilknyttetBesøg.ansvarlig.map((ansvarlig, index) => (
                                         <option key={index} value={JSON.stringify(ansvarlig)}>{ansvarlig.navn}</option>
                                     ))
                                 ) : (
@@ -442,7 +452,7 @@ const AddBesøg = (props) => {
                 </div>}
 
                 {/* BESØGSDETALJER */}
-                <div className={`${Styles.opretBesøgFraOverblikContainer} ${(tilknyttetAnsvarlig && tilknyttetOpgave) ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
+                <div className={`${Styles.opretBesøgFraOverblikContainer} ${(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) ? Styles.activeOpretBesøgFraOverblikContainer : ""}`}>
                     <h3 className={Styles.subHeading}>Besøgsdetaljer:</h3>
                     <form action="" onSubmit={submitNewBesøgFromOverblikPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         {chosenEndDate ? 
@@ -490,14 +500,13 @@ const AddBesøg = (props) => {
             
             {isOnTaskPage && <div className={Styles.modalSubheadingContainer}>
                 <label className={ModalStyles.modalLabel}>Kundeinformationer</label>
-                <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.navn : "Ingen person"}</h3>
-                <h3 className={ModalStyles.modalSubheading}>{chosenTask ? chosenTask.adresse : "Ingen adresse"}</h3>
+                <h3 className={ModalStyles.modalSubheading}>{customerForChosenTask?.navn || "Ingen person"}</h3>
+                <h3 className={ModalStyles.modalSubheading}>{customerForChosenTask?.adresse || "Ingen adresse"}</h3>
             </div>}
             {isOnTaskPage && <form action="" onSubmit={submitNewBesøgFromTaskPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                 {user.isAdmin && isOnTaskPage && props.trigger.origin !== "besøgFraLedigTid" && (
                     <>
                     <label className={ModalStyles.modalLabel} htmlFor="ansvarlige">Vælg medarbejder</label>
-                    {console.log("SelectedAnsvarlig: ", selectedAnsvarlig)}
                     <select className={ModalStyles.modalInput} id="ansvarlige" value={selectedAnsvarlig} onChange={(e) => {setSelectedAnsvarlig(e.target.value)}}>
                         {chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 ? (
                             chosenTask.ansvarlig.map((ansvarlig, index) => (

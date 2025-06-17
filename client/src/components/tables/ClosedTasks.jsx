@@ -12,6 +12,7 @@ const ClosedTasks = () => {
 
   const navigate = useNavigate()
   const [afsluttedeOpgaver, setAfsluttedeOpgaver] = useState(null)
+  const [kunder, setKunder] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [posteringer, setPosteringer] = useState(null)
   const {user} = useAuthContext()
@@ -35,6 +36,20 @@ const ClosedTasks = () => {
     if (user) {
       fetchOpgaver()
     }
+  }, [user])
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
   }, [user])
 
   useEffect(() => {
@@ -70,9 +85,10 @@ const ClosedTasks = () => {
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : afsluttedeOpgaver.length > 0 ? afsluttedeOpgaver.map((opgave) => {
                   
                   const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
+                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                   let momsvisning;
                 
-                  if(opgave.virksomhed || opgave.CVR) {
+                  if(kunde?.virksomhed || kunde?.CVR) {
                     momsvisning = false;
                   } else {
                     momsvisning = true;
@@ -82,11 +98,12 @@ const ClosedTasks = () => {
                   const fakturabeløbForOpgaveEksklMoms = beregn.totalPris(posteringerForOpgave, 2, false)?.beløb;
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
+
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
                         <li>{new Date(opgave.opgaveAfsluttet).toLocaleDateString()}</li>
                         <li>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                         <li>{dbBeløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
@@ -116,9 +133,10 @@ const ClosedTasks = () => {
               <div className={`${TableCSS.opgaveBody} ${ClosedTasksCSS.closedTasksBody}`}>
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : afsluttedeOpgaver.length > 0 ? afsluttedeOpgaver.map((opgave) => {
                   const posteringerForOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id)
+                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                   let momsvisning;
                 
-                  if(opgave.virksomhed || opgave.CVR) {
+                  if(kunde?.virksomhed || kunde?.CVR) {
                     momsvisning = false;
                   } else {
                     momsvisning = true;
@@ -128,11 +146,12 @@ const ClosedTasks = () => {
                   const fakturabeløbForOpgaveEksklMoms = beregn.totalPris(posteringerForOpgave, 2, false)?.beløb;
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
+
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li>{new Date(opgave.opgaveAfsluttet).toLocaleDateString()}</li>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
                         <li>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                         <li>{dbBeløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                       </ul>

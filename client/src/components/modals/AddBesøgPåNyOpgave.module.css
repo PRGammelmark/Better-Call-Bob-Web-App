@@ -1,0 +1,318 @@
+.dateInputContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.addEndDateButton{
+    background: #f0f0f0;
+    color: #222222;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    max-height: 40px;
+    width: 45%;
+}
+
+.disabledButton {
+    color: lightgrey!important;
+}
+
+.removeEndDateButton {
+    background: #f0f0f0;
+    color: #222222;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    max-height: 40px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.dateInput {
+    width: 45%;
+}
+
+.modalInput {
+    width: 100%;
+    background: #fff;
+    color: #222222;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+}
+
+.modalInput:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+}
+
+.modalLabel {
+    font-family: OmnesBold;
+}
+
+.timeSeparator {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    width: 20px;
+    height: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.modalButtonFlexContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.stateButton {
+    width: 100%;
+    background: #f0f0f0;
+    color: #222222;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 8px 20px;
+    border-radius: 15px;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.activeStateButton {
+    background: #59bf1a;
+    color: #fff;
+}
+
+.vælgOpgaveContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vælgOpgaveContainer {
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    padding: 1px;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-out,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeVælgOpgaveContainer {
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-in-out 0.25s;
+    transform: translateX(0px);
+    /* margin-top: 30px;
+    margin-bottom: 30px; */
+}
+
+.vælgAnsvarligContainer {
+    max-height: 0px;
+    padding: 1px;
+    opacity: 0;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-in,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeVælgAnsvarligContainer {
+    max-height: 100px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.opretBesøgFraOverblikContainer {
+    max-height: 0px;
+    opacity: 0;
+    padding: 1px;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-in-out 0.25s, 
+        opacity 0.3s ease-in-out, 
+        transform 0.3s ease-in,
+        margin-top 0.5s ease-in-out 0.25s,
+        margin-bottom 0.5s ease-in-out 0.25s;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeOpretBesøgFraOverblikContainer {
+    max-height: 500px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.infoContainer {
+    background: #f0f0f0;
+    padding: 0;
+    border-radius: 15px;
+    max-height: 0px;
+    opacity: 0;
+    overflow: hidden;
+    transition: 
+        max-height 0.5s ease-in-out 0.25s,
+        opacity 0.5s ease-in-out 0.25s,
+        margin-top 0.5s ease-in-out 0.25s,
+        margin-bottom 0.5s ease-in-out 0.25s,
+        padding 0.5s ease-in-out 0.25s;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeInfoContainer {
+    max-height: 150px;
+    opacity: 1;
+    padding: 15px 20px;
+}
+
+.subHeading {
+    font-family: OmnesBold;
+    margin-bottom: 10px;
+}
+
+.opretOpgaveContainer {
+    max-height: 0px;
+    padding: 1px;
+    opacity: 0;
+    overflow-y: hidden;
+    transition: 
+        max-height 0.5s ease-out, 
+        opacity 0.3s ease-out, 
+        transform 0.3s ease-out,
+        margin-top 0.5s ease-out,
+        margin-bottom 0.5s ease-out;
+    transform: translateX(-30px);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.activeOpretOpgaveContainer {
+    max-height: 1100px;
+    opacity: 1;
+    transition: 
+        max-height 0.5s ease-in-out,
+        margin-top 0.5s ease-in-out,
+        margin-bottom 0.5s ease-in-out,
+        opacity 0.5s ease-in-out 0.25s, 
+        transform 0.5s ease-out 0.25s;
+    transform: translateX(0px);
+    margin-bottom: 30px;
+}
+
+.infoSuccessMessage {
+    font-family: OmnesBold;
+    color: #59bf1a;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    background: #59bf1a30;
+    padding: 5px 10px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+.vælgAnsvarligFlexContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.ansvarligeStateButton {
+    background: #f0f0f0;
+    color: #222222;
+    width: 80%;
+    height: 36px;
+    border-radius: 15px;
+    border: none;
+    font-weight: bold;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0px 20px;
+    cursor: pointer;
+}
+
+.ansvarligeStateButton img {
+    width: 16px;
+    height: 16px;
+    margin-left: 5px;
+}
+
+.modalSubheading {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #757575;
+    margin-top: -15px;
+    margin-bottom: 20px;
+}
+
+.modalSubheadingContainer {
+    margin-bottom: 30px;
+    position: relative;
+    background: #f0f0f0;
+    padding: 10px 15px;
+    border-radius: 10px;
+}
+
+@media screen and (max-width: 750px) {
+    .subHeading {
+        font-size: 1rem;
+        color: black;
+        text-align: left;
+    }
+}

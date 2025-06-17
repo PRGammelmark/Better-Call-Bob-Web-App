@@ -2,7 +2,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import BCBLogo from "../assets/mobilePay.png";
 
-const useBetalMedMobilePayQR = (user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setQrErrorMessage) => {
+const useBetalMedMobilePayQR = (user, opgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setQrErrorMessage) => {
 
     console.log("Betaling med Mobile Pay QR-kode igangsættes.")
 
@@ -102,7 +102,7 @@ const useBetalMedMobilePayQR = (user, opgave, opgaveID, posteringer, setOpgaveAf
         <div style="background-color: #fff; color: #000; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
             <img src="https://bettercallbob.dk/wp-content/uploads/2024/01/Better-Call-Bob-logo-v2-1.svg" alt="BCB Logo" style="width: 150px; height: auto; margin-top: -20px; display: flex; justify-content: flex-end;" />
             <div>
-                <p style="font-size: 1.2rem;">Kvittering for arbejde på adressen <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${opgave.adresse}</b><br />${opgave.postnummerOgBy}</p>
+                <p style="font-size: 1.2rem;">Kvittering for arbejde på adressen <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${kunde?.adresse}</b><br />${kunde?.postnummerOgBy}</p>
                 <p><b>Dato:</b> ${dayjs().format('DD. MMMM YYYY')}<br />
                 <b>Udført af:</b> ${opgave.ansvarlig.length > 0 ? opgave.ansvarlig.map(ansvarlig => ansvarlig.navn).join(', ') : 'Bob'}</p>
             </div>
@@ -123,7 +123,7 @@ const useBetalMedMobilePayQR = (user, opgave, opgaveID, posteringer, setOpgaveAf
             </table>
         </div>`;
 
-//  body: `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nHerunder kan du se din kvittering:\n\n ${kvittering} \n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
+//  body: `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nHerunder kan du se din kvittering:\n\n ${kvittering} \n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`,
 
     // REQUEST SERVER TO GET QR CODE
     axios.post(`${import.meta.env.VITE_API_URL}/mobilepay/get-qr-code`, paymentInformation, {
@@ -161,9 +161,9 @@ const useBetalMedMobilePayQR = (user, opgave, opgaveID, posteringer, setOpgaveAf
                     
                     // ===== SEND KVITTERING PÅ MAIL =====
                     axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                        to: opgave && opgave.email,
+                        to: kunde?.email,
                         subject: `Kvittering fra Better Call Bob`,
-                        html: `<p>Kære ${opgave.navn},</p>
+                        html: `<p>Kære ${kunde?.navn},</p>
                             <p>Tak fordi du valgte at være kunde hos Better Call Bob.</p>
                             <p>Herunder kan du se detaljer om dit køb af vores service:</p>
                             ${kvittering}

@@ -7,42 +7,42 @@ const opgaverSchema = new Schema({
         type: String,
         required: true
     },
-    navn: {
-        type: String,
-        required: true
-    },
-    CVR: {
-        type: String,
-        required: false
-    },
-    virksomhed: {
-        type: String,
-        required: false
-    },
-    adresse: {
-        type: String,
-        required: true
-    },
-    postnummerOgBy: {
-        type: String,
-        required: true
-    },
-    telefon: {
-        type: Number,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
+    // navn: {
+    //     type: String,
+    //     required: true
+    // },
+    // CVR: {
+    //     type: String,
+    //     required: false
+    // },
+    // virksomhed: {
+    //     type: String,
+    //     required: false
+    // },
+    // adresse: {
+    //     type: String,
+    //     required: true
+    // },
+    // postnummerOgBy: {
+    //     type: String,
+    //     required: true
+    // },
+    // telefon: {
+    //     type: Number,
+    //     required: true
+    // },
+    // email: {
+    //     type: String,
+    //     required: true
+    // },
     onsketDato: {
         type: Date,
         required: false
     },
-    harStige: {
-        type: Boolean,
-        default: false
-    },
+    // harStige: {
+    //     type: Boolean,
+    //     default: false
+    // },
     status: {
         type: String,
         required: true,
@@ -124,9 +124,13 @@ const opgaverSchema = new Schema({
         type: [String],
         required: false
     },
-    isEnglish: {
-        type: Boolean,
-        default: false
+    // isEnglish: {
+    //     type: Boolean,
+    //     default: false
+    // },
+    kundeID: {
+        type: String,
+        required: false
     }
 }, { timestamps: true })
 

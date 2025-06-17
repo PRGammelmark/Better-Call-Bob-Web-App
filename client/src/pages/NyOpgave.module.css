@@ -109,7 +109,7 @@
 
 .submitButtonFullWidth {
     min-height: 36px;
-    border-radius: 25px;
+    border-radius: 10px;
     border: none;
     background: #3c5a3f;
     color: white;
@@ -149,6 +149,235 @@
     margin-bottom: 5px;
 }
 
+.vælgKundeButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.vælgKundeButton {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #e9e9e9!important;
+    border: 1px solid #22222200;
+    cursor: pointer;
+    background: #fefefe;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.2s ease;
+    color: #222222;
+}
+
+.vælgKundeButton:hover {
+    border: 1px solid #222222;
+}
+
+.tilknytMedarbejderButton {
+    padding: 10px 20px;
+    border-radius: 10px;
+    background: #e9e9e9!important;
+    border: 1px solid #22222200;
+    cursor: pointer;
+    background: #fefefe;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.2s ease;
+    color: #222222;
+}
+
+.tilbageButton {
+    min-height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: #e9e9e9;
+    color: #222222;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 20%;
+}
+
+.tilknytMedarbejderButton:hover {
+    border: 1px solid #222222;
+}
+
+.vælgKundeButtonActive {
+    background: #59bf1a30!important;
+    border: 1px solid #59bf1a;
+}
+
+.formHeading {
+    margin-top: 30px;
+}
+
+.nyOpgaveDetaljerFørOprettelse {
+    margin-bottom: 20px;
+    background: #e9e9e9;
+    padding: 10px 20px;
+    border-radius: 10px;
+}
+
+.nyOpgaveDetaljerFørOprettelse h2 {
+    text-decoration: underline;
+    text-decoration-color: #222222;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+
+.nyOpgaveDetaljerFørOprettelseSubDiv {
+    margin-bottom: 20px;
+}
+
+.fremButton {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+    border-radius: 10px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 12px 15px; 
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.fremButton:disabled {
+    background: #e9e9e9;
+    color: #666666;
+    cursor: default;
+}
+
+.fremButton:hover:not(:disabled) {
+    background: rgba(89, 191, 26, 1);
+}
+
+.trinDiv {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    margin-top: 20px;
+    color: #666666;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 800px;
+}
+
+.trinDivHeading {
+    margin-bottom: 0;
+    margin-top: 0;
+    text-align: center;
+    padding: 5px 8px;
+    border-radius: 10px;
+    border: 1px solid #3c5a3f00;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: 0.2s ease;
+    color: #999999;
+}
+
+.trinDivHeadingClickable:hover {
+    border: 1px solid #222222;
+}
+
+.trinDivHeadingClickable {
+    color: #3c5a3f;
+    cursor: pointer;
+}
+
+.trinDivHeadingActive {
+    color: #3c5a3f;
+    background: #3c5a3f10;
+    border: 1px solid #3c5a3f90;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 2px, rgba(0, 0, 0, 0.07) 0px 2px 4px, rgba(0, 0, 0, 0.07) 0px 4px 8px, rgba(0, 0, 0, 0.07) 0px 8px 16px, rgba(0, 0, 0, 0.07) 0px 16px 32px, rgba(0, 0, 0, 0.07) 0px 32px 64px;
+    transform: translateY(-2px);
+}
+
+.trinDivHeadingDone {
+    color: #59bf1a;
+    background: #59bf1a10;
+    border: 1px solid #59bf1a;
+}
+
+.trinDivHeadingDoneIcon {
+    width: 18px;
+    height: 18px;
+    opacity: 0;
+    transition: 0.2s ease;
+}
+
+.trinDivHeadingDoneIconActive {
+    opacity: 1;
+}
+
+.bekræftDetaljerButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: 0.2s ease;
+    pointer-events: none;
+}
+
+.bekræftDetaljerButtonsActive {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.nyOpgaveDetaljerFørOprettelseKundeName {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    display: block;
+}
+
+.nyOpgaveDetaljerFørOprettelseKundeDiv p {
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.trinDivHeadingRemoved {
+    opacity: 0;
+    pointer-events: none;
+    width: -10px;
+}
+
+.succesDiv {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    background: #59bf1a50;
+    padding: 20px 30px;
+    border-radius: 10px;
+    border: 1px solid #59bf1a;
+}
+
+.succesDiv button {
+    border-radius: 10px;
+}
+
+.bekræftEllerTilbageButtons {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
 @media screen and (max-width: 750px) {
     .overskrift {
         display: none;
@@ -159,10 +388,58 @@
         color: black;
         text-align: left;
     }
-}
 
-@media screen and (display-mode: standalone) {
-    .overskrift {
-        display: none;
+    .trinDiv {
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .trinDivHeading {
+        font-size: 0.75rem;
+    }
+
+    .bekræftEllerTilbageButtons {
+        flex-direction: column;
+    }
+
+    .submitButton {
+        width: 100%;
+    }
+
+    .tilbageButton {
+        width: 100%;
+    }
+
+    .searchInput {
+        margin-top: 0px!important;
+    }
+
+    .besøgDiv {
+        padding-left: 10px;
+    }
+
+    .succesDiv {
+        margin-top: -15px;
+    }
+
+    .succesButtonsDiv {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 40px;
+    }
+
+    .submitButton {
+        font-size: 1.1rem;
+        font-family: OmnesBold;
+    }
+
+    .startForfraButton {
+        background: #e9e9e9;
+        color: #222222;
+        border: 1px solid #22222250;
+        color: #222222;
+        font-size: 0.8rem;
     }
 }

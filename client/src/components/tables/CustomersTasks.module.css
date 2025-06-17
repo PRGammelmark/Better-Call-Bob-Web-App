@@ -1,0 +1,37 @@
+.customersTasksHeader ul li:nth-child(1), .customersTasksBody div ul li:nth-child(1) {
+    width: 15%;
+    min-width: 15%;
+    max-width: 15%;
+}
+
+.customersTasksHeader ul li:nth-child(2), .customersTasksBody div ul li:nth-child(2) {
+    width: 40%;
+    min-width: 40%;
+    max-width: 40%;
+    overflow: auto;
+}
+
+.customersTasksHeader ul li:nth-child(3), .customersTasksBody div ul li:nth-child(3) {
+    width: 20%;
+    min-width: 20%;
+    max-width: 20%;
+}
+
+.customersTasksHeader ul li:nth-child(4), .customersTasksBody div ul li:nth-child(4) {
+    width: 25%;
+    min-width: 25%;
+    max-width: 25%;
+}
+
+.customersTasksHeader ul {
+    max-width: 100%!important;
+}
+
+.clickableListingItem {
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.clickableListingItem:hover {
+    background: #cae4ca;
+}

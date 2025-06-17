@@ -35,7 +35,7 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
+const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
   const [view, setView] = useState("month")
@@ -51,6 +51,8 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
   const [besøgDenneMåned, setBesøgDenneMåned] = useState(0)
   const [igangværendeOpgaverDenneMåned, setIgangværendeOpgaverDenneMåned] = useState(0)
   const [addBesøgModal, setAddBesøgModal] = useState(false)
+  const [kunder, setKunder] = useState([])
+  const [kundeTilknyttetBesøg, setKundeTilknyttetBesøg] = useState(null)
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -58,6 +60,14 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
     })
     .then(res => {
       setAlleOpgaver(res.data)
+    })
+    .catch(error => console.log(error))
+
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: { 'Authorization': `Bearer ${user.token}` }
+    })
+    .then(res => {
+      setKunder(res.data)
     })
     .catch(error => console.log(error))
   }, [])
@@ -96,7 +106,7 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
-        setTilknyttetOpgave(null)
+        setOpgaveTilknyttetBesøg(null)
       }
     }, [openDialog]);
 
@@ -218,7 +228,7 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
     }))
 
    const openCalendarEvent = useCallback((callEvent) => {
-    
+
     const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
 
       if(opgaveTilknyttetBesøg !== ""){
@@ -228,16 +238,18 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, set
           }
         })
         .then(res => {
-          setTilknyttetOpgave(res.data)
+          setOpgaveTilknyttetBesøg(res.data)
+          setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === res.data.kundeID))
         })
         .catch(error => console.log(error))
       } else {
-        setTilknyttetOpgave(callEvent)
+        setOpgaveTilknyttetBesøg(callEvent)
+        setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === callEvent.kundeID))
       }
       setEventData(callEvent);
       editBesøg && setEditBesøg(false);
       setOpenDialog(true);
-}, [openDialog]);
+}, [openDialog, kunder]);
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   
@@ -450,7 +462,7 @@ const onRedigerBesøg = (e) => {
       </div>
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
         {editBesøg ? (
-          tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
+          opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
           ""
           :
           (
@@ -458,8 +470,8 @@ const onRedigerBesøg = (e) => {
             <DivSlideAnimation>
             <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : ""} besøg</h2>
                 <div className={ModalStyles.modalSubheadingContainer}>
-                  <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.navn : "Ingen person"}</h3>
-                  {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid === false && <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? tilknyttetOpgave.adresse : "Ingen adresse"}</h3>}
+                  <h3 className={ModalStyles.modalSubheading}>Kunde: {kundeTilknyttetBesøg?.navn || "Navn ikke fundet"}</h3>
+                  {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid === false && <h3 className={ModalStyles.modalSubheading}>{kundeTilknyttetBesøg?.adresse || "Ingen adresse"}</h3>}
                 </div>
                 <form action="" onSubmit={onRedigerBesøg}>
                     <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
@@ -484,20 +496,20 @@ const onRedigerBesøg = (e) => {
         )
         : 
         <>
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(tilknyttetOpgave.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave && tilknyttetOpgave.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(kundeTilknyttetBesøg?.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (kundeTilknyttetBesøg.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p>}
         {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
         <br />
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
         <br />
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <Link to={`../opgave/${tilknyttetOpgave ? tilknyttetOpgave._id : null}`}>
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
           <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
         </Link>}
-        {(user.isAdmin || (eventData && eventData._id === user.id)) && tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
+        {(user.isAdmin || (eventData && eventData._id === user.id)) && opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
         fratrækBesøgFraLedigeTider === false && (
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons}>
@@ -574,7 +586,7 @@ const onRedigerBesøg = (e) => {
         
       }
       </Modal>
-      {/* setAddBesøgModal({action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}) */}
+      {/* setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}) */}
       <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} />
     </div>
   )

@@ -13,9 +13,7 @@ import PageAnimation from '../../components/PageAnimation'
 import axios from 'axios'
 
 
-const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, totalFaktura, isEnglish}) => {
-    // const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
-    // const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
+const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, åbnOpretRegningModal, setÅbnOpretRegningModal, vilBetaleMedMobilePay, setVilBetaleMedMobilePay, opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende, allePosteringerUdfyldt, setAllePosteringerUdfyldt, totalFaktura, isEnglish}) => {
     const [betalSenereModalState, setBetalSenereModalState] = useState(false)
     const [betalNuMedAnmodningModalState, setBetalNuMedAnmodningModalState] = useState(false)
     const [betalNuMedQRModalState, setBetalNuMedQRModalState] = useState(false)
@@ -26,7 +24,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
     const [qrErrorMessage, setQrErrorMessage] = useState('')
     const [bekræftAdmGebyr, setBekræftAdmGebyr] = useState(false)
     const [inklAdministrationsGebyr, setInklAdministrationsGebyr] = useState(true)
-    const [telefonnummerTilAnmodning, setTelefonnummerTilAnmodning] = useState(opgave && opgave.telefon ? opgave.telefon : '')
+    const [telefonnummerTilAnmodning, setTelefonnummerTilAnmodning] = useState(kunde && kunde.telefon ? kunde.telefon : '')
     const [loadingFakturaSubmission, setLoadingFakturaSubmission] = useState(false)
     const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
     const [loadingMobilePaySubmission, setLoadingMobilePaySubmission] = useState(false)
@@ -46,13 +44,13 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
         setBetalNuMedQRModalState(true)
         setQrLoading(true)
         setQrURL('')
-        useBetalMedMobilePayQR(user, opgave, opgaveID, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setQrErrorMessage)
+        useBetalMedMobilePayQR(user, opgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, totalFaktura, setQrURL, setQrTimer, setQrPaymentAuthorized, setQrErrorMessage)
     }
 
     function initierAnmodningState() {
         setBetalNuMedAnmodningModalState(true)
         setLoadingMobilePaySubmission(true)
-        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish)
+        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish)
     }
 
   return (
@@ -119,7 +117,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
             </div>
         </form>
         {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <input style={{marginTop: 10, marginBottom: 10, textAlign: 'center', paddingRight: 65}} className={ÅbenOpgaveCSS.modalInput} type="tel" name="telefonnummer" id="telefonnummer" placeholder="Indtast evt. andet nummer til anmodning" onChange={(e) => setTelefonnummerTilAnmodning(e.target.value)} />}
-        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalNuKnap} onClick={() => initierAnmodningState()}><span>Send Mobile Pay-anmodning<br /><span style={{fontSize: 13}}>Tlf.: {telefonnummerTilAnmodning ? telefonnummerTilAnmodning : opgave.telefon}</span></span> <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>}
+        {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalNuKnap} onClick={() => initierAnmodningState()}><span>Send Mobile Pay-anmodning<br /><span style={{fontSize: 13}}>Tlf.: {telefonnummerTilAnmodning ? telefonnummerTilAnmodning : kunde?.telefon}</span></span> <img className={Styles.mobilePayLogo} src={mobilePayLogo} alt="Mobile Pay" /></button>}
         {opgaveLøstTilfredsstillende && allePosteringerUdfyldt && <button className={Styles.betalSenereKnap} onClick={() => setBetalSenereModalState(true)}>Betal senere med faktura – kr. 49,-</button>}
         </PageAnimation>
         </>
@@ -151,8 +149,8 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, posteringer, setO
             onClick={(e) => {
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
-                const alternativEmail = opgave && opgave.email
-                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish)        
+                const alternativEmail = kunde && kunde.email
+                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish)        
             }}>Betal senere med faktura {inklAdministrationsGebyr ? "(+ 49 kr.)" : "(intet gebyr)"}</button>
         </PageAnimation>
         </>

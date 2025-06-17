@@ -7,6 +7,13 @@ const getLedigeTider = async (req,res) => {
     res.status(200).json(ledigeTider)
 }
 
+// GET alle ledige tider for en medarbejder
+const getLedigeTiderForMedarbejder = async (req, res) => {
+    const { id } = req.params;
+    const ledigeTider = await LedigTid.find({ brugerID: id });
+    res.status(200).json(ledigeTider);
+}
+
 // GET en enkelt ledig tid
 const getLedigTid = async (req,res) => {
     const { id } = req.params;
@@ -86,5 +93,6 @@ export {
     createLedigTid,
     getLedigTid,
     deleteLedigTid,
-    updateLedigTid
+    updateLedigTid,
+    getLedigeTiderForMedarbejder
 }

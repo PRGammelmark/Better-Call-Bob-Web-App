@@ -4,7 +4,7 @@ import useEconomicLines from "./useEconomicLines.js";
 import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 
-const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish) => {
+const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -19,18 +19,18 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
     // Importer linjer til faktura fra posteringer
     const economicLines = useEconomicLines(posteringer, inklAdministrationsGebyr, isEnglish);
 
-    const cvrNummer = opgave.CVR ? ("corporateIdentificationNumber: opgave.CVR") : "";
-    const erErhvervskunde = opgave.CVR || opgave.virksomhed;
+    const cvrNummer = kunde?.CVR ? ("corporateIdentificationNumber: kunde?.CVR") : "";
+    const erErhvervskunde = kunde?.CVR || kunde?.virksomhed;
 
     const nyKundeObject = {
-        ...(erErhvervskunde && { name: opgave.virksomhed ? opgave.virksomhed : "Virksomhedsnavn ikke oplyst" }),
-        ...(!erErhvervskunde && { name: opgave.navn ? opgave.navn : "Intet navn oplyst" }),
-        address: opgave.adresse ? opgave.adresse : "Ingen adresse oplyst",
-        email: alternativEmail ? alternativEmail : opgave.email ? opgave.email : null,
+        ...(erErhvervskunde && { name: kunde?.virksomhed ? kunde?.virksomhed : "Virksomhedsnavn ikke oplyst" }),
+        ...(!erErhvervskunde && { name: kunde?.navn ? kunde?.navn : "Intet navn oplyst" }),
+        address: kunde?.adresse ? kunde?.adresse : "Ingen adresse oplyst",
+        email: alternativEmail ? alternativEmail : kunde?.email ? kunde?.email : null,
         vatZone: {
             vatZoneNumber: 1
         },
-        ...(opgave.CVR && { corporateIdentificationNumber: opgave.CVR }),
+        ...(kunde?.CVR && { corporateIdentificationNumber: kunde?.CVR }),
         currency: "DKK",
         customerGroup: {
             customerGroupNumber: 1
@@ -60,10 +60,10 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                 layoutNumber: 3
             },
             recipient: {
-                ...(erErhvervskunde && { name: opgave.virksomhed ? opgave.virksomhed : "Virksomhedsnavn ikke oplyst" }),
-                ...(!erErhvervskunde && { name: opgave.navn ? opgave.navn : "Intet navn oplyst" }),
-                address: `${opgave.adresse}`,
-                city: `${opgave.postnummerOgBy ? opgave.postnummerOgBy : "1000 København"}`,
+                ...(erErhvervskunde && { name: kunde?.virksomhed ? kunde?.virksomhed : "Virksomhedsnavn ikke oplyst" }),
+                ...(!erErhvervskunde && { name: kunde?.navn ? kunde?.navn : "Intet navn oplyst" }),
+                address: `${kunde?.adresse}`,
+                city: `${kunde?.postnummerOgBy ? kunde?.postnummerOgBy : "1000 København"}`,
                 country: "Danmark",
                 vatZone: {
                     name: "Domestic",
@@ -126,7 +126,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
             console.log("Fakturakladde oprettet.");
 
             // ERHVERVSKUNDEFLOW
-            if(opgave.CVR || opgave.virksomhed){
+            if(kunde?.CVR || kunde?.virksomhed){
 
                 console.log("Starter erhvervskundeflow ...")
 
@@ -134,7 +134,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                     to: "hej@bettercallbob.dk",
                     subject: `Ny fakturakladde i Economic`,
-                    body: `Hej 👋\n\nEn erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic. Fakturaen er IKKE blevet sendt til kunden endnu. \n\nInformationer om kunden:\n\n Navn: ${opgave?.navn} \n Virksomhed: ${opgave?.virksomhed} \n CVR: ${opgave?.CVR} \n Opgavebeskrivelse: ${opgave?.opgaveBeskrivelse} \n\n Gå ind i dit regnskabssystem, og bekræft data og satser i fakturaen før du sender den videre. \n\n Dbh.,\n App-robotten 🤖`
+                    body: `Hej 👋\n\nEn erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic. Fakturaen er IKKE blevet sendt til kunden endnu. \n\nInformationer om kunden:\n\n Navn: ${kunde?.navn} \n Virksomhed: ${kunde?.virksomhed} \n CVR: ${kunde?.CVR} \n Opgavebeskrivelse: ${opgave?.opgaveBeskrivelse} \n\n Gå ind i dit regnskabssystem, og bekræft data og satser i fakturaen før du sender den videre. \n\n Dbh.,\n App-robotten 🤖`
                 }, {
                     headers: {
                         'Authorization': `Bearer ${user.token}`
@@ -170,7 +170,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
             }
 
             // PRIVATKUNDEFLOW
-            if(!(opgave.CVR || opgave.virksomhed)) {
+            if(!(kunde?.CVR || kunde?.virksomhed)) {
 
                 console.log("Starter privatkundeflow ...")
 
@@ -202,14 +202,14 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
                                 console.log("Faktura PDF-URL'en genereret.");
 
                                 // 5) -> SEND SMS MED LINK TIL FAKTURA ================================
-                                if (opgave.telefon && String(opgave.telefon).length === 8) {
+                                if (kunde?.telefon && String(kunde?.telefon).length === 8) {
                                     const smsData = {
                                         "messages": [
                                             {
-                                                "to": `${opgave.telefon}`,
+                                                "to": `${kunde?.telefon}`,
                                                 "countryHint": "45",
                                                 "respectBlacklist": true,
-                                                "text": `${isEnglish ? `Dear ${opgave.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`,
+                                                "text": `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`,
                                                 "from": "Bob",
                                                 "flash": false,
                                                 "encoding": "gsm7"
@@ -235,9 +235,9 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, posteringer, setO
 
                                 // 6) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
                                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                                    to: alternativEmail ? alternativEmail : opgave.email,
+                                    to: alternativEmail ? alternativEmail : kunde?.email,
                                     subject: `${isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob"}`,
-                                    body: `${isEnglish ? `Dear ${opgave.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${opgave.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`
+                                    body: `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`
                                 }, {
                                     headers: {
                                         'Authorization': `Bearer ${user.token}`

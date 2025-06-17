@@ -1,12 +1,36 @@
 import React, { createContext, useState, useEffect } from 'react';
 import dayjs from 'dayjs';
 const TaskAndDateContext = createContext();
+import axios from 'axios';
+import { useAuthContext } from '../hooks/useAuthContext';
 
 export const TaskAndDateProvider = ({ children }) => {
-
+    const { user } = useAuthContext();
     const [chosenTask, setChosenTask] = useState(null);
     const [chosenDate, setChosenDate] = useState(dayjs());
     const [chosenEndDate, setChosenEndDate] = useState(null);
+
+    let customerForChosenTask = {}
+    
+    useEffect(() => {
+        if(user && chosenTask){
+            axios.get(`${import.meta.env.VITE_API_URL}/kunder/${chosenTask?.kundeID}`, {
+                headers: {
+                    'Authorization': `Bearer ${user?.token}`
+                }
+            })
+            .then(response => {
+                customerForChosenTask = response.data.kunde
+            })
+            .catch(error => {
+                console.log(error)
+                customerForChosenTask = {}
+            })
+        }
+        if(!user || !chosenTask){
+            customerForChosenTask = {}
+        }
+    }, [chosenTask, user])
 
     return (
         <TaskAndDateContext.Provider value={{ 
@@ -15,7 +39,8 @@ export const TaskAndDateProvider = ({ children }) => {
             chosenDate,
             setChosenDate,
             chosenEndDate,
-            setChosenEndDate
+            setChosenEndDate,
+            customerForChosenTask
          }}>
           {children}
         </TaskAndDateContext.Provider>

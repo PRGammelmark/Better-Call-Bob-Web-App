@@ -1,6 +1,7 @@
 import express from "express"
 import dotenv from "dotenv"
 import opgaverRoutes from "./routes/opgaver.js"
+import kunderRoutes from "./routes/kunder.js"
 import brugerRoutes from "./routes/brugere.js"
 import posteringRoutes from "./routes/posteringer.js"
 import kommentarerRoutes from "./routes/kommentarer.js"
@@ -81,6 +82,7 @@ app.post('/api/send-email', async (req, res) => {
 app.use('/api/password', resetPasswordRoutes);
 app.use('/api/opgaver', opgaverRoutes);
 app.use('/api/brugere', brugerRoutes);
+app.use('/api/kunder', kunderRoutes);
 app.use('/api/posteringer', posteringRoutes);
 app.use('/api/kommentarer', kommentarerRoutes);
 app.use('/api/ledige-tider', ledigeTiderRoutes);

@@ -4,12 +4,13 @@ import satser from "../variables";
 import BCBLogo from "../assets/mobilePay.png";
 import Logo from "../assets/bcb-logo.svg"
 
-const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish) => {
+const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish) => {
 
     console.log("Betaling med Mobile Pay via anmodning igangsættes.")
 
     const paymentInformation = {
         opgave: opgave,
+        kunde: kunde,
         posteringer: posteringer,
         totalFaktura: totalFaktura,
         telefonnummerTilAnmodning: telefonnummerTilAnmodning || ""
@@ -179,7 +180,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
         <div style="background-color: #fff; color: #000; padding: 20px; border-radius: 10px; display: inline-block; box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;">
             <img src="https://bettercallbob.dk/wp-content/uploads/2025/05/bcb-logo.png" alt="BCB Logo via hjemmeside" style="width: 150px; height: auto; margin-top: -20px;" />
             <div>
-                <p style="font-size: 1.2rem;">${isEnglish ? "Receipt for work done at" : "Kvittering for arbejde på adressen"} <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${opgave.adresse}</b><br />${opgave.postnummerOgBy}</p>
+                <p style="font-size: 1.2rem;">${isEnglish ? "Receipt for work done at" : "Kvittering for arbejde på adressen"} <br /><b style="font-size: 2rem; margin-top: 10px; display: inline-block;">${kunde?.adresse}</b><br />${kunde?.postnummerOgBy}</p>
                 <p><b>${isEnglish ? "Date" : "Dato"}:</b> ${dayjs().format('DD. MMMM YYYY')}<br />
                 <b>${isEnglish ? "Done by" : "Udført af"}:</b> ${opgave.ansvarlig.length > 0 ? opgave.ansvarlig.map(ansvarlig => ansvarlig.navn).join(', ') : 'Bob'}</p>
             </div>
@@ -205,30 +206,6 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                 ${momsLinje}
             </table>
         </div>`;
-
-        // TEST
-        // const html = `<p>Kære ${opgave.navn},</p>
-        //                     <p>Tak fordi du valgte at være kunde hos Better Call Bob.</p>
-        //                     <p>Herunder kan du se detaljer om dit køb af vores service:</p>
-        //                     ${kvittering}
-        //                     <p>Vi glæder os til at hjælpe dig igen! Du er altid velkommen.</p>
-        //                     <p>Dbh.,<br/>Better Call Bob<br/>Tlf.: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`
-
-        // axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-        //     to: opgave && opgave.email,
-        //     subject: `${isEnglish ? "Receipt from Better Call Bob" : "Kvittering fra Better Call Bob"}`,
-        //     html: html
-        // }, {
-        //     headers: authHeaders
-        // })
-        // .then(response => {
-        //     console.log("Email med kvittering sendt til kunden.");
-        // })
-        // .catch(error => {
-        //     console.log("Fejl: Kunne ikke sende email til kunden.");
-        //     console.log(error);
-        // })
-        // return
 
     // REQUEST SERVER TO GET QR CODE
     axios.post(`${import.meta.env.VITE_API_URL}/mobilepay/get-qr-code`, paymentInformation, {
@@ -271,14 +248,14 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                     let html = ""
 
                     if(isEnglish){
-                        html = `<p>Dear ${opgave.navn},</p>
+                        html = `<p>Dear ${kunde?.navn},</p>
                             <p>Thank you for being a customer at Better Call Bob.</p>
                             <p>You will find details about your purchase of our service below:</p>
                             ${kvittering}
                             <p>We look forward to helping you again! You are always welcome.</p>
                             <p>Best regards,<br/>Better Call Bob<br/>Phone: <a href="tel:71994848">71 99 48 48</a><br/>Web: <a href="https://bettercallbob.dk">https://bettercallbob.dk</a></p>`
                     } else {
-                        html = `<p>Kære ${opgave.navn},</p>
+                        html = `<p>Kære ${kunde?.navn},</p>
                             <p>Tak fordi du valgte at være kunde hos Better Call Bob.</p>
                             <p>Herunder kan du se detaljer om dit køb af vores service:</p>
                             ${kvittering}
@@ -288,7 +265,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                     
                     // ===== SEND KVITTERING PÅ MAIL =====
                     axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                        to: opgave && opgave.email,
+                        to: kunde?.email,
                         subject: `${isEnglish ? "Receipt from Better Call Bob" : "Kvittering fra Better Call Bob"}`,
                         html: html
                     }, {
@@ -300,11 +277,21 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
                     .catch(error => {
                         console.log("Fejl: Kunne ikke sende email til kunden.");
                         console.log(error);
+                        setQrPaymentAuthorized(false)
+                        setÅbnOpretRegningModal(true)
+                        setQrErrorMessage('Fejl: Kunne ikke sende email til kunden. Prøv igen.')
+                        setLoadingMobilePaySubmission(false)
+                        setSuccessMobilePaySubmission(false)
                     })
                     // ===== ===== ===== ===== =====
                 })
                 .catch(error => {
                     console.error('Error setting opgave betalt dato:', error);
+                    setQrPaymentAuthorized(false)
+                    setÅbnOpretRegningModal(true)
+                    setQrErrorMessage('Fejl: Kunne ikke opdatere opgavens betalingsdato. Prøv igen.')
+                    setLoadingMobilePaySubmission(false)
+                    setSuccessMobilePaySubmission(false)
                 });
             } else {
                 setQrPaymentAuthorized(false)
@@ -316,10 +303,20 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, posteringer, s
         })
         .catch(error => {
             console.error('Error listening for payment status: ', error);
+            setQrPaymentAuthorized(false)
+            setÅbnOpretRegningModal(true)
+            setQrErrorMessage('Fejl: Mobile Pay opdaterer ikke betalingsstatusen for denne betaling. Prøv igen.')
+            setLoadingMobilePaySubmission(false)
+            setSuccessMobilePaySubmission(false)
         });
     })
     .catch(error => {
         console.error('Error getting access token from MobilePay: ', error);
+        setQrPaymentAuthorized(false)
+        setÅbnOpretRegningModal(true)
+        setQrErrorMessage('Kunne ikke hente access token fra MobilePay. Prøv igen.')
+        setLoadingMobilePaySubmission(false)
+        setSuccessMobilePaySubmission(false)
     });
 }
 

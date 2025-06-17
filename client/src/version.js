@@ -14,6 +14,19 @@
 // 
 
 const changes = [{
+    version: "2.0",
+    date: "17. juni 2025",
+    changes: [
+        "Alle kunder er nu tilgængelige som selvstændige objekter i app'en, og præsenteres i et dynamisk kundekartotek. Dette kan tilgås via menupunktet 'Kunder'.",
+        "I kartoteket præsenteres en kunde med navn, adresse og antallet af igangværende og afsluttede opgaver.",
+        "En kunde kan nemt søges frem via søgefeltet i kundekartoteket. Søgefeltet gennemgår både kunders navn, adresser, postnumre, virksomhedsnavne, CVR-numre, mm. Derudover indeholder kartoteket knapper til filtrering af hhv. erhvervskunder og privatkunder.",
+        "Hver eksisterende og ny kunde får en særskilt side. Denne kan man se ved at trykke på en kunde i kundekartoteket. Her kan man se flere detaljer om hver kunde – fx om kunden har en stige, vil kontaktes med reklamer, om kunden taler engelsk, osv. Man har også mulighed for at tilknytte noter til en kunde. Derudover præsenterer kundesiderne den pågældende kundes opgavehistorik. Ved opgavehistorikken kan man nu også direkte oprette en ny opgave på den pågældende kunde. Vil man redigere i en eksisterende kundes informationer kan dette også gøres via kundens side.",
+        "'Opret opgave'-proceduren er blevet revideret. Nu er processen trinopdelt i hhv. 'Opgave', 'Kunde', 'Medarbejder' og 'Besøg'. For alle nye opgaver er det påkrævet at udfylde opgavebeskrivelsen samt informationer om kunden. Kunden kan både oprettes som en ny kunde, eller vælges blandt eksisterende kunder. Administratoren har også mulighed for at tilknytte medarbejdere til opgaven med det samme, men det er ikke et krav. Ligeledes kan et besøg også oprettes med det samme via 'Opret opgave'-formularen, men dette er heller ikke påkrævet.",
+        "Den flydende action-knap i nederste højre hjørne har fået en ny knap: 'Opret kunde'. Her kan man oprette en kunde i databasen uden, i første omgang, at knytte kunden til en ny eller eksisterende opgave.",
+        "Justeringer i design af kundesektionen på åbne opgaver – nu viser sektionen først virksomhedsinformationer hvis kunden er en erhvervskunde, og efterfølgende kontaktinformationer på kontaktpersonen i virksomheden. Tidligere var det altid blot kontaktpersonen, der var fremhævet.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "1.4.9",
     date: "16. juni 2025",
     changes: [

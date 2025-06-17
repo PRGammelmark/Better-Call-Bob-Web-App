@@ -35,7 +35,7 @@ const lang = {
 
 const TradCalendar = withDragAndDrop(Calendar);
 
-const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave, setTilknyttetOpgave, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID, updateOpgave, setUpdateOpgave}) => {
+const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg, eventData, setEventData, aktueltBesøg, opgaveID, getBrugerName, brugere, egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID, updateOpgave, setUpdateOpgave}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
   const [currentView, setCurrentView] = useState("month")
@@ -54,6 +54,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
   const [alleOpgaver, setAlleOpgaver] = useState([])
   const [besøgDenneMåned, setBesøgDenneMåned] = useState(0)
   const [addBesøgModal, setAddBesøgModal] = useState(false)
+  const [kunder, setKunder] = useState([])
+  const [kundeTilknyttetBesøg, setKundeTilknyttetBesøg] = useState(null)
+
   const filterEgneBesøgDenneOpgave = egneBesøg.filter(besøg => besøg.opgaveID === opgaveID)
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
@@ -63,6 +66,14 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
     })
     .then(res => {
       setAlleOpgaver(res.data)
+    })
+    .catch(error => console.log(error))
+
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: { 'Authorization': `Bearer ${user.token}` }
+    })
+    .then(res => {
+      setKunder(res.data)
     })
     .catch(error => console.log(error))
   }, [])
@@ -91,7 +102,8 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
-        setTilknyttetOpgave(null)
+        setOpgaveTilknyttetBesøg(null)
+        setKundeTilknyttetBesøg(null)
       }
     }, [openDialog]);
 
@@ -260,6 +272,8 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
       title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(ledigTid.datoTidFra).format("HH:mm")}-{dayjs(ledigTid.datoTidTil).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
     }))
 
+    console.log(kunder)
+
    const openCalendarEvent = useCallback((callEvent) => {
       const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
 
@@ -270,16 +284,20 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, tilknyttetOpgave,
             }
           })
           .then(res => {
-            setTilknyttetOpgave(res.data)
+            setOpgaveTilknyttetBesøg(res.data)
+            console.log(res.data.kundeID)
+            console.log(kunder)
+            setKundeTilknyttetBesøg(kunder?.find(kunde => kunde._id === res.data.kundeID))
           })
           .catch(error => console.log(error))
       } else {
-        setTilknyttetOpgave(callEvent)
+        setOpgaveTilknyttetBesøg(callEvent)
+        setKundeTilknyttetBesøg(kunder?.find(kunde => kunde._id === callEvent.kundeID))
       }
       setEventData(callEvent);
       editBesøg && setEditBesøg(false);
       setOpenDialog(true);
-}, [openDialog]);
+}, [openDialog, kunder]);
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   
@@ -348,8 +366,6 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
             }
         });
     }
-
-    console.log(newEventBorders)
 
     axios.patch(`${import.meta.env.VITE_API_URL}/ledige-tider/${event._id}`, newEventBorders, {
       headers: {
@@ -644,7 +660,7 @@ const onRedigerLedigTid = (e) => {
       
       <Modal trigger={openDialog} setTrigger={setOpenDialog}>
         {editBesøg ? (
-          tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? 
+          opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
           (
             // Rediger ledig tid
             <DivSlideAnimation>
@@ -673,8 +689,8 @@ const onRedigerLedigTid = (e) => {
             <DivSlideAnimation>
             <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : getBrugerName(eventData?.brugerID) + "s"} besøg</h2>
                 <div className={ModalStyles.modalSubheadingContainer}>
-                  <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? <p><b style={{fontFamily: "OmnesBold"}}>Hos: </b> {tilknyttetOpgave.navn}</p>: "Ingen person"}</h3>
-                  {tilknyttetOpgave && !tilknyttetOpgave.objectIsLedigTid && <h3 className={ModalStyles.modalSubheading}>{tilknyttetOpgave ? <p><b style={{fontFamily: "OmnesBold"}}>På: </b>{tilknyttetOpgave.adresse}, {tilknyttetOpgave.postnummerOgBy}</p> : "Ingen adresse"}</h3>}
+                  <h3 className={ModalStyles.modalSubheading}>{opgaveTilknyttetBesøg ? <p><b style={{fontFamily: "OmnesBold"}}>Hos: </b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p> : "Ingen person"}</h3>
+                  {opgaveTilknyttetBesøg && !opgaveTilknyttetBesøg.objectIsLedigTid && <h3 className={ModalStyles.modalSubheading}>{opgaveTilknyttetBesøg ? <p><b style={{fontFamily: "OmnesBold"}}>På: </b>{kundeTilknyttetBesøg?.adresse || "Ingen adresse"}</p> : "Ingen adresse"}</h3>}
                 </div>
                 <form action="" onSubmit={onRedigerBesøg}>
                     <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
@@ -699,18 +715,18 @@ const onRedigerLedigTid = (e) => {
         )
         : 
         <>
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(tilknyttetOpgave.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(tilknyttetOpgave && tilknyttetOpgave.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (tilknyttetOpgave.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {tilknyttetOpgave ? tilknyttetOpgave.navn : null}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(kundeTilknyttetBesøg && kundeTilknyttetBesøg?.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (kundeTilknyttetBesøg?.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p>}
         {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
         {eventData && eventData?.brugerID && <p><b style={{fontFamily: "OmnesBold"}}>Medarbejder:</b> {getBrugerName(eventData?.brugerID)}</p>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({origin: "besøgFraLedigTid", action: "ledigTidSelect", ansvarligID: tilknyttetOpgave.brugerID, ansvarligNavn: getBrugerName(tilknyttetOpgave.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({origin: "besøgFraLedigTid", action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
         <br />
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
         <br />
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
-        {tilknyttetOpgave && tilknyttetOpgave.objectIsLedigTid ? "" : <p>{tilknyttetOpgave ? tilknyttetOpgave.opgaveBeskrivelse : null}</p>}
-        {(user.isAdmin || (eventData?.brugerID === userID)) && (tilknyttetOpgave?.objectIsLedigTid ? 
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>}
+        {(user.isAdmin || (eventData?.brugerID === userID)) && (opgaveTilknyttetBesøg?.objectIsLedigTid ? 
         
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons} style={{marginTop: -10}}>

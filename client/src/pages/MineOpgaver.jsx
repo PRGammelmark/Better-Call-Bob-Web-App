@@ -16,7 +16,7 @@ const Mine_opgaver = () => {
         }
       })
       .then(res => {
-        setTilknyttetOpgave(res.data)
+        setOpgaveTilknyttetBesøg(res.data)
       })
       .catch(error => console.log(error))
 

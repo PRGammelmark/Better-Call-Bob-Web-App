@@ -14,10 +14,25 @@ const MyEarlierTasks = ({openTableEvent}) => {
   const [mineAfsluttedeOpgaver, setMineAfsluttedeOpgaver] = useState([])
   const [mineBesøg, setMineBesøg] = useState([])
   const [minePosteringer, setMinePosteringer] = useState([])
+  const [kunder, setKunder] = useState(null)
   const {user} = useAuthContext()
   const [isLoading, setIsLoading] = useState(true)
   const userID = user.id;
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+      headers: {
+        'Authorization': `Bearer ${user.token}`
+      }
+    })
+    .then(res => {
+      setKunder(res.data)
+    })
+    .catch(err => {
+      console.log(err)
+    })
+  }, [user])
   
   useEffect(()=>{
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -87,13 +102,14 @@ return (
                         const posteringTotalHonorar = minePosteringer.reduce((sum, postering) => sum + postering.totalHonorar, 0);
                         const posteringTotalUdlæg = minePosteringer.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
                         const posteringTotalTjent = posteringTotalHonorar - posteringTotalUdlæg;
+                        const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
 
                         return (
                         <div className={TableCSS.opgaveListing} key={opgave._id}>
                             <ul>
                             <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                            <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={MyEarlierTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                            <li>{opgave.adresse}</li>
+                            <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={MyEarlierTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                            <li>{kunde?.adresse}</li>
                             <li>{posteringTotalHonorar} kr. <span style={{color: "#59bf1a", marginLeft: "5px"}}>({posteringTotalTjent} kr.)</span></li>
                             </ul>
                             <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
@@ -123,12 +139,13 @@ return (
                         const posteringTotalHonorar = posteringerForOpgave.reduce((sum, postering) => sum + postering.totalHonorar, 0);
                         const posteringTotalUdlæg = posteringerForOpgave.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
                         const posteringTotalTjent = posteringTotalHonorar - posteringTotalUdlæg;
+                        const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
 
                         return (
                         <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
                             <ul>
-                                <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{opgave.navn}{(opgave.virksomhed || opgave.CVR) && <br />}<span className={MyEarlierTasksCSS.opgaveVirksomhedNavn}>{(opgave.virksomhed && opgave.virksomhed) || (opgave.CVR && "CVR.: " + opgave.CVR)}</span></li>
-                                <li>{opgave.adresse}</li>
+                                <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={MyEarlierTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                                <li>{kunde?.adresse}</li>
                                 <li style={{display: "flex", flexDirection: "row"}}>{posteringTotalHonorar} kr. <span style={{color: "#59bf1a", marginLeft: "5px"}}>({posteringTotalTjent} kr.)</span></li>
                             </ul>
                         </div>

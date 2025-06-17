@@ -31,7 +31,7 @@ const Overblik = () => {
   const { managerOverblik, setManagerOverblik } = useOverblikView()
   const [openDialog, setOpenDialog] = useState(false)
   const [eventData, setEventData] = useState(null)
-  const [tilknyttetOpgave, setTilknyttetOpgave] = useState(null)
+  const [opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg] = useState(null)
   const [aktueltBesøg, setAktueltBesøg] = useState(null)
   const { egneLedigeTider, egneBesøg, refetchLedigeTider, refetchBesøg, alleLedigeTider, alleBesøg, setEgneLedigeTider, setEgneBesøg, setAlleLedigeTider, setAlleBesøg, setRefetchLedigeTider, setRefetchBesøg } = useBesøg();
 
@@ -84,7 +84,7 @@ const Overblik = () => {
         }
       })
       .then(res => {
-        setTilknyttetOpgave(res.data)
+        setOpgaveTilknyttetBesøg(res.data)
       })
       .catch(error => console.log(error))
 
@@ -110,8 +110,8 @@ const Overblik = () => {
         }}>Gå til alle opgaver</p>
         <ManagerCalendar 
                         user={user} 
-                        tilknyttetOpgave={tilknyttetOpgave}
-                        setTilknyttetOpgave={setTilknyttetOpgave}
+                        opgaveTilknyttetBesøg={opgaveTilknyttetBesøg}
+                        setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg}
                         openDialog={openDialog}
                         setOpenDialog={setOpenDialog}
                         eventData={eventData}
@@ -145,8 +145,8 @@ const Overblik = () => {
         <MyTasks openTableEvent={openTableEvent} />
         <ÅbenOpgaveCalendar 
                         user={user} 
-                        tilknyttetOpgave={tilknyttetOpgave}
-                        setTilknyttetOpgave={setTilknyttetOpgave}
+                        opgaveTilknyttetBesøg={opgaveTilknyttetBesøg}
+                        setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg}
                         openDialog={openDialog}
                         setOpenDialog={setOpenDialog}
                         eventData={eventData}
