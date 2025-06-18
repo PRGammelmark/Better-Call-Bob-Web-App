@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "2.0.4",
+    date: "18. juni 2025",
+    changes: [
+        "Forbereder implementering af push-notifikationer."
+    ]
+},{
     version: "2.0.3",
     date: "17. juni 2025",
     changes: [
