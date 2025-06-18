@@ -20,6 +20,7 @@ import scheduledCleanup from './utils/scheduledCleanup.js';
 import requestedCleanup from './utils/requestedCleanup.js';
 import cron from 'node-cron';
 import rateLimit from 'express-rate-limit';
+import { sendPushNotification } from './utils/pushService.js';
 
 dotenv.config();
 const app = express();
@@ -77,6 +78,18 @@ app.post('/api/send-email', async (req, res) => {
         res.status(500).json({ error: 'Error sending email' }); // Respond with error
     }
 });
+
+// Define push notification route
+app.post('/api/send-push', async (req, res) => {
+    const { subscription, payload } = req.body;
+    try {
+      await sendPushNotification(subscription, payload);
+      res.status(200).json({ message: 'Push sent' });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Failed to send push' });
+    }
+  });
 
 // routes
 app.use('/api/password', resetPasswordRoutes);

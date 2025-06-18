@@ -8,10 +8,10 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal.jsx'
 import LocationMarker from '../assets/locationMarker.svg'
-import EditIcon from '../assets/editIcon.svg'
-import PasswordIcon from '../assets/passwordIcon.svg'
+import { RectangleEllipsis, BellRing, SquarePen } from 'lucide-react';
 import ToolboxIcon from '../assets/toolboxIcon.svg'
 import ClockIcon from '../assets/clockIcon.svg'
+import subscribeToPush from '../utils/subscribeToPush'
 
 const Indstillinger = () => {
     const {user} = useAuthContext();
@@ -33,7 +33,6 @@ const Indstillinger = () => {
     const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
     const [opgaveBesøg, setOpgaveBesøg] = useState([])
     const [kalenderVisning, setKalenderVisning] = useState("")
-    const [test, setTest] = useState(false);
     
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -202,6 +201,99 @@ const Indstillinger = () => {
       .catch(error => console.log(error))
     }
 
+    // function urlBase64ToUint8Array(base64String) {
+    //   const padding = "=".repeat((4 - base64String.length % 4) % 4);
+    //   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+    //   const rawData = atob(base64);
+    //   return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
+    // }
+    
+    // async function subscribeToPush() {
+    //   try {
+    //     if (!('serviceWorker' in navigator)) {
+    //       return alert("Din browser understøtter ikke notifikationer.");
+    //     }
+    
+    //     const permission = Notification.permission;
+    
+    //     if (permission === 'denied') {
+    //       return alert("Du har blokeret notifikationer. Gå til Indstillinger > Notifikationer og slå dem til.");
+    //     }
+    
+    //     if (permission !== 'granted') {
+    //       const newPermission = await Notification.requestPermission();
+    //       if (newPermission !== 'granted') {
+    //         return alert("Du skal acceptere notifikationer for at det virker.");
+    //       }
+    //     }
+
+    //     if(permission === 'granted') {
+    //       alert("Du har allerede accepteret notifikationer.");
+    //       return;
+    //     }
+    
+    //     const registration = await navigator.serviceWorker.ready;
+    
+    //     let subscription = await registration.pushManager.getSubscription();
+    
+    //     if (!subscription) {
+    //       subscription = await registration.pushManager.subscribe({
+    //         userVisibleOnly: true,
+    //         applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY)
+    //       });
+    //     }
+    
+    //     console.log("Push subscription:", subscription);
+    
+    //     // Send til backend
+    //     await axios.post(`${import.meta.env.VITE_API_URL}/brugere/push-subscribe`, {
+    //       subscription
+    //     }, {
+    //       headers: {
+    //         'Authorization': `Bearer ${user.token}`
+    //       }
+    //     });
+    
+    //     alert("Push-notifikationer er nu aktiveret.");
+    //   } catch (err) {
+    //     console.error("Fejl ved push-tilmelding:", err);
+    //     alert("Noget gik galt under tilmelding. Se konsollen for detaljer.");
+    //   }
+    // }
+    
+       
+
+    function sendTestNotification() {
+      if (!user.pushSubscription) {
+        alert("Ingen push subscription fundet på brugeren. Abonner først.");
+        return;
+      }
+    
+      const payload = {
+        title: "Test asdfnotifikation",
+        body: "Dette er en test notifikation.",
+      };
+    
+
+      axios.post(`${import.meta.env.VITE_API_URL}/send-push`, {
+        subscription: user.pushSubscription,
+        payload
+      }, {
+        headers: {
+          'Authorization': `Bearer ${user.token}`
+        }
+      })
+      .then(() => {
+        console.log("Test-notifikation er sendt.");
+      })
+      .catch(err => {
+        console.error("Fejl ved test-notifikation:", err);
+        alert("Fejl under afsendelse af test-notifikation. Se konsollen.");
+      });
+    }
+    
+    
+
   return (
     <PageAnimation>
       <div className={Styles.pageContent}>
@@ -227,7 +319,7 @@ const Indstillinger = () => {
                 </div>
               </div>
             </div>
-            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><img src={EditIcon} alt="edit icon" />Personlig info</button>
+            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Tilpas dine informationer</button>
             <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
                 <h2 className={Styles.modalHeading}>Personlige informationer</h2>
                 <form onSubmit={submitÆndringer}>
@@ -244,7 +336,7 @@ const Indstillinger = () => {
                   <button className={Styles.buttonFullWidth}>Gem ændringer</button>
                 </form>
             </Modal>
-          <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><img src={PasswordIcon} alt="password icon" />Skift kodeord</button>
+          <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>
           <Modal trigger={skiftKodeord} setTrigger={setSkiftKodeord}>
                 <h2 className={Styles.modalHeading}>Skift kodeord</h2>
                 <p className={`${Styles.text} ${Styles.marginBottom10}`}>Tips til et stærkt kodeord:</p>
@@ -264,14 +356,10 @@ const Indstillinger = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
+          <button className={Styles.newButton} onClick={() => subscribeToPush(user)}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>
+          <button className={Styles.newButton} onClick={() => sendTestNotification()}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
           </div>
         </div>
-        {/* <div className={Styles.præferencer}>
-          <p className={Styles.miniheading}>Præferencer:</p>
-          <button className={Styles.newButton}><img src={ToolboxIcon} alt="toolbox icon" />Hvad kan du tage med?</button>
-          <button className={Styles.newButton}><img src={LocationMarker} alt="location marker" />Hvor kan du arbejde?</button>
-          <button className={Styles.newButton}><img src={ClockIcon} alt="clock icon" />Hvornår er du ledig?</button>
-        </div> */}
       </div>
     </PageAnimation>
   )

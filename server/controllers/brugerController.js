@@ -82,7 +82,7 @@ const loginBruger = async (req,res) => {
         // create token
         const token = createToken(bruger._id)
 
-        res.status(200).json({id: bruger._id, email, navn: bruger.navn, telefon: bruger.telefon, isAdmin: bruger.isAdmin, token, satser: bruger.satser})
+        res.status(200).json({id: bruger._id, email, navn: bruger.navn, telefon: bruger.telefon, isAdmin: bruger.isAdmin, token, satser: bruger.satser, pushSubscription: bruger.pushSubscription})
     } catch (error) {
         res.status(400).json({error: error.message})
     }
@@ -102,11 +102,36 @@ const signupBruger = async (req,res) => {
     }
 }
 
+// subscribe to push
+const subscribeToPush = async (req, res) => {
+    const { subscription } = req.body;
+
+    try {
+        const bruger = await Bruger.findByIdAndUpdate(
+            req.user._id,
+            { pushSubscription: subscription },
+            { new: true }
+        );
+
+        if (!bruger) {
+            return res.status(404).json({ error: "Bruger ikke fundet" });
+        }
+
+        res.status(200).json(bruger);
+    } catch (err) {
+        console.error("Fejl i subscribeToPush:", err);
+        res.status(500).json({ error: "Noget gik galt ved push subscription." });
+    }
+}
+
+
+
 export {
     loginBruger,
     signupBruger,
     getBrugere,
     getBruger,
     updateBruger,
-    updateBrugerPassword
+    updateBrugerPassword,
+    subscribeToPush
 }

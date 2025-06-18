@@ -1,12 +1,19 @@
 import express from "express"
-import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword } from '../controllers/brugerController.js'
+import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword, subscribeToPush } from '../controllers/brugerController.js'
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
-// router.use(requireAuth) 
+
+// login route
+router.post('/login', loginBruger)
+
+// signup route
+router.post('/signup', signupBruger)
 
 // GET alle brugere
 router.get("/", getBrugere)
+
+router.use(requireAuth) 
 
 // GET en enkelt bruger
 router.get('/:id', getBruger)
@@ -17,10 +24,7 @@ router.patch('/:id', updateBruger)
 // OPDATER en brugers password
 router.patch('/updatePassword/:id', updateBrugerPassword)
 
-// login route
-router.post('/login', loginBruger)
-
-// signup route
-router.post('/signup', signupBruger)
+// subscribe to push
+router.post('/push-subscribe', subscribeToPush)
 
 export default router;

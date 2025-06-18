@@ -50,7 +50,11 @@ const brugerSchema = new Schema({
         type: [String],
         required: false
     },
-    satser: Object
+    satser: Object,
+    pushSubscription: {
+        type: Object,
+        required: false
+    }
 })
 
 // static signup method
