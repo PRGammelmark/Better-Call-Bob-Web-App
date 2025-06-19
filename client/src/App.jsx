@@ -52,18 +52,6 @@ function App() {
           .register('/sw.js')
           .then((registration) => {
             console.log('Service Worker registered with scope:', registration.scope);
-  
-            // Når SW er klar, tjek om der findes en aktiv push-subscription
-            // navigator.serviceWorker.ready.then((reg) => {
-            //   reg.pushManager.getSubscription().then((sub) => {
-            //     if (!sub) {
-            //       console.log("Ingen aktiv push-subscription – forsøger at resubscribe");
-            //       subscribeToPush(user); // Du skal have denne funktion defineret et sted
-            //     } else {
-            //       console.log("Push-subscription findes allerede");
-            //     }
-            //   });
-            // });
           })
           .catch((error) => {
             console.log('Service Worker registration failed:', error);

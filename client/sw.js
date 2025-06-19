@@ -27,11 +27,6 @@ self.addEventListener('activate', (event) => {
 });
 
 // fetch the service worker
-// self.addEventListener('fetch', (event) => {
-//     console.log('Service Worker fetching');
-//     event.respondWith(fetch(event.request));
-// });
-
 self.addEventListener('fetch', (event) => {
     console.log('Service Worker fetching');
     event.respondWith(
@@ -44,86 +39,53 @@ self.addEventListener('fetch', (event) => {
 // PUSH NOTIFICATIONS
 
 self.addEventListener('push', (event) => {
-    console.log('✅ Push notification received');
-
-    console.log(event.data.json());
-    const notifikation = event.data.json();
+    console.log('✅ Push event modtaget');
   
-    const notificationTitle = notifikation.title || 'Ny notifikation';
+    const notificationTitle = 'Test-notifikation';
     const notificationOptions = {
-      body: notifikation.body,
-      icon: '/logo192.png',
-      badge: '/logo192.png',
+      body: 'Denne besked er sendt fra service worker uden payload',
       data: { url: '/' }
     };
   
     event.waitUntil(
       self.registration.showNotification(notificationTitle, notificationOptions)
+        .catch(err => console.error('❌ showNotification fejlede:', err))
     );
   });
-  
 
-// self.addEventListener('push', (event) => {
-//     console.log('Push notification received');
-//     console.log(event);
+//   self.addEventListener('push', (event) => {
+//     console.log('✅ Push event modtaget');
   
-//     let data = {};
-//     if (event.data) {
-//       try {
-//         data = event.data.json();
-//         console.log('Push data as JSON:', data);
-//       } catch (e) {
-//         data = { title: 'Ny besked', body: event.data.text() };
-//         console.log('Push data as text:', data);
-//       }
-//     } else {
-//       console.log('Push event uden data');
-//     }
-  
-//     const title = data.title || 'Ny notifikation';
-//     const options = {
-//       body: data.body || 'Du har en ny notifikation',
-//       icon: '/logo192.png',
-//       badge: '/logo192.png',
-//       data: { url: data.url || '/' },
-//       tag: `${Date.now()}`,
-//       requireInteraction: true,
+//     // Standard fallback-indhold
+//     let notificationTitle = 'Ny notifikation';
+//     let notificationOptions = {
+//       body: 'Du har modtaget en ny besked.',
+//       icon: '/logo192.png',       // Valgfri men anbefalet
+//       badge: '/logo192.png',      // Også valgfri
+//       data: { url: '/' }          // Bruges af notificationclick
 //     };
   
+//     // Forsøg at parse data fra push payload
+//     try {
+//       if (event.data) {
+//         const data = event.data.json();
+//         console.log('📦 Push-data modtaget:', data);
+  
+//         notificationTitle = data.title || notificationTitle;
+//         notificationOptions.body = data.body || notificationOptions.body;
+//         notificationOptions.data.url = data.url || '/';
+//       }
+//     } catch (err) {
+//       console.warn('⚠️ Kunne ikke parse event.data:', err);
+//     }
+  
+//     // Vis notifikationen
 //     event.waitUntil(
-//       self.registration.showNotification(title, options).then(() => {
-//         console.log('Notification vist:', title);
-//       }).catch((err) => {
-//         console.error('Fejl ved showNotification:', err);
-//       })
+//       self.registration.showNotification(notificationTitle, notificationOptions)
+//         .catch(err => console.error('❌ showNotification fejlede:', err))
 //     );
 //   });
   
-
-// self.addEventListener('push', (event) => {
-//     console.log('Push notification received');
-//     let data = {};
-//     if (event.data) {
-//         try {
-//             data = event.data.json();
-//         } catch (e) {
-//             data = { title: 'Ny besked', body: event.data.text() };
-//         }
-//     }
-
-//     const options = {
-//         body: data.body || 'Du har en ny notifikation',
-//         icon: '/logo192.png',
-//         badge: '/logo192.png',
-//         data: {
-//             url: data.url || '/', // så du kan deep-linke
-//         },
-//     };
-
-//     event.waitUntil(
-//         self.registration.showNotification(data.title || 'Ny notifikation', options)
-//     );
-// });
 
 self.addEventListener('notificationclick', (event) => {
     event.notification.close();

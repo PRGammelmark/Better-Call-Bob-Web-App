@@ -33,6 +33,8 @@ const Indstillinger = () => {
     const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
     const [opgaveBesøg, setOpgaveBesøg] = useState([])
     const [kalenderVisning, setKalenderVisning] = useState("")
+    const [pushDebugMessage, setPushDebugMessage] = useState("");
+
     
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -261,7 +263,22 @@ const Indstillinger = () => {
     //   }
     // }
     
-       
+    const checkNotificationStatus = () => {
+      let message = '';;
+      switch (Notification.permission) {
+        case 'granted':
+          message = 'Du har givet tilladelse til notifikationer ✅';
+          break;
+        case 'denied':
+          message = 'Du har afvist notifikationer ❌. Gå til indstillinger og aktiver dem.';
+          break;
+        case 'default':
+          message = 'Du er endnu ikke blevet spurgt om notifikationer.';
+          break;
+      }
+      setPushDebugMessage(message); // eller hvordan du håndterer beskeder i dit UI
+    };
+    
 
     function sendTestNotification() {
       if (!user.pushSubscription) {
@@ -270,10 +287,12 @@ const Indstillinger = () => {
       }
     
       const payload = {
-        title: "Test asdfnotifikation",
+        title: "Test-notifikation",
         body: "Dette er en test notifikation.",
       };
-    
+      
+      console.log("Tjekker user.pushSubscription");
+      console.log(user.pushSubscription);
 
       axios.post(`${import.meta.env.VITE_API_URL}/send-push`, {
         subscription: user.pushSubscription,
@@ -291,8 +310,6 @@ const Indstillinger = () => {
         alert("Fejl under afsendelse af test-notifikation. Se konsollen.");
       });
     }
-    
-    
 
   return (
     <PageAnimation>
@@ -356,8 +373,9 @@ const Indstillinger = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
-          <button className={Styles.newButton} onClick={() => subscribeToPush(user)}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>
+          <button className={Styles.newButton} onClick={() => {subscribeToPush(user); checkNotificationStatus()}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>
           <button className={Styles.newButton} onClick={() => sendTestNotification()}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
+          <p>{pushDebugMessage}</p>
           </div>
         </div>
       </div>
