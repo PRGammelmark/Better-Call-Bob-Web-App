@@ -59,22 +59,47 @@ function App() {
   //     });
   //   }
   // }, []);
+  
+
 
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', async () => {
-        try {
-          const registration = await navigator.serviceWorker.register('/sw.js');
-          console.log('✅ Service Worker registered with scope:', registration.scope);
+      navigator.serviceWorker
+        .register('/sw.js')
+        .then(reg => {
+          console.log('✅ Service Worker registered:', reg);
+        })
+        .catch(err => {
+          console.error('❌ Service Worker registration failed:', err);
+        });
   
-          const readyReg = await navigator.serviceWorker.ready;
-          console.log('✅ Service Worker is ready:', readyReg);
-        } catch (error) {
-          console.error('❌ Fejl ved Service Worker registration:', error);
-        }
-      });
+      navigator.serviceWorker.ready
+        .then(reg => {
+          console.log('✅ Service Worker ready:', reg);
+        })
+        .catch(err => {
+          console.error('❌ Service Worker ready error:', err);
+        });
     }
   }, []);
+
+  
+  // useEffect(() => {
+  //   if ('serviceWorker' in navigator) {
+  //     window.addEventListener('load', async () => {
+  //       try {
+  //         console.log('✅ Service Worker loading');
+  //         const registration = await navigator.serviceWorker.register('/sw.js');
+  //         console.log('✅ Service Worker registered with scope:', registration.scope);
+  
+  //         const readyReg = await navigator.serviceWorker.ready;
+  //         console.log('✅ Service Worker is ready:', readyReg);
+  //       } catch (error) {
+  //         console.error('❌ Fejl ved Service Worker registration:', error);
+  //       }
+  //     });
+  //   }
+  // }, []);
   
 
   const router = createBrowserRouter(
