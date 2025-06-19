@@ -222,7 +222,7 @@ const AddBesøg = (props) => {
                     axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                         to: ansvarligEmail,
                         subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                        html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
+                        html: `<p><b>Hej ${ansvarligNavn?.split(' ')[0]},</b></p>
                             <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
                             <p style="font-size: 1.2rem"><b>${kunde?.adresse}, ${kunde?.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
                             <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />
@@ -337,7 +337,7 @@ const AddBesøg = (props) => {
                     axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                         to: ansvarligEmail,
                         subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,
-                        html: `<p><b>Hej ${ansvarligNavn.split(' ')[0]},</b></p>
+                        html: `<p><b>Hej ${ansvarligNavn?.split(' ')[0]},</b></p>
                             <p>Du er blevet booket til et nyt besøg på en opgave for Better Call Bob. Besøget er på:</p>
                             <p style="font-size: 1.2rem"><b>${customerForChosenTask?.adresse}, ${customerForChosenTask?.postnummerOgBy}</b><br/><span style="font-size: 1rem">${dayjs(besøg.datoTidFra).format("dddd [d.] DD. MMMM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}</span></p>
                             <hr style="border: none; border-top: 1px solid #3c5a3f; margin: 20px 0;" />

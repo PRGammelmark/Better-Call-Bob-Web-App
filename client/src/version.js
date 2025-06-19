@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "2.0.5",
+    date: "19. juni 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at man i særlige tilfælde kunne oprette nye opgaver uden tilknyttede kunder.",
+        "Tilføjede bedre beskrivelser af potentielle fejl, der kan opstå ved upload af udlægsbilleder."
+    ]
+},{
     version: "2.0.4",
     date: "18. juni 2025",
     changes: [

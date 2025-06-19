@@ -178,11 +178,11 @@ const NyOpgave = () => {
 
         const opgaveMedEksisterendeKunde = {
             ...opgaven,
-            kundeID: vælgEksisterendeKunde ? valgtKunde._id : "",
+            kundeID: vælgEksisterendeKunde && valgtKunde?._id,
             ansvarlig: valgtMedarbejder ? [valgtMedarbejder] : []
         }
 
-        if(vælgEksisterendeKunde){
+        if(vælgEksisterendeKunde && valgtKunde){
             axios.post(`${import.meta.env.VITE_API_URL}/opgaver`, opgaveMedEksisterendeKunde, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -225,7 +225,7 @@ const NyOpgave = () => {
             })
         }
 
-        if(opretNyKunde){
+        if(opretNyKunde && kundeUdfyldt){
             axios.post(`${import.meta.env.VITE_API_URL}/kunder`, kunden, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`

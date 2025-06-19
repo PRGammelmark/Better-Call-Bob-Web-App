@@ -276,8 +276,8 @@ const AddPostering = (props) => {
         const timeoutId = setTimeout(() => {
             uploadTask.cancel();
             setKvitteringLoadingStates((prev) => ({ ...prev, [index]: false }));
-            alert("Upload af udlægsbillede tog for lang tid. Vælg venligst et mindre billede.");
-        }, 20000); // 15 sekunder
+            alert("Upload af udlægsbillede tog for lang tid. Find et sted med bedre internetforbindelse, vælg et mindre billede, genstart app'en eller prøv igen om lidt.");
+        }, 25000); // 25 sekunder
     
         uploadTask.on(
             "state_changed",
