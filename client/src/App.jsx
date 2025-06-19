@@ -44,24 +44,6 @@ function App() {
     FastClick(document.body);
   }, [])
 
-  // useEffect(() => {
-  //   // Registering the service worker
-  //   if ('serviceWorker' in navigator) {
-  //     window.addEventListener('load', () => {
-  //       navigator.serviceWorker
-  //         .register('/sw.js')
-  //         .then((registration) => {
-  //           console.log('Service Worker registered with scope:', registration.scope);
-  //         })
-  //         .catch((error) => {
-  //           console.log('Service Worker registration failed:', error);
-  //         });
-  //     });
-  //   }
-  // }, []);
-  
-
-
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker
@@ -82,25 +64,6 @@ function App() {
         });
     }
   }, []);
-
-  
-  // useEffect(() => {
-  //   if ('serviceWorker' in navigator) {
-  //     window.addEventListener('load', async () => {
-  //       try {
-  //         console.log('✅ Service Worker loading');
-  //         const registration = await navigator.serviceWorker.register('/sw.js');
-  //         console.log('✅ Service Worker registered with scope:', registration.scope);
-  
-  //         const readyReg = await navigator.serviceWorker.ready;
-  //         console.log('✅ Service Worker is ready:', readyReg);
-  //       } catch (error) {
-  //         console.error('❌ Fejl ved Service Worker registration:', error);
-  //       }
-  //     });
-  //   }
-  // }, []);
-  
 
   const router = createBrowserRouter(
     createRoutesFromElements(
