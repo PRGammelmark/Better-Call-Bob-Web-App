@@ -9,22 +9,46 @@ const assets = [
     '/logo512.png'
 ];
 
+// // install the service worker
+// self.addEventListener('install', (event) => {
+//     console.log('Service Worker installing');
+//     event.waitUntil(
+//         caches.open(staticCacheName).then((cache) => {
+//             console.log('Caching shell assets');
+//             cache.addAll(assets);
+//         })
+//     );
+// });
+
+// // activate the service worker
+// self.addEventListener('activate', (event) => {
+//     console.log('Service Worker activating');
+//     event.waitUntil(self.clients.claim());
+// });
+
 // install the service worker
 self.addEventListener('install', (event) => {
-    console.log('Service Worker installing');
+    console.log('📦 Service Worker installing');
+  
+    // Spring ventetid over, så den bliver aktiv med det samme
+    self.skipWaiting();
+  
     event.waitUntil(
-        caches.open(staticCacheName).then((cache) => {
-            console.log('Caching shell assets');
-            cache.addAll(assets);
-        })
+      caches.open(staticCacheName).then((cache) => {
+        console.log('📂 Caching shell assets');
+        return cache.addAll(assets);
+      })
     );
-});
-
-// activate the service worker
-self.addEventListener('activate', (event) => {
-    console.log('Service Worker activating');
+  });
+  
+  // activate the service worker
+  self.addEventListener('activate', (event) => {
+    console.log('🚀 Service Worker activating');
+  
+    // Tag kontrol over alle åbne klienter (vinduer)
     event.waitUntil(self.clients.claim());
-});
+  });
+  
 
 // fetch the service worker
 self.addEventListener('fetch', (event) => {
