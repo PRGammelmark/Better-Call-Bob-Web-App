@@ -150,10 +150,12 @@ self.addEventListener('fetch', event => {
 
 self.addEventListener('push', (event) => {
     console.log('✅ Push event modtaget');
+
+    const data = event.data.json();
   
-    const notificationTitle = 'Test-notifikation';
+    const notificationTitle = data?.title || 'Ny notifikation';
     const notificationOptions = {
-      body: 'Denne besked er sendt fra service worker uden payload',
+      body: data?.body || 'Du har modtaget en ny besked.',
       data: { url: '/' }
     };
   

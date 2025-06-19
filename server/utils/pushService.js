@@ -1,4 +1,5 @@
 import webpush from 'web-push';
+import axios from 'axios';
 
 webpush.setVapidDetails(
   'mailto:patrick@bettercallbob.dk',
@@ -6,11 +7,11 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-export const sendPushNotification = async (subscription, payload) => {
+export const sendPushNotification = async (modtager, payload) => {
   try {
-    console.log('🔔 Sender push notifikation til:', subscription.endpoint);
+    console.log('🔔 Sender push notifikation til:', modtager?.navn);
     const response = await webpush.sendNotification(
-      subscription,
+      modtager?.pushSubscription,
       JSON.stringify(payload)
     );
     console.log('✅ Push notifikation sendt');

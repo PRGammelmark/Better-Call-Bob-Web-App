@@ -81,9 +81,9 @@ app.post('/api/send-email', async (req, res) => {
 
 // Define push notification route
 app.post('/api/send-push', async (req, res) => {
-    const { subscription, payload } = req.body;
+    const { modtager, payload } = req.body;
     try {
-      await sendPushNotification(subscription, payload);
+      await sendPushNotification(modtager, payload);
       res.status(200).json({ message: 'Push sent' });
     } catch (err) {
       console.error(err);

@@ -8,10 +8,12 @@ import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal.jsx'
 import LocationMarker from '../assets/locationMarker.svg'
-import { RectangleEllipsis, BellRing, SquarePen } from 'lucide-react';
+import { RectangleEllipsis, BellRing, BellOff, SquarePen } from 'lucide-react';
 import ToolboxIcon from '../assets/toolboxIcon.svg'
 import ClockIcon from '../assets/clockIcon.svg'
 import subscribeToPush from '../utils/subscribeToPush'
+import unSubscribeToPush from '../utils/unSubscribeToPush'
+import sendPushnotifikation from '../utils/sendPushnotifikation.js'
 
 const Indstillinger = () => {
     const {user} = useAuthContext();
@@ -47,6 +49,11 @@ const Indstillinger = () => {
     const [fraTid, setFraTid] = useState("08:00")
     const [tilTid, setTilTid] = useState("16:00")
     const [ledighedDato, setLedighedDato] = useState("")
+
+
+    useEffect(() => {
+      console.log(user)
+    }, [user])
 
     useEffect(() => {
       axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
@@ -280,36 +287,38 @@ const Indstillinger = () => {
     };
     
 
-    function sendTestNotification() {
-      if (!user.pushSubscription) {
-        alert("Ingen push subscription fundet på brugeren. Abonner først.");
-        return;
-      }
+    // function sendTestNotification() {
+    //   if (!user.pushSubscription) {
+    //     alert("Ingen push subscription fundet på brugeren. Abonner først.");
+    //     return;
+    //   }
     
-      const payload = {
-        title: "Test-notifikation",
-        body: "Dette er en test notifikation.",
-      };
+    //   const payload = {
+    //     title: "Test-notifikation",
+    //     body: "Dette er en test notifikation.",
+    //   };
       
-      console.log("Tjekker user.pushSubscription");
-      console.log(user.pushSubscription);
+    //   console.log("Tjekker user.pushSubscription");
+    //   console.log(user.pushSubscription);
 
-      axios.post(`${import.meta.env.VITE_API_URL}/send-push`, {
-        subscription: user.pushSubscription,
-        payload
-      }, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(() => {
-        console.log("Test-notifikation er sendt.");
-      })
-      .catch(err => {
-        console.error("Fejl ved test-notifikation:", err);
-        alert("Fejl under afsendelse af test-notifikation. Se konsollen.");
-      });
-    }
+    //   axios.post(`${import.meta.env.VITE_API_URL}/send-push`, {
+    //     subscription: user.pushSubscription,
+    //     payload
+    //   }, {
+    //     headers: {
+    //       'Authorization': `Bearer ${user.token}`
+    //     }
+    //   })
+    //   .then(() => {
+    //     console.log("Test-notifikation er sendt.");
+    //   })
+    //   .catch(err => {
+    //     console.error("Fejl ved test-notifikation:", err);
+    //     alert("Fejl under afsendelse af test-notifikation. Se konsollen.");
+    //   });
+    // }
+
+
 
   return (
     <PageAnimation>
@@ -373,8 +382,8 @@ const Indstillinger = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
-          <button className={Styles.newButton} onClick={() => {subscribeToPush(user); checkNotificationStatus()}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>
-          <button className={Styles.newButton} onClick={() => sendTestNotification()}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
+          {user.pushSubscription ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={() => {unSubscribeToPush(user)}}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.marginBottom10}`} onClick={() => {subscribeToPush(user); checkNotificationStatus()}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>}
+          <button className={Styles.newButton} onClick={() => sendPushnotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
           <p>{pushDebugMessage}</p>
           </div>
         </div>
