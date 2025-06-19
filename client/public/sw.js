@@ -1,18 +1,16 @@
-console.log('Service Worker loading ...');
-
-const staticCacheName = "site-static";
-const assets = [
-    '/',
-    '/index.html',
-    '/site.webmanifest',
-    '/logo192.png',
-    '/logo512.png'
-];
+// const staticCacheName = "site-static";
+// const assets = [
+//     '/',
+//     '/index.html',
+//     '/site.webmanifest',
+//     '/logo192.png',
+//     '/logo512.png'
+// ];
 
 const PRECACHE = 'precache-v1';
 const RUNTIME = 'runtime';
 
-// A list of local resources we always want to be cached.
+// Filer som skal caches ved installation
 const PRECACHE_URLS = [
   '/',
   '/index.html',
@@ -21,53 +19,84 @@ const PRECACHE_URLS = [
   '/logo512.png'
 ];
 
-// The install handler takes care of precaching the resources we always need.
+console.log('🟦 [SW] Service worker script loaded');
+
+// INSTALL - Precache assets
 self.addEventListener('install', event => {
+  console.log('📦 [SW] Install event triggered');
+
   event.waitUntil(
     caches.open(PRECACHE)
-      .then(cache => cache.addAll(PRECACHE_URLS))
-      .then(self.skipWaiting())
+      .then(cache => {
+        console.log('🗃️ [SW] Caching precache URLs:', PRECACHE_URLS);
+        return cache.addAll(PRECACHE_URLS);
+      })
+      .then(() => {
+        console.log('✅ [SW] Precaching done, calling skipWaiting');
+        return self.skipWaiting();
+      })
+      .catch(err => {
+        console.error('❌ [SW] Error during install/precache:', err);
+      })
   );
 });
 
-// The activate handler takes care of cleaning up old caches.
+// ACTIVATE - Cleanup old caches
 self.addEventListener('activate', event => {
+  console.log('🚀 [SW] Activate event triggered');
+
   const currentCaches = [PRECACHE, RUNTIME];
+
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return cacheNames.filter(cacheName => !currentCaches.includes(cacheName));
-    }).then(cachesToDelete => {
-      return Promise.all(cachesToDelete.map(cacheToDelete => {
-        return caches.delete(cacheToDelete);
-      }));
-    }).then(() => self.clients.claim())
+    caches.keys()
+      .then(cacheNames => {
+        const toDelete = cacheNames.filter(name => !currentCaches.includes(name));
+        console.log('🧹 [SW] Caches to delete:', toDelete);
+        return Promise.all(toDelete.map(name => caches.delete(name)));
+      })
+      .then(() => {
+        console.log('✅ [SW] Activation complete, taking control');
+        return self.clients.claim();
+      })
+      .catch(err => {
+        console.error('❌ [SW] Error during activate:', err);
+      })
   );
 });
 
-// The fetch handler serves responses for same-origin resources from a cache.
-// If no response is found, it populates the runtime cache with the response
-// from the network before returning it to the page.
+// FETCH - Serve from cache first, then network fallback
 self.addEventListener('fetch', event => {
-  // Skip cross-origin requests, like those for Google Analytics.
   if (event.request.url.startsWith(self.location.origin)) {
+    console.log('🌐 [SW] Fetch intercepted for:', event.request.url);
+
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
         if (cachedResponse) {
+          console.log('📦 [SW] Cache hit for:', event.request.url);
           return cachedResponse;
         }
 
+        console.log('🌍 [SW] Cache miss, fetching from network:', event.request.url);
+
         return caches.open(RUNTIME).then(cache => {
           return fetch(event.request).then(response => {
-            // Put a copy of the response in the runtime cache.
+            // Put a copy of the response in the runtime cache
             return cache.put(event.request, response.clone()).then(() => {
+              console.log('📥 [SW] Response cached at runtime:', event.request.url);
               return response;
             });
+          }).catch(err => {
+            console.error('❌ [SW] Network fetch failed:', err);
+            throw err;
           });
         });
       })
     );
+  } else {
+    console.log('🔁 [SW] Ignoring cross-origin request:', event.request.url);
   }
 });
+  
 
 // // install the service worker
 // self.addEventListener('install', (event) => {
