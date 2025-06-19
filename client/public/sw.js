@@ -37,7 +37,7 @@ self.addEventListener('install', event => {
   console.log('→ install');
   event.waitUntil(
     caches.open(staticCacheName).then(cache => cache.addAll(assets))
-      .then(() => self.skipWaiting())
+      .then(self.skipWaiting())
   );
 });
 
