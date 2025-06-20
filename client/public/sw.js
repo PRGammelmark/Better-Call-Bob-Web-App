@@ -189,6 +189,7 @@ self.addEventListener('push', (event) => {
   
 
 self.addEventListener('notificationclick', (event) => {
+  console.log('🔔 Notifikation klikket:', event.notification.data);
     event.notification.close();
     event.waitUntil(
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
