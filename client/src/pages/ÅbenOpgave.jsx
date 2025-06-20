@@ -269,7 +269,7 @@ const ÅbenOpgave = () => {
     }, [nuværendeAnsvarlige])
 
     const getBrugerName = (brugerID) => {
-        const bruger = brugere && brugere.find(user => user._id === brugerID);
+        const bruger = brugere && brugere.find(user => (user?._id || user?.id) === brugerID);
         return bruger ? bruger.navn : 'Unknown User';
     };
 

@@ -33,7 +33,7 @@ const TradCalendar = withDragAndDrop(Calendar);
 
 const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg, eventData, setEventData, aktueltBesøg}) => {
 
-  const userID = user.id;
+  const userID = user?.id || user?._id;
   
   const { defaultDate, messages } = useMemo(
       () => ({

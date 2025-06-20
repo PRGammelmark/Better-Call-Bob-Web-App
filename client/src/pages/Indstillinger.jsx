@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react'
 import PageAnimation from '../components/PageAnimation'
 import Styles from './Indstillinger.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush'
+import { useSubscribeToPush } from '../hooks/useSubscribeToPush'
 import axios from 'axios'
 import LedighedCalendar from '../components/calendars/LedighedCalendar'
 import dayjs from 'dayjs'
@@ -16,13 +18,12 @@ import unSubscribeToPush from '../utils/unSubscribeToPush'
 import sendPushnotifikation from '../utils/sendPushnotifikation.js'
 
 const Indstillinger = () => {
-    const {user} = useAuthContext();
+    const {user, updateUser} = useAuthContext();
+    const permission = Notification.permission;
     
     if (!user) {
         return
     }
-
-    const userID = user.id;
     const navigate = useNavigate();
 
     const [bruger, setBruger] = useState(null);
@@ -49,11 +50,9 @@ const Indstillinger = () => {
     const [fraTid, setFraTid] = useState("08:00")
     const [tilTid, setTilTid] = useState("16:00")
     const [ledighedDato, setLedighedDato] = useState("")
+    
 
-
-    useEffect(() => {
-      console.log(user)
-    }, [user])
+    const userID = user?.id || user?._id;
 
     useEffect(() => {
       axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
@@ -318,6 +317,17 @@ const Indstillinger = () => {
     //   });
     // }
 
+    const unSubscribeToPush = useUnsubscribeToPush();
+    const subscribeToPush = useSubscribeToPush();
+
+    const handleUnsubscribeToPush = () => {
+      unSubscribeToPush(user, updateUser);
+    };
+
+    const handleSubscribeToPush = () => {
+      subscribeToPush(user, updateUser);
+    };
+
 
 
   return (
@@ -382,7 +392,7 @@ const Indstillinger = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
-          {user.pushSubscription ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={() => {unSubscribeToPush(user)}}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.marginBottom10}`} onClick={() => {subscribeToPush(user); checkNotificationStatus()}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>}
+          {(user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>}
           <button className={Styles.newButton} onClick={() => sendPushnotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
           <p>{pushDebugMessage}</p>
           </div>

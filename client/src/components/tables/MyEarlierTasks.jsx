@@ -17,7 +17,7 @@ const MyEarlierTasks = ({openTableEvent}) => {
   const [kunder, setKunder] = useState(null)
   const {user} = useAuthContext()
   const [isLoading, setIsLoading] = useState(true)
-  const userID = user.id;
+  const userID = user?.id || user?._id;
   const navigate = useNavigate();
   
   useEffect(() => {

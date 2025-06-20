@@ -7,7 +7,7 @@ function urlBase64ToUint8Array(base64String) {
     return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
   }
 
-async function subscribeToPush(user) {
+async function subscribeToPush(user, updateUser) {
     try {
       if (!('serviceWorker' in navigator)) {
         return alert("Din browser understøtter ikke notifikationer.");
@@ -40,7 +40,7 @@ async function subscribeToPush(user) {
       console.log("Push subscription:", subscription);
   
       // Send til backend
-      await axios.post(`${import.meta.env.VITE_API_URL}/brugere/push-subscribe`, {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/brugere/push-subscribe`, {
         subscription
       }, {
         headers: {
@@ -49,6 +49,12 @@ async function subscribeToPush(user) {
       });
   
       alert("Push-notifikationer er nu aktiveret.");
+
+      const updatedUser = response.data;
+      console.log(updatedUser);
+
+      updateUser(updatedUser);
+
     } catch (err) {
       console.error("Fejl ved push-tilmelding:", err);
       alert("Noget gik galt under tilmelding. Se konsollen for detaljer.");

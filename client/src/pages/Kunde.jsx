@@ -14,6 +14,7 @@ const Kunde = () => {
 
     const { kundeID } = useParams()
     const { user } = useAuthContext()
+    const userID = user?.id || user?._id;
     const navigate = useNavigate()
 
     const [kunde, setKunde] = useState({})
@@ -167,7 +168,7 @@ const Kunde = () => {
                             <h2>Opgavehistorik</h2>
                             <button className={Styles.opretOpgaveKnap} onClick={() => navigate(`/ny-opgave/kunde/${kundeID}`)}>+ Opret opgave</button>
                         </div>
-                        <CustomersTasks kundeID={kundeID} userID={user.id} kunde={kunde}/>
+                        <CustomersTasks kundeID={kundeID} userID={userID} kunde={kunde}/>
                     </div>
                     {/* <div className={Styles.kundeBetalinger}>
                         <h2>Økonomiske detaljer</h2>

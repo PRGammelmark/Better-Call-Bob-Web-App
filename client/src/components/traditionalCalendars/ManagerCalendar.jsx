@@ -253,7 +253,7 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   
-  if (!user.isAdmin && user.id !== event.brugerID) {
+  if (!user.isAdmin && userID !== event.brugerID) {
     return;
   }
   
@@ -509,7 +509,7 @@ const onRedigerBesøg = (e) => {
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
           <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
         </Link>}
-        {(user.isAdmin || (eventData && eventData._id === user.id)) && opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
+        {(user.isAdmin || (eventData && eventData._id === userID)) && opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
         fratrækBesøgFraLedigeTider === false && (
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons}>

@@ -15,6 +15,7 @@ const Team = () => {
     const [medarbejdere, setMedarbejdere] = useState(null)
     const [løntrinModal, setLøntrinModal] = useState(null)
     const {user} = useAuthContext()
+    const userID = user?.id || user?._id;
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere/`, {
@@ -119,7 +120,7 @@ const Team = () => {
                                             </a>
                                         </div>
                                         <div className={styles.flereMedarbejderDetaljer}>
-                                            {!user.isAdmin && user.id === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>}
+                                            {!user.isAdmin && userID === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>}
                                             {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
                                         </div>
                                     </div>

@@ -15,7 +15,7 @@ const MyTasks = ({openTableEvent}) => {
   const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
   const [kunder, setKunder] = useState(null)
-  const userID = user.id;
+  const userID = user?.id || user?._id;
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {

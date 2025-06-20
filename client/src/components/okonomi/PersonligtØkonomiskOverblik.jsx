@@ -25,7 +25,7 @@ const PersonligtØkonomiskOverblik = (props) => {
 
     // HENT MEDARBEJDERENS POSTERINGER
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/posteringer/bruger/${props.user.id}`, {
+        axios.get(`${import.meta.env.VITE_API_URL}/posteringer/bruger/${props.user?.id || props.user?._id}`, {
             headers: {
                 'Authorization': `Bearer ${props.user.token}`
             }
@@ -35,30 +35,6 @@ const PersonligtØkonomiskOverblik = (props) => {
         })
         .catch(error => console.log(error))
     }, [])
-
-    // FILTRER POSTERINGER OG BEREGN TJENT + UDLÆG FOR VALGT MÅNED
-    // useEffect(() => {
-    //     const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
-    //     const denneMånedsOpstartsgebyrer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.opstart * postering.satser.opstartsgebyrHonorar) : 0), 0)
-    //     const denneMånedsHandymantimer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.handymanTimer * postering.satser.handymanTimerHonorar) : 0), 0)
-    //     const denneMånedsTømrertimer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) : 0), 0)
-    //     const denneMånedsRådgivningOpmålingVejledning = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar) : 0), 0)
-    //     const denneMånedsAftenTillæg = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0)) : 0), 0)
-    //     const denneMånedsNatTillæg = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0)) : 0), 0)
-    //     const denneMånedsTrailer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? ((postering.trailer ? postering.satser.trailerHonorar : 0)) : 0), 0)
-    //     const denneMånedsUdlæg = denneMånedsPosteringer.reduce((sum, postering) => {
-    //         const udlægSum = postering.udlæg.reduce((udlægSum, udlægItem) => udlægSum + udlægItem.beløb, 0);
-    //         return sum + udlægSum;
-    //     }, 0);
-    //     const denneMånedTjentFørRabat = denneMånedsOpstartsgebyrer + denneMånedsHandymantimer + denneMånedsTømrertimer + denneMånedsRådgivningOpmålingVejledning + denneMånedsAftenTillæg + denneMånedsNatTillæg + denneMånedsTrailer
-    //     const denneMånedsRabat = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.rabatProcent > 0 ? ((postering.rabatProcent / 100) * (postering.opstart * postering.satser.opstartsgebyrHonorar + postering.handymanTimer * postering.satser.handymanTimerHonorar + postering.tømrerTimer * postering.satser.tømrerTimerHonorar + postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar + (postering.aftenTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.aftenTillægHonorar / 100)) : 0) + (postering.natTillæg ? (((postering.handymanTimer * postering.satser.handymanTimerHonorar) + (postering.tømrerTimer * postering.satser.tømrerTimerHonorar) + (postering.rådgivningOpmålingVejledning * postering.satser.rådgivningOpmålingVejledningHonorar)) * (postering.satser.natTillægHonorar / 100)) : 0) + (postering.trailer ? postering.satser.trailerHonorar : 0))) : 0), 0)
-    //     const denneMånedsDynamiskeHonorarer = denneMånedTjentFørRabat - denneMånedsRabat;
-    //     const denneMånedsFasteHonorarer = denneMånedsPosteringer.reduce((sum, postering) => sum + (postering.dynamiskHonorarBeregning ? 0 : postering.fastHonorar), 0)
-    //     const sumTjentDenneMåned = denneMånedsDynamiskeHonorarer + denneMånedsFasteHonorarer
-
-    //     setTjentDenneMåned(sumTjentDenneMåned)
-    //     setUdlægDenneMåned(denneMånedsUdlæg)
-    // }, [posteringer, månedOffset])
 
     const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
 

@@ -23,7 +23,7 @@ const Overblik = () => {
 
   const navigate = useNavigate()
 
-  const userID = user.id;
+  const userID = user?.id || user?._id;
   
   const [brugere, setBrugere] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -70,8 +70,8 @@ const Overblik = () => {
 }, [])
 
   const getBrugerName = (brugerID) => {
-    const bruger = brugere && brugere.find(user => user._id === brugerID);
-    return bruger ? bruger.navn : 'Unknown User';
+    const bruger = brugere && brugere.find(user => (user?._id || user?.id) === brugerID);
+    return bruger ? bruger.navn : 'Ukendt medarbejder';
 };
 
   const openTableEvent = (besøg) => {

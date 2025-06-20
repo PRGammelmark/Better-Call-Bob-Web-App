@@ -9,6 +9,8 @@ export const authReducer = (state, action) => {
             return { user: action.payload };
         case 'LOGOUT':
             return { user: null };
+        case 'UPDATE_USER':
+            return { user: action.payload }; // <- NY linje
         default:
             return state;
     }
@@ -18,8 +20,14 @@ export const AuthContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(authReducer, {
         user: null
     });
+    
     const [authIsReady, setAuthIsReady] = useState(false)
 
+    const updateUser = (updatedUser) => {
+        dispatch({ type: 'UPDATE_USER', payload: updatedUser });
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+    };
+    
     useEffect(() => {
         const user = JSON.parse(localStorage.getItem('user')); // Get user info
 
@@ -52,7 +60,7 @@ export const AuthContextProvider = ({ children }) => {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ ...state, dispatch, authIsReady }}>
+        <AuthContext.Provider value={{ ...state, dispatch, authIsReady, updateUser }}>
             {children}
         </AuthContext.Provider>
     );

@@ -12,12 +12,14 @@ import { useBesøg } from '../../context/BesøgContext.jsx'
 const BesøgInfoModal = (props) => {
 
     const { user } = useAuthContext();
+    const userID = user?.id || user?._id;
+    
     const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate, customerForChosenTask } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg } = useBesøg();
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
-    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
+    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || userID);
     const [selectedTimeFrom, setSelectedTimeFrom] = useState("08:00");
     const [selectedTimeTo, setSelectedTimeTo] = useState("09:00");
     const [comment, setComment] = useState("");
@@ -87,7 +89,7 @@ const BesøgInfoModal = (props) => {
             refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
 
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
-            if (besøg.brugerID !== user.id) {
+            if (besøg.brugerID !== userID) {
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                     to: nyAnsvarlig.email,
                     subject: `Du har fået et nyt besøg d. ${dayjs(besøg.datoTidFra).format("DD/MM")} kl. ${dayjs(besøg.datoTidFra).format("HH:mm")}-${dayjs(besøg.datoTidTil).format("HH:mm")}`,

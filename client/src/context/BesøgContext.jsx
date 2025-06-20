@@ -5,7 +5,7 @@ const BesøgContext = createContext();
 
 export const BesøgProvider = ({ children }) => {
     const { user } = useAuthContext();
-
+    
     // Declare all hooks at the top
     const [alleBesøg, setAlleBesøg] = useState([]);
     const [egneBesøg, setEgneBesøg] = useState([]);
@@ -22,7 +22,7 @@ export const BesøgProvider = ({ children }) => {
                 headers: { 'Authorization': `Bearer ${user.token}` }
             })
             .then(res => {
-                const filteredVisits = res.data.filter(besøg => besøg.brugerID === user.id);
+                const filteredVisits = res.data.filter(besøg => besøg.brugerID === userID);
                 setAlleBesøg(res.data);
                 setEgneBesøg(filteredVisits);
             })
@@ -49,13 +49,13 @@ export const BesøgProvider = ({ children }) => {
             })
             .then(res => {
                 setAlleLedigeTider(res.data);
-                setEgneLedigeTider(res.data.filter(ledigtTid => ledigtTid.brugerID === user.id));
+                setEgneLedigeTider(res.data.filter(ledigTid => ledigTid.brugerID === userID));
             })
             .catch(error => console.log(error));
         }
     }, [user, refetchLedigeTider]);
 
-    const userID = user && user.id
+    const userID = user?.id || user?._id;
 
     return (
         <BesøgContext.Provider value={{ 

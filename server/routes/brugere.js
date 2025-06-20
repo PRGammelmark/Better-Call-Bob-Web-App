@@ -1,5 +1,5 @@
 import express from "express"
-import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword, subscribeToPush } from '../controllers/brugerController.js'
+import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword, subscribeToPush, unSubscribeToPush } from '../controllers/brugerController.js'
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
@@ -26,5 +26,8 @@ router.patch('/updatePassword/:id', updateBrugerPassword)
 
 // subscribe to push
 router.post('/push-subscribe', subscribeToPush)
+
+// unsubscribe from push
+router.post('/push-unsubscribe', unSubscribeToPush)
 
 export default router;

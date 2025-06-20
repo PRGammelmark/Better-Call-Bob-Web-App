@@ -19,20 +19,15 @@ const PRECACHE_URLS = [
   '/logo512.png'
 ];
 
-console.log('🟦 [SW] Service worker script loaded');
-
 // INSTALL - Precache assets
 self.addEventListener('install', event => {
-  console.log('📦 [SW] Install event triggered');
 
   event.waitUntil(
     caches.open(PRECACHE)
       .then(cache => {
-        console.log('🗃️ [SW] Caching precache URLs:', PRECACHE_URLS);
         return cache.addAll(PRECACHE_URLS);
       })
       .then(() => {
-        console.log('✅ [SW] Precaching done, calling skipWaiting');
         return self.skipWaiting();
       })
       .catch(err => {
@@ -43,7 +38,6 @@ self.addEventListener('install', event => {
 
 // ACTIVATE - Cleanup old caches
 self.addEventListener('activate', event => {
-  console.log('🚀 [SW] Activate event triggered');
 
   const currentCaches = [PRECACHE, RUNTIME];
 
@@ -51,11 +45,9 @@ self.addEventListener('activate', event => {
     caches.keys()
       .then(cacheNames => {
         const toDelete = cacheNames.filter(name => !currentCaches.includes(name));
-        console.log('🧹 [SW] Caches to delete:', toDelete);
         return Promise.all(toDelete.map(name => caches.delete(name)));
       })
       .then(() => {
-        console.log('✅ [SW] Activation complete, taking control');
         return self.clients.claim();
       })
       .catch(err => {
@@ -67,33 +59,28 @@ self.addEventListener('activate', event => {
 // FETCH - Serve from cache first, then network fallback
 self.addEventListener('fetch', event => {
   if (event.request.url.startsWith(self.location.origin)) {
-    console.log('🌐 [SW] Fetch intercepted for:', event.request.url);
 
     event.respondWith(
       caches.match(event.request).then(cachedResponse => {
         if (cachedResponse) {
-          console.log('📦 [SW] Cache hit for:', event.request.url);
           return cachedResponse;
         }
 
-        console.log('🌍 [SW] Cache miss, fetching from network:', event.request.url);
 
-        return caches.open(RUNTIME).then(cache => {
-          return fetch(event.request).then(response => {
-            // Put a copy of the response in the runtime cache
-            return cache.put(event.request, response.clone()).then(() => {
-              console.log('📥 [SW] Response cached at runtime:', event.request.url);
-              return response;
-            });
-          }).catch(err => {
-            console.error('❌ [SW] Network fetch failed:', err);
-            throw err;
-          });
-        });
+        return fetch(event.request);
+        // return caches.open(RUNTIME).then(cache => {
+        //   return fetch(event.request).then(response => {
+        //     // Put a copy of the response in the runtime cache
+        //     return cache.put(event.request, response.clone()).then(() => {
+        //       return response;
+        //     });
+        //   }).catch(err => {
+        //     console.error('❌ [SW] Network fetch failed:', err);
+        //     throw err;
+        //   });
+        // });
       })
     );
-  } else {
-    console.log('🔁 [SW] Ignoring cross-origin request:', event.request.url);
   }
 });
   

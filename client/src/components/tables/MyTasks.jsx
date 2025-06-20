@@ -15,7 +15,7 @@ const MyTasks = ({openTableEvent}) => {
   const [mineBesøg, setMineBesøg] = useState([])
   const {user} = useAuthContext()
   const [isLoading, setIsLoading] = useState(true)
-  const userID = user.id;
+  const userID = user?.id || user?._id;
   const navigate = useNavigate();
   
   useEffect(() => {

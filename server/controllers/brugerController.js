@@ -108,7 +108,7 @@ const subscribeToPush = async (req, res) => {
 
     try {
         const bruger = await Bruger.findByIdAndUpdate(
-            req.user._id,
+            req.user._id || req.user.id,
             { pushSubscription: subscription },
             { new: true }
         );
@@ -117,6 +117,7 @@ const subscribeToPush = async (req, res) => {
             return res.status(404).json({ error: "Bruger ikke fundet" });
         }
 
+        console.log("Bruger:", bruger);
         res.status(200).json(bruger);
     } catch (err) {
         console.error("Fejl i subscribeToPush:", err);
@@ -124,7 +125,26 @@ const subscribeToPush = async (req, res) => {
     }
 }
 
-
+// POST /brugere/push-unsubscribe
+const unSubscribeToPush = async (req, res) => {
+    try {
+      const bruger = await Bruger.findByIdAndUpdate(
+        req.user._id || req.user.id,
+        { $unset: { pushSubscription: "" } },
+        { new: true }
+      );
+  
+      if (!bruger) {
+        return res.status(404).json({ error: "Bruger ikke fundet" });
+      }
+      
+      console.log("Bruger:", bruger);
+      res.status(200).json(bruger);
+    } catch (err) {
+      console.error("Fejl i unSubscribeToPush:", err);
+      res.status(500).json({ error: "Noget gik galt ved afmelding." });
+    }
+  };
 
 export {
     loginBruger,
@@ -133,5 +153,6 @@ export {
     getBruger,
     updateBruger,
     updateBrugerPassword,
-    subscribeToPush
+    subscribeToPush,
+    unSubscribeToPush
 }

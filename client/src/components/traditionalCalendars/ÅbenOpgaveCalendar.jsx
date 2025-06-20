@@ -301,7 +301,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   
-  if (!user.isAdmin && user.id !== event.brugerID) {
+  if (!user.isAdmin && userID !== event.brugerID) {
     return;
   }
 

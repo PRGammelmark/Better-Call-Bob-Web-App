@@ -17,6 +17,7 @@ import AddBesøg from './modals/AddBesøg.jsx'
 const FloatingActionButton = () => {
 
     const { user } = useAuthContext();
+    const userID = user?.id || user?._id;
     const { chosenDate, setChosenDate, chosenTask } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg, refetchLedigeTider, setRefetchLedigeTider, egneLedigeTider, medarbejdere } = useBesøg();
     const [menuOpen, setMenuOpen] = useState(false);
@@ -24,7 +25,7 @@ const FloatingActionButton = () => {
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [åbnUploadDokumentModal, setÅbnUploadDokumentModal] = useState(false);
-    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || user.id);
+    const [selectedAnsvarlig, setSelectedAnsvarlig] = useState(chosenTask && chosenTask.ansvarlig && chosenTask.ansvarlig.length > 0 && chosenTask.ansvarlig[0]._id || userID);
     const [selectedTimeFrom, setSelectedTimeFrom] = useState("08:00");
     const [selectedTimeTo, setSelectedTimeTo] = useState("09:00");
     const [comment, setComment] = useState("");
@@ -94,7 +95,7 @@ const FloatingActionButton = () => {
         const ledighedsDage = weekdays.map(day => ({
             datoTidFra: dayjs(`${day}${tidFra}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
             datoTidTil: dayjs(`${day}${tidTil}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
-            brugerID: user.id,
+            brugerID: userID,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
         }));
@@ -172,7 +173,7 @@ const FloatingActionButton = () => {
         const enkeltLedighed = {
             datoTidFra: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
             datoTidTil: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
-            brugerID: user.id,
+            brugerID: userID,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
         }

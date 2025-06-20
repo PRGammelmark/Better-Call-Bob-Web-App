@@ -25,6 +25,8 @@ const Dokumenter = () => {
         return
     }
 
+    const userID = user?.id || user?._id;
+
   // ===== STATE MANAGER =====
   const [dokumenter, setDokumenter] = useState([])
   const [mineDokumenter, setMineDokumenter] = useState([])
@@ -48,8 +50,7 @@ const Dokumenter = () => {
   }, [refetchDocuments])
 
   useEffect(() => {
-    const dokumenterMedEksplicitBrugeradgang = dokumenter.filter(dokument => dokument.brugerAdgang.includes(user.id))
-    setMineDokumenter(dokumenter.filter(dokument => dokument.brugerAdgang.includes(user.id)))
+    setMineDokumenter(dokumenter.filter(dokument => dokument.brugerAdgang.includes(userID)))
   }, [dokumenter, user])
 
   return (
@@ -104,9 +105,9 @@ const Dokumenter = () => {
                     <p className={DokumenterCSS.dokumentBeskrivelse}>{dokument.beskrivelse}</p>
                   </div>
                   {dokument.kraevSamtykke && 
-                    (dokument.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) 
+                    (dokument.samtykkeListe.some(samtykke => samtykke.brugerId === userID) 
                     ? 
-                    <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D/M-YY')}</b>
+                    <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: '#59bf1a'}}>Underskrevet d. {dayjs(dokument.samtykkeListe.find(samtykke => samtykke.brugerId === userID).samtykkeDato).format('D/M-YY')}</b>
                     :
                     <b className={DokumenterCSS.dokumentSamtykkeText} style={{color: 'red'}}>Mangler din underskrift</b>)
                   }

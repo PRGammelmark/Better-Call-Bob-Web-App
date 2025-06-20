@@ -18,9 +18,11 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
     // const aftenTillægMultiplikator = postering.aftenTillæg ? (postering.satser.aftenTillægHonorar / 100) : 1;
     // const natTillægMultiplikator = postering.natTillæg ? (postering.satser.natTillægHonorar / 100) : 1;
 
+    const userID = user?.id || user?._id;
+
     const getBrugerName = (brugerID) => {
-        const bruger = brugere && brugere.find(user => user._id === brugerID);
-        return bruger ? bruger.navn : 'Unknown User';
+        const bruger = brugere && brugere.find(user => (user?._id || user?.id) === brugerID);
+        return bruger ? bruger.navn : 'Ukendt medarbejder';
     };
 
     function sletPostering(posteringID){
@@ -165,7 +167,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                     </div>
                     <div className={`${ÅbenOpgaveCSS.posteringKnapper} ${!honorarVisning && ÅbenOpgaveCSS.posteringKnapperFadeOut}`}>
                         <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => setHonorarVisning(!honorarVisning)}><img className={ÅbenOpgaveCSS.posteringSwitchKnap} src={SwitchArrows} />Honorar</button>
-                        {(user.isAdmin || user.id === postering.brugerID) && <div>
+                        {(user.isAdmin || userID === postering.brugerID) && <div>
                             <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringSatser(postering)}}>Satser</button>
                             <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
                             {færdiggjort ? null : <button className={ÅbenOpgaveCSS.posteringKnap} onClick={() => {setOpenPosteringModalID(postering._id)}}>Rediger</button>}

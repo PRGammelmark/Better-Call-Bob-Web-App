@@ -41,8 +41,8 @@ const MedarbejderØkonomiDetaljer = (props) => {
     }, [])
     
     const getBrugerName = (brugerID) => {
-        const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
-        return bruger ? bruger.navn : 'Ukendt bruger';
+        const bruger = props.brugere && props.brugere.find(user => (user?._id || user?.id) === brugerID);
+        return bruger ? bruger.navn : 'Ukendt medarbejder';
     };
 
     const navn = posteringer.length > 0 && getBrugerName(posteringer[0].brugerID)

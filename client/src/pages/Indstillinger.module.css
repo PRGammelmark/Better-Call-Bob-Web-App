@@ -135,6 +135,17 @@
     }
 }
 
+.afmeldPush {
+    background: rgba(193, 26, 57, 0.25)!important;
+    color: rgba(193, 26, 57, 1);
+}
+
+.tilmeldPush {
+    background: #59bf1a25;
+    color: #59bf1a;
+    border: 1px solid #59bf1a;
+}
+
 @keyframes fade-in-no-movement {
     0% {
         opacity: 0;

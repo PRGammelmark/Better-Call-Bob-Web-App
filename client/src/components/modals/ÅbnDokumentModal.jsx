@@ -12,6 +12,7 @@ import dayjs from 'dayjs'
 const ÅbnDokumentModal = ({åbnDokumentModal, setÅbnDokumentModal, refetchDokumenter, setRefetchDokumenter}) => {
 
 const { user } = useAuthContext();
+const userID = user?.id || user?._id;
 
 const [titel, setTitel] = useState('');
 const [beskrivelse, setBeskrivelse] = useState('');
@@ -45,7 +46,7 @@ useEffect(() => {
 function underskrivDokument(e){
   e.preventDefault()
   
-  const brugerId = user._id;
+  const brugerId = userID;
   const samtykkeDato = new Date();
   const underskrift = {
     bruger: user,
@@ -99,8 +100,8 @@ function sletDokument(){
             <b style={{fontFamily: 'OmnesBold'}}>Beskrivelse:</b>
             <p style={{fontSize: 16, marginBottom: '15px'}}>{åbnDokumentModal.beskrivelse}</p>
         </div>
-        {åbnDokumentModal.kraevSamtykke && (åbnDokumentModal.samtykkeListe.some(samtykke => samtykke.brugerId === user._id) ? 
-        <b className={Styles.dokumentSamtykkeText} style={{display: 'block', textAlign: 'center', marginBottom: '15px'}}>✔︎ Du har underskrevet dette dokument d. {dayjs(åbnDokumentModal.samtykkeListe.find(samtykke => samtykke.brugerId === user._id).samtykkeDato).format('D. MMMM YYYY')}.</b>
+        {åbnDokumentModal.kraevSamtykke && (åbnDokumentModal.samtykkeListe.some(samtykke => samtykke.brugerId === userID) ? 
+        <b className={Styles.dokumentSamtykkeText} style={{display: 'block', textAlign: 'center', marginBottom: '15px'}}>✔︎ Du har underskrevet dette dokument d. {dayjs(åbnDokumentModal.samtykkeListe.find(samtykke => samtykke.brugerId === userID).samtykkeDato).format('D. MMMM YYYY')}.</b>
         : (
         <form onSubmit={(e) => underskrivDokument(e)} method="" encType="multipart/form-data">
           <p><b style={{fontFamily: 'OmnesBold'}}>Dette dokument kræver din underskrift.</b> <br />Du kan underskrive ved at indtaste dit navn som vi har registreret det i feltet herunder.</p><br />

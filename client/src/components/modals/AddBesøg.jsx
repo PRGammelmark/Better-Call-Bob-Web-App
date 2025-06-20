@@ -18,7 +18,7 @@ const AddBesøg = (props) => {
     const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate, customerForChosenTask } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg } = useBesøg();
 
-    const userID = user.id;
+    const userID = user?.id || user?._id;
 
     const [isOnTaskPage, setIsOnTaskPage] = useState(false);
     const [opretOpgave, setOpretOpgave] = useState(false);
@@ -205,7 +205,7 @@ const AddBesøg = (props) => {
             refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
 
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
-            if (besøg.brugerID !== user.id) {
+            if (besøg.brugerID !== userID) {
                 const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
                 const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
                 const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
@@ -329,7 +329,7 @@ const AddBesøg = (props) => {
                 refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
     
                 // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
-                if (besøg.brugerID !== user.id) {
+                if (besøg.brugerID !== userID) {
                     const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
                     const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
                     const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn

@@ -11,11 +11,11 @@ import PageAnimation from '../PageAnimation.jsx'
 const PosteringSatserModal = (props) => {
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
     const postering = props.postering;
-    const bruger = props.brugere && props.brugere.find(user => user._id === postering.brugerID);
+    const bruger = props.brugere && props.brugere.find(user => (user?._id || user?.id) === postering.brugerID);
     const brugersAktuelleSatser = bruger && bruger.satser || satser;
 
     const getBrugerName = (brugerID) => {
-        const bruger = props.brugere && props.brugere.find(user => user._id === brugerID);
+        const bruger = props.brugere && props.brugere.find(user => (user?._id || user?.id) === brugerID);
         return bruger ? bruger.navn : 'Unknown User';
     };
 

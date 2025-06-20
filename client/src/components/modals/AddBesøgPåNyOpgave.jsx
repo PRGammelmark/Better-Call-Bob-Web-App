@@ -18,7 +18,7 @@ const AddBesøgPåNyOpgave = (props) => {
     const { chosenDate, setChosenDate, chosenTask, chosenEndDate, setChosenEndDate } = useTaskAndDate();
     const { refetchBesøg, setRefetchBesøg } = useBesøg();
 
-    const userID = user.id;
+    const userID = user?.id || user?._id;
 
     const [opgaveTilknyttetBesøg, setopgaveTilknyttetBesøg] = useState(props.opgaveTilknyttetBesøg);
     const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState(props.tilknyttetMedarbejder);
