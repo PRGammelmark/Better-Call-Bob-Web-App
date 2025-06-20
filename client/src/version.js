@@ -19,6 +19,7 @@ const changes = [{
     changes: [
         "Bruger-data er nu mere stabile i app'en.",
         "Flere forberedelser til implementering af push-notifikationer.",
+        "Reducerede mængden af cachede data, der bliver gemt i app'en – dette gør app'en hurtigere til at afspejle opdateringer hos brugerne.",
         "Smårettelser og justeringer."
     ]
 },{
