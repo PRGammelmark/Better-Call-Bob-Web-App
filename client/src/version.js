@@ -18,7 +18,7 @@ const changes = [{
     date: "20. juni 2025",
     changes: [
         "Bruger-data er nu mere stabile i app'en.",
-        "Flere forberedelser til implementering af push-notifikationer.",
+        "Endnu flere forberedelser til implementering af push-notifikationer.",
         "Reducerede mængden af cachede data, der bliver gemt i app'en – dette gør app'en hurtigere til at afspejle opdateringer hos brugerne.",
         "Smårettelser og justeringer."
     ]
