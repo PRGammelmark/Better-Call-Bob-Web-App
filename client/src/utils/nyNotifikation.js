@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useAuthContext } from '../hooks/useAuthContext';
 
-function sendPushnotifikation(user, modtager, titel, besked, url = '/') {
+function nyNotifikation(user, modtager, titel, besked, url = '/') {
   // Tjek inputs
   if (!titel?.trim() || !besked?.trim()) {
     console.warn('⛔ Push-notifikation afvist: Titel eller besked mangler.');
@@ -45,4 +45,4 @@ function sendPushnotifikation(user, modtager, titel, besked, url = '/') {
   });
 }
 
-export default sendPushnotifikation;
+export default nyNotifikation;

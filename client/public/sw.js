@@ -143,9 +143,11 @@ self.addEventListener('push', (event) => {
     const notificationTitle = data?.title || 'Ny notifikation';
     const notificationOptions = {
       body: data?.body || 'Du har modtaget en ny besked.',
-      data: { url: '/' }
+      data: {
+        url: data?.url || '/'
+      }
     };
-  
+    
     event.waitUntil(
       self.registration.showNotification(notificationTitle, notificationOptions)
         .catch(err => console.error('❌ showNotification fejlede:', err))

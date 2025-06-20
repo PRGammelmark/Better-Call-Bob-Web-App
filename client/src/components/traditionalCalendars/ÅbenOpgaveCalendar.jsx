@@ -60,6 +60,8 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
   const filterEgneBesøgDenneOpgave = egneBesøg.filter(besøg => besøg.opgaveID === opgaveID)
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
+  console.log("Opgave: " + opgaveID)
+
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
@@ -271,8 +273,6 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '60' || '#3c5a3f60',
       title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(ledigTid.datoTidFra).format("HH:mm")}-{dayjs(ledigTid.datoTidTil).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
     }))
-
-    console.log(kunder)
 
    const openCalendarEvent = useCallback((callEvent) => {
       const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
@@ -774,7 +774,7 @@ const onRedigerLedigTid = (e) => {
       
       }
       </Modal>
-      <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave}/>
+      <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave} opgaveID={opgaveID}/>
     </div>
   )
 }

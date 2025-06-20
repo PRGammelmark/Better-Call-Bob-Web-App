@@ -11,7 +11,7 @@ import { useBesøg } from '../../context/BesøgContext.jsx'
 import VælgOpgaveVedNytBesøg from '../tables/VælgOpgaveVedNytBesøg.jsx'
 import NyOpgaveFraOpretBesøg from '../NyOpgaveFraOpretBesøg.jsx'
 import SwitchArrows from "../../assets/switchArrowsBlack.svg"
-import sendPushnotifikation from '../../utils/sendPushnotifikation.js'
+import nyNotifikation from '../../utils/nyNotifikation.js'
 
 const AddBesøg = (props) => {
 
@@ -44,7 +44,6 @@ const AddBesøg = (props) => {
     const [opgaveOprettet, setOpgaveOprettet] = useState(false);
     const [vælgAnsvarligBlandtAlleMedarbejdere, setVælgAnsvarligBlandtAlleMedarbejdere] = useState(true);
     const [medarbejdere, setMedarbejdere] = useState([]);
-
 
     const resetState = () => {
         setOpretOpgave(false);
@@ -192,7 +191,7 @@ const AddBesøg = (props) => {
             })
             .then(res => {
                 console.log("Tilknyttet ny ansvarlig til opgaven.")
-                sendPushnotifikation(user, xAnsvarlig, "Du har fået en ny opgave", `Du er blevet tilknyttet en opgave på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/opgave/${opgaveTilknyttetBesøg._id}`)
+                nyNotifikation(user, xAnsvarlig, "Du har fået en ny opgave", `Du er blevet tilknyttet en opgave på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/opgave/${props.opgaveID}`)
             })
             .catch(error => {
                 console.log(error)
@@ -205,11 +204,16 @@ const AddBesøg = (props) => {
             }
         })
         .then(res => {
-            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
+            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
+            const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
+
+            // ===== SEND PUSH-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
+            if (besøg.brugerID !== userID) {
+                nyNotifikation(user, xAnsvarlig, "Du er booket til et nyt besøg", `Du er blevet booket til et nyt besøg på en opgave. Gå ind på app'en for at se detaljerne.`, `/opgave/${props.opgaveID}`)
+            }
 
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
             if (besøg.brugerID !== userID) {
-                const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
                 const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
                 const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
                 const xOpgave = chosenTask || opgaveTilknyttetBesøg
@@ -317,6 +321,7 @@ const AddBesøg = (props) => {
                 .then(res => {
                     // refetchAnsvarlige
                     props.setUpdateOpgave(!props.updateOpgave)
+                    nyNotifikation(user, xAnsvarlig, "Du har fået en ny opgave", `Du er blevet tilknyttet en opgave på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/opgave/${props.opgaveID}`)
                 })
                 .catch(error => {
                     console.log(error)
@@ -330,10 +335,16 @@ const AddBesøg = (props) => {
             })
             .then(res => {
                 refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
+                const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder?._id === besøg.brugerID);
+                console.log(xAnsvarlig)
+                console.log("Opgave", opgaveTilknyttetBesøg)
+
+                if (besøg.brugerID === userID) {
+                    nyNotifikation(user, xAnsvarlig, "Du er booket til et nyt besøg", `Du er blevet booket til et nyt besøg på en opgave. Gå ind på app'en for at se detaljerne.`, `/opgave/${props.opgaveID}`)
+                }
     
                 // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
                 if (besøg.brugerID !== userID) {
-                    const xAnsvarlig = medarbejdere.find(medarbejder => medarbejder._id === besøg.brugerID);
                     const ansvarligEmail = nyAnsvarlig?.email || xAnsvarlig?.email
                     const ansvarligNavn = nyAnsvarlig?.navn || xAnsvarlig?.navn
                     // console.log(ansvarligEmail)

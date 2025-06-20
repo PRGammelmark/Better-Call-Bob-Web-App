@@ -15,7 +15,7 @@ import ToolboxIcon from '../assets/toolboxIcon.svg'
 import ClockIcon from '../assets/clockIcon.svg'
 import subscribeToPush from '../utils/subscribeToPush'
 import unSubscribeToPush from '../utils/unSubscribeToPush'
-import sendPushnotifikation from '../utils/sendPushnotifikation.js'
+import nyNotifikation from '../utils/nyNotifikation.js'
 
 const Indstillinger = () => {
     const {user, updateUser} = useAuthContext();
@@ -394,7 +394,7 @@ const Indstillinger = () => {
                 </form>
           </Modal>
           {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
-          <button className={Styles.newButton} onClick={() => sendPushnotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
+          {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
           <p>{pushDebugMessage}</p>
           </div>
         </div>
