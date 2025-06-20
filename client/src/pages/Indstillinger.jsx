@@ -53,6 +53,7 @@ const Indstillinger = () => {
     
 
     const userID = user?.id || user?._id;
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     useEffect(() => {
       axios.get(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, {
@@ -392,7 +393,7 @@ const Indstillinger = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
-          {(user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>}
+          {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
           <button className={Styles.newButton} onClick={() => sendPushnotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button>
           <p>{pushDebugMessage}</p>
           </div>
