@@ -5,6 +5,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import Header from './Header'
 import Footer from './Footer'
 import { currentVersion } from '../version.js'
+import ServiceWorkerMessageHandler from '../serviceWorkerMessageHandler';
 
 
 const Content = () => {
@@ -14,6 +15,7 @@ const Content = () => {
 
   return (
     <>
+        <ServiceWorkerMessageHandler />
         <Header />
         <div className={ContentCSS.main}>
 

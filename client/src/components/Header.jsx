@@ -93,8 +93,12 @@ useEffect(() => {
   }
 
   const handleBackClick = () => {
-    navigate(-1); // Navigate one step back in the history
-  }
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   const handleSwitchClick = () => {
     setManagerOverblik(!managerOverblik)
