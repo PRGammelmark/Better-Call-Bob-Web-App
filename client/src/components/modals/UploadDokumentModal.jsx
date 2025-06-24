@@ -34,6 +34,7 @@ useEffect(() => {
   .catch(error => console.log(error))
 }, [])
 
+
 async function uploadDokument(e) {
   e.preventDefault();
   if (!file) return alert("Vælg en fil først!");
@@ -67,6 +68,11 @@ async function uploadDokument(e) {
           headers: { 'Authorization': `Bearer ${user.token}` }
         })
         .then(() => {
+
+          let brugereMedAdgang = brugere.filter(bruger => brugerAdgang.includes(bruger._id));
+          let brugereMedAdgangUdenMig = brugereMedAdgang.filter(bruger => bruger._id !== user._id);
+          nyNotifikation(user, brugereMedAdgangUdenMig, "Du har fået adgang til et nyt dokument", `Du har fået adgang til et nyt dokument på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/dokumenter`)
+          
           setIsUploading(false)
           setRefetchDocuments(!refetchDocuments);
           setFile(null); 

@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "2.0.7",
+    date: "24. juni 2025",
+    changes: [
+        "Push-notifikationer er nu implementeret. Brugere af app'en kan tilmelde sig push-notifikationer på deres 'Indstillinger'-side.",
+        "Brugere af app'en vil bl.a. få push-notifikationer, når de har fået tildelt en ny opgave, når der er oprettet et nyt besøg på en eksisterende opgave på vegne af dem, eller når en opgave bliver afsluttet. Når der bliver uploadet et nyt dokument med begrænset brugeradgang vil brugere, der har adgang til dokumentet, også få en push-notifikation. Admin vil også få en notifikation når en ny faktura eller en fakturakladde bliver oprettet.",
+        "Rettede en fejl, der gjorde, at 'Tilbage'-knappen i header'en på mobil-views nogle gange ikke virkede korrekt. Det gør den nu.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "2.0.6",
     date: "20. juni 2025",
     changes: [

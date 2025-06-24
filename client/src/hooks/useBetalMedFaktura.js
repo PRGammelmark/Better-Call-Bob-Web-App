@@ -142,6 +142,10 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringe
                 })
                 .then(response => {
                     console.log("Email sendt til regnskabsansvarlig.");
+
+                    // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
+                    nyNotifikation(user, "admin", "Ny fakturakladde i Economic", `En erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic.`, `/opgaver/${opgaveID}`)
+
                     setLoadingFakturaSubmission(false);
                     setSuccessFakturaSubmission(true);
                 })
@@ -184,7 +188,10 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringe
                 })
                 .then(response => {
                     console.log("Faktura booket.");
-                    
+
+                    // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
+                    nyNotifikation(user, "admin", "Ny faktura oprettet", `En privatkunde har fået færdiggjort en opgave, og der er blevet oprettet en ny faktura.`, `/opgaver/${opgaveID}`)
+
                     // 4) -> LAGR FAKTURA PDF I FIREBASE ================================
                     axios.get(response.data.pdf.download, {
                         responseType: 'blob',

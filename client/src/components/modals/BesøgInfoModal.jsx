@@ -88,6 +88,11 @@ const BesøgInfoModal = (props) => {
         .then(res => {
             refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
 
+            // ===== SEND PUSH-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
+            if (besøg.brugerID !== userID) {
+                nyNotifikation(user, nyAnsvarlig, "Du er booket til et nyt besøg", `Du er blevet booket til et nyt besøg på en opgave. Gå ind på app'en for at se detaljerne.`, `/opgave/${chosenTask._id}`)
+            }
+
             // ===== SEND EMAIL-NOTIFIKATION TIL MEDABEJDER, DER HAR ANSVAR FOR BESØGET =====
             if (besøg.brugerID !== userID) {
                 axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
