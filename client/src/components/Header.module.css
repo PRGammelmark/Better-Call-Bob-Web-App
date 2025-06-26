@@ -76,7 +76,7 @@
         min-height: 60px;
         padding-right: 30px;
         padding-left: 30px;
-        padding-top: env(safe-area-inset-top, 0px);
+        /* padding-top: env(safe-area-inset-top, 0px); */
         display: flex;
         position: fixed;
         width: 100%;
