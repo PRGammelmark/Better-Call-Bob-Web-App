@@ -11,7 +11,7 @@ const posteringSchema = new Schema({
     udlæg: [{
         beskrivelse: String,
         beløb: Number,
-        kvittering: String // Added field to store image
+        kvittering: String
     }],
     aftenTillæg: Boolean,
     natTillæg: Boolean,
@@ -28,7 +28,8 @@ const posteringSchema = new Schema({
     totalHonorar: Number,
     totalPris: Number,
     opgaveID: String,
-    brugerID: String
+    brugerID: String,
+    kundeID: String
 }, { timestamps: true })
 
 const model = mongoose.model('Postering', posteringSchema);

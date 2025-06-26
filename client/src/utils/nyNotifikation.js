@@ -1,6 +1,9 @@
 import axios from 'axios';
 
 async function nyNotifikation(user, modtager, titel, besked, url = '/') {
+
+  console.log("Påbegynder push-notifikation til", modtager);
+
   if (!titel?.trim() || !besked?.trim()) {
     console.warn('⛔ Push-notifikation afvist: Titel eller besked mangler.');
     return;

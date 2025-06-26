@@ -339,7 +339,7 @@ const AddBesøg = (props) => {
                 console.log(xAnsvarlig)
                 console.log("Opgave", opgaveTilknyttetBesøg)
 
-                if (besøg.brugerID === userID) {
+                if (besøg.brugerID !== userID) {
                     nyNotifikation(user, xAnsvarlig, "Du er booket til et nyt besøg", `Du er blevet booket til et nyt besøg på en opgave. Gå ind på app'en for at se detaljerne.`, `/opgave/${props.opgaveID}`)
                 }
     

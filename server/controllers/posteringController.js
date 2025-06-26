@@ -32,9 +32,9 @@ const getPosteringerForBruger = async (req,res) => {
 
 // CREATE en postering
 const createPostering = async (req, res) => {
-    const { dato, beskrivelse, opstart, handymanTimer, tømrerTimer, udlæg, aftenTillæg, natTillæg, trailer, rådgivningOpmålingVejledning, satser, rabatProcent, dynamiskHonorarBeregning, dynamiskPrisBeregning, fastHonorar, fastPris, dynamiskHonorar, dynamiskPris, totalHonorar, totalPris, opgaveID, brugerID } = req.body;
+    const { dato, beskrivelse, opstart, handymanTimer, tømrerTimer, udlæg, aftenTillæg, natTillæg, trailer, rådgivningOpmålingVejledning, satser, rabatProcent, dynamiskHonorarBeregning, dynamiskPrisBeregning, fastHonorar, fastPris, dynamiskHonorar, dynamiskPris, totalHonorar, totalPris, opgaveID, brugerID, kundeID } = req.body;
     try {
-        const postering = await Postering.create({ dato, beskrivelse, opstart, handymanTimer, tømrerTimer, udlæg, aftenTillæg, natTillæg, trailer, rådgivningOpmålingVejledning, satser, rabatProcent, dynamiskHonorarBeregning, dynamiskPrisBeregning, fastHonorar, fastPris, dynamiskHonorar, dynamiskPris, totalHonorar, totalPris, opgaveID, brugerID })
+        const postering = await Postering.create({ dato, beskrivelse, opstart, handymanTimer, tømrerTimer, udlæg, aftenTillæg, natTillæg, trailer, rådgivningOpmålingVejledning, satser, rabatProcent, dynamiskHonorarBeregning, dynamiskPrisBeregning, fastHonorar, fastPris, dynamiskHonorar, dynamiskPris, totalHonorar, totalPris, opgaveID, brugerID, kundeID })
         res.status(200).json(postering)
     } catch (error) {
         res.status(400).json({error: error.message})

@@ -76,6 +76,7 @@
         min-height: 60px;
         padding-right: 30px;
         padding-left: 30px;
+        padding-top: env(safe-area-inset-top, 0px);
         display: flex;
         position: fixed;
         width: 100%;
@@ -108,7 +109,7 @@
     }   
 }
 
-@media screen and (display-mode: standalone) {
+/* @media screen and (display-mode: standalone) {
     .mobileHeader {
         display: block;
     }
@@ -153,4 +154,4 @@
         display: flex;
         min-width: 32px;
     }   
-}
+} */

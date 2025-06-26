@@ -43,25 +43,15 @@ const Header = () => {
     '/login': "Log ind"
   }
 
-  // const routesWithBackIcon = ['/opgave', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID'];
-
-  // // Set titles on location update
-  // useEffect(() => {
-  //   if (location.pathname.startsWith('/opgave/')) {
-  //     const opgaveID = location.pathname.split('/').pop() || ""
-  //     const lastThreeChars = opgaveID.slice(-3)
-  //     setNavTitle(`📋 Opgave #${lastThreeChars}`)
-  //     setShowBackIcon(true); // Show back icon for dynamic opgave route
-  //   } else if (routesWithBackIcon.includes(location.pathname)) {
-  //     const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
-  //     setNavTitle(currentTitle)
-  //     setShowBackIcon(true); // Show back icon for specific routes
-  //   } else {
-  //     const currentTitle = routeTitles[location.pathname] || 'Ingen titel'
-  //     setNavTitle(currentTitle)
-  //     setShowBackIcon(false); // Hide back icon for other routes
-  //   }
-  // }, [location.pathname])
+  // ===== PADDING TOP FOR ANDROID =====
+  useEffect(() => {
+    const isAndroid = /android/i.test(navigator.userAgent);
+    const headerEl = document.querySelector(`.${Styles.header}`);
+    if (isAndroid && headerEl) {
+      // typisk 24px er statusbar-højde på Android
+      headerEl.style.paddingTop = '24px';
+    }
+  }, []);
 
   const showBackIconRoutes = ['/opgave/:opgaveID', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID', '/ny-kunde'];
 

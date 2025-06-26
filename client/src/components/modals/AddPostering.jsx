@@ -148,7 +148,8 @@ const AddPostering = (props) => {
             totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: props.opgaveID,
-            brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID
+            brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID,
+            kundeID: props.opgave.kundeID
         }
 
         if(!postering.totalHonorar && !postering.totalPris){

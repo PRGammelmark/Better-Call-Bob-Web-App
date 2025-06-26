@@ -122,7 +122,8 @@ const RedigerPostering = (props) => {
             totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: postering.opgaveID,
-            brugerID: postering.brugerID
+            brugerID: postering.brugerID,
+            kundeID: postering.kundeID
         }
 
         if(!editedPostering.totalHonorar && !editedPostering.totalPris){

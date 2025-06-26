@@ -14,6 +14,17 @@
 // 
 
 const changes = [{
+    version: "2.0.8",
+    date: "26. juni 2025",
+    changes: [
+        "Rettede en fejl på push-notifikationer, der gjorde, at de i nogle tilfælde kun blev sendt til en bruger hvis det var den samme bruger, der triggede notifikationen.",
+        "Implementerede en fast, månedlig udlægsrapport, der sendes til administratoren. Udlægsrapporten indeholder en oversigt over alle udlæg, der er registreret i den forgangne lønperiode.",
+        "Rettede en display-fejl, der opstod når Android-telefoner blev brugt til at åbne app'en.",
+        "Posteringer knytter sig nu fremover direkte til kunder, ud over medarbejdere og opgaver. Førhen var posteringer blot knyttet til medarbejdere og opgaver.",
+        "Smårettelser og justeringer.",
+        "Rettede en fejl, der gjorde, at fakturaer i nogle tilfælde hang under oprettelsen ved betalingsflow."
+    ]
+},{
     version: "2.0.7",
     date: "24. juni 2025",
     changes: [

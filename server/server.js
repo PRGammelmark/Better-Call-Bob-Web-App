@@ -21,6 +21,7 @@ import requestedCleanup from './utils/requestedCleanup.js';
 import cron from 'node-cron';
 import rateLimit from 'express-rate-limit';
 import { sendPushNotification } from './utils/pushService.js';
+import { collectKvitteringer } from './utils/collectKvitteringer.js';
 
 dotenv.config();
 const app = express();
@@ -119,6 +120,12 @@ cron.schedule('0 0 * * *', async () => {
         console.error('Error during daily cleanup of old opgaver:', error);
     }
 });
+
+// Monthly scheduled image ZIPPING
+// collectKvitteringer();
+
+// Månedlig udlægsrapport
+
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
