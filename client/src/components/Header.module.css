@@ -76,6 +76,7 @@
         min-height: 60px;
         padding-right: 30px;
         padding-left: 30px;
+        
         /* padding-top: env(safe-area-inset-top, 0px); */
         display: flex;
         position: fixed;
@@ -109,49 +110,10 @@
     }   
 }
 
-/* @media screen and (display-mode: standalone) {
-    .mobileHeader {
-        display: block;
-    }
-
-    .desktopHeader {
-        display: none;
-    }
-    
+@media screen and (display-mode: standalone) {
     .header {
-        background: #3c5a3f;
         min-height: 100px;
         max-height: 100px;
         padding-top: 57px;
-        padding-right: 30px;
-        padding-left: 30px;
-        position: fixed;
-        width: 100%;
-        z-index: 10000;
     }
-
-    .mobileNavList {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
-        align-items: center;
-        color: #fff;
-    }
-
-    .mobileNavHeading {
-        color: #fff;
-    }
-    
-    .backIconMobile {
-        width: 20px;
-    }
-
-    .hamburgerMobile {
-        width: 32px;
-    }
-
-    .backIconContainer {
-        display: flex;
-        min-width: 32px;
-    }   
-} */
+}
