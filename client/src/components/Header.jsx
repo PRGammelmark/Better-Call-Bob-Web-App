@@ -44,14 +44,14 @@ const Header = () => {
   }
 
   // ===== PADDING TOP FOR ANDROID =====
-  useEffect(() => {
-    const isAndroid = /android/i.test(navigator.userAgent);
-    const headerEl = document.querySelector(`.${Styles.header}`);
-    if (isAndroid && headerEl) {
-      // typisk 24px er statusbar-højde på Android
-      headerEl.style.paddingTop = '24px';
-    }
-  }, []);
+  // useEffect(() => {
+  //   const isAndroid = /android/i.test(navigator.userAgent);
+  //   const headerEl = document.querySelector(`.${Styles.header}`);
+  //   if (isAndroid && headerEl) {
+  //     // typisk 24px er statusbar-højde på Android
+  //     headerEl.style.paddingTop = '24px';
+  //   }
+  // }, []);
 
   const showBackIconRoutes = ['/opgave/:opgaveID', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID', '/ny-kunde'];
 
