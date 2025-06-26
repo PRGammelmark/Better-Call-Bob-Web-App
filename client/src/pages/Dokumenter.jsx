@@ -65,7 +65,6 @@ const Dokumenter = () => {
             {dokumenter.map((dokument) => (
               
               <div className={DokumenterCSS.dokumentContainer} key={dokument._id}>
-                {console.log(dokument)}
                 <div className={DokumenterCSS.dokument} key={dokument._id} onClick={() => setRedigerDokumentModal(dokument)}>
                   <div className={DokumenterCSS.dokumentUpperHalf}>
                     {!dokument.filURL.includes('.pdf') && <img className={DokumenterCSS.dokumentImage} src={dokument.filURL} alt={dokument.titel} />}

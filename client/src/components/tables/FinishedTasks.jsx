@@ -87,10 +87,8 @@ const FinishedTasks = () => {
                 const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 
                 if(kunde?.virksomhed || kunde?.CVR) {
-                  console.log("Erhvervskunde")
                   momsvisning = false;
                 } else {
-                  console.log("Privatkunde")
                   momsvisning = true;
                 }
                 
@@ -133,10 +131,8 @@ const FinishedTasks = () => {
                 const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
                 
                 if(kunde?.virksomhed || kunde?.CVR) {
-                  console.log("Erhvervskunde")
                   momsvisning = false;
                 } else {
-                  console.log("Privatkunde")
                   momsvisning = true;
                 }
                 

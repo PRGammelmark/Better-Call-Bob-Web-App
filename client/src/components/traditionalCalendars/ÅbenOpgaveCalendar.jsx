@@ -60,8 +60,6 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
   const filterEgneBesøgDenneOpgave = egneBesøg.filter(besøg => besøg.opgaveID === opgaveID)
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
-  console.log("Opgave: " + opgaveID)
-
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
       headers: { 'Authorization': `Bearer ${user.token}` }

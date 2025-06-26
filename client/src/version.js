@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "2.0.9",
+    date: "26. juni 2025",
+    changes: [
+        "Fiksede en fejl i headerens visning på mobil.",
+        "Når man kigger på det økonomiske overblik fra 'Overblik'-siden, så vil popup-vinduet nu automatisk scrolle til bunden når man åbner detaljer om posteringer for en valgt opgave.",
+        "Oprydninger."
+    ]
+},{
     version: "2.0.8",
     date: "26. juni 2025",
     changes: [

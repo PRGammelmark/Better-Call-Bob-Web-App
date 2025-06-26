@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 import BackArrow from '../../assets/back.svg'
@@ -25,6 +25,18 @@ const MedarbejderØkonomiDetaljer = (props) => {
     const uniqueOpgaveIDs = opgaveIDs && [...new Set(opgaveIDs)]
     const user = props && props.user
     const opgaver = props && props.opgaver
+
+    const containerRef = useRef();
+    const bottomRef = useRef();
+
+
+    useEffect(() => {
+        if (bottomRef.current) {
+          bottomRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, [posteringerDetaljer]);      
+      
+    
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
@@ -403,11 +415,11 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 })}
             </div>
             {posteringerDetaljer && 
-                <div className={Styles.posteringerContainer}>
+                <div ref={containerRef} className={Styles.posteringerContainer}>
                     <button className={Styles.lukPosteringerButton} onClick={() => setPosteringerDetaljer(null)}>-</button>
                     <div className={Styles.posteringerDiv}>
                         {posteringerDetaljer.map((postering, index) => (
-                            <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
+                            <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id} ref={index === posteringerDetaljer.length - 1 ? bottomRef : null}>
                             <div className={ÅbenOpgaveCSS.posteringCard}>
 
                                 <div>
