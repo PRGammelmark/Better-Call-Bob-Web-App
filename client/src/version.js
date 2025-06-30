@@ -25,6 +25,12 @@
 //     ]
 
 const changes = [{
+    version: "2.0.13",
+    date: "30. juni 2025",
+    changes: [
+        "Førhen opdaterede opgavesiden ikke sig selv automatisk før reload når en opgave blev afsluttet via fakturaoprettelse. Dette er nu rettet."
+    ]
+},{
     version: "2.0.12",
     date: "30. juni 2025",
     changes: [
