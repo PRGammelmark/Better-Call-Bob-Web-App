@@ -25,6 +25,19 @@
 //     ]
 
 const changes = [{
+    version: "2.0.12",
+    date: "30. juni 2025",
+    changes: [
+        "Navigationsmenuen på mobilen har fået en UX-forbedring, og er nu mere intuitiv og enkel at bruge.",
+        "Smårettelser og justeringer."
+    ]
+},{
+    version: "2.0.11",
+    date: "30. juni 2025",
+    changes: [
+        "I nogle tilfælde kunne tilbudsopgaver ikke færdiggøres. Dette er nu rettet."
+    ]
+},{
     version: "2.0.10",
     date: "27. juni 2025",
     changes: [

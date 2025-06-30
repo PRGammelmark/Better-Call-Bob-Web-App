@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useLogout } from '../hooks/useLogout.js'
 import { currentVersion } from '../version.js'
+import { LayoutGrid, ClipboardCheck, User, Users, ScrollText, Settings, Library, X } from 'lucide-react';
 
 
 const MobileNavMenu = ({ setShowNavMenu}) => {
@@ -29,32 +30,87 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
     return ReactDom.createPortal (
     <>
         <div className={Styles.overlay}>
+            <div className={Styles.mobileMenuNavHeader}>
+                <h3 className={Styles.mobileNavHeading}>Navigation</h3>
+                <X className={Styles.closeIcon} onClick={() => {setShowNavMenu(false)}} />
+            </div>
             <div className={Styles.mobileMenu}>
-                <Link style={linkStyles} to={'/'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Overblik</h2>
-                </Link>
-                {user.isAdmin && <Link style={linkStyles} to={'alle-opgaver'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Alle opgaver</h2>
-                </Link>}
-                {!user.isAdmin && <Link style={linkStyles} to={'mine-opgaver'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Mine opgaver</h2>
-                </Link>}
-                {user.isAdmin && <Link style={linkStyles} to={'kunder'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Kunder</h2>
-                </Link>}
-                <Link style={linkStyles} to={'team'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Team</h2>
-                </Link>
-                <Link style={linkStyles} to={'dokumenter'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Dokumenter</h2>
-                </Link>
-                <Link style={linkStyles} to={'indstillinger'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Indstillinger</h2>
-                </Link>
-                <Link style={linkStyles} to={'version'} onClick={() => setShowNavMenu(false)}>
-                    <h2 className={Styles.mobileNavItem}>Opdateringer (v.{currentVersion})</h2>
-                </Link>
-                <h2 className={Styles.mobileNavItem} onClick={handleLogoutClick}>Log ud</h2>
+                <div className={Styles.mobileNavItems}>
+                    <Link style={linkStyles} to={'/'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <LayoutGrid className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Overblik</h2>
+                        </div>
+                    </Link>
+                    {user.isAdmin && <Link style={linkStyles} to={'alle-opgaver'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <ClipboardCheck className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Alle opgaver</h2>
+                        </div>
+                    </Link>}
+                    {!user.isAdmin && <Link style={linkStyles} to={'mine-opgaver'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <ClipboardCheck className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Mine opgaver</h2>
+                        </div>
+                    </Link>}
+                    {user.isAdmin && <Link style={linkStyles} to={'kunder'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <Users className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Kunder</h2>
+                        </div>
+                    </Link>}
+                    <Link style={linkStyles} to={'team'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <User className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Team</h2>
+                        </div>
+                    </Link>
+                    <Link style={linkStyles} to={'dokumenter'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <ScrollText className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Dokumenter</h2>
+                        </div>
+                    </Link>
+                    <Link style={linkStyles} to={'indstillinger'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <Settings className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Indstillinger</h2>
+                        </div>
+                    </Link>
+                    <Link style={linkStyles} to={'/'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <Library className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2 style={{lineHeight: '1.4rem'}}>Hjælp<br /><span style={{fontSize: '0.8rem', lineHeight: '0.8rem', marginTop: '0px', color: '#ffffff80'}}>(kommer snart ...)</span></h2>
+                        </div>
+                    </Link>
+                </div>
+                <div className={Styles.mobileNavFooter}>
+                    <p className={Styles.mobileNavFooterHeading}><b style={{fontFamily: 'OmnesBold'}}>Powered by OCTA</b></p>
+                    <div className={Styles.mobileNavFooterVersion}>
+                        <p className={Styles.mobileNavFooterVersionText}>v.{currentVersion}</p>
+                        <Link to={'version'} onClick={() => setShowNavMenu(false)} style={{textDecoration: 'none', color: '#fff'}}>
+                            <p>Ændringer</p>
+                        </Link>
+                        <p onClick={handleLogoutClick}>Log ud</p>
+                    </div>
+                </div>
             </div>
         </div>
     </>,

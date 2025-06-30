@@ -25,21 +25,63 @@
     height: 100vh;
     width: 100vw;
     background: #3c5a3f;
-    z-index: 99;
+    z-index: 99999;
     animation: fade-in-no-movement 0.20s ease;
+}
+
+.mobileMenuNavHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 70px 20px 20px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: #3c5a3f;
+    z-index: 99999;
+}
+
+.mobileNavHeading {
+    color: #fff;
+    font-family: 'OmnesBold';
+    font-size: 1.4rem;
+}
+
+.closeIcon {
+    color: #fff;
+    width: 25px;
+    height: 25px;
 }
 
 .mobileMenu {
     z-index: 100;
     display: flex;
     flex-direction: column;
-    justify-content: start;
-    align-items: end;
+    justify-content: space-between;
+    align-items: center;
     height: 100vh;
     width: 100vw;
-    padding: 150px 50px;
-
+    padding: 150px 20px 20px 20px;
+    
 }
+
+.mobileNavItems {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    height: calc(100vh - 150px - 100px); /* justér efter reelt header/footer-padding */
+    padding-bottom: 20px;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+    overflow-y: auto;
+}
+
+.mobileNavItems::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
 
 .mobileNavItem {
     color: #fff;
@@ -54,4 +96,79 @@
 
 .link {
     width: 100%;
+}
+
+.mobileNavFooter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px 16px 30px 16px;
+    border-top: 1px solid #ffffff10;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #3c5a3f;
+    z-index: 99999;
+}
+
+.mobileNavFooter p {
+    color: #fff;
+}
+
+.mobileNavFooterVersion {
+    color: #fff;
+    display: flex;
+}
+
+.mobileNavFooterVersion > p:first-child::after {
+    content: "•";
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+.mobileNavFooterVersion > p:last-child::before {
+    content: "•";
+    margin-right: 20px;
+    margin-left: 20px;
+}
+
+.mobileNavFooterHeading {
+    font-size: 20px;
+    font-family: 'OmnesBold';
+    margin-bottom: 10px;
+}
+
+.newMobileNavItem {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.newMobileNavItem h2 {
+    color: #fff;
+    font-size: 2rem;
+    margin-bottom: 0;
+    font-family: 'Omnes';
+}
+
+.newMobileNavItemIcon {
+    width: 34px;
+    height: 34px;
+    color: #fff;
+    padding: 3px;
+}
+
+
+.newMobileNavItemIconCircle {
+    border: 1px solid #fff;
+    border-radius: 50%;
+    aspect-ratio: 1;
+    width: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

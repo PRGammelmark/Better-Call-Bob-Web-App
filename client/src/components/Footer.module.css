@@ -9,12 +9,29 @@
     min-height: 70px;
     max-height: 70px;
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .footerSpan {
     display: flex;
+}
+
+.versionDiv {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.versionLink {
+    text-decoration: none;
+    color: #222222;
+}
+
+.versionLink:hover {
+    text-decoration: underline;
 }
 
 @media screen and (max-width: 750px) {
