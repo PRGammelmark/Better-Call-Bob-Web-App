@@ -5,7 +5,7 @@ import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import nyNotifikation from "../utils/nyNotifikation.js";
 
-const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish) => {
+const useBetalMedFaktura = async (user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish, setErrorMessage) => {
 
     const authHeaders = {
         'Authorization': `Bearer ${user.token}`
@@ -44,12 +44,12 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringe
         }
     }
 
-    const nyfakturakladdeObject = (response) => {
+    const nyfakturakladdeObject = (customerNumber) => {
         return {
             date: dayjs().format("YYYY-MM-DD"),
             currency: "DKK",
             customer: {
-                customerNumber: response.data.customerNumber
+                customerNumber: customerNumber
             },
             paymentTerms: {
                 paymentTermsNumber: 1,
@@ -100,7 +100,7 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringe
     // 2) -> OPRET FAKTURAKLADDE 
 
     // ERHVERVSKUNDEFLOW
-    // 3) -> SEND NOTIFIKATIONSMAIL TIL REGNSKABSANSVARLIG
+    // 3) -> SEND NOTIFIKATIONSMAIL & PUSH-NOTIFIKATION TIL ADMIN
     // 4) -> MARKER FAKTURA SOM SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE
     // 5) -> MARKER FAKTURA SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE
 
@@ -113,199 +113,435 @@ const useBetalMedFaktura = (user, opgave, setOpgave, opgaveID, kunde, posteringe
 
 
     // 1) -> OPRET NY KUNDE
-    axios.post('https://restapi.e-conomic.com/customers', nyKundeObject, {
-        headers: economicHeaders
-    })
-    .then(response => {
-        console.log("Kunde oprettet.");
+    // axios.post('https://restapi.e-conomic.com/customers', nyKundeObject, {
+    //     headers: economicHeaders
+    // })
+    // .then(response => {
+    //     console.log("Kunde oprettet.");
 
-        // 2) -> OPRET FAKTURAKLADDE ================================
-        axios.post('https://restapi.e-conomic.com/invoices/drafts', nyfakturakladdeObject(response), {
-            headers: economicHeaders
-        })
-        .then(response => {
-            console.log("Fakturakladde oprettet.");
+    //     // 2) -> OPRET FAKTURAKLADDE ================================
+    //     axios.post('https://restapi.e-conomic.com/invoices/drafts', nyfakturakladdeObject(response), {
+    //         headers: economicHeaders
+    //     })
+    //     .then(response => {
+    //         console.log("Fakturakladde oprettet.");
 
-            // ERHVERVSKUNDEFLOW
-            if(kunde?.CVR || kunde?.virksomhed){
+    //         // ERHVERVSKUNDEFLOW
+    //         if(kunde?.CVR || kunde?.virksomhed){
 
-                console.log("Starter erhvervskundeflow ...")
+    //             console.log("Starter erhvervskundeflow ...")
 
-                // SEND NOTIFIKATIONSEMAIL TIL REGNSKABSANSVARLIG
-                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                    to: "hej@bettercallbob.dk",
-                    subject: `Ny fakturakladde i Economic`,
-                    body: `Hej 👋\n\nEn erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic. Fakturaen er IKKE blevet sendt til kunden endnu. \n\nInformationer om kunden:\n\n Navn: ${kunde?.navn} \n Virksomhed: ${kunde?.virksomhed} \n CVR: ${kunde?.CVR} \n Opgavebeskrivelse: ${opgave?.opgaveBeskrivelse} \n\n Gå ind i dit regnskabssystem, og bekræft data og satser i fakturaen før du sender den videre. \n\n Dbh.,\n App-robotten 🤖`
-                }, {
-                    headers: {
-                        'Authorization': `Bearer ${user.token}`
-                    }
-                })
-                .then(response => {
-                    console.log("Email sendt til regnskabsansvarlig.");
+    //             // SEND NOTIFIKATIONSEMAIL TIL REGNSKABSANSVARLIG
+    //             axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+    //                 to: "hej@bettercallbob.dk",
+    //                 subject: `Ny fakturakladde i Economic`,
+    //                 body: `Hej 👋\n\nEn erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic. Fakturaen er IKKE blevet sendt til kunden endnu. \n\nInformationer om kunden:\n\n Navn: ${kunde?.navn} \n Virksomhed: ${kunde?.virksomhed} \n CVR: ${kunde?.CVR} \n Opgavebeskrivelse: ${opgave?.opgaveBeskrivelse} \n\n Gå ind i dit regnskabssystem, og bekræft data og satser i fakturaen før du sender den videre. \n\n Dbh.,\n App-robotten 🤖`
+    //             }, {
+    //                 headers: {
+    //                     'Authorization': `Bearer ${user.token}`
+    //                 }
+    //             })
+    //             .then(response => {
+    //                 console.log("Email sendt til regnskabsansvarlig.");
 
-                    // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
-                    nyNotifikation(user, "admin", "Ny fakturakladde i Economic", `En erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic.`, `/opgaver/${opgaveID}`)
+    //                 // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
+    //                 nyNotifikation(user, "admin", "Ny fakturakladde i Economic", `En erhvervskunde har fået færdiggjort en opgave, og der er derfor blevet oprettet en ny fakturakladde i Economic.`, `/opgave/${opgaveID}`)
 
-                    setLoadingFakturaSubmission(false);
-                    setSuccessFakturaSubmission(true);
-                })
-                .catch(error => {
-                    console.log("Fejl: Kunne ikke sende email til regnskabsansvarlig.");
-                    console.log(error);
-                })
-                setLoadingFakturaSubmission(false);
-                setSuccessFakturaSubmission(true);
+    //                 setLoadingFakturaSubmission(false);
+    //                 setSuccessFakturaSubmission(true);
+    //             })
+    //             .catch(error => {
+    //                 console.log("Fejl: Kunne ikke sende email til regnskabsansvarlig.");
+    //                 console.log(error);
+    //             })
+    //             setLoadingFakturaSubmission(false);
+    //             setSuccessFakturaSubmission(true);
 
-                // MARKER FAKTURA SOM SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE ================================
-                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                    fakturaSendt: new Date().toISOString(),
-                    opgaveAfsluttet: new Date().toISOString()
-                }, {
-                    headers: authHeaders
-                })
-                .then(response => {
-                    console.log("Faktura sendt, opgave afsluttet og genindlæst.")
-                    setOpgave(response.data)
-                })
-                .catch(error => {
-                    console.log("Fejl: Kunne ikke markere opgave som afsluttet eller genindlæse opgaven.");
-                    console.log(error);
-                });
-            }
+    //             // MARKER FAKTURA SOM SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE ================================
+    //             axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+    //                 fakturaSendt: new Date().toISOString(),
+    //                 opgaveAfsluttet: new Date().toISOString()
+    //             }, {
+    //                 headers: authHeaders
+    //             })
+    //             .then(response => {
+    //                 console.log("Faktura sendt, opgave afsluttet og genindlæst.")
+    //                 setOpgave(response.data)
+    //             })
+    //             .catch(error => {
+    //                 console.log("Fejl: Kunne ikke markere opgave som afsluttet eller genindlæse opgaven.");
+    //                 console.log(error);
+    //             });
+    //         }
 
-            // PRIVATKUNDEFLOW
-            if(!(kunde?.CVR || kunde?.virksomhed)) {
+    //         // PRIVATKUNDEFLOW
+    //         if(!(kunde?.CVR || kunde?.virksomhed)) {
 
-                console.log("Starter privatkundeflow ...")
+    //             console.log("Starter privatkundeflow ...")
 
-                // 3) -> BOOK FAKTURA ================================
-                axios.post('https://restapi.e-conomic.com/invoices/booked', {
-                    draftInvoice: {
-                        draftInvoiceNumber: response.data.draftInvoiceNumber
-                    }
-                }, {
-                    headers: economicHeaders
-                })
-                .then(response => {
-                    console.log("Faktura booket.");
+    //             // 3) -> BOOK FAKTURA ================================
+    //             axios.post('https://restapi.e-conomic.com/invoices/booked', {
+    //                 draftInvoice: {
+    //                     draftInvoiceNumber: response.data.draftInvoiceNumber
+    //                 }
+    //             }, {
+    //                 headers: economicHeaders
+    //             })
+    //             .then(response => {
+    //                 console.log("Faktura booket.");
 
-                    // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
-                    nyNotifikation(user, "admin", "Ny faktura oprettet", `En privatkunde har fået færdiggjort en opgave, og der er blevet oprettet en ny faktura.`, `/opgaver/${opgaveID}`)
+    //                 // ===== SEND PUSH-NOTIFIKATION TIL ADMIN =====
+    //                 nyNotifikation(user, "admin", "Ny faktura oprettet", `En privatkunde har fået færdiggjort en opgave, og der er blevet oprettet en ny faktura.`, `/opgaver/${opgaveID}`)
 
-                    // 4) -> LAGR FAKTURA PDF I FIREBASE ================================
-                    axios.get(response.data.pdf.download, {
-                        responseType: 'blob',
-                        headers: economicHeaders
-                    })
-                    .then(fakturaPDF => {
-                        uploadFakturaToFirebase(fakturaPDF, opgaveID)
-                        .then(fakturaURL => {
-                            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                                fakturaPDFUrl: fakturaURL
-                            }, {
-                                headers: authHeaders
-                            })
-                            .then(response => {
-                                console.log("Faktura PDF-URL'en genereret.");
+    //                 // 4) -> LAGR FAKTURA PDF I FIREBASE ================================
+    //                 axios.get(response.data.pdf.download, {
+    //                     responseType: 'blob',
+    //                     headers: economicHeaders
+    //                 })
+    //                 .then(fakturaPDF => {
+    //                     uploadFakturaToFirebase(fakturaPDF, opgaveID)
+    //                     .then(fakturaURL => {
+    //                         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+    //                             fakturaPDFUrl: fakturaURL
+    //                         }, {
+    //                             headers: authHeaders
+    //                         })
+    //                         .then(response => {
+    //                             console.log("Faktura PDF-URL'en genereret.");
 
-                                // 5) -> SEND SMS MED LINK TIL FAKTURA ================================
-                                if (kunde?.telefon && String(kunde?.telefon).length === 8) {
-                                    const smsData = {
-                                        "messages": [
-                                            {
-                                                "to": `${kunde?.telefon}`,
-                                                "countryHint": "45",
-                                                "respectBlacklist": true,
-                                                "text": `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`,
-                                                "from": "Bob",
-                                                "flash": false,
-                                                "encoding": "gsm7"
-                                            }
-                                        ]
-                                    }
+    //                             // 5) -> SEND SMS MED LINK TIL FAKTURA ================================
+    //                             if (kunde?.telefon && String(kunde?.telefon).length === 8) {
+    //                                 const smsData = {
+    //                                     "messages": [
+    //                                         {
+    //                                             "to": `${kunde?.telefon}`,
+    //                                             "countryHint": "45",
+    //                                             "respectBlacklist": true,
+    //                                             "text": `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`,
+    //                                             "from": "Bob",
+    //                                             "flash": false,
+    //                                             "encoding": "gsm7"
+    //                                         }
+    //                                     ]
+    //                                 }
 
-                                    axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
-                                        headers: {
-                                            'Authorization': `Bearer ${user.token}`
-                                        }
-                                    })
-                                    .then(response => {
-                                        console.log("SMS sendt til kunden.");
-                                    })
-                                    .catch(error => {
-                                        console.log("Error: Could not send SMS to customer.");
-                                        console.log(error);
-                                    });
-                                } else {
-                                    console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
-                                }
+    //                                 axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, { smsData }, {
+    //                                     headers: {
+    //                                         'Authorization': `Bearer ${user.token}`
+    //                                     }
+    //                                 })
+    //                                 .then(response => {
+    //                                     console.log("SMS sendt til kunden.");
+    //                                 })
+    //                                 .catch(error => {
+    //                                     console.log("Error: Could not send SMS to customer.");
+    //                                     console.log(error);
+    //                                 });
+    //                             } else {
+    //                                 console.log("Intet gyldigt telefonnummer fundet for kunden – SMS ikke sendt.")
+    //                             }
 
-                                // 6) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
-                                axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
-                                    to: alternativEmail ? alternativEmail : kunde?.email,
-                                    subject: `${isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob"}`,
-                                    body: `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`
-                                }, {
-                                    headers: {
-                                        'Authorization': `Bearer ${user.token}`
-                                    }
-                                })
-                                .then(response => {
-                                    console.log("Email sendt til kunden.");
-                                })
-                                .catch(error => {
-                                    console.log("Fejl: Kunne ikke sende email til kunden.");
-                                    console.log(error);
-                                })
+    //                             // 6) -> SEND EMAIL MED LINK TIL FAKTURA ==================================================
+    //                             axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+    //                                 to: alternativEmail ? alternativEmail : kunde?.email,
+    //                                 subject: `${isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob"}`,
+    //                                 body: `${isEnglish ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}\n\nWe look forward to helping you again! \n\nBest regards,\nBob` : `Kære ${kunde?.navn},\n\nTak fordi du valgte at være kunde hos Better Call Bob.\n\nDu kan se din regning her: ${fakturaURL}\n\nVi glæder os til at hjælpe dig igen! \n\nDbh.,\nBob`}`
+    //                             }, {
+    //                                 headers: {
+    //                                     'Authorization': `Bearer ${user.token}`
+    //                                 }
+    //                             })
+    //                             .then(response => {
+    //                                 console.log("Email sendt til kunden.");
+    //                             })
+    //                             .catch(error => {
+    //                                 console.log("Fejl: Kunne ikke sende email til kunden.");
+    //                                 console.log(error);
+    //                             })
 
-                                setLoadingFakturaSubmission(false);
-                                setSuccessFakturaSubmission(true);
+    //                             setLoadingFakturaSubmission(false);
+    //                             setSuccessFakturaSubmission(true);
 
-                                // 7) -> MARKER FAKTURA SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE ================================
-                                axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                                    fakturaSendt: new Date().toISOString(),
-                                    opgaveAfsluttet: new Date().toISOString()
-                                }, {
-                                    headers: authHeaders
-                                })
-                                .then(response => {
-                                    console.log("Faktura sendt, opgave afsluttet og genindlæst.")
-                                    setOpgave(response.data)
-                                })
-                                .catch(error => {
-                                    console.log("Fejl: Kunne ikke genindlæse opgaven.");
-                                    console.log(error);
-                                });
-                            });
-                        })
-                        .catch(error => {
-                            console.log("Fejl: Kunne ikke uploade faktura PDF til server-mappen.");
-                            console.log(error);
-                        });
-                        }
-                    )
-                    .catch(error => {
-                        console.log("Fejl: Faktura-PDF er ikke blevet gemt i databasen.");
-                        console.log(error);
-                    });
-                    // ============== LAGR FAKTURA I DB ==============
-                })
-                .catch(error => {
-                    console.log("Fejl: Faktura blev ikke booket.")
-                    console.log(error)
-                })
-            }
-        })
-        .catch(error => {
-            console.log("Fejl: Fakturakladde blev ikke oprettet.")
-            console.log(error)
-        });
-    })
-    .catch(error => {
-        console.log("Fejl: Kunde blev ikke oprettet.")
-        console.log(error)
-    });
+    //                             // 7) -> MARKER FAKTURA SENDT, AFSLUT OPGAVE & GENINDLÆS OPGAVE ================================
+    //                             axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+    //                                 fakturaSendt: new Date().toISOString(),
+    //                                 opgaveAfsluttet: new Date().toISOString()
+    //                             }, {
+    //                                 headers: authHeaders
+    //                             })
+    //                             .then(response => {
+    //                                 console.log("Faktura sendt, opgave afsluttet og genindlæst.")
+    //                                 setOpgave(response.data)
+    //                             })
+    //                             .catch(error => {
+    //                                 console.log("Fejl: Kunne ikke genindlæse opgaven.");
+    //                                 console.log(error);
+    //                             });
+    //                         });
+    //                     })
+    //                     .catch(error => {
+    //                         console.log("Fejl: Kunne ikke uploade faktura PDF til server-mappen.");
+    //                         console.log(error);
+    //                     });
+    //                     }
+    //                 )
+    //                 .catch(error => {
+    //                     console.log("Fejl: Faktura-PDF er ikke blevet gemt i databasen.");
+    //                     console.log(error);
+    //                 });
+    //                 // ============== LAGR FAKTURA I DB ==============
+    //             })
+    //             .catch(error => {
+    //                 console.log("Fejl: Faktura blev ikke booket.")
+    //                 console.log(error)
+    //             })
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.log("Fejl: Fakturakladde blev ikke oprettet.")
+    //         console.log(error)
+    //     });
+    // })
+    // .catch(error => {
+    //     console.log("Fejl: Kunde blev ikke oprettet.")
+    //     console.log(error)
+    // });
+
+// =================================================== V2 ===================================================
+
+//     setLoadingFakturaSubmission(true);
+
+//   try {
+//     // 1. Opret kunde
+//     const kundeResponse = await axios.post('https://restapi.e-conomic.com/customers', nyKundeObject, { headers: economicHeaders });
+//     console.log("Kunde oprettet");
+
+//     // 2. Opret fakturakladde
+//     const kladdeResponse = await axios.post('https://restapi.e-conomic.com/invoices/drafts', nyfakturakladdeObject(kundeResponse.data.customerNumber), { headers: economicHeaders });
+//     console.log("Fakturakladde oprettet");
+
+    
+//     if (erErhvervskunde) {
+//     // ERHVERVSKUNDEFLOW ================================
+//       console.log("Erhvervskundeflow starter");
+
+//       // NOTIFIKATIONER
+//       nyNotifikation(user, "admin", "Ny fakturakladde i Economic", `Fakturakladde oprettet for erhvervskunde.`, `/opgave/${opgaveID}`);
+
+//       await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+//         to: "hej@bettercallbob.dk",
+//         subject: `Ny fakturakladde i Economic`,
+//         body: `Hej 👋\n\nDer er blevet oprettet en ny fakturakladde i Economic.\n\nNavn: ${kunde?.navn}\nVirksomhed: ${kunde?.virksomhed}\nCVR: ${kunde?.CVR}\nOpgave: ${opgave?.opgaveBeskrivelse}`
+//       }, { headers: authHeaders });
+
+//       // MARKER FAKTURA SOM SENDT & AFSLUT OPGAVE
+//       await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+//         fakturaSendt: new Date().toISOString(),
+//         opgaveAfsluttet: new Date().toISOString()
+//       }, { headers: authHeaders });
+
+//       // AFSLUT OPGAVE STATE
+//       setOpgaveAfsluttet(true);
+
+//     } else {
+//       // PRIVATKUNDEFLOW ================================
+//       console.log("Privatkundeflow starter");
+
+//       const bookingResponse = await axios.post('https://restapi.e-conomic.com/invoices/booked', {
+//         draftInvoice: { draftInvoiceNumber: kladdeResponse.data.draftInvoiceNumber }
+//       }, { headers: economicHeaders });
+
+//       nyNotifikation(user, "admin", "Ny faktura oprettet", `Privatkunde har fået oprettet faktura.`, `/opgave/${opgaveID}`);
+
+//       const fakturaPDF = await axios.get(bookingResponse.data.pdf.download, {
+//         responseType: 'blob',
+//         headers: economicHeaders
+//       });
+
+//       const fakturaURL = await uploadFakturaToFirebase(fakturaPDF, opgaveID);
+
+//       await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+//         fakturaPDFUrl: fakturaURL
+//       }, { headers: authHeaders });
+
+//       // Send SMS hvis muligt
+//       if (kunde?.telefon && String(kunde?.telefon).length === 8) {
+//         await axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, {
+//           smsData: {
+//             messages: [{
+//               to: `${kunde?.telefon}`,
+//               countryHint: "45",
+//               respectBlacklist: true,
+//               text: isEnglish
+//                 ? `Dear ${kunde?.navn},\n\nThank you for being a customer at Better Call Bob.\n\nYou can see your invoice here: ${fakturaURL}`
+//                 : `Kære ${kunde?.navn},\n\nDu kan se din regning her: ${fakturaURL}`,
+//               from: "Bob",
+//               flash: false,
+//               encoding: "gsm7"
+//             }]
+//           }
+//         }, { headers: authHeaders });
+//         console.log("SMS sendt");
+//       }
+
+//       // Send e-mail
+//       await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+//         to: alternativEmail || kunde?.email,
+//         subject: isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob",
+//         body: isEnglish
+//           ? `Dear ${kunde?.navn},\n\nYou can see your invoice here: ${fakturaURL}`
+//           : `Kære ${kunde?.navn},\n\nDu kan se din regning her: ${fakturaURL}`
+//       }, { headers: authHeaders });
+
+//       await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+//         fakturaSendt: new Date().toISOString(),
+//         opgaveAfsluttet: new Date().toISOString()
+//       }, { headers: authHeaders });
+
+//       setOpgaveAfsluttet(true);
+//     }
+
+//     setSuccessFakturaSubmission(true);
+//   } catch (err) {
+//     console.error("Fejl under faktura-flow:", err);
+//     setSuccessFakturaSubmission(false);
+//   } finally {
+//     setLoadingFakturaSubmission(false);
+//   }
+
+// }
+
+// =================================================== V3 ===================================================
+
+setLoadingFakturaSubmission(true);
+
+let kundeResponse, kladdeResponse, bookingResponse, fakturaPDF, fakturaURL;
+
+try {
+  // 1. Opret kunde
+  kundeResponse = await axios.post('https://restapi.e-conomic.com/customersss', nyKundeObject, { headers: economicHeaders });
+  console.log("✅ Kunde oprettet");
+} catch (err) {
+  console.error("❌ Kunde kunne ikke oprettes:", err);
+  setErrorMessage("Fejl i oprettelse af kunde. Prøv igen.");
+  setSuccessFakturaSubmission(false);
+  setLoadingFakturaSubmission(false);
+  return;
+}
+
+try {
+  // 2. Opret fakturakladde
+  kladdeResponse = await axios.post('https://restapi.e-conomic.com/invoices/drafts', nyfakturakladdeObject(kundeResponse.data.customerNumber), { headers: economicHeaders });
+  console.log("✅ Fakturakladde oprettet");
+} catch (err) {
+  console.error("❌ Fakturakladde kunne ikke oprettes:", err);
+  setErrorMessage("Fejl i oprettelse af fakturakladde. Prøv igen.");
+  setSuccessFakturaSubmission(false);
+  setLoadingFakturaSubmission(false);
+  return;
+}
+
+if (erErhvervskunde) {
+  try {
+    nyNotifikation(user, "admin", "Ny fakturakladde i Economic", `Fakturakladde oprettet for erhvervskunde.`, `/opgave/${opgaveID}`);
+
+    await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+      to: "hej@bettercallbob.dk",
+      subject: `Ny fakturakladde i Economic`,
+      body: `Kunde: ${kunde?.navn} – Virksomhed: ${kunde?.virksomhed}`
+    }, { headers: authHeaders });
+
+    await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+      fakturaSendt: new Date().toISOString(),
+      opgaveAfsluttet: new Date().toISOString()
+    }, { headers: authHeaders });
+
+    setOpgaveAfsluttet(true);
+    setSuccessFakturaSubmission(true);
+    console.log("✅ Erhvervskundeflow gennemført");
+  } catch (err) {
+    console.error("❌ Fejl i erhvervskundeflow:", err);
+    setErrorMessage("Kunne ikke opdatere opgavens status. Prøv igen.");
+    setSuccessFakturaSubmission(false);
+  } finally {
+    setLoadingFakturaSubmission(false);
+  }
+  return;
+}
+
+try {
+  // PRIVATKUNDE: Book faktura
+  bookingResponse = await axios.post('https://restapi.e-conomic.com/invoices/booked', {
+    draftInvoice: { draftInvoiceNumber: kladdeResponse.data.draftInvoiceNumber }
+  }, { headers: economicHeaders });
+  console.log("✅ Faktura booket");
+} catch (err) {
+  console.error("❌ Faktura kunne ikke bookes:", err);
+  setErrorMessage("Kunne ikke booke fakturakladden. Prøv igen.");
+  setSuccessFakturaSubmission(false);
+  setLoadingFakturaSubmission(false);
+  return;
+}
+
+try {
+  nyNotifikation(user, "admin", "Ny faktura oprettet", `Privatkunde har fået oprettet faktura.`, `/opgave/${opgaveID}`);
+
+  // Download PDF
+  fakturaPDF = await axios.get(bookingResponse.data.pdf.download, {
+    responseType: 'blob',
+    headers: economicHeaders
+  });
+
+  // Upload PDF
+  fakturaURL = await uploadFakturaToFirebase(fakturaPDF, opgaveID);
+
+  await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+    fakturaPDFUrl: fakturaURL
+  }, { headers: authHeaders });
+
+  // Send SMS
+  if (kunde?.telefon && String(kunde?.telefon).length === 8) {
+    await axios.post(`${import.meta.env.VITE_API_URL}/sms/send-sms`, {
+      smsData: {
+        messages: [{
+          to: kunde.telefon,
+          countryHint: "45",
+          text: isEnglish
+            ? `Dear ${kunde?.navn},\n\nYou can see your invoice here: ${fakturaURL}`
+            : `Kære ${kunde?.navn},\n\nDu kan se din regning her: ${fakturaURL}`,
+          from: "Bob",
+          flash: false,
+          encoding: "gsm7"
+        }]
+      }
+    }, { headers: authHeaders });
+    console.log("✅ SMS sendt");
+  }
+
+  // Send Email
+  await axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
+    to: alternativEmail || kunde?.email,
+    subject: isEnglish ? "Invoice from Better Call Bob" : "Faktura fra Better Call Bob",
+    body: isEnglish
+      ? `Dear ${kunde?.navn},\n\nYou can see your invoice here: ${fakturaURL}`
+      : `Kære ${kunde?.navn},\n\nDu kan se din regning her: ${fakturaURL}`
+  }, { headers: authHeaders });
+
+  await axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
+    fakturaSendt: new Date().toISOString(),
+    opgaveAfsluttet: new Date().toISOString()
+  }, { headers: authHeaders });
+
+  setOpgaveAfsluttet(true);
+  setSuccessFakturaSubmission(true);
+  console.log("✅ Privatkundeflow gennemført");
+} catch (err) {
+  console.error("❌ Fejl i privatkundeflow:", err);
+  setErrorMessage("Kunne ikke opdatere opgavens status. Prøv igen.");
+  setSuccessFakturaSubmission(false);
+} finally {
+  setLoadingFakturaSubmission(false);
+}
 }
 
 export default useBetalMedFaktura;

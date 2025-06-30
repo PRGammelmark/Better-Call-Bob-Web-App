@@ -29,6 +29,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
     const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
     const [loadingMobilePaySubmission, setLoadingMobilePaySubmission] = useState(false)
     const [successMobilePaySubmission, setSuccessMobilePaySubmission] = useState(false)
+    const [errorMessage, setErrorMessage] = useState('')
 
     useEffect(() => {
         let timer;
@@ -91,7 +92,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
         </div>}
 
         {/* ====== FIRST FORM – CHOOSE BETWEEN PAYING NOW OR LATER ====== */}
-        {!loadingFakturaSubmission && !successFakturaSubmission && !betalSenereModalState && !betalNuMedAnmodningModalState && !betalNuMedQRModalState && !qrPaymentAuthorized && !qrErrorMessage &&
+        {!loadingFakturaSubmission && !successFakturaSubmission && !betalSenereModalState && !betalNuMedAnmodningModalState && !betalNuMedQRModalState && !qrPaymentAuthorized && !qrErrorMessage && !errorMessage &&
         <>
         <PageAnimation>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret regning</h2>
@@ -124,7 +125,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
         }
         
         {/* ====== SECOND FORM – PAYING LATER ====== */}
-        {!loadingFakturaSubmission && !successFakturaSubmission && !qrErrorMessage && betalSenereModalState &&
+        {!loadingFakturaSubmission && !successFakturaSubmission && !qrErrorMessage && !errorMessage && betalSenereModalState &&
         <>
         <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
@@ -150,14 +151,14 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
                 e.preventDefault()
                 setLoadingFakturaSubmission(true)
                 const alternativEmail = kunde && kunde.email
-                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish)        
+                useBetalMedFaktura(user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, inklAdministrationsGebyr, isEnglish, setErrorMessage)        
             }}>Betal senere med faktura {inklAdministrationsGebyr ? "(+ 49 kr.)" : "(intet gebyr)"}</button>
         </PageAnimation>
         </>
         }
 
         {/* ====== THIRD FORM – PAYING NOW W. ANMODNING ====== */}
-        {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrErrorMessage && betalNuMedAnmodningModalState &&
+        {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrErrorMessage && !errorMessage && betalNuMedAnmodningModalState &&
         <>
         <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
@@ -180,7 +181,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
         }
 
         {/* ====== FOURTH FORM – PAYING NOW W. QR-CODE ====== */}
-        {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrPaymentAuthorized && !qrErrorMessage && betalNuMedQRModalState &&
+        {!loadingMobilePaySubmission && !successMobilePaySubmission && !qrPaymentAuthorized && !qrErrorMessage && !errorMessage && betalNuMedQRModalState &&
         <>
         <PageAnimation>
             <div className={Styles.betalSenereModalHeader}>
@@ -213,7 +214,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
         </PageAnimation>
         </>
         }
-        {qrPaymentAuthorized && !qrErrorMessage && 
+        {qrPaymentAuthorized && !qrErrorMessage && !errorMessage &&
             <PageAnimation>
                 <div className={Styles.successSubmission}>
                     <h2 className={Styles.successHeading}>Betalingen er godkendt 🎉</h2>
@@ -225,9 +226,19 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
         <PageAnimation>
             <div className={Styles.errorSubmission}>
                 <div className={Styles.betalSenereModalHeader}>
-                    <img src={BackButton} className={Styles.backButton} onClick={() => setQrErrorMessage(false)} alt="Tilbage" /><h2 style={{marginBottom: 10, fontFamily: 'OmnesBold'}} className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
+                    <img src={BackButton} className={Styles.backButton} onClick={() => setQrErrorMessage(false)} alt="Tilbage" /><h2 style={{fontFamily: 'OmnesBold'}} className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
                 </div>
                 <p className={Styles.errorText}>Betalingen blev ikke godkendt. Prøv igen.</p>
+            </div>
+        </PageAnimation>
+        }
+        {errorMessage && 
+        <PageAnimation>
+            <div className={Styles.errorSubmission}>
+                <div className={Styles.betalSenereModalHeader}>
+                    <img src={BackButton} className={Styles.backButton} onClick={() => {setErrorMessage(false); setLoadingFakturaSubmission(false)}} alt="Tilbage" /><h2 style={{fontFamily: 'OmnesBold'}} className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
+                </div>
+                <p className={Styles.errorText}><b style={{fontFamily: 'OmnesBold'}}>Fejlmeddelelse: </b>{errorMessage}</p>
             </div>
         </PageAnimation>
         }

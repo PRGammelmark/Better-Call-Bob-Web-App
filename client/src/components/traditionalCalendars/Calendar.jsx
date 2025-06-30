@@ -51,8 +51,7 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
-        setOpgaveTilknyttetBesøg
-    (null)
+        setOpgaveTilknyttetBesøg(null)
       }
     }, [openDialog]);
 

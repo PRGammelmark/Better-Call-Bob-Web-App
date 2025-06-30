@@ -50,6 +50,7 @@ const VælgOpgaveVedNytBesøg = (props) => {
                   return (
                     <div className={`${TableCSS.opgaveListing} ${props.opgaveTilknyttetBesøg && props.opgaveTilknyttetBesøg._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} style={{cursor: "pointer"}} onClick={() => {
                       props.setOpgaveTilknyttetBesøg(opgave)
+                      props.setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === opgave.kundeID))
                     }}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
@@ -82,6 +83,7 @@ const VælgOpgaveVedNytBesøg = (props) => {
                   return (
                     <div className={`${TableCSS.opgaveListing} ${props.opgaveTilknyttetBesøg && props.opgaveTilknyttetBesøg._id === opgave._id ? TableCSS.activeOpgaveListing : ""}`} key={opgave._id} onClick={() => {
                       props.setOpgaveTilknyttetBesøg(opgave)
+                      props.setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === opgave.kundeID))
                       props.setTilknyttetAnsvarlig("")
                     }}>
                       <ul>

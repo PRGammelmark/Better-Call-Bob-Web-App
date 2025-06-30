@@ -5,6 +5,8 @@ import Styles from './OpretFakturaModal.module.css'
 import SwitcherStyles from '../../pages/Switcher.module.css'
 import useBetalMedFaktura from '../../hooks/useBetalMedFaktura.js'
 import BarLoader from '../loaders/BarLoader.js'
+import BackButton from '../../assets/back.svg'
+import PageAnimation from '../PageAnimation.jsx'
 
 const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, åbnOpretFakturaModal, setÅbnOpretFakturaModal, totalFaktura, redigerKundeModal, setRedigerKundeModal, isEnglish}) => {
   const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
@@ -13,6 +15,7 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
   const [alternativEmail, setAlternativEmail] = useState('')
   const [loadingFakturaSubmission, setLoadingFakturaSubmission] = useState(false)
   const [successFakturaSubmission, setSuccessFakturaSubmission] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   function åbnRedigerKundeModal() {
     setÅbnOpretFakturaModal(false)
@@ -21,7 +24,17 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
 
     return (
     <Modal trigger={åbnOpretFakturaModal} setTrigger={setÅbnOpretFakturaModal}>
-        {loadingFakturaSubmission && 
+        {errorMessage && 
+            <PageAnimation>
+                <div className={Styles.errorSubmission}>
+                    <div className={Styles.betalSenereModalHeader}>
+                        <img src={BackButton} className={Styles.backButton} onClick={() => {setErrorMessage(false); setLoadingFakturaSubmission(false)}} alt="Tilbage" /><h2 style={{fontFamily: 'OmnesBold'}} className={Styles.errorHeading}>Betaling mislykkedes 🚫</h2>
+                    </div>
+                    <p className={Styles.errorText}><b style={{fontFamily: 'OmnesBold'}}>Fejlmeddelelse: </b>{errorMessage}</p>
+                </div>
+            </PageAnimation>
+        }
+        {loadingFakturaSubmission && !errorMessage &&
         <div className={Styles.loadingSubmission}>
             <h2>Sender faktura – vent venligst ... </h2>
             <BarLoader
@@ -32,17 +45,17 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
                 wrapperClass=""
             />
         </div>}
-        {!loadingFakturaSubmission && successFakturaSubmission && (kunde?.CVR || kunde?.virksomhed) &&
+        {!loadingFakturaSubmission && successFakturaSubmission && !errorMessage && (kunde?.CVR || kunde?.virksomhed) &&
         <div className={Styles.successSubmission}>
             <h2>Fakturakladde oprettet 👍</h2>
             <p>En fakturakladde er blevet oprettet, og sendt videre til manuel gennemgang. Du kan nu lukke dette vindue.</p>
         </div>}
-        {!loadingFakturaSubmission && successFakturaSubmission && !(kunde?.CVR || kunde?.virksomhed) &&
+        {!loadingFakturaSubmission && successFakturaSubmission && !(kunde?.CVR || kunde?.virksomhed) && !errorMessage &&
         <div className={Styles.successSubmission}>
             <h2>Faktura sendt! 🎉</h2>
             <p>Fakturaen er blevet oprettet, og sendt til kundens email ({kunde?.email}).</p>
         </div>}
-        {!loadingFakturaSubmission && !successFakturaSubmission && <>
+        {!loadingFakturaSubmission && !successFakturaSubmission && !errorMessage && <>
         <div>
             <h2 className={ÅbenOpgaveCSS.modalHeading} style={{paddingRight: 20}}>Opret faktura</h2>
                 <form action="">
@@ -102,7 +115,7 @@ const OpretFakturaModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
                                 if (alternativEmail.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) || alternativEmail === '') {
                                     setLoadingFakturaSubmission(true);
                                     const bekræftAdmGebyr = false;
-                                    useBetalMedFaktura(user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish);
+                                    useBetalMedFaktura(user, opgave, setOpgave, opgaveID, kunde, posteringer, setOpgaveAfsluttet, alternativEmail, setLoadingFakturaSubmission, setSuccessFakturaSubmission, bekræftAdmGebyr, isEnglish, setErrorMessage);
                                 } else {
                                     alert("Indtast en gyldig e-mailadresse, eller efterlad feltet tomt.");
                                 }

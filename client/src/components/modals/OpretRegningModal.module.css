@@ -63,6 +63,10 @@
     margin-top: -20px;
 }
 
+.errorText {
+    margin-bottom: 10px;
+}
+
 .betalMedFakturaKnap {
     background-color: #3c5a40;
     color: white;

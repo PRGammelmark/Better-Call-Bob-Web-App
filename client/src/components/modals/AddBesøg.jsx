@@ -26,6 +26,7 @@ const AddBesøg = (props) => {
     const [oprettetOpgave, setOprettetOpgave] = useState(null);
     const [tilknytOpgave, setTilknytOpgave] = useState(false);
     const [opgaveTilknyttetBesøg, setOpgaveTilknyttetBesøg] = useState(null);
+    const [kundeTilknyttetBesøg, setKundeTilknyttetBesøg] = useState(null);
     const [tilknytAnsvarlig, setTilknytAnsvarlig] = useState(false);
     const [tilknyttetAnsvarlig, setTilknyttetAnsvarlig] = useState("");
     const [isOnDocumentsPage, setIsOnDocumentsPage] = useState(false);
@@ -415,7 +416,8 @@ const AddBesøg = (props) => {
                 {/* INFORMATIONS-CONTAINER VED EKSISTERENDE OPGAVE */}
                 <div className={`${Styles.infoContainer} ${(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) ? Styles.activeInfoContainer : ""}`}>
                     {opgaveOprettet && <p className={Styles.infoSuccessMessage}>Opgave oprettet! 🥳 </p>}
-                    {(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig.navn || props.trigger.ansvarligNavn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{opgaveTilknyttetBesøg.adresse}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{opgaveTilknyttetBesøg.navn}</b>.</p>}
+                    {kundeTilknyttetBesøg && console.log(kundeTilknyttetBesøg)}
+                    {(tilknyttetAnsvarlig && opgaveTilknyttetBesøg) && <p>Tilføjer besøg for <b style={{fontFamily: "OmnesBold"}}>{tilknyttetAnsvarlig?.navn || props?.trigger?.ansvarligNavn}</b><br /> på opgave på <b style={{fontFamily: "OmnesBold"}}>{kundeTilknyttetBesøg?.adresse}, {kundeTilknyttetBesøg?.postnummerOgBy}</b><br />tilknyttet kunde <b style={{fontFamily: "OmnesBold"}}>{kundeTilknyttetBesøg?.navn}</b>.</p>}
                 </div>
 
                 {/* NY OPGAVE, TRIN 1: OPRET OPGAVE */}
@@ -425,7 +427,7 @@ const AddBesøg = (props) => {
                 
                 {/* VÆLG OPGAVE, TRIN 1: VÆLG OPGAVE */}
                 <div className={`${Styles.vælgOpgaveContainer} ${(tilknytOpgave && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg)) ? Styles.activeVælgOpgaveContainer : ""}`} style={(tilknytOpgave && !(tilknyttetAnsvarlig && opgaveTilknyttetBesøg)) ? maxHeightStyle : {}}>
-                    <VælgOpgaveVedNytBesøg opgaveTilknyttetBesøg={opgaveTilknyttetBesøg} setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg} opgaver={opgaver} opgaverLoading={opgaverLoading} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig}/>
+                    <VælgOpgaveVedNytBesøg opgaveTilknyttetBesøg={opgaveTilknyttetBesøg} setOpgaveTilknyttetBesøg={setOpgaveTilknyttetBesøg} kundeTilknyttetBesøg={kundeTilknyttetBesøg} setKundeTilknyttetBesøg={setKundeTilknyttetBesøg} opgaver={opgaver} opgaverLoading={opgaverLoading} setTilknyttetAnsvarlig={setTilknyttetAnsvarlig}/>
                 </div>
 
                 {/* VÆLG OPGAVE, TRIN 2: VÆLG ANSVARLIG */}

@@ -1,4 +1,4 @@
-// ÆNDRINGER MARKERES I CHANGES-KONSTANTEN HERUNDER
+// ÆNDRINGER MARKERES I CHANGES-ARRAY'ET HERUNDER
 // Nye ændringer tilføjes i begyndelsen af array'et.
 // 
 // ===================================================
@@ -13,7 +13,27 @@
 // ===================================================
 // 
 
+
+
+// version: "2.0.10",
+//     date: "27. juni 2025",
+//     changes: [
+//         "Når man tidligere oprettede et besøg på en eksisterende opgave, så blev kunden ikke korrekt vist i popup-vinduet. Dette er nu rettet.",
+//         "Når man opretter en ny opgave er fanen 'Opgave' og 'Kunde' nu samlet i ét trin i stedet for flere. Derudover antager formularen nu også, at man vil oprette en ny kunde før man vælger det – og man kan altid vælge at finde en eksisterende kunde til den nye opgave i stedet.",
+//         "Rettede en fejl i push-notifikationen, som administratoren modtager når en kunde har fået tilsendt en faktura – linket virkede ikke tidligere. Det gør det nu.",
+//         "Smårettelser og justeringer."
+//     ]
+
 const changes = [{
+    version: "2.0.10",
+    date: "27. juni 2025",
+    changes: [
+        "Når man tidligere oprettede et besøg på en eksisterende opgave, så blev kunden ikke korrekt vist i popup-vinduet. Dette er nu rettet.",
+        "Rettede en fejl i push-notifikationen, som administratoren modtager når en kunde har fået tilsendt en faktura – linket virkede ikke tidligere. Det gør det nu.",
+        "Flere fejlrettelser i 'Betal med faktura'-flowet. Nu er flowet både mere robust, og eventuelle fejlmeddelelser vises nu også direkte til brugeren, hvis noget går galt i fakturaoprettelsesprocessen.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "2.0.9",
     date: "26. juni 2025",
     changes: [
