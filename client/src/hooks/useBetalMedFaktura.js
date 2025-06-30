@@ -31,7 +31,7 @@ const useBetalMedFaktura = async (user, opgave, setOpgave, opgaveID, kunde, post
         vatZone: {
             vatZoneNumber: 1
         },
-        ...(kunde?.CVR && { corporateIdentificationNumber: kunde?.CVR }),
+        ...(kunde?.CVR && { corporateIdentificationNumber: kunde?.CVR.toString() }),
         currency: "DKK",
         customerGroup: {
             customerGroupNumber: 1
@@ -419,7 +419,7 @@ let kundeResponse, kladdeResponse, bookingResponse, fakturaPDF, fakturaURL;
 
 try {
   // 1. Opret kunde
-  kundeResponse = await axios.post('https://restapi.e-conomic.com/customersss', nyKundeObject, { headers: economicHeaders });
+  kundeResponse = await axios.post('https://restapi.e-conomic.com/customers', nyKundeObject, { headers: economicHeaders });
   console.log("✅ Kunde oprettet");
 } catch (err) {
   console.error("❌ Kunde kunne ikke oprettes:", err);
