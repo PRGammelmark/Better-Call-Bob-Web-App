@@ -25,6 +25,13 @@
 //     ]
 
 const changes = [{
+    version: "2.1.1",
+    date: "1. juli 2025",
+    changes: [
+        "Rettede en fejl, hvor man førhen ikke kunne ændre en kundes postnummer og by efter kunden var blevet oprettet.",
+        "'Rediger kunde'-formularen fortæller nu hvis der sker en fejl under opdateringen af kunden."
+    ]
+},{
     version: "2.1.0",
     date: "1. juli 2025",
     changes: [

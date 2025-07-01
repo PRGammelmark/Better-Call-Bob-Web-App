@@ -12,17 +12,18 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
     const { user } = useAuthContext()
     
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState({
-        navn: kunde.navn,
-        adresse: kunde.adresse,
-        postnummerOgBy: kunde.postnummerOgBy,
-        telefon: kunde.telefon,
-        email: kunde.email,
-        virksomhed: kunde.virksomhed,
-        CVR: kunde.CVR,
-        engelskKunde: kunde.engelskKunde,
-        harStige: kunde.harStige,
-        måKontaktesMedReklame: kunde.måKontaktesMedReklame
+        navn: kunde?.navn,
+        adresse: kunde?.adresse,
+        postnummerOgBy: kunde?.postnummerOgBy,
+        telefon: kunde?.telefon,
+        email: kunde?.email,
+        virksomhed: kunde?.virksomhed,
+        CVR: kunde?.CVR,
+        engelskKunde: kunde?.engelskKunde,
+        harStige: kunde?.harStige,
+        måKontaktesMedReklame: kunde?.måKontaktesMedReklame
     })
+    const [error, setError] = useState("")
 
     function redigerKunde(e) {
         e.preventDefault()
@@ -39,6 +40,7 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
         })
         .catch(err => {
             console.log(err)
+            setError(err.response.data.error)
         })
     }
 
@@ -50,6 +52,8 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
                 <input type="text" name="navn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.navn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, navn: e.target.value})} />
                 <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Adresse</label>
                 <input type="text" name="adresse" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.adresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value})} />
+                <label className={ÅbenOpgaveCSS.label} htmlFor="postnummerOgBy">Postnummer og by</label>
+                <input type="text" name="postnummerOgBy" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.postnummerOgBy} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, postnummerOgBy: e.target.value})} />
                 <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
                 <input type="text" name="telefon" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.telefon} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value})} />
                 <label className={ÅbenOpgaveCSS.label} htmlFor="email">E-mail</label>
@@ -81,6 +85,7 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
                 </div>
                 <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
                 <button className={ModalCSS.buttonFullWidth} type="submit">Opdater kunde</button>
+                {error && <p style={{color: "red", marginTop: 10}}>{error}</p>}
             </form>
         </Modal>
   )
