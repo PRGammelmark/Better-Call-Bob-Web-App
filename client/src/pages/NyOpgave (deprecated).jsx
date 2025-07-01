@@ -1,12 +1,13 @@
-// Denne fil er implementeret efter Henriks ønske, og er en ny version af "Opret Opgave"-formularen.
+// Denne fil er ikke længere i brug, men er gemt for at kunne tilbagekaldes hvis nødvendigt.
+// Her er "Opret Opgave"-formularen opdelt i 4 trin:
 //
-// Hvor den gamle formular var opdelt i 4 trin, så er den nye formular opdelt i 3 trin.
+// 1. Opgave
+// 2. Kunde
+// 3. Medarbejder
+// 4. Besøg
 //
-// 1. Opgave & kunde
-// 2. Medarbejder
-// 3. Besøg
-//
-// Den gamle formular er implementeret i NyOpgave (deprecated).jsx.
+// Den nye formular er opdelt i 3 trin efter Henriks ønske, og er implementeret i NyOpgave.jsx.
+
 
 import React, { useEffect, useState } from 'react'
 import NyOpgaveCSS from "./NyOpgave.module.css"
@@ -50,11 +51,11 @@ const NyOpgave = () => {
 
     // State managers for progress, success & error messages
     const [bekræftDetaljer, setBekræftDetaljer] = useState(false);
-    const [trinEtOpgaveOgKunde, setTrinEtOpgaveOgKunde] = useState(true);
-    const [trinToMedarbejder, setTrinToMedarbejder] = useState(false);
-    const [trinTreBesøg, setTrinTreBesøg] = useState(false);
+    const [trinEtOpgave, setTrinEtOpgave] = useState(true);
+    const [trinToKunde, setTrinToKunde] = useState(false);
+    const [trinTreMedarbejder, setTrinTreMedarbejder] = useState(false);
+    const [trinFireBesøg, setTrinFireBesøg] = useState(false);
     const [error, setError] = useState(null);
-    const [opgavebeskrivelseError, setOpgavebeskrivelseError] = useState(null);
     const [succes, setSucces] = useState(false);
     const [loading, setLoading] = useState(false);
     const [opgaveID, setOpgaveID] = useState("");
@@ -69,7 +70,7 @@ const NyOpgave = () => {
     // Stage managers for kunde
     const [vælgEksisterendeKunde, setVælgEksisterendeKunde] = useState(false);
     const [valgtKunde, setValgtKunde] = useState(null);
-    const [opretNyKunde, setOpretNyKunde] = useState(true);
+    const [opretNyKunde, setOpretNyKunde] = useState(false);
     const [fornavn, setFornavn] = useState("");
     const [efternavn, setEfternavn] = useState("");
     const [CVR, setCVR] = useState("");
@@ -93,9 +94,8 @@ const NyOpgave = () => {
     const [besøgPåOpgaven, setBesøgPåOpgaven] = useState(null);
 
     // Progress checkers    
-    const opgaveUdfyldt = (opgaveBeskrivelse.length >= 10)
-    const kundeUdfyldt = ((vælgEksisterendeKunde && valgtKunde) || (opretNyKunde && (fornavn.length > 1 && efternavn.length > 1 && adresse.length > 1 && postnummerOgBy.length > 3 && (telefon.length  > 7) && email.length > 5)))
-    const opgaveOgKundeUdfyldt = opgaveUdfyldt && kundeUdfyldt
+    const opgaveUdfyldt = (opgaveBeskrivelse.length > 10)
+    const kundeUdfyldt = (vælgEksisterendeKunde && valgtKunde) || (opretNyKunde && (fornavn.length > 1 && efternavn.length > 1 && adresse.length > 1 && postnummerOgBy.length > 3 && (telefon.length  > 7) && email.length > 5))
     const medarbejderUdfyldt = tilknytMedarbejder && valgtMedarbejder
     const besøgUdfyldt = besøgPåOpgaven?.datoTidFra && besøgPåOpgaven?.datoTidTil && besøgPåOpgaven?.brugerID;
 
@@ -166,15 +166,6 @@ const NyOpgave = () => {
             })
         }
     }, [kundeID])
-
-    useEffect(() => {
-        if(valgtMedarbejder && !besøgUdfyldt){
-            setTrinToMedarbejder(false);
-            setTrinTreBesøg(true);
-            setTrinEtOpgaveOgKunde(false);
-            setBekræftDetaljer(false);
-        }
-    }, [valgtMedarbejder])
 
     const submitOpgave = async (e) => {
         e.preventDefault();
@@ -310,20 +301,13 @@ const NyOpgave = () => {
         }
     }
 
-    const checkOpgaveBeskrivelse = () => {
-        if(opgaveBeskrivelse.length < 10){
-            setOpgavebeskrivelseError("Lav en mere fyldig opgavebeskrivelse.")
-        } else {
-            setOpgavebeskrivelseError(null)
-        }
-    }
-
     function startForfra(){
     
         setBekræftDetaljer(false);
-        setTrinEtOpgaveOgKunde(true);
-        setTrinToMedarbejder(false);
-        setTrinTreBesøg(false);
+        setTrinEtOpgave(true);
+        setTrinToKunde(false);
+        setTrinTreMedarbejder(false);
+        setTrinFireBesøg(false);
         setError(null);
         setSucces(false);
         setLoading(false);
@@ -358,41 +342,56 @@ const NyOpgave = () => {
 
   return (
     <PageAnimation>
-        <>
-        <div style={{position: "static!important"}}>
+        <div>
             <span className={NyOpgaveCSS.headingSpan}><h1 className={NyOpgaveCSS.overskrift}>📋 Opret ny opgave</h1></span>
             {!succes && <div className={NyOpgaveCSS.trinDiv}>
-                {/* OPGAVE- OG KUNDE-TRIN */}
+                {/* OPGAVE-TRIN */}
                 <h2 
-                    onClick={() => {setTrinToMedarbejder(false); setTrinTreBesøg(false); setTrinEtOpgaveOgKunde(true); setBekræftDetaljer(false);}} 
-                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinEtOpgaveOgKunde && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${opgaveOgKundeUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${NyOpgaveCSS.trinDivHeadingClickable}`}
+                    onClick={() => {setTrinToKunde(false); setTrinTreMedarbejder(false); setTrinFireBesøg(false); setTrinEtOpgave(true); setBekræftDetaljer(false);}} 
+                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinEtOpgave && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${opgaveUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${NyOpgaveCSS.trinDivHeadingClickable}`}
                 >
-                    Opgave & kunde <CircleCheck className={`${NyOpgaveCSS.trinDivHeadingDoneIcon} ${opgaveOgKundeUdfyldt ? NyOpgaveCSS.trinDivHeadingDoneIconActive : ""}`} />
+                    Opgave <CircleCheck className={`${NyOpgaveCSS.trinDivHeadingDoneIcon} ${opgaveUdfyldt ? NyOpgaveCSS.trinDivHeadingDoneIconActive : ""}`} />
+                </h2>
+                {/* KUNDE-TRIN */}
+                <h2 
+                    onClick={() => {
+                        if(opgaveUdfyldt || kundeUdfyldt){
+                            setTrinToKunde(true); 
+                            setTrinTreMedarbejder(false); 
+                            setTrinFireBesøg(false); 
+                            setTrinEtOpgave(false);
+                            setBekræftDetaljer(false);
+                        }}} 
+                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinToKunde && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${kundeUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${opgaveUdfyldt || kundeUdfyldt ? NyOpgaveCSS.trinDivHeadingClickable : ""}`}
+                >
+                    Kunde <CircleCheck className={`${NyOpgaveCSS.trinDivHeadingDoneIcon} ${kundeUdfyldt ? NyOpgaveCSS.trinDivHeadingDoneIconActive : ""}`} />
                 </h2>
 
                 {/* MEDARBEJDER-TRIN */}
                 <h2 
                     onClick={() => {
-                        if((opgaveOgKundeUdfyldt) || medarbejderUdfyldt){
-                            setTrinToMedarbejder(true); 
-                            setTrinTreBesøg(false); 
-                            setTrinEtOpgaveOgKunde(false);
+                        if((opgaveUdfyldt && kundeUdfyldt) || medarbejderUdfyldt){
+                            setTrinToKunde(false); 
+                            setTrinTreMedarbejder(true); 
+                            setTrinFireBesøg(false); 
+                            setTrinEtOpgave(false);
                             setBekræftDetaljer(false);
                         }}} 
-                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinToMedarbejder && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${medarbejderUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${((opgaveOgKundeUdfyldt) || medarbejderUdfyldt) ? NyOpgaveCSS.trinDivHeadingClickable : ""} ${(bekræftDetaljer && !medarbejderUdfyldt) ? NyOpgaveCSS.trinDivHeadingRemoved : ""}`}
+                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinTreMedarbejder && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${medarbejderUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${((opgaveUdfyldt && kundeUdfyldt) || medarbejderUdfyldt) ? NyOpgaveCSS.trinDivHeadingClickable : ""} ${(bekræftDetaljer && !medarbejderUdfyldt) ? NyOpgaveCSS.trinDivHeadingRemoved : ""}`}
                 >
                     Medarbejder <CircleCheck className={`${NyOpgaveCSS.trinDivHeadingDoneIcon} ${medarbejderUdfyldt ? NyOpgaveCSS.trinDivHeadingDoneIconActive : ""}`} />
                 </h2>
                 {/* BESØG-TRIN */}
                 <h2 
                     onClick={() => {
-                        if(opgaveOgKundeUdfyldt){
-                            setTrinToMedarbejder(false); 
-                            setTrinTreBesøg(true); 
-                            setTrinEtOpgaveOgKunde(false);
+                        if(opgaveUdfyldt && kundeUdfyldt && medarbejderUdfyldt){
+                            setTrinToKunde(false); 
+                            setTrinTreMedarbejder(false); 
+                            setTrinFireBesøg(true); 
+                            setTrinEtOpgave(false);
                             setBekræftDetaljer(false);
                         }}} 
-                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinTreBesøg && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${besøgUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${opgaveOgKundeUdfyldt ? NyOpgaveCSS.trinDivHeadingClickable : ""} ${(bekræftDetaljer && !besøgUdfyldt) ? NyOpgaveCSS.trinDivHeadingRemoved : ""}`}
+                    className={`${NyOpgaveCSS.trinDivHeading} ${(trinFireBesøg && !bekræftDetaljer) ? NyOpgaveCSS.trinDivHeadingActive : ""} ${besøgUdfyldt ? NyOpgaveCSS.trinDivHeadingDone : ""} ${opgaveUdfyldt && kundeUdfyldt && medarbejderUdfyldt ? NyOpgaveCSS.trinDivHeadingClickable : ""} ${(bekræftDetaljer && !besøgUdfyldt) ? NyOpgaveCSS.trinDivHeadingRemoved : ""}`}
                 >
                     Besøg <CircleCheck className={`${NyOpgaveCSS.trinDivHeadingDoneIcon} ${besøgUdfyldt ? NyOpgaveCSS.trinDivHeadingDoneIconActive : ""}`} />
                 </h2>
@@ -400,14 +399,12 @@ const NyOpgave = () => {
             <form onSubmit={submitOpgave} className={NyOpgaveCSS.form}>
                 {!bekræftDetaljer && <>
                     
-                    {trinEtOpgaveOgKunde && <PageAnimation>
-                    <div>
+                    {trinEtOpgave && <div>
                         <label className={NyOpgaveCSS.label}>Opgavebeskrivelse</label>
-                        <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required onBlur={() => checkOpgaveBeskrivelse()} onFocus={() => setOpgavebeskrivelseError(null)}/>
-                        {opgavebeskrivelseError && <p className={NyOpgaveCSS.opgavebeskrivelseError}>{opgavebeskrivelseError}</p>}
-                        {/* <label className={NyOpgaveCSS.label}>Ønskes opgaven udført på et bestemt tidspunkt?</label>
-                        <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} /> */}
-                        <div style={{marginTop: 0, marginBottom: 50}} className={SwitcherStyles.checkboxContainer}>
+                        <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required/>
+                        <label className={NyOpgaveCSS.label}>Ønskes opgaven udført på et bestemt tidspunkt?</label>
+                        <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} required/>
+                        <div style={{marginTop: 30}} className={SwitcherStyles.checkboxContainer}>
                             <label className={SwitcherStyles.switch} htmlFor="fakturaOprettesManuelt">
                                 <input type="checkbox" id="fakturaOprettesManuelt" name="fakturaOprettesManuelt" className={SwitcherStyles.checkboxInput} checked={fakturaOprettesManuelt} onChange={(e) => setFakturaOprettesManuelt(e.target.checked)} />
                                 <span className={SwitcherStyles.slider}></span>
@@ -415,7 +412,7 @@ const NyOpgave = () => {
                             <b>Fast tilbud afgivet</b>
                         </div>
                         {fakturaOprettesManuelt && 
-                            <div style={{marginTop: -30}}>
+                            <div style={{marginTop: 20}}>
                                 <ul style={{marginBottom: 10, fontSize: 13, marginLeft: 20}}>
                                     <li>Når du har afgivet et fast tilbud vil den første postering på opgaven automatisk blive oprettet med tilbudsprisen som en fast pris. Dette kan ændres manuelt af den ansvarshavende medarbejder.</li>
                                     <li>Tilbudsopgaver vil altid blive sendt til manuel godkendelse inden endelig fakturering af kunden.</li>
@@ -424,11 +421,14 @@ const NyOpgave = () => {
                                 <input style={{marginTop: 5}} type="number" name="tilbudAfgivet" className={NyOpgaveCSS.input} onChange={(e) => setTilbudAfgivet(e.target.value)} value={tilbudAfgivet} required/>
                             </div>
                         }
-                    </div>
-                    <div style={{marginTop: 30}}>
+                        {!kundeUdfyldt && <button disabled={!opgaveUdfyldt} type="button" className={NyOpgaveCSS.fremButton} onClick={() => {setTrinToKunde(true); setTrinEtOpgave(false)}}>{opgaveUdfyldt ? "Udfyld kundeoplysninger" : "Beskriv opgaven ..."} {opgaveUdfyldt && <ArrowRight style={{width: 20, height: 20}}/>}</button>}
+                        {kundeUdfyldt && <button disabled={true} type="button" className={`${NyOpgaveCSS.beskrivOpgavenDisabledButton} ${opgaveUdfyldt ? NyOpgaveCSS.beskrivOpgavenDisabledButtonRemoved : ""}`}>{"Beskriv opgaven ..."}</button>}
+                    </div>}
+
+                    {trinToKunde && <div>
                         <div className={NyOpgaveCSS.vælgKundeButtons}>
-                            <button type="button" className={`${NyOpgaveCSS.vælgKundeButton} ${opretNyKunde ? NyOpgaveCSS.vælgKundeButtonActive : ""}`} onClick={() => {setVælgEksisterendeKunde(false); setOpretNyKunde(true)}}>Opret ny kunde</button>
                             <button type="button" className={`${NyOpgaveCSS.vælgKundeButton} ${vælgEksisterendeKunde ? NyOpgaveCSS.vælgKundeButtonActive : ""}`} onClick={() => {setVælgEksisterendeKunde(true); setOpretNyKunde(false)}}>Vælg eksisterende kunde</button>
+                            <button type="button" className={`${NyOpgaveCSS.vælgKundeButton} ${opretNyKunde ? NyOpgaveCSS.vælgKundeButtonActive : ""}`} onClick={() => {setVælgEksisterendeKunde(false); setOpretNyKunde(true)}}>Opret ny kunde</button>
                         </div>
                         {opretNyKunde && 
                             <div>
@@ -487,12 +487,10 @@ const NyOpgave = () => {
                                 <KunderTabel vælgKunde={true} setValgtKunde={setValgtKunde} valgtKunde={valgtKunde} search={search} setSearch={setSearch}/>
                             </div>
                         }
-                    </div>
-                    </PageAnimation>
-                    }
+                    </div>}
                     
-                    {trinToMedarbejder && 
-                    <PageAnimation>
+                    {trinTreMedarbejder && 
+                    <>
                         <div>
                             <div className={NyOpgaveCSS.medarbejdereTabelContainer}>
                                 <div className={NyOpgaveCSS.vælgKundeButtons}>
@@ -503,60 +501,49 @@ const NyOpgave = () => {
                                 <MedarbejdereTabel setBesøgPåOpgaven={setBesøgPåOpgaven} vælgMedarbejder={tilknytMedarbejder} setValgtMedarbejder={setValgtMedarbejder} valgtMedarbejder={valgtMedarbejder} filter={visMedarbejdereFilter ? (visAdministratorerFilter ? "visAlle" : "visMedarbejdere") : (visAdministratorerFilter ? "visAdministratorer" : "visAlle")} search={medarbejdereSearch} setSearch={setMedarbejdereSearch}/>
                             </div>
                         </div>
-                    </PageAnimation>}
-                    {trinTreBesøg && 
-                        <PageAnimation>
-                            <div className={NyOpgaveCSS.besøgDiv}>  
-                                {valgtMedarbejder && <h2 className={NyOpgaveCSS.formHeading}>Opret besøg for {valgtMedarbejder.navn}</h2>}
-                                {!valgtMedarbejder && <h2 className={NyOpgaveCSS.formHeading}>Opret besøg</h2>}
-                                <NyOpgaveMedarbejderCalendar 
-                                    tilknyttetMedarbejder={valgtMedarbejder ? valgtMedarbejder : null}
-                                    setValgtMedarbejder={setValgtMedarbejder}
-                                    user={user}
-                                    brugere={brugere}
-                                    tilknyttetKunde={valgtKunde}
-                                    setBesøg={setBesøg}
-                                    setBesøgPåOpgaven={setBesøgPåOpgaven}
-                                    setBekræftDetaljer={setBekræftDetaljer}
-                                    opgaver={opgaver}
-                                    setTrinToMedarbejder={setTrinToMedarbejder}
-                                    setTrinTreBesøg={setTrinTreBesøg}
-                                />
-                            </div>
-                        </PageAnimation>
+                    </>}
+                    {trinFireBesøg && valgtMedarbejder && 
+                        <div className={NyOpgaveCSS.besøgDiv}>  
+                            <h2 className={NyOpgaveCSS.formHeading}>Opret besøg for {valgtMedarbejder.navn}</h2>
+                            <NyOpgaveMedarbejderCalendar 
+                                tilknyttetMedarbejder={valgtMedarbejder}
+                                user={user}
+                                brugere={brugere}
+                                tilknyttetKunde={valgtKunde}
+                                setBesøg={setBesøg}
+                                setBesøgPåOpgaven={setBesøgPåOpgaven}
+                                setBekræftDetaljer={setBekræftDetaljer}
+                                opgaver={opgaver}
+                            />
+                        </div>
                     }
                 </>}
                 
                 <div className={NyOpgaveCSS.submitMeddelelser}>
 
 
-                    <div className={`${NyOpgaveCSS.bekræftDetaljerButtons} ${(opgaveOgKundeUdfyldt) ? NyOpgaveCSS.bekræftDetaljerButtonsActive : ""}`}>
-                        <div style={{display: "flex", flexDirection: "row", gap: 10}}>
-                            {!valgtMedarbejder && !trinToMedarbejder && !trinTreBesøg && !bekræftDetaljer && <button type="button" className={NyOpgaveCSS.tilknytMedarbejderButton} onClick={() => {setTrinToMedarbejder(true); setTrinTreBesøg(false); setTrinEtOpgaveOgKunde(false);}}>+ Tilknyt medarbejder</button>}
-                            {!valgtMedarbejder && !trinToMedarbejder && !trinTreBesøg && !bekræftDetaljer && <button type="button" className={NyOpgaveCSS.tilknytMedarbejderButton} onClick={() => {setTrinToMedarbejder(false); setTrinTreBesøg(true); setTrinEtOpgaveOgKunde(false);}}>+ Opret besøg</button>}
-                        </div>
+                    <div className={`${NyOpgaveCSS.bekræftDetaljerButtons} ${(opgaveUdfyldt && kundeUdfyldt) ? NyOpgaveCSS.bekræftDetaljerButtonsActive : ""}`}>
+                        {!valgtMedarbejder && !trinTreMedarbejder && !bekræftDetaljer && <button type="button" className={NyOpgaveCSS.tilknytMedarbejderButton} onClick={() => {setTrinTreMedarbejder(true); setTrinFireBesøg(false); setTrinEtOpgave(false); setTrinToKunde(false)}}>+ Tilknyt medarbejder</button>}
                         {!bekræftDetaljer && <button type="button" className={`${NyOpgaveCSS.submitButton} ${NyOpgaveCSS.submitButtonFullWidth}`} onClick={() => setBekræftDetaljer(true)}>Bekræft detaljer</button>} 
                     </div>
                     
                     {bekræftDetaljer && 
                         (succes ? 
-                            <PageAnimation>
-                                <div className={NyOpgaveCSS.succesDiv}>
-                                    <h2>Opgave oprettet! 🎉</h2>
-                                    <div>
-                                        <p><b style={{fontFamily: "OmnesBold"}}>Beskrivelse:</b> "{opgaveBeskrivelse}"</p>
-                                        <p><b style={{fontFamily: "OmnesBold"}}>Hos:</b> {(kunden.virksomhed || kunden.CVR) ? kunden.virksomhed : kunden.fornavn + " " + kunden.efternavn}</p>
-                                        {valgtMedarbejder && <p><b style={{fontFamily: "OmnesBold"}}>Medarbejder på opgaven:</b> {valgtMedarbejder?.navn}</p>}
-                                        {besøgPåOpgaven && <p><b style={{fontFamily: "OmnesBold"}}>Besøg:</b> {besøgPåOpgaven?.datoTidFra ? dayjs(besøgPåOpgaven.datoTidFra).format("D. MMMM HH:mm") : "Ingen dato"} - {besøgPåOpgaven?.datoTidTil ? dayjs(besøgPåOpgaven.datoTidTil).format("HH:mm") : "Ingen dato"}</p>}
-                                    </div>
-                                    <div className={NyOpgaveCSS.succesButtonsDiv}>
-                                        <button className={NyOpgaveCSS.submitButton} type="button" onClick={navigerTilOpgave}><b>Gå til opgave</b></button>
-                                        <button className={`${NyOpgaveCSS.submitButton} ${NyOpgaveCSS.startForfraButton}`} type="button" onClick={startForfra} >+ Opret ny opgave</button>
-                                    </div>
-                                </div> 
-                            </PageAnimation>
+                            <div className={NyOpgaveCSS.succesDiv}>
+                                <h2>Opgave oprettet! 🎉</h2>
+                                <div>
+                                    <p><b style={{fontFamily: "OmnesBold"}}>Beskrivelse:</b> "{opgaveBeskrivelse}"</p>
+                                    <p><b style={{fontFamily: "OmnesBold"}}>Hos:</b> {(kunden.virksomhed || kunden.CVR) ? kunden.virksomhed : kunden.fornavn + " " + kunden.efternavn}</p>
+                                    {valgtMedarbejder && <p><b style={{fontFamily: "OmnesBold"}}>Medarbejder på opgaven:</b> {valgtMedarbejder?.navn}</p>}
+                                    {besøgPåOpgaven && <p><b style={{fontFamily: "OmnesBold"}}>Besøg:</b> {besøgPåOpgaven?.datoTidFra ? dayjs(besøgPåOpgaven.datoTidFra).format("D. MMMM HH:mm") : "Ingen dato"} - {besøgPåOpgaven?.datoTidTil ? dayjs(besøgPåOpgaven.datoTidTil).format("HH:mm") : "Ingen dato"}</p>}
+                                </div>
+                                <div className={NyOpgaveCSS.succesButtonsDiv}>
+                                    <button className={NyOpgaveCSS.submitButton} type="button" onClick={navigerTilOpgave}><b>Gå til opgave</b></button>
+                                    <button className={`${NyOpgaveCSS.submitButton} ${NyOpgaveCSS.startForfraButton}`} type="button" onClick={startForfra} >+ Opret ny opgave</button>
+                                </div>
+                            </div> 
                         : 
-                            <PageAnimation>
+                            <>
                                 <div className={NyOpgaveCSS.nyOpgaveDetaljerFørOprettelse}>
                                     <h2>Bekræft følgende:</h2>
                                     {opgaveUdfyldt && <div className={NyOpgaveCSS.nyOpgaveDetaljerFørOprettelseSubDiv}>
@@ -598,14 +585,13 @@ const NyOpgave = () => {
                                     <button className={NyOpgaveCSS.tilbageButton} type="button" onClick={() => setBekræftDetaljer(false)}>Tilbage</button>
                                     <button className={`${NyOpgaveCSS.submitButton} ${NyOpgaveCSS.submitButtonFullWidth}`}>{loading ? "Opretter opgave ..." : "Bekræft & opret opgave"}</button>
                                 </div>
-                            </PageAnimation>
+                            </>
                         )
                     }
                 </div>
             </form>
             {error && <div className={NyOpgaveCSS.error}>{error}</div>}
         </div>
-        </>
     </PageAnimation>
   )
 }

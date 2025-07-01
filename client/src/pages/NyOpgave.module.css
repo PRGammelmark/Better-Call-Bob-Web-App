@@ -47,7 +47,7 @@
     padding: 8px 20px;
     font-family: Omnes;
     font-size: 0.9rem;
-    height: 70px;
+    height: 150px;
     resize: none;
     border: none;
     transition: 0.2s ease;
@@ -289,6 +289,15 @@
     margin-bottom: 0px;
 }
 
+.opgavebeskrivelseError {
+    color: #ff0000;
+    font-size: 0.8rem;
+    margin-top: -20px;
+    margin-bottom: 20px;
+    margin-left: 10px;
+    font-family: Omnes;
+}
+
 .fremButton:hover:not(:disabled) {
     background: rgba(89, 191, 26, 1);
 }
@@ -422,6 +431,12 @@
         flex-direction: row;
         align-items: flex-start;
         gap: 4px;
+        margin-top: -20px;
+    }
+
+    .formHeading {
+        margin-left: -10px;
+        font-size: 1.2rem;
     }
 
     .trinDivHeading {
@@ -470,5 +485,26 @@
         border: 1px solid #22222250;
         color: #222222;
         font-size: 0.8rem;
+    }
+
+    .trinDivHeadingDoneIconActive {
+        display: none;
+    }
+
+    .trinDivHeadingDoneIcon {
+        display: none;
+    }
+
+    .trinDiv h2 {
+        text-align: center;
+        justify-content: center;
+    }
+
+    .trinDivHeadingClickable {
+        border: 1px solid #3c5a3f30;
+    }
+
+    .trinDivHeadingDone {
+        border: 1px solid #59bf1a;
     }
 }

@@ -1,7 +1,7 @@
 import TableCSS from './Table.module.css'
 import Styles from './MedarbejdereTabel.module.css'
 import { Link } from 'react-router-dom'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useAuthContext } from "../../hooks/useAuthContext.js"
 import BarLoader from '../loaders/BarLoader.js'
 import axios from 'axios'
@@ -79,7 +79,7 @@ const MedarbejdereTabel = ({search, filter, vælgMedarbejder, setValgtMedarbejde
         setSearchedMedarbejdere(filteredMedarbejdere.slice(0, 15))
     }
   }, [search, filteredMedarbejdere])
-
+  
   return (
     <>
       <div className={Styles.desktopTable}>
@@ -96,7 +96,7 @@ const MedarbejdereTabel = ({search, filter, vælgMedarbejder, setValgtMedarbejde
               {searchedMedarbejdere && searchedMedarbejdere.length > 0 && searchedMedarbejdere.map(medarbejder => {
 
                 const medarbejderensOpgaver = opgaver?.filter(opg => opg?.ansvarlig?.some(ansvarlig => ansvarlig._id === medarbejder._id));
-                const medarbejderensAfsluttedeOpgaver = medarbejderensOpgaver?.filter(opg => opg.opgaveAfsluttet);
+                // const medarbejderensAfsluttedeOpgaver = medarbejderensOpgaver?.filter(opg => opg.opgaveAfsluttet);
                 const medarbejderensÅbneOpgaver = medarbejderensOpgaver?.filter(opg => !opg.opgaveAfsluttet);
                 const medarbejderErValgt = medarbejder._id === valgtMedarbejder?._id;
 
@@ -116,7 +116,7 @@ const MedarbejdereTabel = ({search, filter, vælgMedarbejder, setValgtMedarbejde
                     <ul>
                       <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{medarbejder.navn}{(medarbejder.titel) && <br />}<span className={Styles.medarbejderVirksomhedNavn}>{medarbejder.titel}</span></li>
                       <li>{medarbejder.adresse}, {medarbejder.postnummerOgBy}</li>
-                      <li><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: "6px"}}>{medarbejderensÅbneOpgaver?.length > 0 ? (<p className={Styles.igangværendeOpgaver}>{(medarbejderensÅbneOpgaver.length + " igangværende")}</p>) : ""}{medarbejderensAfsluttedeOpgaver?.length > 0 ? (<p className={Styles.afsluttedeOpgaver}>{(medarbejderensAfsluttedeOpgaver.length + (medarbejderensAfsluttedeOpgaver.length > 1 ? " afsluttede" : " afsluttet"))}</p>) : ""}</div></li>
+                      <li><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: "6px"}}>{medarbejderensÅbneOpgaver?.length > 0 ? (<p className={Styles.igangværendeOpgaver}>{(medarbejderensÅbneOpgaver.length + " igangværende")}</p>) : ""}</div></li>
                     </ul>
                   </div>
                 )
@@ -159,7 +159,7 @@ const MedarbejdereTabel = ({search, filter, vælgMedarbejder, setValgtMedarbejde
                     <ul>
                       <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{medarbejder.navn}{(medarbejder.titel) && <br />}<span className={Styles.medarbejderVirksomhedNavn}>{medarbejder.titel}</span></li>
                       <li>{medarbejder.adresse}, {medarbejder.postnummerOgBy}</li>
-                      <li><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: "6px"}}>{medarbejderensÅbneOpgaver?.length > 0 ? (<p className={Styles.igangværendeOpgaver}>{(medarbejderensÅbneOpgaver.length + " igangværende")}</p>) : ""}{medarbejderensAfsluttedeOpgaver?.length > 0 ? (<p className={Styles.afsluttedeOpgaver}>{(medarbejderensAfsluttedeOpgaver.length + (medarbejderensAfsluttedeOpgaver.length > 1 ? " afsluttede" : " afsluttet"))}</p>) : ""}</div></li>
+                      <li><div style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "flex-start", gap: "6px"}}>{medarbejderensÅbneOpgaver?.length > 0 ? (<p className={Styles.igangværendeOpgaver}>{(medarbejderensÅbneOpgaver.length + " igangværende")}</p>) : ""}</div></li>
                     </ul>
                   </div>
                 )

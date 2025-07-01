@@ -33,7 +33,7 @@ const lang = {
   }
 }
 
-const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, tilknyttetKunde, brugere, opgaver, setBesøg, setBesøgPåOpgaven, setBekræftDetaljer}) => {
+const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, setValgtMedarbejder, tilknyttetKunde, brugere, opgaver, setBesøg, setBesøgPåOpgaven, setBekræftDetaljer, setTrinToMedarbejder, setTrinTreBesøg}) => {
 
   const { chosenDate, setChosenDate } = useTaskAndDate();
   const [currentView, setCurrentView] = useState("month")
@@ -61,36 +61,57 @@ const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, tilknyttetKun
 
   const getBrugerName = (brugerID) => {
     const bruger = brugere && brugere.find(user => (user?._id || user?.id) === brugerID);
-    return bruger ? bruger.navn : 'Unknown User';
+    return bruger ? bruger.navn  : 'Ukendt bruger';
   };
-
-  console.log(opgaver)
   
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/medarbejder/${tilknyttetMedarbejder?._id}`, {
-      headers: { 'Authorization': `Bearer ${user.token}` }
-    })
-    .then(res => {
-      console.log("Opgaver", res.data)
-      setMedarbejdersOpgaver(res.data)
-      axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider/medarbejder/${tilknyttetMedarbejder?._id}`, {
+    if(tilknyttetMedarbejder){
+      axios.get(`${import.meta.env.VITE_API_URL}/opgaver/medarbejder/${tilknyttetMedarbejder?._id}`, {
         headers: { 'Authorization': `Bearer ${user.token}` }
       })
       .then(res => {
-        console.log("Ledige tider", res.data)
-        setMedarbejdersLedigeTider(res.data)
-        axios.get(`${import.meta.env.VITE_API_URL}/besoeg/bruger/${tilknyttetMedarbejder?._id}`, {
+        setMedarbejdersOpgaver(res.data)
+        axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider/medarbejder/${tilknyttetMedarbejder?._id}`, {
           headers: { 'Authorization': `Bearer ${user.token}` }
         })
         .then(res => {
-          console.log("Besøg", res.data)
-          setMedarbejdersBesøg(res.data || [])
+          setMedarbejdersLedigeTider(res.data)
+          axios.get(`${import.meta.env.VITE_API_URL}/besoeg/bruger/${tilknyttetMedarbejder?._id}`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+          })
+          .then(res => {
+            setMedarbejdersBesøg(res.data || [])
+          })
+          .catch(error => console.log(error))
         })
         .catch(error => console.log(error))
       })
       .catch(error => console.log(error))
-    })
-    .catch(error => console.log(error))
+    }
+
+    if(!tilknyttetMedarbejder){
+      axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
+        headers: { 'Authorization': `Bearer ${user.token}` }
+      })
+      .then(res => {
+        setMedarbejdersOpgaver(res.data)
+        axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
+          headers: { 'Authorization': `Bearer ${user.token}` }
+        })
+        .then(res => {
+          setMedarbejdersLedigeTider(res.data)
+          axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+          })
+          .then(res => {
+            setMedarbejdersBesøg(res.data || [])
+          })
+          .catch(error => console.log(error))
+        })
+        .catch(error => console.log(error))
+      })
+      .catch(error => console.log(error))
+    }
   }, [tilknyttetMedarbejder])
 
   const { messages } = useMemo(
@@ -254,7 +275,6 @@ const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, tilknyttetKun
 }, [openDialog]);
 
 const handleDateChange = (date) => {
-  console.log(date)
   setChosenDate(date);
 }
 
@@ -271,17 +291,21 @@ const openCalendarDay = (slotInfo) => {
   setAddBesøgModal(slotInfo)
 }
 
+const opretBesøgFraLedigTidModal = (callEvent) => {
+  const eventData = callEvent;
+  setAddBesøgModal({origin: "besøgFraLedigTid", action: "ledigTidSelect", ansvarligID: callEvent?.brugerID, ansvarligNavn: getBrugerName(callEvent?.brugerID), start: dayjs(eventData?.datoTidFra), end: dayjs(eventData?.datoTidTil)})
+}
+
   return (
     <div className={Styles.calendarContainer}>
       <Calendar
         className={Styles.calendar}
         culture={'da'}
         localizer={localizer}
-        events={medarbejdersBesøgFormateret}
-        backgroundEvents={medarbejdersLedigeTiderFormateret}
-        onSelectEvent={openCalendarEvent}
+        events={medarbejdersLedigeTiderFormateret}
+        onSelectEvent={(callEvent) => opretBesøgFraLedigTidModal(callEvent)}
         selectable={'ignoreEvents'}
-        onSelectSlot={openCalendarDay}
+        onSelectSlot={tilknyttetMedarbejder ? openCalendarDay : () => {setTrinToMedarbejder(true); setTrinTreBesøg(false); window.alert("Vælg en medarbejder i forrige trin – så kan du booke besøg på valgfrie tidspunkter i kalenderen.")}}
         startAccessor="start"
         endAccessor="end"
         messages={messages}
@@ -320,7 +344,7 @@ const openCalendarDay = (slotInfo) => {
       
       }
       </Modal>
-      <AddBesøgPåNyOpgave trigger={addBesøgModal} setTrigger={setAddBesøgModal} opgaveTilknyttetBesøg={opgaveTilknyttetBesøg} tilknyttetKunde={tilknyttetKunde} tilknyttetMedarbejder={tilknyttetMedarbejder} setBesøg={setBesøg} setBekræftDetaljer={setBekræftDetaljer} setBesøgPåOpgaven={setBesøgPåOpgaven} />
+      <AddBesøgPåNyOpgave trigger={addBesøgModal} setTrigger={setAddBesøgModal} brugere={brugere} opgaveTilknyttetBesøg={opgaveTilknyttetBesøg} tilknyttetKunde={tilknyttetKunde} setValgtMedarbejder={setValgtMedarbejder} tilknyttetMedarbejder={tilknyttetMedarbejder} setBesøg={setBesøg} setBekræftDetaljer={setBekræftDetaljer} setBesøgPåOpgaven={setBesøgPåOpgaven} />
     </div>
   )
 }

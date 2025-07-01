@@ -25,6 +25,20 @@
 //     ]
 
 const changes = [{
+    version: "2.1.0",
+    date: "1. juli 2025",
+    changes: [
+        "'Opret opgave'-formularen er blevet gjort lettere og hurtigere at bruge.",
+        "Når man opretter en ny opgave er fanen 'Opgave' og 'Kunde' nu samlet i ét trin i stedet for flere.", 
+        "Formularen giver nu mere finkornet feedback, hvis der er felter, man mangler at udfylde.",
+        "'Opret opgave'-formularen antager nu også, at man vil oprette en ny kunde før man vælger det – og man kan altid vælge at finde en eksisterende kunde til den nye opgave i stedet.",
+        "Formularen tillader nu også, at man kan oprette et besøg inden man har tilknyttet en medarbejder til opgaven. I dette tilfælde kan man hoppe direkte til tabben 'besøg', der vil vise alle medarbejderes ledige tider. Her vælger man blot den ønskede medarbejders ledige tid, og opretter et besøg gennem denne.",
+        "'Opret opgave'-formularen hopper nu automatisk til besøgskalenderen når man har tilknyttet en medarbejder til opgaven. Besøgskalenderen vil her vise medarbejderens ledighed i stedet for besøg, så man nemt kan booke et nyt besøg direkte ind i den.",
+        "Feltet under opgavebeskrivelsen, hvor man kunne indtaste kundens ønskede udførelsesdato, er blevet fjernet, da processen nu lægger op til, at man vil booke et besøg på opgaven med det samme.",
+        "Designjusteringer og -forbedringer på samme formular.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "2.0.13",
     date: "30. juni 2025",
     changes: [

@@ -91,33 +91,35 @@ const AddBesøgPåNyOpgave = (props) => {
         const besøg = {
             datoTidFra: `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`,
             datoTidTil: `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`,
-            brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig,
+            brugerID: tilknyttetAnsvarlig._id || tilknyttetAnsvarlig || props.trigger.ansvarligID,
             opgaveID: "",
             kommentar: comment ? comment : ""
         }
 
-        console.log(props)
-
         props.setBesøgPåOpgaven(besøg)
-        props.setBekræftDetaljer(true)
+        if(!props.tilknyttetMedarbejder){
+            const ansvarlig = props.brugere.find(bruger => bruger._id === props.trigger.ansvarligID)
+            props.setValgtMedarbejder(ansvarlig)
+        }
         props.setTrigger(false)
+        props.setBekræftDetaljer(true)
     }
 
     return (
         <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => {
             resetState()
         }}>
-            <h2 className={ModalStyles.modalHeading}>Tilføj besøg for {props?.tilknyttetMedarbejder?.navn}</h2>
+            <h2 className={ModalStyles.modalHeading}>Tilføj besøg for {props?.tilknyttetMedarbejder?.navn || props.trigger.ansvarligNavn}</h2>
+            {props.trigger.action === "ledigTidSelect" && <p className={Styles.modalSubheading}>- ledig d. {dayjs(props.trigger.start).format("DD. MMMM")} fra kl. {dayjs(props.trigger.start).format("HH:mm")}-{dayjs(props.trigger.end).format("HH:mm")}</p>}
             <div className={Styles.modalSubheadingContainer}>
                 <b style={{fontFamily: "OmnesBold"}}>Hos kunde:</b>
                 <p>{props?.tilknyttetKunde?.fornavn + " " + props?.tilknyttetKunde?.efternavn || "..."}</p>
                 <p>{props?.tilknyttetKunde?.adresse || "..."}</p>
                 <p>{props?.tilknyttetKunde?.postnummerOgBy}</p>
             </div>
-            {props.trigger.action === "ledigTidSelect" && <p className={Styles.modalSubheading}>for {props.trigger.ansvarligNavn}<br />ledig d. {dayjs(props.trigger.start).format("DD. MMMM")} fra kl. {dayjs(props.trigger.start).format("HH:mm")}-{dayjs(props.trigger.end).format("HH:mm")}</p>}
                 {/* BESØGSDETALJER */}
                 <div className={`${Styles.opretBesøgFraOverblikContainer} ${Styles.activeOpretBesøgFraOverblikContainer}`}>
-                    <h3 className={Styles.subHeading}>Besøgsdetaljer:</h3>
+                    <h3 className={Styles.subHeading}>Tilpas besøg:</h3>
                     <div style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         {chosenEndDate ? 
                         <div>
