@@ -20,7 +20,7 @@ const changes = [{
         "Afsluttede opgaver for privatkunder viser nu ikke længere 'Betal nu'-knappen umiddelbart efter at faktura er blevet oprettet på opgaven. Det gjorde de før ved en fejl.",
         "Implementerede bedre fejlhåndtering, når man forsøger at uploade videoer på opgaver.",
         "Ledige tider blev i nogle tilfælde fejlrepræsenteret pga. tidszoneforskelle i kalenderen. Dette er nu rettet.",
-        "Nu kan medarbejdere slette deres egne ledige tider i både overbliks- og opgavekalenderen. Administratorer kan slette egne og andres i de samme kalendere.",
+        "Nu kan medarbejdere slette deres egne ledige tider i både overbliks- og opgavekalenderen. Administratorer kan slette egne og andres i de samme kalendere. Hvis man sletter en ledig tid inden for hvilken der i forvejen er booket et besøg på den pågældende medarbejder vil besøget ikke blive påvirket.",
         "Fremover vil alle kalendre i app'en automatisk opdatere sig selv hvert 15. minut. Dette mindsker risikoen for, at brugere og administratorer sidder med forældede informationer.",
         "Når man opretter en ny kunde i 'Ny opgave'-formularen vil felterne nu fjerne alle mellemrum i CVR-, telefon- og email-felterne. Derudover vil input-felterne i de øvrige automatisk fjerne ekstra mellemrum før og efter inputtet.",
         "Det samme gør sig gældende når man opretter en ny kunde i 'Ny kunde'-formularen, såvel som når man redigerer en eksisterende kunde.",
