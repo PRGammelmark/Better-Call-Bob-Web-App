@@ -33,6 +33,7 @@ import MoonLoader from "react-spinners/MoonLoader";
 import VisBilledeModal from '../components/modals/VisBillede.jsx'
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
+import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
 
 const ÅbenOpgave = () => {
@@ -51,6 +52,7 @@ const ÅbenOpgave = () => {
     const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
     const [opgave, setOpgave] = useState(null);
     const [kunde, setKunde] = useState({});
+    const [opdaterKunde, setOpdaterKunde] = useState(false);
     const [loading, setLoading] = useState(true);
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState(null);
     const [updateOpgave, setUpdateOpgave] = useState(false);
@@ -228,7 +230,7 @@ const ÅbenOpgave = () => {
             })
             .catch(error => console.log(error))
         }
-    }, [opgave])
+    }, [opgave, opdaterKunde])
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
@@ -825,7 +827,7 @@ const ÅbenOpgave = () => {
     const handleFileChange = async (e) => {        
         const selectedFiles = e.target.files;
         const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
-        const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime'];
+        const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/hevc'];
 
         const validFiles = Array.from(selectedFiles).filter(file => 
             allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type)
@@ -893,18 +895,14 @@ const ÅbenOpgave = () => {
                             outputFileName
                         ]);
 
-                        console.log("Reading the compressed file ...")
-                        // Read the compressed video from FFmpeg's virtual file system
                         const compressedVideo = await ffmpeg.readFile(outputFileName);
-                        console.log("Creating blob ...")
-                        // Create a Blob from the compressed video data
                         const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4', name: outputFileName });
-                        console.log("Pushing the file to compressed videos array ...")
-                        // Push the compressed video file to the upload array
                         compressedVideos.push(compressedFile);
-                        setIsCompressingVideo(false)
                     } catch (error) {
                         console.error("Video compression failed", error);
+                        window.alert(`Noget gik galt under behandling af "${file.name}". 
+                            Prøv igen – du kan evt. også prøve at gemme videoen i et andet filformat.`);
+                    } finally {
                         setIsCompressingVideo(false)
                     }
                 }
@@ -1155,34 +1153,9 @@ const ÅbenOpgave = () => {
                             <div className={ÅbenOpgaveCSS.kundeHeadingContainer}>
                                 <b className={ÅbenOpgaveCSS.kundeHeading} onClick={() => navigate(`/kunde/${kunde?._id}`)}>{kunde?.virksomhed ? kunde?.virksomhed : kunde?.navn}</b>
                                 {(!kunde?.CVR && !kunde?.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>CVR: {kunde?.CVR} • Erhvervskunde</p>}
-                                {/* <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button> */}
+                                {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button>}
                             </div>
-                            {/* <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
-                                <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>
-                                <form className={ÅbenOpgaveCSS.redigerKundeForm} onSubmit={redigerKunde}>
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Navn</label>
-                                    <input type="text" name="navn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.navn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, navn: e.target.value})} />
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Adresse</label>
-                                    <input type="text" name="adresse" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.adresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value})} />
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
-                                    <input type="text" name="telefon" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.telefon} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value})} />
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="email">E-mail</label>
-                                    <input type="text" name="email" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.email} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, email: e.target.value})} />
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="virksomhed">Virksomhed</label>
-                                    <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} />
-                                    <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
-                                    <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value})} />
-                                    <div className={SwitcherStyles.checkboxContainer}>
-                                        <label className={SwitcherStyles.switch} htmlFor="isEnglish">
-                                            <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={nyeKundeinformationer.isEnglish} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, isEnglish: e.target.checked})} />
-                                            <span className={SwitcherStyles.slider}></span>
-                                        </label>
-                                        <b>Engelsk kunde</b>
-                                    </div>
-                                    <p style={{marginTop: 10, fontSize: 13}}>(Automatiske e-mails, SMS'er og regninger til kunden vil være på engelsk.)</p>
-                                    <button className={ModalCSS.buttonFullWidth} type="submit">Opdater kunde</button>
-                                </form>
-                            </Modal> */}
+                            
                             <p className={ÅbenOpgaveCSS.adresseTekst}>{kunde?.adresse}, {kunde?.postnummerOgBy}</p>
                             {(kunde?.virksomhed || kunde?.CVR) && 
                             <div className={ÅbenOpgaveCSS.virksomhedInfo}>
@@ -1197,12 +1170,14 @@ const ÅbenOpgave = () => {
                                 <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>
                                 <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>
                             </div>}
+                            {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>}
                             <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + kunde?.telefon}><Phone size="20px"/> {kunde?.telefon}</a>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + kunde?.telefon + "&body=Hej%20" + kunde?.fornavn + ", "}><MessageCircle size="20px" /> SMS</a>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"mailto:" + kunde?.email}><Mail size="20px" /> Mail</a>
                             </div>
                         </div>
+                        <RedigerKundeModal redigerKundeModal={redigerKundeModal} setRedigerKundeModal={setRedigerKundeModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde}/>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
                             <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
                             {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
@@ -1389,7 +1364,7 @@ const ÅbenOpgave = () => {
                                 
                                 {/* InfoLines */}
                                 {!opgave.opgaveAfsluttet && <p className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>🔒</span> Opgaven er markeret som færdig og låst.</p>}
-                                {opgave.fakturaSendt && ((kunde?.virksomhed || kunde?.CVR) ? <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p style={{marginTop: -3}}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Fakturakladde oprettet d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p></div> : <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Åbn</button></a></div>)}
+                                {opgave.fakturaSendt && ((kunde?.virksomhed || kunde?.CVR) ? <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p style={{marginTop: -3}}><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Fakturakladde oprettet d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p></div> : <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{display: "flex", justifyContent: "space-between"}}><p><span style={{fontSize: '1rem', marginRight: 10}}>📨</span> Faktura sendt til kunden d. {new Date(opgave.fakturaSendt).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p><a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Se faktura</button></a></div>)}
                                 {/* const dato = new Date(opgave?.opgaveAfsluttet);
                                 const erGyldigDato = !isNaN(dato); */}
                                 {opgaveAfsluttet && ((typeof opgaveAfsluttet === 'boolean') ? <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet.</p> : <p style={{marginTop: 10}}className={ÅbenOpgaveCSS.infoLine}><span style={{fontSize: '1rem', marginRight: 10}}>✔︎</span> Opgaven er afsluttet d. {new Date(opgave?.opgaveAfsluttet).toLocaleDateString('da-DK', { day: '2-digit', month: 'long', year: 'numeric' })}.</p>)}
@@ -1401,7 +1376,7 @@ const ÅbenOpgave = () => {
                                 {(kunde?.virksomhed || kunde?.CVR) ? 
                                     (!opgave.fakturaSendt && !opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretFakturaModal(true)}>Opret faktura ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som erhvervskunde</span></button> 
                                     : 
-                                    (!opgave.fakturaSendt && !opgave.opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som privatkunde</span></button>
+                                    (!opgave.fakturaSendt && !opgaveAfsluttet) && <button className={ÅbenOpgaveCSS.startBetalingButton} onClick={() => setÅbnOpretRegningModal(true)}>Opret regning ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})<br /><span>Kunden er registreret som privatkunde</span></button>
                                 }
 
                                 {/* <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/> */}

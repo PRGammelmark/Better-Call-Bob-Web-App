@@ -135,19 +135,19 @@ const NyKunde = () => {
                     <div className={styles.kolonner}>
                         <div className={styles.kolonneEt}>
                             <label className={styles.label}>Fornavn</label>
-                            <input tabIndex={1} type="text" name="fornavn" placeholder="Fornavn" className={styles.input} onChange={(e) => setFornavn(e.target.value)} value={fornavn} required/>
+                            <input tabIndex={1} type="text" name="fornavn" placeholder="Fornavn" className={styles.input} onChange={(e) => setFornavn(e.target.value)} value={fornavn} required onBlur={(e) => setFornavn(e.target.value.trim())}/>
                             <label className={styles.label}>Adresse</label>
-                            <input tabIndex={3} type="text" name="adresse" placeholder="Adresse" className={styles.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
+                            <input tabIndex={3} type="text" name="adresse" placeholder="Adresse" className={styles.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required onBlur={(e) => setAdresse(e.target.value.trim())}/>
                             <label className={styles.label}>Evt. virksomhed</label>
-                            <input tabIndex={5} type="text" name="virksomhed" placeholder="Virksomhed" className={styles.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed} />
+                            <input tabIndex={5} type="text" name="virksomhed" placeholder="Virksomhed" className={styles.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed} onBlur={(e) => setVirksomhed(e.target.value.trim())}/>
                         </div>
                         <div className={styles.kolonneTo}>
                             <label className={styles.label}>Efternavn</label>
-                            <input tabIndex={2} type="text" name="efternavn" placeholder="Efternavn" className={styles.input} onChange={(e) => setEfternavn(e.target.value)} value={efternavn} required/>
+                            <input tabIndex={2} type="text" name="efternavn" placeholder="Efternavn" className={styles.input} onChange={(e) => setEfternavn(e.target.value)} value={efternavn} required onBlur={(e) => setEfternavn(e.target.value.trim())}/>
                             <label className={styles.label}>Postnummer og by</label>
-                            <input tabIndex={4} type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={styles.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required/>
+                            <input tabIndex={4} type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={styles.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required onBlur={(e) => setPostnummerOgBy(e.target.value.trim())}/>
                             <label className={styles.label}>Evt. CVR</label>
-                            <input tabIndex={6} type="text" name="cvr" placeholder="CVR" className={styles.input} onChange={(e) => setCvr(e.target.value)} value={cvr} />
+                            <input tabIndex={6} type="text" name="cvr" placeholder="CVR" className={styles.input} onChange={(e) => setCvr(e.target.value)} value={cvr} onBlur={(e) => setCvr(e.target.value.replace(/\s+/g, ''))}/>
                         </div>
                     </div>
                     <div className={styles.noterWrapper}>
@@ -167,11 +167,11 @@ const NyKunde = () => {
                     <div className={styles.kolonner}>
                         <div className={styles.kolonneEt}>
                             <label className={styles.label}>Email</label>
-                            <input tabIndex={8} type="text" name="email" placeholder="Email" className={styles.input} onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                            <input tabIndex={8} type="text" name="email" placeholder="Email" className={styles.input} onChange={(e) => setEmail(e.target.value)} value={email} required onBlur={(e) => setEmail(e.target.value.replace(/\s+/g, ''))}/>
                         </div>
                         <div className={styles.kolonneTo}>
                             <label className={styles.label}>Telefon</label>
-                            <input tabIndex={9} type="text" name="telefon" placeholder="Telefon" className={styles.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} />
+                            <input tabIndex={9} type="text" name="telefon" placeholder="Telefon" className={styles.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} onBlur={(e) => setTelefon(e.target.value.replace(/\s+/g, ''))}/>
                         </div>
                     </div>
                     <div style={{marginTop: 30, display: "flex", flexDirection: "column", gap: 8}}>

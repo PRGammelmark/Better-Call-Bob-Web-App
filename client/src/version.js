@@ -13,24 +13,21 @@
 // ===================================================
 // 
 
-// {
-//     version: "2.1.2",
-//     date: "2. juli 2025",
-//     changes: [
-//         "Afsluttede opgaver for privatkunder viser nu ikke længere 'Betal nu'-knappen umiddelbart efter at faktura er blevet oprettet på opgaven. Det gjorde de før ved en fejl.",
-//         "Implementerede bedre fejlhåndtering, når man forsøger at uploade videoer på opgaver.",
-//         "Ledige tider blev i nogle tilfælde fejlrepræsenteret pga. tidszoneforskelle i kalenderen. Dette er nu rettet.",
-//         "Nu kan medarbejdere slette deres egne ledige tider i både overbliks- og opgavekalenderen. Administratorer kan slette egne og andres i de samme kalendere.",
-//         "Fremover vil alle kalendre i app'en automatisk opdatere sig selv hvert 15. minut. Dette mindsker risikoen for, at brugere og administratorer sidder med forældede informationer.",
-//         "Når man opretter en ny kunde i 'Ny opgave'-formularen vil felterne nu fjerne alle mellemrum i CVR-, telefon- og email-felterne. Derudover vil input-felterne i de øvrige automatisk fjerne ekstra mellemrum før og efter inputtet.",
-//         "Det samme gør sig gældende når man opretter en ny kunde i 'Ny kunde'-formularen, såvel som når man redigerer en eksisterende kunde.",
-//         "Tilføjede mulighed for at ændre en kundes telefonnummer.",
-//         "Nu kan administratorer redigere i en kundes informationer direkte fra opgave-siden.",
-        
-//     ]
-// }
-
 const changes = [{
+    version: "2.1.4",
+    date: "2. juli 2025",
+    changes: [
+        "Afsluttede opgaver for privatkunder viser nu ikke længere 'Betal nu'-knappen umiddelbart efter at faktura er blevet oprettet på opgaven. Det gjorde de før ved en fejl.",
+        "Implementerede bedre fejlhåndtering, når man forsøger at uploade videoer på opgaver.",
+        "Ledige tider blev i nogle tilfælde fejlrepræsenteret pga. tidszoneforskelle i kalenderen. Dette er nu rettet.",
+        "Nu kan medarbejdere slette deres egne ledige tider i både overbliks- og opgavekalenderen. Administratorer kan slette egne og andres i de samme kalendere.",
+        "Fremover vil alle kalendre i app'en automatisk opdatere sig selv hvert 15. minut. Dette mindsker risikoen for, at brugere og administratorer sidder med forældede informationer.",
+        "Når man opretter en ny kunde i 'Ny opgave'-formularen vil felterne nu fjerne alle mellemrum i CVR-, telefon- og email-felterne. Derudover vil input-felterne i de øvrige automatisk fjerne ekstra mellemrum før og efter inputtet.",
+        "Det samme gør sig gældende når man opretter en ny kunde i 'Ny kunde'-formularen, såvel som når man redigerer en eksisterende kunde.",
+        "Tilføjede mulighed for at ændre en eksisterende kundes telefonnummer (hvilket af Gud ved hvilken årsag ikke var muligt tidligere).",
+        "Nu kan administratorer redigere i en kundes informationer direkte fra opgave-siden."
+    ]
+},{
     version: "2.1.3",
     date: "2. juli 2025",
     changes: [

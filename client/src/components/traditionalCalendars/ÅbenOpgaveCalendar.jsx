@@ -725,9 +725,8 @@ const onRedigerLedigTid = (e) => {
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>}
         {(user.isAdmin || (eventData?.brugerID === userID)) && (opgaveTilknyttetBesøg?.objectIsLedigTid ? 
-        
           // Knapper til ledig tid
-          <div className={ModalStyles.deleteEditButtons} style={{marginTop: -10}}>
+          <div className={ModalStyles.deleteEditButtons} style={{marginTop: 10}}>
                 <button 
                   className={ModalStyles.deleteButton} 
                   onClick={() => {sletLedigTid()}}

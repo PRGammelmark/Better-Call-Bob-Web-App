@@ -509,8 +509,7 @@ const onRedigerBesøg = (e) => {
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
           <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
         </Link>}
-        {(user.isAdmin || (eventData && eventData._id === userID)) && opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
-        fratrækBesøgFraLedigeTider === false && (
+        {(user.isAdmin || (eventData?._id === userID)) && opgaveTilknyttetBesøg?.objectIsLedigTid ? (
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons}>
             {eventData && (
@@ -533,14 +532,6 @@ const onRedigerBesøg = (e) => {
                   }}
                 >
                   Slet ledig tid
-                </button>
-                <button 
-                  className={ModalStyles.editButton} 
-                  onClick={() => {
-                    openEditDialog();
-                  }}
-                >
-                  Rediger ledig tid
                 </button>
               </>
             )}

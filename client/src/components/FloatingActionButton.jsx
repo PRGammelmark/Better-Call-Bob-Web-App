@@ -170,9 +170,12 @@ const FloatingActionButton = () => {
     function submitNewEnkeltLedighed(e){
         e.preventDefault();
 
+        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
+        const datoTidTil = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
+
         const enkeltLedighed = {
-            datoTidFra: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
-            datoTidTil: dayjs(`${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
+            datoTidFra,
+            datoTidTil,
             brugerID: userID,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true

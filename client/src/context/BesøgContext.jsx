@@ -6,7 +6,6 @@ const BesøgContext = createContext();
 export const BesøgProvider = ({ children }) => {
     const { user } = useAuthContext();
     
-    // Declare all hooks at the top
     const [alleBesøg, setAlleBesøg] = useState([]);
     const [egneBesøg, setEgneBesøg] = useState([]);
     const [alleLedigeTider, setAlleLedigeTider] = useState([]);
@@ -15,6 +14,17 @@ export const BesøgProvider = ({ children }) => {
     const [refetchLedigeTider, setRefetchLedigeTider] = useState(false);
     const [medarbejdere, setMedarbejdere] = useState([]);
     const [refetchMedarbejdere, setRefetchMedarbejdere] = useState(false);
+    
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setRefetchBesøg(prev => !prev);
+            setRefetchLedigeTider(prev => !prev);
+            console.log("Refetching besøg og ledige tider");
+        }, 15 * 60 * 1000); // 15 minutter
+    
+        return () => clearInterval(interval); // Cleanup
+    }, []);
+    
     // Conditionally execute side-effects but don't return early
     useEffect(() => {
         if (user) {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Modal from '../Modal'
 import ModalCSS from '../Modal.module.css'
 import Styles from './RedigerKundeModal.module.css'
@@ -12,7 +12,9 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
     const { user } = useAuthContext()
     
     const [nyeKundeinformationer, setNyeKundeinformationer] = useState({
-        navn: kunde?.navn,
+        fornavn: kunde?.fornavn,
+        efternavn: kunde?.efternavn,
+        navn: kunde?.fornavn + " " + kunde?.efternavn,
         adresse: kunde?.adresse,
         postnummerOgBy: kunde?.postnummerOgBy,
         telefon: kunde?.telefon,
@@ -24,6 +26,34 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
         måKontaktesMedReklame: kunde?.måKontaktesMedReklame
     })
     const [error, setError] = useState("")
+
+    // Sætter friske kundeinformationer i modalen, når kunden er initialiseret i parent-komponenten
+    useEffect(() => {
+        if (kunde) {
+            setNyeKundeinformationer({
+                fornavn: kunde.fornavn || "",
+                efternavn: kunde.efternavn || "",
+                navn: (kunde.fornavn || "") + " " + (kunde.efternavn || ""),
+                adresse: kunde.adresse || "",
+                postnummerOgBy: kunde.postnummerOgBy || "",
+                telefon: kunde.telefon || "",
+                email: kunde.email || "",
+                virksomhed: kunde.virksomhed || "",
+                CVR: kunde.CVR || "",
+                engelskKunde: kunde.engelskKunde || false,
+                harStige: kunde.harStige || false,
+                måKontaktesMedReklame: kunde.måKontaktesMedReklame || false
+            })
+        }
+    }, [kunde])
+
+    // Sikrer, at navn opdateres korrekt, når fornavn eller efternavn ændres
+    useEffect(() => {
+        setNyeKundeinformationer(prev => ({
+            ...prev,
+            navn: `${prev.fornavn} ${prev.efternavn}`.trim()
+        }))
+    }, [nyeKundeinformationer.fornavn, nyeKundeinformationer.efternavn])
 
     function redigerKunde(e) {
         e.preventDefault()
@@ -44,24 +74,30 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
         })
     }
 
+    useEffect(() => {
+        console.log(kunde)
+    }, [redigerKundeModal])
+
   return (
     <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>
             <form className={ÅbenOpgaveCSS.redigerKundeForm} onSubmit={redigerKunde}>
-                <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Navn</label>
-                <input type="text" name="navn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.navn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, navn: e.target.value})} />
+                <label className={ÅbenOpgaveCSS.label} htmlFor="fornavn">Fornavn</label>
+                <input type="text" name="fornavn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.fornavn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, fornavn: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, fornavn: e.target.value.trim()})}/>
+                <label className={ÅbenOpgaveCSS.label} htmlFor="efternavn">Efternavn</label>
+                <input type="text" name="efternavn" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.efternavn} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, efternavn: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, efternavn: e.target.value.trim()})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="navn">Adresse</label>
-                <input type="text" name="adresse" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.adresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value})} />
+                <input type="text" name="adresse" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.adresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, adresse: e.target.value.trim()})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="postnummerOgBy">Postnummer og by</label>
-                <input type="text" name="postnummerOgBy" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.postnummerOgBy} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, postnummerOgBy: e.target.value})} />
-                <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
-                <input type="text" name="telefon" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.telefon} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value})} />
+                <input type="text" name="postnummerOgBy" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.postnummerOgBy} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, postnummerOgBy: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, postnummerOgBy: e.target.value.trim()})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="email">E-mail</label>
-                <input type="text" name="email" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.email} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, email: e.target.value})} />
+                <input type="text" name="email" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.email} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, email: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, email: e.target.value.replace(/\s+/g, '')})}/>
+                <label className={ÅbenOpgaveCSS.label} htmlFor="telefon">Telefon</label>
+                <input type="text" name="telefon" required className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.telefon} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, telefon: e.target.value.replace(/\s+/g, '')})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="virksomhed">Virksomhed</label>
-                <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} />
+                <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value.trim()})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
-                <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value})} />
+                <input type="text" name="cvr" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value.replace(/\s+/g, '')})}/>
                 <div className={SwitcherStyles.checkboxContainer}>
                     <label className={SwitcherStyles.switch} htmlFor="måKontaktesMedReklame">
                         <input type="checkbox" id="måKontaktesMedReklame" name="måKontaktesMedReklame" className={SwitcherStyles.checkboxInput} checked={nyeKundeinformationer.måKontaktesMedReklame} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, måKontaktesMedReklame: e.target.checked})} />
