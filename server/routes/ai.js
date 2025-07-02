@@ -25,7 +25,7 @@ router.post("/parseOpgaveFromText", async (req, res) => {
           role: "system",
           content: `Udtræk følgende felter fra teksten og returnér som ren JSON: 
             fornavn, efternavn, email, telefon, virksomhed, cvr, adresse, postnummerOgBy. Hvis information mangler, så brug empty string. Email, telefon og cvr må ikke indeholde mellemrum.
-            Svar kun med gyldig JSON uden yderligere tekst.`
+            Returnér kun gyldig JSON som output, uden markdown eller forklaringer.`
         },
         {
           role: "user",

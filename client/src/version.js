@@ -31,6 +31,13 @@
 // }
 
 const changes = [{
+    version: "2.1.3",
+    date: "2. juli 2025",
+    changes: [
+        "Rettede en fejl, hvor processen for AI-udtræk af data fra opgavebeskrivelsen ikke kunne startes igen før page reload, hvis der var en fejl i AI'ens output. Tilføjede derudover fejlmeddelelser, der beskriver hvad der gik galt, hvis der opstod en fejl.",
+        "Gjorde AI-outputtet mere stabilt i data-udtræk fra opgavebeskrivelsen."
+    ]
+},{
     version: "2.1.2",
     date: "2. juli 2025",
     changes: [

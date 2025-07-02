@@ -364,47 +364,64 @@ const NyOpgave = () => {
     
     const aiUdtrækData = async () => {
         setUdtrækkerData(true)
+        setOpgavebeskrivelseError(null)
         
-        const response = await axios.post(`${import.meta.env.VITE_API_URL}/ai/parseOpgaveFromText`, {
-            tekstblok: opgaveBeskrivelse
-        })
-        
-        console.log(response.data)
-
-        if(response.data.fornavn){
-            setFornavn(response.data.fornavn)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/ai/parseOpgaveFromText`, {
+                tekstblok: opgaveBeskrivelse
+            })
+            
+            console.log(response.data)
+    
+            if(response.data.fornavn){
+                setFornavn(response.data.fornavn)
+            }
+    
+            if(response.data.efternavn){
+                setEfternavn(response.data.efternavn)
+            }
+    
+            if(response.data.adresse){
+                setAdresse(response.data.adresse)
+            }
+    
+            if(response.data.postnummerOgBy){
+                setPostnummerOgBy(response.data.postnummerOgBy)
+            }
+    
+            if(response.data.email){
+                setEmail(response.data.email)
+            }
+    
+            if(response.data.telefon){
+                setTelefon(response.data.telefon)
+            }
+            
+            if(response.data.virksomhed){
+                setVirksomhed(response.data.virksomhed)
+            }
+    
+            if(response.data.CVR){
+                setCVR(response.data.CVR)
+            }
+    
+            setUdtrækkerData(false)
+    
+            if(response.data.fornavn || response.data.efternavn || response.data.adresse || response.data.postnummerOgBy || response.data.email || response.data.telefon || response.data.virksomhed || response.data.CVR){
+                setDataUdtrukket(true)
+            } else {
+                setDataUdtrukket(false)
+                setOpgavebeskrivelseError("Ingen gyldige data blev fundet i opgavebeskrivelsen.")
+            }
+        } catch (error) {
+            if(error.response.data.error){
+                setOpgavebeskrivelseError(error.response.data.error)
+                console.log(error.response.data)
+            } else {
+                setOpgavebeskrivelseError("En fejl opstod under udtrækning af data.")
+            }
+            setUdtrækkerData(false)
         }
-
-        if(response.data.efternavn){
-            setEfternavn(response.data.efternavn)
-        }
-
-        if(response.data.adresse){
-            setAdresse(response.data.adresse)
-        }
-
-        if(response.data.postnummerOgBy){
-            setPostnummerOgBy(response.data.postnummerOgBy)
-        }
-
-        if(response.data.email){
-            setEmail(response.data.email)
-        }
-
-        if(response.data.telefon){
-            setTelefon(response.data.telefon)
-        }
-        
-        if(response.data.virksomhed){
-            setVirksomhed(response.data.virksomhed)
-        }
-
-        if(response.data.CVR){
-            setCVR(response.data.CVR)
-        }
-
-        setUdtrækkerData(false)
-        setDataUdtrukket(true)
     }
 
   return (
