@@ -43,7 +43,6 @@
 .opgavebeskrivelse {
     width: 100%;
     border-radius: 15px;
-    margin-bottom: 20px;
     padding: 8px 20px;
     font-family: Omnes;
     font-size: 0.9rem;
@@ -52,6 +51,40 @@
     border: none;
     transition: 0.2s ease;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+}
+
+.opgavebeskrivelseContainer {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.aiParseButton {
+    position: absolute;
+    right: 10px;
+    bottom: 15px;
+    border-radius: 10px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    padding: 8px 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 130px;
+    height: 30px;
+    gap: 6px;
+}
+
+.aiParseButton:hover {
+    background: rgba(89, 191, 26, 1);
+}
+
+.aiParseButtonSuccess {
+    background: #59bf1a;
 }
 
 .opgavebeskrivelse:focus {

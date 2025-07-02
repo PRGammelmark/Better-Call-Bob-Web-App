@@ -19,8 +19,9 @@ import KunderTabel from '../components/tables/KunderTabel'
 import MedarbejdereTabel from '../components/tables/MedarbejdereTabel'
 import NyOpgaveMedarbejderCalendar from '../components/traditionalCalendars/NyOpgaveMedarbejderCalendar'
 import axios from 'axios'
-import { ArrowRight, CircleCheck } from 'lucide-react'
+import { ArrowRight, CircleCheck, Bot } from 'lucide-react'
 import dayjs from 'dayjs'
+import { PulseLoader } from "react-spinners";
 
 
 const NyOpgave = () => {
@@ -59,6 +60,8 @@ const NyOpgave = () => {
     const [loading, setLoading] = useState(false);
     const [opgaveID, setOpgaveID] = useState("");
     const [search, setSearch] = useState("");
+    const [udtrækkerData, setUdtrækkerData] = useState(false);
+    const [dataUdtrukket, setDataUdtrukket] = useState(true);
 
     // State managers for opgave
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("");
@@ -175,6 +178,10 @@ const NyOpgave = () => {
             setBekræftDetaljer(false);
         }
     }, [valgtMedarbejder])
+
+    useEffect(() => {
+        setDataUdtrukket(false)
+    }, [opgaveBeskrivelse])
 
     const submitOpgave = async (e) => {
         e.preventDefault();
@@ -355,6 +362,50 @@ const NyOpgave = () => {
 
     }
     
+    const aiUdtrækData = async () => {
+        setUdtrækkerData(true)
+        
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/ai/parseOpgaveFromText`, {
+            tekstblok: opgaveBeskrivelse
+        })
+        
+        console.log(response.data)
+
+        if(response.data.fornavn){
+            setFornavn(response.data.fornavn)
+        }
+
+        if(response.data.efternavn){
+            setEfternavn(response.data.efternavn)
+        }
+
+        if(response.data.adresse){
+            setAdresse(response.data.adresse)
+        }
+
+        if(response.data.postnummerOgBy){
+            setPostnummerOgBy(response.data.postnummerOgBy)
+        }
+
+        if(response.data.email){
+            setEmail(response.data.email)
+        }
+
+        if(response.data.telefon){
+            setTelefon(response.data.telefon)
+        }
+        
+        if(response.data.virksomhed){
+            setVirksomhed(response.data.virksomhed)
+        }
+
+        if(response.data.CVR){
+            setCVR(response.data.CVR)
+        }
+
+        setUdtrækkerData(false)
+        setDataUdtrukket(true)
+    }
 
   return (
     <PageAnimation>
@@ -403,7 +454,10 @@ const NyOpgave = () => {
                     {trinEtOpgaveOgKunde && <PageAnimation>
                     <div>
                         <label className={NyOpgaveCSS.label}>Opgavebeskrivelse</label>
-                        <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required onBlur={() => checkOpgaveBeskrivelse()} onFocus={() => setOpgavebeskrivelseError(null)}/>
+                        <div className={NyOpgaveCSS.opgavebeskrivelseContainer}>
+                            <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required onBlur={() => checkOpgaveBeskrivelse()} onFocus={() => setOpgavebeskrivelseError(null)}/>
+                            {opgaveBeskrivelse.length > 10 && <button type="button" className={`${NyOpgaveCSS.aiParseButton} ${dataUdtrukket ? NyOpgaveCSS.aiParseButtonSuccess : ""}`} onClick={aiUdtrækData}>{dataUdtrukket ? "Succes!" : (udtrækkerData ? <PulseLoader color="#fff" size={5} /> : <><Bot size={16} style={{marginBottom: 2, marginLeft: -2}} /> Udtræk data</>)}</button>}
+                        </div>
                         {opgavebeskrivelseError && <p className={NyOpgaveCSS.opgavebeskrivelseError}>{opgavebeskrivelseError}</p>}
                         {/* <label className={NyOpgaveCSS.label}>Ønskes opgaven udført på et bestemt tidspunkt?</label>
                         <input type="datetime-local" name="tid&dato" className={NyOpgaveCSS.input} onChange={(e) => setOnsketDato(e.target.value)} value={onsketDato} /> */}
@@ -435,23 +489,23 @@ const NyOpgave = () => {
                                 <div className={NyOpgaveCSS.kolonner}>
                                     <div className={NyOpgaveCSS.kolonneEt}>
                                         <label className={NyOpgaveCSS.label}>Fornavn</label>
-                                        <input type="text" name="fornavn" placeholder="Fornavn" className={NyOpgaveCSS.input} onChange={(e) => setFornavn(e.target.value)} value={fornavn} required/>
+                                        <input type="text" name="fornavn" placeholder="Fornavn" className={NyOpgaveCSS.input} onChange={(e) => setFornavn(e.target.value)} value={fornavn} required onBlur={(e) => setFornavn(e.target.value.trim())}/>
                                         <label className={NyOpgaveCSS.label}>Efternavn</label>
-                                        <input type="text" name="efternavn" placeholder="Efternavn" className={NyOpgaveCSS.input} onChange={(e) => setEfternavn(e.target.value)} value={efternavn} required/>
+                                        <input type="text" name="efternavn" placeholder="Efternavn" className={NyOpgaveCSS.input} onChange={(e) => setEfternavn(e.target.value)} value={efternavn} required onBlur={(e) => setEfternavn(e.target.value.trim())}/>
                                         <label className={NyOpgaveCSS.label}>Adresse</label>
-                                        <input type="text" name="adresse" placeholder="Adresse" className={NyOpgaveCSS.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required/>
+                                        <input type="text" name="adresse" placeholder="Adresse" className={NyOpgaveCSS.input} onChange={(e) => setAdresse(e.target.value)} value={adresse} required onBlur={(e) => setAdresse(e.target.value.trim())}/>
                                         <label className={NyOpgaveCSS.label}>Postnummer og by</label>
-                                        <input type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={NyOpgaveCSS.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required/>
+                                        <input type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={NyOpgaveCSS.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required onBlur={(e) => setPostnummerOgBy(e.target.value.trim())}/>
                                     </div>
                                     <div className={NyOpgaveCSS.kolonneTo}>
                                         <label className={NyOpgaveCSS.label}>Evt. CVR</label>
-                                        <input type="text" name="CVR" className={NyOpgaveCSS.input} onChange={(e) => setCVR(e.target.value)} value={CVR}/>
+                                        <input type="text" name="CVR" className={NyOpgaveCSS.input} onChange={(e) => setCVR(e.target.value)} value={CVR} onBlur={(e) => setCVR(e.target.value.replace(/\s+/g, ''))}/>
                                         <label className={NyOpgaveCSS.label}>Evt. virksomhed</label>
-                                        <input type="text" name="virksomhed" className={NyOpgaveCSS.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed}/>
+                                        <input type="text" name="virksomhed" className={NyOpgaveCSS.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed} onBlur={(e) => setVirksomhed(e.target.value.trim())}/>
                                         <label className={NyOpgaveCSS.label}>Telefon</label>
-                                        <input type="tel" name="telefon" className={NyOpgaveCSS.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} required/>
+                                        <input type="tel" name="telefon" className={NyOpgaveCSS.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} required onBlur={(e) => setTelefon(e.target.value.replace(/\s+/g, ''))}/>
                                         <label className={NyOpgaveCSS.label}>Email</label>
-                                        <input type="email" name="email" className={NyOpgaveCSS.input} onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                                        <input type="email" name="email" className={NyOpgaveCSS.input} onChange={(e) => setEmail(e.target.value)} value={email} required onBlur={(e) => setEmail(e.target.value.replace(/\s+/g, ''))}/>
                                     </div>
                                 </div>
                                 <div style={{marginTop: 20}}>

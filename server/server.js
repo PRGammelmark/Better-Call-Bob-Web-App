@@ -22,6 +22,7 @@ import cron from 'node-cron';
 import rateLimit from 'express-rate-limit';
 import { sendPushNotification } from './utils/pushService.js';
 import { collectKvitteringer } from './utils/collectKvitteringer.js';
+import aiRoutes from './routes/ai.js';
 
 dotenv.config();
 const app = express();
@@ -125,6 +126,9 @@ cron.schedule('0 0 * * *', async () => {
 // collectKvitteringer();
 
 // Månedlig udlægsrapport
+
+// AI-parsing af opgaver
+app.use('/api/ai', aiRoutes);
 
 
 // connect to db

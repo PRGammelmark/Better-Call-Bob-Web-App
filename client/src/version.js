@@ -13,18 +13,31 @@
 // ===================================================
 // 
 
-
-
-// version: "2.0.10",
-//     date: "27. juni 2025",
+// {
+//     version: "2.1.2",
+//     date: "2. juli 2025",
 //     changes: [
-//         "Når man tidligere oprettede et besøg på en eksisterende opgave, så blev kunden ikke korrekt vist i popup-vinduet. Dette er nu rettet.",
-//         "Når man opretter en ny opgave er fanen 'Opgave' og 'Kunde' nu samlet i ét trin i stedet for flere. Derudover antager formularen nu også, at man vil oprette en ny kunde før man vælger det – og man kan altid vælge at finde en eksisterende kunde til den nye opgave i stedet.",
-//         "Rettede en fejl i push-notifikationen, som administratoren modtager når en kunde har fået tilsendt en faktura – linket virkede ikke tidligere. Det gør det nu.",
-//         "Smårettelser og justeringer."
+//         "Afsluttede opgaver for privatkunder viser nu ikke længere 'Betal nu'-knappen umiddelbart efter at faktura er blevet oprettet på opgaven. Det gjorde de før ved en fejl.",
+//         "Implementerede bedre fejlhåndtering, når man forsøger at uploade videoer på opgaver.",
+//         "Ledige tider blev i nogle tilfælde fejlrepræsenteret pga. tidszoneforskelle i kalenderen. Dette er nu rettet.",
+//         "Nu kan medarbejdere slette deres egne ledige tider i både overbliks- og opgavekalenderen. Administratorer kan slette egne og andres i de samme kalendere.",
+//         "Fremover vil alle kalendre i app'en automatisk opdatere sig selv hvert 15. minut. Dette mindsker risikoen for, at brugere og administratorer sidder med forældede informationer.",
+//         "Når man opretter en ny kunde i 'Ny opgave'-formularen vil felterne nu fjerne alle mellemrum i CVR-, telefon- og email-felterne. Derudover vil input-felterne i de øvrige automatisk fjerne ekstra mellemrum før og efter inputtet.",
+//         "Det samme gør sig gældende når man opretter en ny kunde i 'Ny kunde'-formularen, såvel som når man redigerer en eksisterende kunde.",
+//         "Tilføjede mulighed for at ændre en kundes telefonnummer.",
+//         "Nu kan administratorer redigere i en kundes informationer direkte fra opgave-siden.",
+        
 //     ]
+// }
 
 const changes = [{
+    version: "2.1.2",
+    date: "2. juli 2025",
+    changes: [
+        "Når man opretter en ny kunde i 'Ny opgave'-formularen vil felterne nu fjerne alle mellemrum i CVR-, telefon- og email-felterne. Derudover vil input-felterne i de øvrige automatisk fjerne ekstra mellemrum før og efter inputtet.",
+        "Implementerede en AI, der automatisk kan udtrække data fra opgavebeskrivelsen og indsætte det i de relevante felter i 'Ny opgave'-formularen."
+    ]
+},{
     version: "2.1.1",
     date: "1. juli 2025",
     changes: [
