@@ -74,10 +74,6 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
         })
     }
 
-    useEffect(() => {
-        console.log(kunde)
-    }, [redigerKundeModal])
-
   return (
     <Modal trigger={redigerKundeModal} setTrigger={setRedigerKundeModal}>
             <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger kundeinformationer</h2>

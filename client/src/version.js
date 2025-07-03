@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "2.1.6",
+    date: "3. juli 2025",
+    changes: [
+        "Opdateringer af databasemodeller – gør dataflow lettere i app'en.",
+        "Småt oprydningsarbejde."
+    ]
+},{
     version: "2.1.5",
     date: "3. juli 2025",
     changes: [

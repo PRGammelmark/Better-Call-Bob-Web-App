@@ -12,8 +12,8 @@ const ledigeTiderSchema = new Schema({
         required: true
     },
     brugerID: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'Bruger'
     },
     kommentar: {
         type: String,

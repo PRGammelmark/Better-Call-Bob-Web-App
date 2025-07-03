@@ -8,12 +8,12 @@ const kommentarSchema = new Schema({
         required: true
     },
     brugerID: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'Bruger'
     },
     opgaveID: {
-        type: String,
-        required: true
+        type: Schema.Types.ObjectId,
+        ref: 'Opgave'
     }
 }, { timestamps: true })
 

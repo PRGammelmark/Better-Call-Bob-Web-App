@@ -49,7 +49,7 @@ function App() {
       navigator.serviceWorker
         .register('/sw.js')
         .then(reg => {
-          console.log('✅ Service Worker registered:', reg);
+          // console.log('✅ Service Worker registered:', reg);
         })
         .catch(err => {
           console.error('❌ Service Worker registration failed:', err);
@@ -57,7 +57,7 @@ function App() {
   
       navigator.serviceWorker.ready
         .then(reg => {
-          console.log('✅ Service Worker ready:', reg);
+          // console.log('✅ Service Worker ready:', reg);
         })
         .catch(err => {
           console.error('❌ Service Worker ready error:', err);

@@ -534,12 +534,12 @@ const ÅbenOpgave = () => {
         }
     }
 
-    function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
-        if (opgave && opgave.fakturaPDFUrl) {
-            const baseURL = import.meta.env.VITE_API_URL;
-            window.open(`${baseURL}${opgave.fakturaPDFUrl}`, '_blank');
-        }
-    }
+    // function openPDFFromDatabase(base64PDF, fileName = 'faktura.pdf') {
+    //     if (opgave && opgave.fakturaPDFUrl) {
+    //         const baseURL = import.meta.env.VITE_API_URL;
+    //         window.open(`${baseURL}${opgave.fakturaPDFUrl}`, '_blank');
+    //     }
+    // }
 
     function sletOpgave() {
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {

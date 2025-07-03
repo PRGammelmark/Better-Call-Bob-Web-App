@@ -3,134 +3,37 @@ import mongoose from "mongoose"
 const Schema = mongoose.Schema;
 
 const opgaverSchema = new Schema({
-    opgaveBeskrivelse: {
-        type: String,
-        required: true
-    },
-    // navn: {
-    //     type: String,
-    //     required: true
-    // },
-    // CVR: {
-    //     type: String,
-    //     required: false
-    // },
-    // virksomhed: {
-    //     type: String,
-    //     required: false
-    // },
-    // adresse: {
-    //     type: String,
-    //     required: true
-    // },
-    // postnummerOgBy: {
-    //     type: String,
-    //     required: true
-    // },
-    // telefon: {
-    //     type: Number,
-    //     required: true
-    // },
-    // email: {
-    //     type: String,
-    //     required: true
-    // },
-    onsketDato: {
-        type: Date,
-        required: false
-    },
-    // harStige: {
-    //     type: Boolean,
-    //     default: false
-    // },
+    opgaveBeskrivelse: String,
+    onsketDato: Date,
     status: {
         type: String,
-        required: true,
         default: "Modtaget"
     },
     ansvarlig: [{
-        type: Object,
-        required: false
+        type: Object
     }],
-    planlagt: [{
-        dato: Date,
-        tidFra: String,
-        tidTil: String,
-        ansvarlig: String
-    }],
-    fakturaOprettesManuelt: {
-        type: Boolean,
-        default: false
-    },
-    tilbudAfgivet: {
-        type: String,
-        required: false
-    },
-    fastlagtFakturaBeløb: {
-        type: Number,
-        required: false
-    },
-    markeretSomFærdig: {
-        type: Boolean,
-        default: false
-    },
-    opgaveAfsluttet: {
-        type: Date,
-        default: false,
-        required: false
-    },
-    opgaveBetaltMedMobilePay: {
-        type: String,
-        required: false
-    },
-    fakturaSendt: {
-        type: String,
-        required: false
-    },
-    fakturaPDF: {
-        type: Buffer,
-        required: false
-    },
-    fakturaPDFUrl: {
-        type: String,
-        required: false
-    },
-    fakturaBetalt: {
-        type: String,
-        required: false
-    },
-    opgaveBetaltPåAndenVis: {
-        type: Date,
-        default: null,
-        required: false
-    },
+    fakturaOprettesManuelt: Boolean,
+    tilbudAfgivet: String,
+    markeretSomFærdig: Boolean,
+    opgaveAfsluttet: Date,
+    opgaveBetaltMedMobilePay: String,
+    fakturaSendt: String,
+    fakturaPDF: Buffer,
+    fakturaPDFUrl: String,
+    fakturaBetalt: String,
+    opgaveBetaltPåAndenVis: Date,
     incrementalID: {
         type: Number,
         unique: true
     },
-    sidsteSMSSendtTilKundenOmPåVej: {
-        type: Date,
-        required: false
-    },
-    isDeleted: {
-        type: Date,
-        default: false
-    },
-    posteringer: [{
-        type: Array,
-        required: false
-    }],
-    opgaveBilleder: {
-        type: [String],
-        required: false
-    },
-    // isEnglish: {
-    //     type: Boolean,
-    //     default: false
-    // },
-    kundeID: {
-        type: String,
-        required: false
+    sidsteSMSSendtTilKundenOmPåVej: Date,
+    isDeleted: Date,
+    // posteringer: Array,
+    opgaveBilleder: Array,
+    kundeID: String,
+    kunde: {
+        type: Schema.Types.ObjectId,
+        ref: 'Kunde'
     }
 }, { timestamps: true })
 
