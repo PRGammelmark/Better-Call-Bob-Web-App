@@ -147,7 +147,7 @@ const useBetalMedMobilePayQR = (user, opgave, opgaveID, kunde, posteringer, setO
         })
         .then(response => {
             console.log(response.data)
-            if (response.data === 'AUTHORIZED') {
+            if (response.data.status === 'CAPTURED') {
                 setOpgaveAfsluttet(true)
                 setQrPaymentAuthorized(true)
                 axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {

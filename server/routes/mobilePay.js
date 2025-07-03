@@ -164,8 +164,34 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
             })
             .then(response => {
                 console.log(response.data.state);
+                console.log(response.data)
                 if (response.data.state === 'AUTHORIZED') {
-                    return res.status(200).json(response.data.state);
+                    // return res.status(200).json(response.data.state);
+
+                    // Capture betaling
+                    axios.post(`https://api.vipps.no/epayment/v1/payments/${orderId}/capture`, {
+                        modificationAmount: {
+                            currency: "DKK",
+                            value: response.data.amount.value // eller et hardkodet beløb f.eks. 49900
+                        }
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${accessToken}`,
+                            'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
+                            'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
+                            'Idempotency-Key': `${uuidv4()}` // idempotency key
+                        }
+                    })
+                    .then(captureResponse => {
+                        console.log("Capture successful:", captureResponse.data);
+                        return res.status(200).json({ status: 'CAPTURED', data: captureResponse.data });
+                    })
+                    .catch(captureError => {
+                        console.error('Error capturing payment: ', captureError.response?.data || captureError);
+                        return res.status(500).json({ error: 'Failed to capture payment' });
+                    });
+
                 } else if (response.data.state === 'ABORTED') {
                     return res.status(200).json(response.data.state);
                 } else if (response.data.state === 'FAILED') {

@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "2.1.5",
+    date: "3. juli 2025",
+    changes: [
+        "Førhen blev Mobile Pay-betalinger blot reserveret på kundens konto når kunden godkendte en Mobile Pay-betaling. Nu bliver de trukket med det samme umiddelbart efter reservationen.",
+        "Rettede en fejl, hvor en åben opgave ikke afsluttede sig selv før reload efter succesfuld Mobile Pay-betaling."
+    ]
+},{
     version: "2.1.4",
     date: "2. juli 2025",
     changes: [

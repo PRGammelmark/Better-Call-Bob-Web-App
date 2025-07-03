@@ -4,7 +4,7 @@ import satser from "../variables";
 import BCBLogo from "../assets/mobilePay.png";
 import Logo from "../assets/bcb-logo.svg"
 
-const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish) => {
+const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish, setOpgaveAfsluttet) => {
 
     console.log("Betaling med Mobile Pay via anmodning igangsættes.")
 
@@ -230,7 +230,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, kunde, posteri
         })
         .then(response => {
             console.log(response.data)
-            if (response.data === 'AUTHORIZED') {
+            if (response.data.status === 'CAPTURED') {
                 setQrPaymentAuthorized(true)
                 setLoadingMobilePaySubmission(false)
                 setSuccessMobilePaySubmission(true)
@@ -244,6 +244,7 @@ const useBetalMedMobilePayViaAnmodning = (user, opgave, opgaveID, kunde, posteri
                 .then(response => {
                     console.log('Opgaven er afsluttet.');
                     setOpgave(response.data)
+                    setOpgaveAfsluttet(true)
 
                     let html = ""
 

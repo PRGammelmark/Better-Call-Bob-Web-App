@@ -51,7 +51,7 @@ const OpretRegningModal = ({user, opgave, setOpgave, opgaveID, kunde, posteringe
     function initierAnmodningState() {
         setBetalNuMedAnmodningModalState(true)
         setLoadingMobilePaySubmission(true)
-        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish)
+        useBetalMedMobilePayViaAnmodning(user, opgave, opgaveID, kunde, posteringer, setOpgave, totalFaktura, telefonnummerTilAnmodning, setQrURL, setQrTimer, setQrPaymentAuthorized, setLoadingMobilePaySubmission, setSuccessMobilePaySubmission, setQrErrorMessage, setÅbnOpretRegningModal, isEnglish, setOpgaveAfsluttet)
     }
 
   return (
