@@ -27,7 +27,10 @@ const opgaverSchema = new Schema({
         unique: true
     },
     sidsteSMSSendtTilKundenOmPåVej: Date,
-    isDeleted: Date,
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     // posteringer: Array,
     opgaveBilleder: Array,
     kundeID: String,
