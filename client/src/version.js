@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "2.1.7",
+    date: "6. juli 2025",
+    changes: [
+        "Der har været et problem med tabelvisninger af opgaver. Dette er nu rettet."
+    ]
+},{
     version: "2.1.6",
     date: "3. juli 2025",
     changes: [

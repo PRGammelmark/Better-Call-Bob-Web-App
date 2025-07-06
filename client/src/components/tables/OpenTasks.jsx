@@ -44,7 +44,7 @@ const OpenTasks = () => {
 
       if (response.ok) {
         const opgaverUdenAnsvarlige = json.filter(opgave => opgave.ansvarlig.length === 0);
-        const ufærdigeOpgaverUdenAnsvarlige = opgaverUdenAnsvarlige.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
+        const ufærdigeOpgaverUdenAnsvarlige = opgaverUdenAnsvarlige.filter(opgave => !opgave.markeretSomFærdig && !opgave.isDeleted)
         setOpgaver(ufærdigeOpgaverUdenAnsvarlige);
         setIsLoading(false)
       }

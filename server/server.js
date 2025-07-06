@@ -113,14 +113,14 @@ app.use('/api/cleanup', (req, res) => {
 });
 
 // Daily scheduled cleanup
-cron.schedule('0 0 * * *', async () => {
-    try {
-        await scheduledCleanup();
-        console.log('Daily cleanup of old opgaver completed successfully.');
-    } catch (error) {
-        console.error('Error during daily cleanup of old opgaver:', error);
-    }
-});
+// cron.schedule('0 0 * * *', async () => {
+//     try {
+//         await scheduledCleanup();
+//         console.log('Daily cleanup of old opgaver completed successfully.');
+//     } catch (error) {
+//         console.error('Error during daily cleanup of old opgaver:', error);
+//     }
+// });
 
 // Monthly scheduled image ZIPPING
 // collectKvitteringer();
@@ -133,10 +133,7 @@ app.use('/api/ai', aiRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
-    .then(async () => {
-        // Cleanup deleted tasks more than 30 days old
-        await scheduledCleanup();
-        
+    .then(async () => {     
         app.listen(port, () => {
             console.log(`App running, connected to database, and listening on port ${port}.`)
         });

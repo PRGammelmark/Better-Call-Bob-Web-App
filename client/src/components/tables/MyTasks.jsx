@@ -43,7 +43,7 @@ const MyTasks = ({openTableEvent}) => {
             opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID)
         );
         const filterAktuelleOpgaver = filterMineOpgaver.filter((opgave) => 
-            opgave.markeretSomFærdig === false
+            !opgave.markeretSomFærdig
         );
         setMineAktuelleOpgaver(filterAktuelleOpgaver)
         setIsLoading(false)
