@@ -122,12 +122,12 @@ const AddBesøg = (props) => {
         })
         .then(response => {
             if(user.isAdmin) {
-                const ufærdigeOpgaver = response.data.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted)
+                const ufærdigeOpgaver = response.data.filter(opgave => !opgave.markeretSomFærdig && !opgave.isDeleted)
                 setOpgaver(ufærdigeOpgaver);
                 setOpgaverLoading(false)
             }
             if(!user.isAdmin){
-                const mineUfærdigeOpgaver = response.data.filter(opgave => opgave.markeretSomFærdig === false && !opgave.isDeleted && opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID))
+                const mineUfærdigeOpgaver = response.data.filter(opgave => !opgave.markeretSomFærdig && !opgave.isDeleted && opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID))
                 setOpgaver(mineUfærdigeOpgaver);
                 setOpgaverLoading(false)
             }

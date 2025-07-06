@@ -31,7 +31,6 @@ const opgaverSchema = new Schema({
         type: Date,
         default: undefined
     },
-    // posteringer: Array,
     opgaveBilleder: Array,
     kundeID: String,
     kunde: {
