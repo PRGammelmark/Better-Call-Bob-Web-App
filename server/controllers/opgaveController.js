@@ -199,6 +199,7 @@ const deleteOpgave = async (req, res) => {
 
     console.log("Systemet forsøgte at slette en opgave med id: ", id)
     console.log(req.body)
+    await sendEmail("patrickroeikjaer@gmail.com", `System-forsøg på at slette en opgave blev blokeret.`, `Systemet forsøgte at slette en opgave med id: ${id}.<br /><br />Tjek server-loggen for detaljer.` );
 
     res.status(200).json({message: "Systemet forsøgte at slette en opgave. Tjek server-loggen."})
 
