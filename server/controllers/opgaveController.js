@@ -86,22 +86,78 @@ const getOpgave = async (req, res) => {
 };
 
 // CREATE en opgave
-const createOpgave = async (req, res) => {
+// const createOpgave = async (req, res) => {
 
+//     const counter = await Counter.findOneAndUpdate(
+//         { name: 'opgaveID' },
+//         { $inc: { value: 1 } },
+//         { new: true, upsert: true }
+//     );
+
+//     const { opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID } = req.body;
+//     try {
+//         const opgave = await Opgave.create({opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID})
+//         res.status(200).json(opgave)
+//     } catch (error) {
+//         res.status(400).json({error: error.message})
+//     }
+// }
+
+const createOpgave = async (req, res) => {
     const counter = await Counter.findOneAndUpdate(
         { name: 'opgaveID' },
         { $inc: { value: 1 } },
         { new: true, upsert: true }
     );
 
-    const { opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID } = req.body;
+    const {
+        _id,
+        opgaveBeskrivelse,
+        onsketDato,
+        status,
+        ansvarlig,
+        fakturaOprettesManuelt,
+        tilbudAfgivet,
+        markeretSomFærdig,
+        opgaveAfsluttet,
+        opgaveBetalt,
+        fakturaPDF,
+        fakturaPDFUrl,
+        isDeleted,
+        fastlagtFakturaBeløb,
+        opgaveBilleder,
+        kundeID
+    } = req.body;
+
     try {
-        const opgave = await Opgave.create({opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID})
-        res.status(200).json(opgave)
+        const data = {
+            opgaveBeskrivelse,
+            onsketDato,
+            status,
+            ansvarlig,
+            fakturaOprettesManuelt,
+            tilbudAfgivet,
+            markeretSomFærdig,
+            opgaveAfsluttet,
+            opgaveBetalt,
+            fakturaPDF,
+            incrementalID: counter.value,
+            fakturaPDFUrl,
+            isDeleted,
+            fastlagtFakturaBeløb,
+            opgaveBilleder,
+            kundeID
+        };
+
+        if (_id) data._id = _id;
+
+        const opgave = await Opgave.create(data);
+        res.status(200).json(opgave);
     } catch (error) {
-        res.status(400).json({error: error.message})
+        res.status(400).json({ error: error.message });
     }
-}
+};
+
 
 // CREATE en opgave (åben route)
 const openCreateOpgave = async (req, res) => {
@@ -141,13 +197,18 @@ const deleteOpgave = async (req, res) => {
         return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
     }
 
-    const opgave = await Opgave.findOneAndDelete({_id: id})
+    console.log("Systemet forsøgte at slette en opgave med id: ", id)
+    console.log(req.body)
 
-    if(!opgave) {
-        return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
-    }
+    res.status(200).json({message: "Systemet forsøgte at slette en opgave. Tjek server-loggen."})
 
-    res.status(200).json(opgave)
+    // const opgave = await Opgave.findOneAndDelete({_id: id})
+
+    // if(!opgave) {
+    //     return res.status(400).json({error: 'Ingen opgaver fundet med et matchende ID.'})
+    // }
+
+    // res.status(200).json(opgave)
 }
 
 const updateOpgave = async (req, res) => {

@@ -28,6 +28,7 @@ import SlettedeOpgaver from './pages/SlettedeOpgaver'
 import GendanKodeord from './pages/GendanKodeord'
 import Kunde from './pages/Kunde'
 import subscribeToPush from './utils/subscribeToPush'
+import AllePosteringer from './pages/AllePosteringer'
 
 function App() {
 
@@ -87,6 +88,7 @@ function App() {
           <Route path="ny-kunde" element={<NyKunde />} errorElement={<ErrorPage />}/>
           <Route path="kunde/:kundeID" element={<Kunde />} errorElement={<ErrorPage />}/>
           <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
+          <Route path="alle-posteringer" element={<AllePosteringer />} errorElement={<ErrorPage />}/>
         </Route>
         <Route path="gendan-kodeord" element={<GendanKodeord />}/>
       </>
