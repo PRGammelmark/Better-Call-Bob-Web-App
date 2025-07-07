@@ -12,19 +12,19 @@ const PRECACHE_URLS = [
 
 // INSTALL - Precache assets
 self.addEventListener('install', event => {
-
-  event.waitUntil(
-    caches.open(PRECACHE)
-      .then(cache => {
-        return cache.addAll(PRECACHE_URLS);
-      })
-      .then(() => {
-        return self.skipWaiting();
-      })
-      .catch(err => {
-        console.error('❌ [SW] Error during install/precache:', err);
-      })
-  );
+  self.skipWaiting();
+  // event.waitUntil(
+  //   caches.open(PRECACHE)
+  //     .then(cache => {
+  //       return cache.addAll(PRECACHE_URLS);
+  //     })
+  //     .then(() => {
+  //       return self.skipWaiting();
+  //     })
+  //     .catch(err => {
+  //       console.error('❌ [SW] Error during install/precache:', err);
+  //     })
+  // );
 });
 
 // ACTIVATE - Cleanup old caches
@@ -48,32 +48,24 @@ self.addEventListener('activate', event => {
 });
 
 // FETCH - Serve from cache first, then network fallback
+// self.addEventListener('fetch', event => {
+//   if (event.request.url.startsWith(self.location.origin)) {
+
+//     event.respondWith(
+//       caches.match(event.request).then(cachedResponse => {
+//         if (cachedResponse) {
+//           return cachedResponse;
+//         }
+//         return fetch(event.request);
+//       })
+//     );
+//   }
+// });
+
 self.addEventListener('fetch', event => {
-  if (event.request.url.startsWith(self.location.origin)) {
-
-    event.respondWith(
-      caches.match(event.request).then(cachedResponse => {
-        if (cachedResponse) {
-          return cachedResponse;
-        }
-
-
-        return fetch(event.request);
-        // return caches.open(RUNTIME).then(cache => {
-        //   return fetch(event.request).then(response => {
-        //     // Put a copy of the response in the runtime cache
-        //     return cache.put(event.request, response.clone()).then(() => {
-        //       return response;
-        //     });
-        //   }).catch(err => {
-        //     console.error('❌ [SW] Network fetch failed:', err);
-        //     throw err;
-        //   });
-        // });
-      })
-    );
-  }
+  event.respondWith(fetch(event.request));
 });
+
 
 // PUSH NOTIFICATIONS
 
