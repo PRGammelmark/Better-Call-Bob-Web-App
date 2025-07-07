@@ -1,13 +1,13 @@
-const PRECACHE = 'precache-v1';
+const PRECACHE = 'precache-v2';
 const RUNTIME = 'runtime';
 
 // Filer som skal caches ved installation
 const PRECACHE_URLS = [
-  '/',
-  '/index.html',
-  '/site.webmanifest',
-  '/logo192.png',
-  '/logo512.png'
+  // '/',
+  // '/index.html',
+  // '/site.webmanifest',
+  // '/logo192.png',
+  // '/logo512.png'
 ];
 
 // INSTALL - Precache assets
