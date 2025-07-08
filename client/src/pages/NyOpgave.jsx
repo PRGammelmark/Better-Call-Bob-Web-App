@@ -312,7 +312,15 @@ const NyOpgave = () => {
             .catch(error => {
                 console.log(error)
                 setLoading(false)
-                setError(error.response.data.error)
+                // setError(error.response.data.error)
+                if (error.response?.data?.error?.includes("E11000 duplicate key error") && error.response?.data?.error?.includes("email")) {
+                    setError("Der findes allerede en kunde med denne email i systemet. Tilknyt denne kunde, eller indtast en anden email.");
+                    setTimeout(() => {
+                        setError(null)
+                    }, 10000)
+                } else {
+                    setError(error.response.data.error)
+                }
             })
         }
     }
@@ -533,7 +541,6 @@ const NyOpgave = () => {
                                         </label>
                                         <b>Vil gerne modtage sæsontilbud og rabatter</b>
                                     </div>
-                                    <p style={{marginTop: 8, marginBottom: 20, fontSize: 13}}>(Relevant hvis kundens opgaver kræver, at medarbejderen skal op i højden.)</p>
                                     <div className={SwitcherStyles.checkboxContainer}>
                                         <label className={SwitcherStyles.switch} htmlFor="harStige">
                                             <input type="checkbox" id="harStige" name="harStige" className={SwitcherStyles.checkboxInput} checked={harStige} onChange={(e) => setHarStige(e.target.checked)} />
@@ -541,6 +548,7 @@ const NyOpgave = () => {
                                         </label>
                                         <b>Kunden har egen stige</b>
                                     </div>
+                                    <p style={{marginTop: 8, marginBottom: 20, fontSize: 13}}>(Relevant hvis kundens opgaver kræver, at medarbejderen skal op i højden.)</p>
                                     <div className={SwitcherStyles.checkboxContainer}>
                                         <label className={SwitcherStyles.switch} htmlFor="isEnglish">
                                             <input type="checkbox" id="isEnglish" name="isEnglish" className={SwitcherStyles.checkboxInput} checked={isEnglish} onChange={(e) => setIsEnglish(e.target.checked)} />
@@ -673,8 +681,8 @@ const NyOpgave = () => {
                         )
                     }
                 </div>
+                {error && <div className={NyOpgaveCSS.error}>{error}</div>}
             </form>
-            {error && <div className={NyOpgaveCSS.error}>{error}</div>}
         </div>
         </>
     </PageAnimation>

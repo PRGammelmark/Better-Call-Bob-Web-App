@@ -232,6 +232,7 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
     const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
 
       if(opgaveTilknyttetBesøg !== ""){
+        console.log("Opgave tilknyttet besøg", opgaveTilknyttetBesøg)
       axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
           headers: {
             'Authorization': `Bearer ${user.token}`
@@ -250,6 +251,14 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
       editBesøg && setEditBesøg(false);
       setOpenDialog(true);
 }, [openDialog, kunder]);
+
+useEffect(() => {
+  if(!openDialog && !editBesøg){
+    setOpgaveTilknyttetBesøg(null)
+    setKundeTilknyttetBesøg(null)
+    setEventData(null)
+  }
+}, [openDialog])
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   
@@ -496,8 +505,8 @@ const onRedigerBesøg = (e) => {
         )
         : 
         <>
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(kundeTilknyttetBesøg?.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (kundeTilknyttetBesøg.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(kundeTilknyttetBesøg?.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (kundeTilknyttetBesøg.adresse || aktueltBesøg.adresse) : "Adresse ikke fundet"}</h2>}
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Kunde ikke fundet"}</p>}
         {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
         <br />
@@ -505,10 +514,10 @@ const onRedigerBesøg = (e) => {
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
         <br />
         {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
+        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg?.opgaveBeskrivelse || "Opgave ikke fundet"}</p>}
+        {opgaveTilknyttetBesøg && (opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
           <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
-        </Link>}
+        </Link>)}
         {(user.isAdmin || (eventData?._id === userID)) && opgaveTilknyttetBesøg?.objectIsLedigTid ? (
           // Knapper til ledig tid
           <div className={ModalStyles.deleteEditButtons}>
@@ -544,6 +553,7 @@ const onRedigerBesøg = (e) => {
               <>
                 <button 
                   className={ModalStyles.deleteButton} 
+                  style={{marginTop: 0}}
                   onClick={() => {
                     if (window.confirm("Er du sikker på, at du vil slette dette besøg?")) {
                       axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, {

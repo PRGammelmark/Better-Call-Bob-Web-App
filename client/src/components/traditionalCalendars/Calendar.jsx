@@ -93,6 +93,8 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
       .catch(error => console.log(error))
     }, [])
 
+    // HVORDAN EVENTS VISES I KALENDEREN
+
     const egneBesøgFormateret = egneBesøg.map((besøg) => ({
       ...besøg,
       start: new Date(besøg.datoTidFra),

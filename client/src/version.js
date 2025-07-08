@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "2.1.8",
+    date: "8. juli 2025",
+    changes: [
+        "Hvis man forsøger at oprette en ny kunde med samme email som en eksisterende kunde i systemet får man nu en fejlmeddelelse, man rent faktisk kan tolke.",
+        "Rettede flere fejl i overblikskalenderen.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "2.1.7",
     date: "6. juli 2025",
     changes: [

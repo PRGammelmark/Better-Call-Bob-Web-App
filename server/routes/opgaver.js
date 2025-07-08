@@ -1,5 +1,5 @@
 import express from "express"
-import { getOpgaver, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder } from "../controllers/opgaveController.js"
+import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder } from "../controllers/opgaveController.js"
 import requireAuth from "../middleware/requireAuth.js";
 import { shortTermLimiter, dailyLimiter } from "../middleware/rateLimit.js"
 
@@ -9,6 +9,9 @@ const router = express.Router();
 
 // GET alle opgaver
 router.get("/", requireAuth, getOpgaver)
+
+// GET alle opgaver med kunder
+router.get("/populateKunder", requireAuth, getOpgaverPopulateKunder)
 
 // GET en enkelt opgave
 router.get('/:id', requireAuth, getOpgave)

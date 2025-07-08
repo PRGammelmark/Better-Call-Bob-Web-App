@@ -17,7 +17,7 @@ export const sendPushNotification = async (modtager, payload) => {
     console.log('✅ Push notifikation sendt');
     return response;
   } catch (error) {
-    console.error('❌ Fejl ved afsendelse af push notifikation:', error);
+    console.error('❌ Fejl ved afsendelse af push notifikation:', error.body.trim());
 
     // Nogle fejl har en statuskode og kan indikere at subscription er ugyldig
     if (

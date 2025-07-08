@@ -103,9 +103,21 @@ const NyKunde = () => {
                 setKundeID(res.data._id)
             })
             .catch(error => {
+                console.log(error)
                 setLoading(false)
-                console.log(error);
-                setError("Der skete en fejl.")
+                // setError(error.response.data.error)
+                if (error.response?.data?.error?.includes("E11000 duplicate key error") && error.response?.data?.error?.includes("email")) {
+                    setError("Der findes allerede en kunde med denne email i systemet.");
+                    
+                    setTimeout(() => {
+                        setError(null)
+                    }, 10000)
+                } else {
+                    setError(error.response.data.error)
+                    setTimeout(() => {
+                        setError(null)
+                    }, 10000)
+                }
             })
     };
     
@@ -202,8 +214,8 @@ const NyKunde = () => {
                             {loading ? "Opretter kunde ..." : "Opret kunde"}
                         </button>}
                     </div>
+                    {error && <div className={styles.error}>{error}</div>}
                 </form>
-                {error && <div className={styles.error}>{error}</div>}
             </div>
         </PageAnimation>
     )

@@ -61,7 +61,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
   const filterAlleBesøgDenneOpgave = alleBesøg.filter(besøg => besøg.opgaveID === opgaveID)
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/opgaver/populateKunder`, {
       headers: { 'Authorization': `Bearer ${user.token}` }
     })
     .then(res => {
@@ -189,7 +189,7 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
       end: new Date(besøg.datoTidTil),
       brugerID: besøg.brugerID,
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
-      title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(besøg.datoTidFra).format("HH:mm")}-{dayjs(besøg.datoTidTil).format("HH:mm")}</p><b style={besøgBStyles}>{alleOpgaver.find(opgave => opgave._id === besøg.opgaveID)?.adresse || besøg.opgaveID}</b></span>
+      title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(besøg.datoTidFra).format("HH:mm")}-{dayjs(besøg.datoTidTil).format("HH:mm")}</p><b style={besøgBStyles}>{alleOpgaver.find(opgave => opgave._id === besøg.opgaveID)?.kunde?.adresse || besøg.opgaveID}</b></span>
     }));
 
     // "Vis alle besøg" - formatering af alle andre besøg ved siden af egne
@@ -283,8 +283,6 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
           })
           .then(res => {
             setOpgaveTilknyttetBesøg(res.data)
-            console.log(res.data.kundeID)
-            console.log(kunder)
             setKundeTilknyttetBesøg(kunder?.find(kunde => kunde._id === res.data.kundeID))
           })
           .catch(error => console.log(error))
@@ -737,9 +735,14 @@ const onRedigerLedigTid = (e) => {
         
         : (
           // Knapper til planlagt besøg
+          <>
+          {!opgaveID && <Link to={`../opgave/${opgaveTilknyttetBesøg?._id || null}`}>
+            <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
+          </Link>}
           <div className={ModalStyles.deleteEditButtons}>
               <button 
                 className={ModalStyles.deleteButton} 
+                style={{marginTop: 0}}
                 onClick={() => {
                   if (window.confirm("Er du sikker på, at du vil slette dette besøg?")) {
                     axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, {
@@ -766,6 +769,7 @@ const onRedigerLedigTid = (e) => {
                 Rediger besøg
               </button>
           </div>
+          </>
         ))}
         </>
       

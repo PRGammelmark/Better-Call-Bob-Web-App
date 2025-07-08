@@ -47,6 +47,15 @@ const getOpgaver = async (req, res) => {
     }
 };
 
+const getOpgaverPopulateKunder = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({}).sort({ createdAt: -1 }).populate('kunde');
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+}
+
 const getOpgaverForKunde = async (req, res) => {
     const { id } = req.params;
     const opgaver = await Opgave.find({ kundeID: id });
@@ -250,6 +259,7 @@ const updateOpgave = async (req, res) => {
 
 export {
     getOpgaver,
+    getOpgaverPopulateKunder,
     openCreateOpgave,
     createOpgave,
     getOpgave,
