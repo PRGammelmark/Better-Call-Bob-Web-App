@@ -16,6 +16,8 @@ const satser = {
   tømrerTimerPrisInklAftenTillæg: 720,
   handymanTimerPrisInklNatTillæg: 894.4,
   tømrerTimerPrisInklNatTillæg: 960,
+  aftenTillægPris: 50,
+  natTillægPris: 100,
   trailerPris: 264,
   rådgivningOpmålingVejledningPris: 480
 };
