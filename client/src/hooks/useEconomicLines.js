@@ -161,7 +161,7 @@ const useEconomicLines = (posteringer, inklAdministrationsGebyr, isEnglish) => {
                         productNumber: "2"
                     },
                     quantity: 1,
-                    unitNetPrice: postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0),
+                    unitNetPrice: postering.udlæg.reduce((total, udlæg) => total + udlæg.beløb, 0).toFixed(2),
                     discountPercentage: 0.00
                 })
             }
