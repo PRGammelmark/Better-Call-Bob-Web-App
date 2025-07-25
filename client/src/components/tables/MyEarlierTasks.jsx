@@ -98,9 +98,9 @@ return (
                     {isLoading ? 
                     <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : mineAfsluttedeOpgaver.length > 0 ? mineAfsluttedeOpgaver.map((opgave) => {
                         
-                        const minePosteringer = opgave.posteringer.filter((postering) => postering.brugerID === userID);
-                        const posteringTotalHonorar = minePosteringer.reduce((sum, postering) => sum + postering.totalHonorar, 0);
-                        const posteringTotalUdlæg = minePosteringer.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
+                        const posteringerForOpgave = minePosteringer.filter((postering) => postering.opgaveID === opgave._id);
+                        const posteringTotalHonorar = posteringerForOpgave.reduce((sum, postering) => sum + postering.totalHonorar, 0);
+                        const posteringTotalUdlæg = posteringerForOpgave.reduce((sum, postering) => sum + postering?.udlæg?.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
                         const posteringTotalTjent = posteringTotalHonorar - posteringTotalUdlæg;
                         const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
 
@@ -137,7 +137,7 @@ return (
                     <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : mineAfsluttedeOpgaver.length > 0 ? mineAfsluttedeOpgaver.map((opgave) => {
                         const posteringerForOpgave = minePosteringer.filter((postering) => postering.opgaveID === opgave._id);
                         const posteringTotalHonorar = posteringerForOpgave.reduce((sum, postering) => sum + postering.totalHonorar, 0);
-                        const posteringTotalUdlæg = posteringerForOpgave.reduce((sum, postering) => sum + postering.udlæg.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
+                        const posteringTotalUdlæg = posteringerForOpgave.reduce((sum, postering) => sum + postering?.udlæg?.reduce((sum, udlæg) => sum + udlæg.beløb, 0), 0);
                         const posteringTotalTjent = posteringTotalHonorar - posteringTotalUdlæg;
                         const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
 

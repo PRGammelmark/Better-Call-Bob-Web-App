@@ -14,12 +14,20 @@
 // 
 
 const changes = [{
+    version: "2.1.9",
+    date: "25. juli 2025",
+    changes: [
+        "Rettede en fejl, der kunne forhindre en medarbejder i at tilgå sin liste over nuværende og tidligere opgaver."
+    ]
+},{
     version: "2.1.8",
     date: "8. juli 2025",
     changes: [
-        "Hvis man forsøger at oprette en ny kunde med samme email som en eksisterende kunde i systemet får man nu en fejlmeddelelse, man rent faktisk kan tolke.",
-        "Rettede flere fejl i overblikskalenderen.",
-        "Smårettelser og justeringer."
+        "Hvis man forsøger at oprette en ny kunde med samme email som en eksisterende kunde i systemet får man nu en fejlmeddelelse, man rent faktisk kan tolke. Dette sker nu både i 'Ny opgave'- og 'Ny kunde'-flowet.",
+        "Tidligere hen viste besøg i medarbejderes overblikskalender ID'et for den pågældende opgave. Nu viser besøgene i stedet kundens adresse.",
+        "Når en medarbejder trykker sig ind på et besøg i overblikskalenderen, så vil der nu automatisk blive vist en knap til at gå til den pågældende opgave.",
+        "Rettede en række fejl i overblikskalenderen.",
+        "Øvrige smårettelser og justeringer."
     ]
 },{
     version: "2.1.7",
