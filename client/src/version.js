@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "2.1.10",
+    date: "28. juli 2025",
+    changes: [
+        "Opdaterede prissatserne i app'en for fremtidige posteringer."
+    ]
+},{
     version: "2.1.9",
     date: "25. juli 2025",
     changes: [

@@ -1,25 +1,25 @@
 const satser = {
   // Honorar-beløb i kr. (ex moms)
+  opstartsgebyrHonorar: 200,
   handymanTimerHonorar: 300,
   tømrerTimerHonorar: 360,
-  opstartsgebyrHonorar: 200,
+  rådgivningOpmålingVejledningHonorar: 360,
   aftenTillægHonorar: 50,
   natTillægHonorar: 100,
   trailerHonorar: 210,
-  rådgivningOpmålingVejledningHonorar: 360,
 
   // Pris-beløb i kr. (ex moms)
-  handymanTimerPris: 447.2,
-  tømrerTimerPris: 480,
   opstartsgebyrPris: 319.2,
-  handymanTimerPrisInklAftenTillæg: 670.8,
-  tømrerTimerPrisInklAftenTillæg: 720,
-  handymanTimerPrisInklNatTillæg: 894.4,
-  tømrerTimerPrisInklNatTillæg: 960,
+  handymanTimerPris: 463.2,
+  tømrerTimerPris: 543.2,
+  rådgivningOpmålingVejledningPris: 543.2,
   aftenTillægPris: 50,
   natTillægPris: 100,
   trailerPris: 264,
-  rådgivningOpmålingVejledningPris: 480
+  handymanTimerPrisInklAftenTillæg: 694.8,
+  tømrerTimerPrisInklAftenTillæg: 814.8,
+  handymanTimerPrisInklNatTillæg: 926.4,
+  tømrerTimerPrisInklNatTillæg: 1086.4
 };
 
 export default satser
