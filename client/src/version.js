@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "2.1.11",
+    date: "2. august 2025",
+    changes: [
+        "Rettelser i betalings- og afslutningsflow."
+    ]
+},{
     version: "2.1.10",
     date: "28. juli 2025",
     changes: [

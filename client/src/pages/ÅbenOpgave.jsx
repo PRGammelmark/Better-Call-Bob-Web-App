@@ -1382,8 +1382,8 @@ const ÅbenOpgave = () => {
                                 {/* <RegistrerBetalingsModal trigger={registrerBetalingsModal} setTrigger={setRegistrerBetalingsModal} opgave={opgave} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave}/> */}
                                 {!opgaveAfsluttet 
                                     && 
-                                    <div className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv}>
-                                        <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => setTvingAfslutOpgaveModal(true)}>Afslut uden betaling</button>
+                                    <div className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv} style={{display: "flex", gap: 10, justifyContent: "center"}}>
+                                        {user.isAdmin && <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => setTvingAfslutOpgaveModal(true)}>Afslut uden betaling</button>}
                                         <button className={ÅbenOpgaveCSS.genåbnButton} onClick={() => åbnForÆndringer()}>Genåbn opgave</button>
                                     </div>
                                 }
