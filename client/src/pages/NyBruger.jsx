@@ -17,8 +17,13 @@ const [telefon, setTelefon] = useState("");
 const [email, setEmail] = useState("");
 const [isAdmin, setIsAdmin] = useState(false);
 const [brugerID, setBrugerID] = useState("");
-const [satser, setSatser] = useState(fasteSatser)
+const [satser, setSatser] = useState({})
 const { signup, error, loading, succes, setSucces } = useSignup();
+
+useEffect(() => {
+    const nyBrugerSatser = Object.fromEntries(Object.entries(fasteSatser).filter(([key]) => !key.includes("Pris")));
+    setSatser(nyBrugerSatser)
+}, [])
 
 const handleSubmit = async (e) => {
     e.preventDefault();

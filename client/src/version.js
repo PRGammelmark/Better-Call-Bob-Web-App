@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "2.1.12",
+    date: "8. august 2025",
+    changes: [
+        "Rettede en fejl, hvor nye brugere ikke kunne trække dynamiske prissatser når de oprettede posteringer."
+    ]
+},{
     version: "2.1.11",
     date: "2. august 2025",
     changes: [
