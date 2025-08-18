@@ -1,0 +1,78 @@
+.betalingsmetodeContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    justify-content: center;
+    margin: 40px 0 10px 0;
+}
+
+.betalingsmetodeHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.betalingsmetode {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 40px;
+    border-radius: 16px;
+    background: rgb(89, 119, 254);
+    box-shadow:
+      4px 4px 12px rgba(0, 0, 0, 0.15),
+      -4px -4px 12px rgba(255, 255, 255, 0.1),
+      inset 1px 1px 0 rgba(255, 255, 255, 0.2),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    color: white;
+  }
+
+  .betalingsmetode:hover {
+    box-shadow:
+      6px 6px 16px rgba(0, 0, 0, 0.2),
+      -6px -6px 16px rgba(255, 255, 255, 0.1),
+      inset 1px 1px 0 rgba(255, 255, 255, 0.1),
+      inset -1px -1px 0 rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  
+  
+
+/* .betalingsmetode:hover {
+    box-shadow: rgba(26, 60, 214, 0.35) 0px 6px 24px 0px, rgba(14, 45, 181, 0.98) 0px 0px 0px 1px;
+} */
+
+.betalingsmetodeHeader img {
+    width: 30px;
+    height: 30px;
+}
+
+.betalingsmetodeHeader h3 {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+    font-family: "OmnesBold";
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.betalingsmetodeIkon {
+    width: 50px;
+    height: 50px;
+    color: #fff;
+}
+
+@media screen and (max-width: 750px) {
+    .betalingsmetodeContainer {
+        flex-direction: column;
+        gap: 20px;
+        margin: 20px 0 0 0;
+    }
+
+    .betalingsmetode {
+        padding: 20px 20px;
+    }
+}

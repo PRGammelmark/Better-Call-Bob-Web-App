@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
 import ReactDom from "react-dom";
 import ModalStyles from "./Modal.module.css";
 import ContentStyles from "./Content.module.css"
@@ -26,7 +26,7 @@ const desktopAnimation = {
   };
   
 
-const Modal = ({ children, trigger, setTrigger, onClose, closeIsBackButton, setBackFunction }) => {
+const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackButton, setBackFunction }, ref) => {
 
     const [isMobile, setIsMobile] = useState(false);
 
@@ -112,6 +112,7 @@ const Modal = ({ children, trigger, setTrigger, onClose, closeIsBackButton, setB
         >
           <motion.div
             className={ModalStyles.modal}
+            ref={ref}
             onClick={(e) => e.stopPropagation()}
             initial="initial"
             animate="animate"
@@ -139,6 +140,6 @@ const Modal = ({ children, trigger, setTrigger, onClose, closeIsBackButton, setB
     </AnimatePresence>,
     document.getElementById("portal")
   );
-};
+});
 
 export default Modal;

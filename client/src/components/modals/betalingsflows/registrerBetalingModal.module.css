@@ -1,0 +1,90 @@
+.overblikContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: #f0f0f0;
+    padding: 15px 20px;
+    border-radius: 10px;
+}
+
+.overblikLinje {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.registrerBetalingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.registrerBetalingContainer input {
+    width: 100%;
+}
+
+.kolonner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.select {
+    width: 100%;
+    height: 34px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+    padding: 0 10px;
+    font-size: 16px;
+    color: #222222;
+    background-color: #fff;
+    cursor: pointer;
+    border: none;
+}
+
+.submitButton {
+    width: 100%;
+    height: 60px;
+    border-radius: 10px;
+    background-color: #3c5a3f;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    font-family: 'OmnesBold';
+    font-size: 14px;
+    transition: 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.submitButton:hover {
+    background-color: #59bf1a;
+}
+
+.betalingsIDContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.fjernBetalingsIDButton {
+    width: 34px;
+    height: 34px;
+    background-color: #ff000040;
+    border: none;
+    cursor: pointer;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+    border: 1px solid #ff000000;
+    transition: 0.2s ease;
+}
+
+.fjernBetalingsIDButton:hover {
+    border: 1px solid #ff0000;
+}

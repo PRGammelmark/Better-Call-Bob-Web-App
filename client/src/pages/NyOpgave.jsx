@@ -320,6 +320,9 @@ const NyOpgave = () => {
                     }, 10000)
                 } else {
                     setError(error.response.data.error)
+                    setTimeout(() => {
+                        setError(null)
+                    }, 10000)
                 }
             })
         }

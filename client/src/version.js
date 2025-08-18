@@ -14,6 +14,22 @@
 // 
 
 const changes = [{
+    version: "3.0.0",
+    date: "18. august 2025",
+    changes: [
+        "Posteringer har nu fået en masse nye funktioner, nyt design og bedre datastruktur.",
+        "Opgaver kan ikke længere færdiggøres – nu afslutter man en opgave med det samme man er færdig med den. Ved afslutning af en opgave vil man med det samme blive promptet til at anmode kunden om betaling. Privatkunder kan betale med Mobile Pay (via enten anmodning eller QR-kode), og erhvervskunder kan betale med faktura. Vil en privatkunde betale med faktura lukker medarbejderen blot den automatiske prompt ned, og trykker på knappen 'Betal via faktura', som efter afslutning af opgaven bliver synlig på opgavesiden.",
+        "Nu er det muligt at foretage delbetaling af opgaver. Medarbejdere kan, uden først at afslutte eller færdiggøre en opgave, opkræve særskilt betaling for en enkelt postering. Dette kan gøres via den særlige postering-menu, der vises umiddelbart under posteringen.",
+        "Hver postering tracker nu sin egen opkrævnings- og betalingsstatus. Relevante brugere kan se opkrævninger og betalinger for posteringen via posteringens menu.",
+        "Hvis man allerede har fået delvis betaling for en postering, eller hvis man har fået betalt nogle af posteringerne tilknyttet en opgave og vil opkræve resten, så vil opkrævningen via Mobile Pay automatisk tage højde for de indbetalinger, der allerede er foretaget, så der ikke bliver opkrævet for meget.",
+        "En postering kan nu have fire status-tilstande: 'Ikke opkrævet', 'Faktura sendt', 'Delvist betalt' og 'Betalt'. Posteringer får ikke opdateret opkrævningsstatus ved Mobile Pay-betalinger, da betalingsvinduet her er kortere. Hvis en postering er blevet overbetalt vil dette også fremgå under 'Betalinger'-sektionen på den pågældende postering.",
+        "Når posteringer for en opgave opkræves via faktura, så vil posteringen gemme fakturareferencen. Admins kan løbende tjekke op på fakturaens betalingsstatus direkte via posteringens opkrævningsmenu. Hvis en faktura registreres som betalt vil registreringen også automatisk opdatere posteringens status. Under posteringens 'Opkrævninger'-menu kan man desuden også se den pågældende faktura, der er blevet sendt ud til kunden, og man kan gensende den samme faktura til kunden igen som en reminder.",
+        "Posteringers prissatser og lønsatser kan nu finjusteres efter oprettelse. Dette gøres ved at trykke på 'Ret' i posteringsmenuen, hvorefter man kan rette indhold, priser eller løn. Mens man retter satserne kan man også se et live-preview af posteringen som den vil fremgå efter ændringerne.",
+        "Nu kan man registrere betaling manuelt på posteringerne direkte i app'en. Betalinger registreres manuelt ved at trykke på 'Ret', og derefter 'Reg. betaling'. Når man vil registrere en betaling kan det både være hele beløbet eller et delvist beløb – man kan her også se hvad der mangler at blive betalt på posteringen. Vil man knytte betalingen op til fx en faktura eller en Mobile Pay-indbetaling kan man også kopiere betalings-ID'et ind i det relevante felt under registreringen.",
+        "Posteringer vender nu med prissiden opad i udgangspunktet. Man kan vende en postering ved at klikke på den, eller ved at trykke 'Vend' i posteringens menu. Man kan kun vende posteringer, som enten er tilknyttet en selv eller hvis man er administrator.",
+        "Admins kan nu låse posteringer. En låst postering kan ikke redigeres af posteringens ophavsmand, men kan stadig ses og redigeres i af admins. Indhold og priser i en postering kan ikke ændres af hverken admins eller medarbejdere efter posteringen har registreret indbetalinger. Lønsatser på en postering kan ændres af admins frem til udgangen af den indeværende lønperiode."
+    ]
+},{
     version: "2.1.12",
     date: "8. august 2025",
     changes: [

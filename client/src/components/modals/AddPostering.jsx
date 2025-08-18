@@ -149,11 +149,19 @@ const AddPostering = (props) => {
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
             opgaveID: props.opgaveID,
             brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID,
-            kundeID: props.opgave.kundeID
+            kundeID: props?.opgave?.kundeID,
+            kunde: props?.opgave?.kundeID,
+            bruger: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID,
+            opgave: props.opgaveID
         }
 
         if(!postering.totalHonorar && !postering.totalPris){
             window.alert("Du kan ikke oprette en postering uden indhold. Tilføj data til posteringen, og prøv igen.")
+            return
+        }
+
+        if(!postering.kundeID){
+            window.alert("Kunde ikke registreret. Prøv igen.")
             return
         }
 

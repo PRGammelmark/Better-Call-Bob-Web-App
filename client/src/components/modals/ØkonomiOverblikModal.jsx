@@ -6,7 +6,8 @@ import ModalStyles from '../Modal.module.css'
 import dayjs from 'dayjs'
 import PageAnimation from '../PageAnimation'
 import BackIcon from "../../assets/back.svg"
-import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
+// import PosteringCSS from '../../pages/ÅbenOpgave.module.css'
+import PosteringCSS from '../../components/Postering.module.css'
 import satser from '../../variables'
 import BackArrow from '../../assets/back.svg'
 import axios from 'axios'
@@ -817,19 +818,19 @@ const ØkonomiOverblikModal = (props) => {
             <div className={Styles.posteringerDiv}>
             {posteringerDetaljer && posteringerDetaljer.map((postering) => {
                 return (
-                    <div className={ÅbenOpgaveCSS.posteringDiv} key={postering._id}>
-                        <div className={ÅbenOpgaveCSS.posteringCard}>
+                    <div className={PosteringCSS.posteringDiv} key={postering._id}>
+                        <div className={PosteringCSS.posteringCard} style={{padding: '10px 20px'}}>
 
                             <div>
-                                <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
-                                <p className={ÅbenOpgaveCSS.posteringBruger}>{postering.opgaveID && getOpgaveAdresse(postering.opgaveID)}</p>
-                                <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
-                                <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
+                                <p className={PosteringCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
+                                <p className={PosteringCSS.posteringBruger}>{postering.opgaveID && getOpgaveAdresse(postering.opgaveID)}</p>
+                                <i className={PosteringCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
+                                <div className={PosteringCSS.kvitteringBillederListe}>
                                     {postering.udlæg.map((udlæg, index) => {
                                         return udlæg.kvittering ? 
                                         <img 
                                         key={`udlæg-${index}`}
-                                        className={ÅbenOpgaveCSS.kvitteringBillede} 
+                                        className={PosteringCSS.kvitteringBillede} 
                                         src={udlæg.kvittering} 
                                         alt={udlæg.beskrivelse} 
                                         onClick={() => {
@@ -840,74 +841,74 @@ const ØkonomiOverblikModal = (props) => {
                                     })}
                                 </div>
                             </div>
-                            <div className={ÅbenOpgaveCSS.posteringListe}>
+                            <div className={PosteringCSS.posteringListe}>
                                 {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Opstart </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>Opstart </span>
                                         <span>{beregn.opstartHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
                                         <span>{beregn.handymanHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
                                         <span>{beregn.tømrerHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
                                         <span>{beregn.rådgivningHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Aftentillæg (+50% pr. time) </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>Aftentillæg (+50% pr. time) </span>
                                         <span>{beregn.aftenTillægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.natTillæg && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Nattillæg (+ 100% pr. time) </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>Nattillæg (+ 100% pr. time) </span>
                                         <span>{beregn.natTillægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.trailer && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Trailer </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>Trailer </span>
                                         <span>{beregn.trailerHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
                                         <span>{beregn.udlægHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
                                         <span>- {beregn.rabatHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
                                 {!postering.dynamiskHonorarBeregning && (
-                                    <div className={ÅbenOpgaveCSS.posteringRække}>
-                                        <span className={ÅbenOpgaveCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
+                                    <div className={PosteringCSS.posteringRække}>
+                                        <span className={PosteringCSS.posteringRækkeBeskrivelse}>Fast honorar: </span>
                                         <span>{beregn.fastHonorar(postering, 0, false)?.formateret}</span>
                                     </div>
                                 )}
-                                <div className={ÅbenOpgaveCSS.totalRække}>
-                                    <b className={ÅbenOpgaveCSS.totalRækkeBeskrivelse}>Total: </b>
-                                    <b className={ÅbenOpgaveCSS.totalRækkeResultat}>{(beregn.totalHonorar(postering, 0, false)?.beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
+                                <div className={PosteringCSS.totalRække}>
+                                    <b className={PosteringCSS.totalRækkeBeskrivelse}>Total: </b>
+                                    <b className={PosteringCSS.totalRækkeResultat}>{(beregn.totalHonorar(postering, 0, false)?.beløb).toLocaleString('da-DK', { style: 'currency', currency: 'DKK', minimumFractionDigits: 0, maximumFractionDigits: 0 })}</b>
                                 </div>
                             </div>
                         </div>
-                        <p style={{display: 'flex', marginTop: 10, justifyContent: 'center', cursor: 'pointer'}} className={ÅbenOpgaveCSS.prefix} onClick={() => {
+                        <p style={{display: 'flex', marginTop: 10, justifyContent: 'center', cursor: 'pointer'}} className={PosteringCSS.prefix} onClick={() => {
                         navigate(`/opgave/${postering.opgaveID}`)
                     }}>Gå til opgave</p>
                     </div>
@@ -916,10 +917,10 @@ const ØkonomiOverblikModal = (props) => {
             </> 
             : 
             <PageAnimation>
-                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
-                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    <div className={PosteringCSS.billedModalHeader}>
+                        <img className={PosteringCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
                     </div>
-                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                    <img src={kvitteringBillede} className={PosteringCSS.kvitteringBilledeStort} />
                 </PageAnimation>}
         </PageAnimation>
         </>}

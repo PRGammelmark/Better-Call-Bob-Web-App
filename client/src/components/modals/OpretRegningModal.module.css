@@ -131,3 +131,22 @@
     margin-top: 40px;
     margin-bottom: 20px;
 }
+
+.annullerKnap {
+    background-color: #ff000030;
+    color: #222222;
+    width: 50%;
+    border-radius: 10px;
+    border: none;
+    padding: 8px 20px;
+    font-weight: bold;
+    font-family: Omnes;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-left: 25%;
+    text-align: center;
+}
+
+.annullerKnap:hover {
+    background-color: #ff000050;
+}

@@ -1,0 +1,159 @@
+.posteringMereKnap {
+    font-size: 0.8rem;
+    border: 1px solid #22222230;
+    background: none;
+    cursor: pointer;
+    font-family: OmnesBold;
+    font-weight: 400;
+    font-size: 1.2rem;
+    color: #222222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    padding: 0;
+    transition: 0.2s ease;
+}
+
+.posteringMereKnap:hover {
+    border: 1px solid rgba(60, 90, 63, 0.5);
+    font-weight: 800;
+}
+
+.posteringMereKnapContainer {
+    position: relative;
+}
+
+.posteringMereMenu {
+    position: absolute;
+    right: 0;
+    bottom: 45px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+    z-index: 10;
+    min-width: 200px;
+}
+
+.underMenu {
+    animation: slideIn 0.2s forwards;
+}
+
+.underMenuHeader {
+    background: #f0f0f0;
+}
+
+.låsMenuHeader {
+    background: #f0f0f0;
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    font-size: 0.95rem;
+}
+
+.låsMenuHeader span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.opening {
+    animation: fadeSlideUp 0.2s ease-out forwards;
+}
+
+.closing {
+    animation: fadeSlideDown 0.2s ease-in forwards;
+}
+
+.posteringMereMenu button {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 16px;
+    text-align: left;
+    background: none;
+    border: none;
+    font-family: Omnes;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.posteringMereMenu button span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.posteringMereMenu button:hover {
+    background: #f0f0f0;
+}
+
+.posteringMereInnerKnapIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+}
+
+.posteringMereKnapIcon {
+    width: 16px;
+    height: 16px;
+    /* margin-right: 10px; */
+    opacity: 0;
+    transform: translateY(4px);
+    position: absolute;
+}
+
+.posteringMereKnapIconOpen {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.posteringMereKnapIconClose {
+    opacity: 1;
+    transform: translateY(0px);
+}
+
+.tilbageKnapIcon {
+    width: 16px;
+    height: 16px;
+    margin-right: 10px;
+}
+
+@keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeSlideDown {
+    from {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  
+  @keyframes slideIn {
+    from {
+      left: 100%;
+    }
+    to {
+      left: 0;
+    }
+  }

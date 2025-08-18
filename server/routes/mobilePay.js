@@ -3,6 +3,8 @@ import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 const router = express.Router();
 import dotenv from 'dotenv';
+import Postering from '../models/posteringModel.js';
+import { registrerBetalinger } from '../utils/registrerBetalinger.js';
 
 router.use(express.json());
 dotenv.config();
@@ -18,6 +20,16 @@ const mpHeadersForAccessToken = {
     'Vipps-System-Plugin-Name': 'YOUR-PLUGIN-NAME',
     'Vipps-System-Plugin-Version': 'YOUR-PLUGIN-VERSION'
 }
+
+function shouldRetry(error) {
+    if (!error.response) {
+        return true;
+    }
+
+    const status = error.response.status;
+    return status >= 500 && status < 600;
+}
+
 
 router.post('/initiate-mobilepay-payment', async (req, res) => {
     console.log("Initiating MobilePay payment.");
@@ -75,7 +87,7 @@ router.post('/initiate-mobilepay-payment', async (req, res) => {
     });
 })
 
-router.post('/get-qr-code', async (req, res) => {
+router.post('/send-payment-request', async (req, res) => {
     console.log("Initiating MobilePay payment.");
 
     const paymentInformationObject = req.body;
@@ -96,7 +108,7 @@ router.post('/get-qr-code', async (req, res) => {
         axios.post('https://api.vipps.no/epayment/v1/payments', {
             "amount": {
                 "currency":"DKK",
-                "value": ((paymentInformationObject.totalFaktura * 1.25) * 100)
+                "value": Math.ceil(((paymentInformationObject.totalFaktura * 1.25) * 100))
             },
             "customer": {
                 "phoneNumber":`45${telefonnummerTilAnmodning || kunde?.telefon || opgave?.telefon}`
@@ -120,8 +132,99 @@ router.post('/get-qr-code', async (req, res) => {
                 'Vipps-System-Plugin-Version': '1.0'
             }
         })
-        .then(response => {
+        .then(async response => {
             console.log('Payment initiated successfully:', response.data);
+            // Registrer opkrævning på posteringer
+            const posteringer = paymentInformationObject.posteringer;
+
+            for (const postering of posteringer) {
+                const dbPostering = await Postering.findById(postering._id);
+                if (dbPostering) {
+                    dbPostering.opkrævninger.push({
+                        reference: response.data.reference,
+                        metode: "mobilepay",
+                        dato: new Date()
+                    });
+                    await dbPostering.save();
+                }
+            }
+            
+            res.status(200).json(response.data);
+        })
+        .catch(error => {
+            console.error('Error initiating payment:', error);
+            console.log(error.response.data.extraDetails)
+            res.status(500).json({ error: 'Error initiating payment' });
+        });
+    })
+    .catch(error => {
+        console.error('Error getting access token from MobilePay: ', error);
+        res.status(500).json({ error: 'Error getting access token from MobilePay' });
+    });
+});
+
+router.post('/create-qr-code', async (req, res) => {
+    console.log("Creating QR code.");
+
+    const paymentInformationObject = req.body;
+    const opgave = paymentInformationObject.opgave;
+    const kunde = paymentInformationObject.kunde;
+    
+    // STEP 1: GET ACCESS TOKEN
+    console.log("Getting access token from MobilePay.")
+    axios.post('https://api.vipps.no/accesstoken/get', {}, {
+        headers: mpHeadersForAccessToken
+    })
+    .then(response => {
+        const accessToken = response.data.access_token;
+        console.log("Access token received from MobilePay.");
+
+        // STEP 2: INITIATE PAYMENT
+        axios.post('https://api.vipps.no/epayment/v1/payments', {
+            "amount": {
+                "currency":"DKK",
+                "value": Math.ceil(((paymentInformationObject.totalFaktura * 1.25) * 100))
+            },
+            "customer": {
+                "phoneNumber":`45${kunde?.telefon || opgave?.telefon}`
+            },
+            "paymentMethod": {
+                "type":"WALLET"
+            },
+            "reference": `bcb-${uuidv4()}`,
+            "paymentDescription": `Opgave: ${opgave.opgaveBeskrivelse.slice(0, 80)}`,
+            "userFlow": "QR"
+        }, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`,
+                'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
+                'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
+                'Idempotency-Key': `${uuidv4()}`,
+                'Vipps-System-Name': 'Better Call Bob',
+                'Vipps-System-Version': '1.0',
+                'Vipps-System-Plugin-Name': 'No plugin',
+                'Vipps-System-Plugin-Version': '1.0'
+            }
+        })
+        .then(async response => {
+            console.log('Payment initiated successfully:', response.data);
+            console.log(response)
+            // Registrer opkrævning på posteringer
+            const posteringer = paymentInformationObject.posteringer;
+
+            for (const postering of posteringer) {
+                const dbPostering = await Postering.findById(postering._id);
+                if (dbPostering) {
+                    dbPostering.opkrævninger.push({
+                        reference: response.data.reference,
+                        metode: "mobilepay",
+                        dato: new Date()
+                    });
+                    await dbPostering.save();
+                }
+            }
+            
             res.status(200).json(response.data);
         })
         .catch(error => {
@@ -153,7 +256,6 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
         })
         .then(response => { 
             const accessToken = response.data.access_token;
-            console.log(`https://api.vipps.no/ecomm/v2/payments/${orderId}/details`);
             axios.get(`https://api.vipps.no/epayment/v1/payments/${orderId}`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -163,16 +265,13 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
                 }
             })
             .then(response => {
-                console.log(response.data.state);
-                console.log(response.data)
+                console.log("Poll-status for Mobile Pay-betaling (" + response.data.reference + ", " + (response.data.amount.value / 100).toFixed(2) + " " + response.data.amount.currency + "): " + response.data.state);
                 if (response.data.state === 'AUTHORIZED') {
-                    // return res.status(200).json(response.data.state);
-
                     // Capture betaling
                     axios.post(`https://api.vipps.no/epayment/v1/payments/${orderId}/capture`, {
                         modificationAmount: {
                             currency: "DKK",
-                            value: response.data.amount.value // eller et hardkodet beløb f.eks. 49900
+                            value: response.data.amount.value
                         }
                     }, {
                         headers: {
@@ -180,16 +279,23 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
                             'Authorization': `Bearer ${accessToken}`,
                             'Ocp-Apim-Subscription-Key': `${process.env.VITE_OCP_APIM_SUBSCRIPTION_KEY_PRIMARY}`,
                             'Merchant-Serial-Number': `${process.env.VITE_MSN}`,
-                            'Idempotency-Key': `${uuidv4()}` // idempotency key
+                            'Idempotency-Key': `${uuidv4()}`
                         }
                     })
-                    .then(captureResponse => {
+                    .then(async captureResponse => {
                         console.log("Capture successful:", captureResponse.data);
+                        
+                        // Registrer betalinger på posteringer
+                        const betalingsbeløb = captureResponse.data.aggregate.capturedAmount.value / 100;
+                        const betalingsID = captureResponse.data.reference;
+                        registrerBetalinger(betalingsbeløb, betalingsID);
+
+                        // Returner status
                         return res.status(200).json({ status: 'CAPTURED', data: captureResponse.data });
                     })
                     .catch(captureError => {
                         console.error('Error capturing payment: ', captureError.response?.data || captureError);
-                        return res.status(500).json({ error: 'Failed to capture payment' });
+                        return res.status(500).json({ error: 'Kundens betaling fejlede.' });
                     });
 
                 } else if (response.data.state === 'ABORTED') {
@@ -203,9 +309,15 @@ router.post('/listen-for-payment-status/:orderId', async (req, res) => {
                 }
             })
             .catch(error => {
-                console.error('Error polling payment status: ', error);
-                res.status(500).json({ error: `Error polling payment status for orderId: ${orderId}` });
-            });
+                console.error('Error polling payment status: ', error.response?.data || error.message);
+            
+                if (shouldRetry(error)) {
+                    console.log('Retrying after temporary error...');
+                    setTimeout(() => pollPaymentStatus(orderId), 3000);
+                } else {
+                    res.status(500).json({ error: `Error polling payment status for orderId: ${orderId}` });
+                }
+            });            
         })
         .catch(error => {
             console.error('Error getting access token from MobilePay: ', error);

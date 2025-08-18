@@ -64,22 +64,25 @@ const AllePosteringer = () => {
         })
     }, [user])
 
-    console.log("Posteringer", posteringer)
+    // console.log("Posteringer", posteringer)
 
     const arrayAfEksisterendeOpgaveIDer = opgaver.map(opgave => opgave._id)
     const arrayAfPosteringersOpgaveIDer = posteringer.map(postering => postering.opgaveID)
     const ikkeEksisterendeOpgaveIDer = arrayAfPosteringersOpgaveIDer.filter(opgaveID => !arrayAfEksisterendeOpgaveIDer.includes(opgaveID))
     const unikkeIkkeEksisterendeOpgaveIDer = [...new Set(ikkeEksisterendeOpgaveIDer)]
 
-    console.log("Unikke ikke-eksisterende opgaveIDer", unikkeIkkeEksisterendeOpgaveIDer)
+    console.log("Unikke ikke-eksisterende opgaveIDer")
+    console.log(unikkeIkkeEksisterendeOpgaveIDer)
 
     const nyeOpgaveKundePar = unikkeIkkeEksisterendeOpgaveIDer.map(opgaveID => {
         const kundeID = posteringer.find(postering => postering.opgaveID === opgaveID)?.kundeID
         const brugerID = posteringer.find(postering => postering.opgaveID === opgaveID)?.brugerID
+        const dato = posteringer.find(postering => postering.opgaveID === opgaveID)?.dato
         return {
             opgaveID: opgaveID,
             kundeID: kundeID,
-            brugerID: brugerID
+            brugerID: brugerID,
+            dato: dato
         }
     })
 
@@ -88,15 +91,16 @@ const AllePosteringer = () => {
     const submitOpgaver = async (e) => {
         e.preventDefault()
 
-        const treFørstePar = nyeOpgaveKundePar.slice(0, 3)
+        console.log("Intet at se her.")
+        return
 
-        treFørstePar.forEach(opgaveKundePar => {
+        nyeOpgaveKundePar.forEach(opgaveKundePar => {
             const opgaveMedEksisterendeKunde = {
                 _id: opgaveKundePar.opgaveID,
                 opgaveBeskrivelse: "Opgavebeskrivelse mangler – opgave tilføjet som placeholder efter datatab.",
                 fakturaOprettesManuelt: false,
                 markeretSomFærdig: true,
-                opgaveAfsluttet: new Date(),
+                opgaveAfsluttet: opgaveKundePar.dato,
                 kundeID: opgaveKundePar.kundeID,
                 kunde: opgaveKundePar.kundeID,
                 ansvarlig: [brugere.find(bruger => bruger._id === opgaveKundePar.brugerID)]
@@ -144,7 +148,6 @@ const AllePosteringer = () => {
         {posteringer.map(postering => (
             <Postering key={postering._id} postering={postering} brugere={brugere} />
         ))}
-        <button onClick={submitOpgaver}>Opret første opgave</button>
     </div>
   )
 }

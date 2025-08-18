@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Modal from '../Modal.jsx'
-import ÅbenOpgaveCSS from '../../pages/ÅbenOpgave.module.css'
+import PosteringCSS from '../Postering.module.css'
 import styles from './PosteringSatserModal.module.css'
 import dayjs from 'dayjs'
 import satser from '../../variables'
@@ -70,17 +70,17 @@ const PosteringSatserModal = (props) => {
             {!kvitteringBillede ? <>
             <h2 className={styles.modalHeading}>Satser for postering</h2>
             <p className={styles.løngruppeP}>{getBrugerName(postering.brugerID).split(' ')[0]} lønnes efter <span style={{fontFamily: 'OmnesBold', background: '#f0f0f0', padding: '2px 8px', borderRadius: '10px', marginRight: '2px'}}><b>løntrin {beregnLøngruppe(postering)}</b></span>på denne postering.</p>
-            <div className={`${ÅbenOpgaveCSS.posteringCard} ${ÅbenOpgaveCSS.posteringCardSatsDisplay}`}>
+            <div className={`${PosteringCSS.posteringCard} ${PosteringCSS.posteringCardSatsDisplay}`} style={{padding: '10px 20px'}}>
                 <div>
-                    <p className={ÅbenOpgaveCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
-                    <p className={ÅbenOpgaveCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
-                    <i className={ÅbenOpgaveCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
-                    <div className={ÅbenOpgaveCSS.kvitteringBillederListe}>
+                    <p className={PosteringCSS.posteringDato}>{postering.dato && postering.dato.slice(0,10)}</p>
+                    <p className={PosteringCSS.posteringBruger}>{getBrugerName(postering.brugerID)}</p>
+                    <i className={PosteringCSS.posteringBeskrivelse}>{postering.beskrivelse ? postering.beskrivelse : "Ingen beskrivelse."}</i>
+                    <div className={PosteringCSS.kvitteringBillederListe}>
                         {postering.udlæg.map((udlæg, index) => {
                             return udlæg.kvittering ? 
                             <img 
                             key={`udlæg-${index}`}
-                            className={ÅbenOpgaveCSS.kvitteringBillede} 
+                            className={PosteringCSS.kvitteringBillede} 
                             src={udlæg.kvittering} 
                             alt={udlæg.beskrivelse} 
                             onClick={() => {
@@ -204,10 +204,10 @@ const PosteringSatserModal = (props) => {
                 </div>
             </div>
             </> : <PageAnimation>
-                    <div className={ÅbenOpgaveCSS.billedModalHeader}>
-                        <img className={ÅbenOpgaveCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
+                    <div className={PosteringCSS.billedModalHeader}>
+                        <img className={PosteringCSS.backArrow} src={BackArrow} onClick={() => setKvitteringBillede("")}/><h2>Billedvisning</h2>    
                     </div>
-                    <img src={kvitteringBillede} className={ÅbenOpgaveCSS.kvitteringBilledeStort} />
+                    <img src={kvitteringBillede} className={PosteringCSS.kvitteringBilledeStort} />
                 </PageAnimation>}
         </Modal>
     )

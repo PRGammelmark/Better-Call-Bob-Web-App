@@ -26,8 +26,41 @@
 // beregnRabatterPris()
 // beregnTotalPris()
 
+// LISTE: FUNKTIONER TIL ANTAL-BEREGNINGER
+// -----------------------------------------------
+// beregnAntalOpstartsgebyrer()
+// beregnAntalHandymanTimer()
+// beregnAntalTømrerTimer()
+// beregnAntalRådgivningOpmålingVejledning()
+// beregnAntalTrailer()
+// beregnAntalAftenTillæg()
+// beregnAntalNatTillæg()
+// beregnAntalUdlæg()
 
+// LISTE: FUNKTIONER TIL BETALING-BEREGNINGER
+// -----------------------------------------------
+// totalBetalinger()
 
+export function totalBetalinger(posteringer, decimaler = 2) {
+    if (!posteringer) return;
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+
+    const totalBetalinger = posteringerListe.reduce((akk, nuv) => {
+        const betalinger = Array.isArray(nuv.betalinger) ? nuv.betalinger : [];
+        return akk + betalinger.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0);
+    }, 0) * 1.25;
+
+    return {
+        beløb: totalBetalinger,
+        formateret: totalBetalinger.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    };
+}
 
 
 // FUNKTIONER TIL PRIS-BEREGNINGER
@@ -176,7 +209,8 @@ export function aftenTillægPris(posteringer, decimaler = 2, inklMoms = false){
     }
 
     const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalAftenTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
+    // let totalAftenTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
+    let totalAftenTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.satser.aftenTillægPris / 100) * ((nuv.handymanTimer * nuv.satser.handymanTimerPris) + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris))) : 0) : 0), 0);
 
     if (inklMoms) {
         totalAftenTillægPris *= 1.25;
@@ -193,13 +227,106 @@ export function aftenTillægPris(posteringer, decimaler = 2, inklMoms = false){
     }
 }
 
+export function handymanPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let totalHandymanPrisInklAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPrisInklAftenTillæg) : 0), 0);
+
+    if (inklMoms) {
+        totalHandymanPrisInklAftenTillæg *= 1.25;
+    }
+    
+    return {
+        beløb: totalHandymanPrisInklAftenTillæg,
+        formateret: totalHandymanPrisInklAftenTillæg.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
+export function handymanPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let totalHandymanPrisInklNatTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPrisInklNatTillæg) : 0), 0);
+
+    if (inklMoms) {
+        totalHandymanPrisInklNatTillæg *= 1.25;
+    }
+    
+    return {
+        beløb: totalHandymanPrisInklNatTillæg,
+        formateret: totalHandymanPrisInklNatTillæg.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
+export function tømrerPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let totalTømrerPrisInklAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPrisInklAftenTillæg) : 0), 0);
+
+    if (inklMoms) {
+        totalTømrerPrisInklAftenTillæg *= 1.25;
+    }
+    
+    return {
+        beløb: totalTømrerPrisInklAftenTillæg,
+        formateret: totalTømrerPrisInklAftenTillæg.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
+export function tømrerPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let totalTømrerPrisInklNatTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPrisInklNatTillæg) : 0), 0);
+
+    if (inklMoms) {
+        totalTømrerPrisInklNatTillæg *= 1.25;
+    }
+    
+    return {
+        beløb: totalTømrerPrisInklNatTillæg,
+        formateret: totalTømrerPrisInklNatTillæg.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
 export function natTillægPris(posteringer, decimaler = 2, inklMoms = false){
     if(!posteringer){
         return
     }
 
     const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalNatTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
+    // let totalNatTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
+    let totalNatTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.satser.natTillægPris / 100) * ((nuv.handymanTimer * nuv.satser.handymanTimerPris) + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris))) : 0) : 0), 0);
 
     if (inklMoms) {
         totalNatTillægPris *= 1.25;
@@ -216,6 +343,33 @@ export function natTillægPris(posteringer, decimaler = 2, inklMoms = false){
     }
 }
 
+export function totalPrisEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const totalPrisEksklUdlægOgRabat = (
+        fastPris(posteringer, 2, inklMoms).beløb
+         + opstartPris(posteringer, 2, inklMoms).beløb
+         + handymanPris(posteringer, 2, inklMoms).beløb
+         + tømrerPris(posteringer, 2, inklMoms).beløb
+         + rådgivningPris(posteringer, 2, inklMoms).beløb
+         + trailerPris(posteringer, 2, inklMoms).beløb
+         + aftenTillægPris(posteringer, 2, inklMoms).beløb
+         + natTillægPris(posteringer, 2, inklMoms).beløb
+     )
+    
+     return {
+        beløb: totalPrisEksklUdlægOgRabat,
+        formateret: totalPrisEksklUdlægOgRabat.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
 export function udlægPris(posteringer, decimaler = 2, inklMoms = false){
     if(!posteringer){
         return
@@ -223,7 +377,7 @@ export function udlægPris(posteringer, decimaler = 2, inklMoms = false){
 
     const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
     let totalUdlægPris = posteringerListe.reduce((akk, nuv) => {
-        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
+        const udlægSum = nuv?.udlæg?.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
         return akk + (nuv.dynamiskPrisBeregning ? udlægSum : 0);
     }, 0);
 
@@ -248,12 +402,16 @@ export function rabatPris(posteringer, decimaler = 2, inklMoms = false){
     }
 
     const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+
     let totalRabatterPris = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+
         const rabatProcent = nuv.rabatProcent || 0;
-        const totalPrisEksklUdlæg = nuv.totalPris - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        const rabatBeregning = (nuv.dynamiskPrisBeregning ? ((totalPrisEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
-        return akk + rabatBeregning;
-    }, 0)
+        const totalUdenUdlæg = totalPrisEksklUdlægOgRabat(nuv, 2, false).beløb;
+        const rabatBeløb = totalUdenUdlæg * (rabatProcent / 100);
+
+        return akk + rabatBeløb;
+    }, 0);
 
     if (inklMoms) {
         totalRabatterPris *= 1.25;
@@ -485,6 +643,33 @@ export function natTillægHonorar(posteringer, decimaler = 2, inklMoms = false){
     }
 }
 
+export function totalHonorarEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false){
+    if(!posteringer){
+        return
+    }
+    
+    const totalHonorarEksklUdlægOgRabat = (
+        fastHonorar(posteringer, 2, inklMoms).beløb
+         + opstartHonorar(posteringer, 2, inklMoms).beløb
+         + handymanHonorar(posteringer, 2, inklMoms).beløb
+         + tømrerHonorar(posteringer, 2, inklMoms).beløb
+         + rådgivningHonorar(posteringer, 2, inklMoms).beløb
+         + trailerHonorar(posteringer, 2, inklMoms).beløb
+         + aftenTillægHonorar(posteringer, 2, inklMoms).beløb
+         + natTillægHonorar(posteringer, 2, inklMoms).beløb
+     )
+    
+     return {
+        beløb: totalHonorarEksklUdlægOgRabat,
+        formateret: totalHonorarEksklUdlægOgRabat.toLocaleString('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: decimaler,
+            maximumFractionDigits: decimaler
+        })
+    }
+}
+
 export function udlægHonorar(posteringer, decimaler = 2, inklMoms = false){
     if(!posteringer){
         return
@@ -517,10 +702,15 @@ export function rabatHonorar(posteringer, decimaler = 2, inklMoms = false){
     }
 
     const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+
     let totalRabatterHonorar = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskHonorarBeregning) return akk;
+
         const rabatProcent = nuv.rabatProcent || 0;
-        const totalHonorarEksklUdlæg = (nuv.totalHonorar - nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0));
-        return akk + (nuv.dynamiskHonorarBeregning ? ((totalHonorarEksklUdlæg / (100 - rabatProcent) * 100) * (rabatProcent / 100)) : 0);
+        const totalUdenUdlæg = totalHonorarEksklUdlægOgRabat(nuv, 2, false).beløb;
+        const rabatBeløb = totalUdenUdlæg * (rabatProcent / 100);
+
+        return akk + rabatBeløb;
     }, 0);
 
     if (inklMoms) {
@@ -544,17 +734,10 @@ export function totalHonorar(posteringer, decimaler = 2, inklMoms = false){
     }
 
     const totalHonorar = (
-       fastHonorar(posteringer, 2, inklMoms).beløb
-        + opstartHonorar(posteringer, 2, inklMoms).beløb
-        + handymanHonorar(posteringer, 2, inklMoms).beløb
-        + tømrerHonorar(posteringer, 2, inklMoms).beløb
-        + rådgivningHonorar(posteringer, 2, inklMoms).beløb
-        + trailerHonorar(posteringer, 2, inklMoms).beløb
-        + aftenTillægHonorar(posteringer, 2, inklMoms).beløb
-        + natTillægHonorar(posteringer, 2, inklMoms).beløb
-        + udlægHonorar(posteringer, 2, inklMoms).beløb
-        - rabatHonorar(posteringer, 2, inklMoms).beløb
-    )
+        totalHonorarEksklUdlægOgRabat(posteringer, 2, inklMoms).beløb
+         + udlægHonorar(posteringer, 2, inklMoms).beløb
+         - rabatHonorar(posteringer, 2, inklMoms).beløb
+     )
 
     return {
         beløb: totalHonorar,
@@ -565,4 +748,94 @@ export function totalHonorar(posteringer, decimaler = 2, inklMoms = false){
             maximumFractionDigits: decimaler
         })
     }
+}
+
+// FUNKTIONER TIL ANTAL-BEREGNINGER
+
+export function antalOpstartsgebyrerForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalOpstartsgebyrer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.opstart : 0), 0);
+
+    return antalOpstartsgebyrer;
+}
+
+export function antalHandymanTimerForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalHandymanTimer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.handymanTimer : 0), 0);
+
+    return antalHandymanTimer;
+}
+
+export function antalTømrerTimerForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalTømrerTimer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.tømrerTimer : 0), 0);
+
+    return antalTømrerTimer;
+}
+
+export function antalRådgivningOpmålingVejledningForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalRådgivningOpmålingVejledning = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.rådgivningOpmålingVejledning : 0), 0);
+
+    return antalRådgivningOpmålingVejledning;
+}
+
+export function antalTrailerForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalTrailer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.trailer : 0), 0);
+
+    return antalTrailer;
+}
+
+export function antalAftenTillægForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + ((nuv.dynamiskPrisBeregning && nuv.aftenTillæg) ? (nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) : 0), 0);
+
+    return antalAftenTillæg;
+}
+
+export function antalNatTillægForPris(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalNatTillæg = posteringerListe.reduce((akk, nuv) => akk + ((nuv.dynamiskPrisBeregning && nuv.natTillæg) ? (nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) : 0), 0);
+
+    return antalNatTillæg;
+}
+
+export function antalUdlæg(posteringer){
+    if(!posteringer){
+        return
+    }
+
+    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+    let antalUdlæg = posteringerListe.reduce((akk, nuv) => akk + (nuv?.udlæg?.length || 0), 0);
+
+    return antalUdlæg;
 }

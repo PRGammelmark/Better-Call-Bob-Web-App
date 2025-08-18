@@ -46,6 +46,19 @@ const posteringSchema = new Schema({
         ref: 'Kunde'
     },
     betalt: Date,
+    opkrævninger: {
+        type: [{
+            reference: String,
+            url: String,
+            metode: {
+                type: String,
+                enum: ['mobilepay', 'faktura', 'bankoverførsel', 'kontant', 'betalingskort'],
+                required: true
+            },
+            dato: Date
+        }],
+        default: []
+    },
     betalinger: { 
         type: [{
             betalingsID: String,
@@ -59,12 +72,20 @@ const posteringSchema = new Schema({
                 type: Schema.Types.ObjectId,
                 ref: 'Bruger'
             },
+            manueltRegistreret: {
+                type: Boolean,
+                default: false
+            },
             dato: Date,
         }],
         default: [] 
     },
     lukket: Date,
-    kommentar: String
+    kommentar: String,
+    låst: {
+        type: Boolean,
+        default: false
+    }
 }, { timestamps: true })
 
 const model = mongoose.model('Postering', posteringSchema);

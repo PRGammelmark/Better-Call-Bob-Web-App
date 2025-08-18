@@ -38,7 +38,6 @@ const DelegatedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        console.log(json)
         const opgaverMedAnsvarlige = json.filter(opgave => opgave.ansvarlig.length > 0 && !opgave.isDeleted);
         const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => !opgave.markeretSomFærdig)
         setUddelegeredeOpgaver(ufærdigeOpgaverMedAnsvarlige);

@@ -1,0 +1,137 @@
+.posteringContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: sticky;
+    top: -20px;
+    background-color: white;
+    z-index: 100;
+    width: calc(100% + 60px);
+    transform: translateX(-30px);
+    padding: 20px 0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.redigerSatserContainer {
+    padding: 0;
+    width: calc(100% + 60px);
+    transform: translateX(-30px);
+}
+
+.label {
+    font-family: OmnesBold;
+    display: block;
+    margin-bottom: 6px;
+}
+
+.inputLine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+    padding: 20px 30px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.inputLine > label {
+    z-index: 2;
+    height: 30px;
+    margin-bottom: 0!important;
+    line-height: 30px;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.inputLine input {
+    width: calc(100% - 60px);
+    position: relative;
+    z-index: 1;
+    height: 30px;
+    text-align: right;
+    border: none!important;
+    box-shadow: none!important;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 0!important;
+    font-size: 1rem;
+    /* Hide arrows for number input */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    -moz-appearance: textfield; /* Firefox */
+}
+
+.input {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.06) 0px 10px 36px 0px, rgba(0, 0, 0, 0.16) 0px 0px 0px 1px;
+    -webkit-appearance: none;
+}
+
+.input:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 36px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 1px;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+.button {
+    border-radius: 10px;
+    border: none;
+    background: #3c5a3f;
+    color: white;
+    font-family: OmnesBold;
+    font-size: 1rem;
+    padding: 15px 20px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    display: block;
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.button:hover {
+    background: rgba(89, 191, 26, 1);
+}
+
+@media (max-width: 750px) {
+    .posteringContainer {
+        width: 100% + 20px;
+        transform: translateX(-30px);
+        padding: 20px 0;
+    }
+}
+
+.inputWrapper {
+    position: relative;
+    width: 100%;
+  }
+  
+.inputWrapper input {
+    padding-right: 20px; /* plads til postfix */
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.postfix {
+    position: absolute;
+    right: 0px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666666;
+    font-family: Omnes;
+    font-size: 1rem;
+    user-select: none;
+}

@@ -9,6 +9,7 @@ import ledigeTiderRoutes from "./routes/ledigeTider.js"
 import besøgRoutes from "./routes/besøg.js"
 import uploadsRoutes from "./routes/uploads.js"
 import fakturaerRoutes from "./routes/fakturaer.js"
+import fakturaOpkraevningerRoutes from "./routes/fakturaOpkraevninger.js"
 import smsRoutes from "./routes/sms.js"
 import mobilePayRoutes from "./routes/mobilePay.js"
 import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
@@ -23,6 +24,8 @@ import rateLimit from 'express-rate-limit';
 import { sendPushNotification } from './utils/pushService.js';
 import { collectKvitteringer } from './utils/collectKvitteringer.js';
 import aiRoutes from './routes/ai.js';
+import { sendFakturaIgen } from './utils/sendFakturaIgen.js';
+import { tjekFakturaForBetaling } from './utils/tjekFakturaForBetaling.js';
 
 dotenv.config();
 const app = express();
@@ -81,6 +84,29 @@ app.post('/api/send-email', async (req, res) => {
     }
 });
 
+app.post('/api/send-faktura-igen', async (req, res) => {
+    try {
+        await sendFakturaIgen(req.body);
+        res.status(200).json({ message: 'Fakturaen er blevet sendt igen til ' + req.body.to + '.' });
+    } catch (error) {
+        console.error('Error sending email for faktura', req.body.fakturaNummer, error);
+        res.status(500).json({ error: 'Error sending email' });
+    }
+});
+
+// Tjek faktura for om den er betalt (true / false)
+app.post('/api/tjek-faktura-for-betaling', async (req, res) => {
+    try {
+      const { fakturaNummer } = req.body;
+      const betalt = await tjekFakturaForBetaling(fakturaNummer);
+      console.log(betalt);
+      res.json({ betalt });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Kunne ikke tjekke betaling' });
+    }
+});  
+
 // Define push notification route
 app.post('/api/send-push', async (req, res) => {
     const { modtager, payload } = req.body;
@@ -104,6 +130,7 @@ app.use('/api/ledige-tider', ledigeTiderRoutes);
 app.use('/api/besoeg', besøgRoutes);
 app.use('/api/uploads', uploadsRoutes);
 app.use('/api/fakturaer', fakturaerRoutes);
+app.use('/api/faktura-opkraevninger', fakturaOpkraevningerRoutes);
 app.use('/api/sms', smsRoutes);
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
@@ -129,7 +156,6 @@ app.use('/api/cleanup', (req, res) => {
 
 // AI-parsing af opgaver
 app.use('/api/ai', aiRoutes);
-
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

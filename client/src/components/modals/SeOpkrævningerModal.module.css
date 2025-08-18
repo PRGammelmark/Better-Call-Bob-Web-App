@@ -1,0 +1,141 @@
+.opkrævningerContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+    margin-top: 10px;
+    padding-bottom: 20px;
+}
+.opkrævningCard {
+    border: 1px solid #3c5a3f;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    padding: 15px;
+    border-radius: 10px;
+    transition: 0.2s ease;
+}
+
+.senesteOpkrævning {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    border: 1px solid #3c5a3f;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    padding: 15px;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 30px;
+    transition: 0.2s ease;
+}
+
+.betaltPill {
+    font-family: 'OmnesBold';
+    font-size: 12px;
+    color: #59bf1a;
+    background-color: #59bf1a30;
+    padding: 8px 15px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    border-radius: 5px;
+}
+
+.opkrævningerHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+
+.klokkeslæt {
+    font-size: 12px;
+    color: #808080;
+}
+
+.beløb {
+    font-family: 'OmnesBold';
+    font-size: 20px;
+}
+
+.visMereKnap {
+    font-family: 'OmnesBold';
+    font-size: 14px;
+    color: #59bf1a;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.betalingerFooter {
+    margin-top: 10px;
+}
+
+.sletBetalingKnap {
+    font-family: 'OmnesBold';
+    color: #222222;
+    cursor: pointer;
+    transition: 0.2s ease;
+    border: none;
+    background-color: transparent;
+    font-size: 12px;
+    padding: 8px 20px;
+    margin-left: 20px;
+    border-radius: 0 0 5px 5px;
+}
+
+.sletBetalingKnap:hover {
+    background-color: #ff000040;
+    color: #ff0000;
+}
+
+.betalingWrapper:has(.sletBetalingKnap:hover) .betalingCard {
+    border: 1px solid #ff0000;
+}
+
+.fakturaKnapperWrapper {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.fakturaKnap {
+    font-family: 'OmnesBold';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-size: 12px;
+    border: 1px solid #22222200;
+    background-color: #e8e8e8;
+    color: #222222;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.fakturaKnap:hover {
+    color: #222222;
+    border: 1px solid #222222;
+}
+
+.tjekBetalingKnap {
+    font-family: 'OmnesBold';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 14px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #3c5a3f;
+    color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s ease;
+    width: 100%;
+}
+
+.tjekBetalingKnap:hover {
+    background-color: #59bf1a;
+    color: #fff;
+}

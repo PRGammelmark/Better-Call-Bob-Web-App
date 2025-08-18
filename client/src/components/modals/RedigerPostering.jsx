@@ -154,6 +154,7 @@ const RedigerPostering = (props) => {
             setDynamiskHonorarBeregning(true);
             setDynamiskPrisBeregning(true);
             setRabatProcent(0);
+            props.refetchPostering();
         })
         .catch(error => console.log(error))
     }
