@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import Modal from '../../Modal.jsx'
 import ÅbenOpgaveCSS from '../../../pages/ÅbenOpgave.module.css'
-import Styles from './RegistrerBetalingModal.module.css'
+import Styles from './registrerBetalingModal.module.css'
 import PageAnimation from '../../PageAnimation.jsx'
 import axios from 'axios'
 import * as beregn from '../../../utils/beregninger.js'
