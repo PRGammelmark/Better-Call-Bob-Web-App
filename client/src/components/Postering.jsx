@@ -18,6 +18,7 @@ import BetalViaFakturaModal from './modals/betalingsflows/BetalViaFakturaModal.j
 import VælgMobilePayBetalingsmetode from './modals/VælgMobilePayBetalingsmetode.jsx'
 import SeBetalingerModal from './modals/SeBetalingerModal.jsx'
 import RegistrerBetalingModal from './modals/betalingsflows/registrerBetalingModal.jsx'
+import RegistrerOpkrævningModal from './modals/betalingsflows/registrerOpkrævningModal.jsx'
 import SeOpkrævningerModal from './modals/SeOpkrævningerModal.jsx'
 
 const Postering = ({ postering, brugere, user, posteringer, setPosteringer, færdiggjort, openPosteringModalID, setOpenPosteringModalID, visInklMoms }) => {
@@ -25,8 +26,9 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
     const [openPosteringSatser, setOpenPosteringSatser] = useState(null)
     const [openRetPrissatsModalID, setOpenRetPrissatsModalID] = useState(null)
     const [openRetLønsatsModalID, setOpenRetLønsatsModalID] = useState(null)
-    const [openRegistrerBetalingModalID, setOpenRegistrerBetalingModalID] = useState(null)
     const [openSeBetalingerModal, setOpenSeBetalingerModal] = useState(false)
+    const [openRegistrerBetalingModalID, setOpenRegistrerBetalingModalID] = useState(null)
+    const [openRegistrerOpkrævningModalID, setOpenRegistrerOpkrævningModalID] = useState(null)
     const [openSeOpkrævningerModal, setOpenSeOpkrævningerModal] = useState(false)
     const [honorarVisning, setHonorarVisning] = useState(false)
     const [kvitteringBillede, setKvitteringBillede] = useState("")
@@ -248,7 +250,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                     </div>
                     <div className={`${Styles.posteringKnapper} ${!honorarVisning && Styles.posteringKnapperFadeOut}`}>
                         <Lock className={`${Styles.posteringLåstIcon} ${postering?.låst ? Styles.posteringLåstIconActive : ''}`}/>
-                        <PosteringMereKnap user={user} userID={userID} postering={postering} setOpenMenuForPosteringID={setOpenMenuForPosteringID} openMenuForPosteringID={openMenuForPosteringID} sletPostering={sletPostering} setOpenPosteringModalID={setOpenPosteringModalID} setHonorarVisning={setHonorarVisning} honorarVisning={honorarVisning} setOpenPosteringSatser={setOpenPosteringSatser} refetchPostering={refetchPostering} setOpenRetPrissatsModalID={setOpenRetPrissatsModalID} setOpenRetLønsatsModalID={setOpenRetLønsatsModalID} setOpenRegistrerBetalingModalID={setOpenRegistrerBetalingModalID} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} posteringBetalt={posteringBetalt} setOpenSeBetalingerModal={setOpenSeBetalingerModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenSeOpkrævningerModal={setOpenSeOpkrævningerModal}/>
+                        <PosteringMereKnap user={user} userID={userID} postering={postering} setOpenMenuForPosteringID={setOpenMenuForPosteringID} openMenuForPosteringID={openMenuForPosteringID} sletPostering={sletPostering} setOpenPosteringModalID={setOpenPosteringModalID} setHonorarVisning={setHonorarVisning} honorarVisning={honorarVisning} setOpenPosteringSatser={setOpenPosteringSatser} refetchPostering={refetchPostering} setOpenRetPrissatsModalID={setOpenRetPrissatsModalID} setOpenRetLønsatsModalID={setOpenRetLønsatsModalID} setOpenRegistrerBetalingModalID={setOpenRegistrerBetalingModalID} setOpenRegistrerOpkrævningModalID={setOpenRegistrerOpkrævningModalID} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} posteringBetalt={posteringBetalt} setOpenSeBetalingerModal={setOpenSeBetalingerModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenSeOpkrævningerModal={setOpenSeOpkrævningerModal} />
                     </div>
                 </div>
                 <div className={`${Styles.posteringBack}`}>
@@ -349,7 +351,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                     </div>
                     <div className={`${Styles.posteringKnapper} ${honorarVisning && Styles.posteringKnapperFadeOut}`}>
                         <Lock className={`${Styles.posteringLåstIcon} ${postering?.låst ? Styles.posteringLåstIconActive : ''}`}/>  
-                        <PosteringMereKnap user={user} userID={userID} postering={postering} setOpenMenuForPosteringID={setOpenMenuForPosteringID} openMenuForPosteringID={openMenuForPosteringID} sletPostering={sletPostering} setOpenPosteringModalID={setOpenPosteringModalID} setHonorarVisning={setHonorarVisning} honorarVisning={honorarVisning} setOpenPosteringSatser={setOpenPosteringSatser} refetchPostering={refetchPostering} setOpenRetPrissatsModalID={setOpenRetPrissatsModalID} setOpenRetLønsatsModalID={setOpenRetLønsatsModalID} setOpenRegistrerBetalingModalID={setOpenRegistrerBetalingModalID} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} posteringBetalt={posteringBetalt} setOpenSeBetalingerModal={setOpenSeBetalingerModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenSeOpkrævningerModal={setOpenSeOpkrævningerModal}/>
+                        <PosteringMereKnap user={user} userID={userID} postering={postering} setOpenMenuForPosteringID={setOpenMenuForPosteringID} openMenuForPosteringID={openMenuForPosteringID} sletPostering={sletPostering} setOpenPosteringModalID={setOpenPosteringModalID} setHonorarVisning={setHonorarVisning} honorarVisning={honorarVisning} setOpenPosteringSatser={setOpenPosteringSatser} refetchPostering={refetchPostering} setOpenRetPrissatsModalID={setOpenRetPrissatsModalID} setOpenRetLønsatsModalID={setOpenRetLønsatsModalID} setOpenRegistrerBetalingModalID={setOpenRegistrerBetalingModalID} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} posteringBetalt={posteringBetalt} setOpenSeBetalingerModal={setOpenSeBetalingerModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenSeOpkrævningerModal={setOpenSeOpkrævningerModal} setOpenRegistrerOpkrævningModalID={setOpenRegistrerOpkrævningModalID}/>
                     </div>
                 </div>
             </div>
@@ -360,12 +362,13 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
         <RetPrissatsModal trigger={openRetPrissatsModalID === postering._id} setTrigger={setOpenRetPrissatsModalID} postering={postering} refetchPostering={refetchPostering} />
         <RetLønsatsModal trigger={openRetLønsatsModalID === postering._id} setTrigger={setOpenRetLønsatsModalID} postering={postering} refetchPostering={refetchPostering}/>
         <RegistrerBetalingModal trigger={openRegistrerBetalingModalID === postering._id} setTrigger={setOpenRegistrerBetalingModalID} postering={postering} refetchPostering={refetchPostering}/>
+        <RegistrerOpkrævningModal trigger={openRegistrerOpkrævningModalID === postering._id} setTrigger={setOpenRegistrerOpkrævningModalID} postering={postering} refetchPostering={refetchPostering}/>
         <BetalViaMobilePayAnmodningModal trigger={openBetalViaMobilePayAnmodningModal?._id === postering._id} setTrigger={setOpenBetalViaMobilePayAnmodningModal} postering={postering} refetchPostering={refetchPostering}/>
         <BetalViaMobilePayQRModal trigger={openBetalViaMobilePayScanQRModal?._id === postering._id} setTrigger={setOpenBetalViaMobilePayScanQRModal} postering={postering} refetchPostering={refetchPostering}/>
         <BetalViaFakturaModal trigger={openBetalViaFakturaModal?._id === postering._id} setTrigger={setOpenBetalViaFakturaModal} postering={postering} refetchPostering={refetchPostering}/>
         <VælgMobilePayBetalingsmetode trigger={openVælgMobilePayBetalingsmetodeModal} setTrigger={setOpenVælgMobilePayBetalingsmetodeModal} postering={postering} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} />
         <SeBetalingerModal trigger={openSeBetalingerModal} setTrigger={setOpenSeBetalingerModal} postering={postering} refetchPostering={refetchPostering}/>
-        <SeOpkrævningerModal trigger={openSeOpkrævningerModal} setTrigger={setOpenSeOpkrævningerModal} postering={postering} />
+        <SeOpkrævningerModal trigger={openSeOpkrævningerModal} setTrigger={setOpenSeOpkrævningerModal} postering={postering} refetchPostering={refetchPostering} />
     </div>
   )
 }

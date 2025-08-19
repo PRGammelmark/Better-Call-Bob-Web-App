@@ -55,7 +55,11 @@ const posteringSchema = new Schema({
                 enum: ['mobilepay', 'faktura', 'bankoverførsel', 'kontant', 'betalingskort'],
                 required: true
             },
-            dato: Date
+            dato: Date,
+            manueltRegistreret: {
+                type: Boolean,
+                default: false
+            }
         }],
         default: []
     },

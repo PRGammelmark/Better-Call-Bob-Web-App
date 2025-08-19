@@ -4,7 +4,7 @@ import { Wallet, SquarePen, Tag, TableOfContents, FlipHorizontal, Trash2, X, Ell
 import { useAuthContext } from '../hooks/useAuthContext'
 import axios from 'axios';
 
-const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering, setOpenPosteringModalID, setHonorarVisning, honorarVisning, setOpenPosteringSatser, refetchPostering, setOpenRetPrissatsModalID, setOpenRetLønsatsModalID, setOpenRegistrerBetalingModalID, setOpenBetalViaMobilePayAnmodningModal, setOpenVælgMobilePayBetalingsmetodeModal, posteringBetalt, setOpenSeBetalingerModal, setOpenSeOpkrævningerModal, setOpenBetalViaFakturaModal }) => {
+const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering, setOpenPosteringModalID, setHonorarVisning, honorarVisning, setOpenPosteringSatser, refetchPostering, setOpenRetPrissatsModalID, setOpenRetLønsatsModalID, setOpenRegistrerBetalingModalID, setOpenBetalViaMobilePayAnmodningModal, setOpenVælgMobilePayBetalingsmetodeModal, posteringBetalt, setOpenSeBetalingerModal, setOpenSeOpkrævningerModal, setOpenBetalViaFakturaModal, setOpenRegistrerOpkrævningModalID }) => {
   const [open, setOpen] = useState(false);
   const [undermenuValg, setUndermenuValg] = useState(null);
   const [closing, setClosing] = useState(false);
@@ -132,6 +132,9 @@ const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering
                   </button>
                   {!(posteringBetalt === 2) && <button onClick={() => { setOpenRegistrerBetalingModalID(postering._id); handleClose(); }}>
                     <span><Check className={Styles.posteringMereInnerKnapIcon}/> Reg. betaling</span>
+                  </button>}
+                  {user.isAdmin && <button onClick={() => { console.log("Hey"); setOpenRegistrerOpkrævningModalID(postering._id); handleClose(); }}>
+                    <span><ReceiptText className={Styles.posteringMereInnerKnapIcon}/> Tilknyt faktura</span>
                   </button>}
                   {/* Flere ret-relaterede ting */}
                 </>

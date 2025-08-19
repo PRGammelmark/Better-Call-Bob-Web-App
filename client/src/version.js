@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.0.1",
+    date: "19. august 2025",
+    changes: [
+        "Nu kan man manuelt registrere tidligere oprettede faktura-opkrævninger på posteringer. Dette gøres ved at trykke på 'Tilknyt faktura' i posteringens menu. Alt man skal gøre er blot at indtaste fakturaens nummer samt dato for posteringen.",
+        "Små designforbedringer i 'Se opkrævninger'-menuen."
+    ]
+},{
     version: "3.0.0",
     date: "18. august 2025",
     changes: [

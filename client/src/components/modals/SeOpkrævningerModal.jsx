@@ -3,7 +3,7 @@ import Modal from '../Modal.jsx'
 import Styles from './SeOpkrævningerModal.module.css'
 import { useAuthContext } from '../../hooks/useAuthContext.js'
 import dayjs from 'dayjs'
-import { Smartphone, Banknote, BanknoteArrowDown, Send, Search, Coins, Check } from 'lucide-react'
+import { Smartphone, Banknote, BanknoteArrowDown, Send, Search, Coins, Check, Trash } from 'lucide-react'
 import axios from 'axios'
 
 const SeOpkrævningerModal = (props) => {
@@ -34,11 +34,11 @@ const SeOpkrævningerModal = (props) => {
         let betalingsMetodeIkon;
 
         if(metode === 'mobilepay') {
-            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5}}><Smartphone style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Mobile Pay</b></span>
+            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end'}}><Smartphone style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Mobile Pay</b></span>
         } else if(metode === 'faktura') {
-            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5}}><Banknote style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Faktura</b></span>
+            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end'}}><Banknote style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Faktura</b></span>
         } else if(metode === 'bankoverførsel') {
-            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5}}><BanknoteArrowDown style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Bankoverførsel</b></span>
+            betalingsMetodeIkon = <span style={{display: 'flex', alignItems: 'center', gap: 5, justifyContent: 'flex-end'}}><BanknoteArrowDown style={{width: 18, height: 18}}/> <b style={{fontFamily: 'OmnesBold'}}>Bankoverførsel</b></span>
         }
 
         return betalingsMetodeIkon;
@@ -123,8 +123,13 @@ const SeOpkrævningerModal = (props) => {
             );
         }
     };
-    
-      
+
+    const sletOpkrævning = async (opkrævning) => {
+        if(window.confirm("Er du sikker på, at du vil slette denne opkrævning?")) {
+            await axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${props.postering._id}`, { opkrævninger: props.postering.opkrævninger.filter(o => o._id !== opkrævning._id) }, { headers: { 'Authorization': `Bearer ${user.token}` } });
+            await props.refetchPostering();
+        }
+    } 
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger}> 
@@ -138,8 +143,9 @@ const SeOpkrævningerModal = (props) => {
                     <p className={Styles.klokkeslæt}>Kl. {dayjs(senesteOpkrævning?.dato).format('HH:mm')}</p>
                 </div>
                 <div className={Styles.betalingsMetodeIkonWrapper}>
-                    <b style={{fontFamily: 'OmnesBold'}}>{betalingsMetodeIkon(senesteOpkrævning?.metode)}</b>
+                    <b style={{fontFamily: 'OmnesBold', textAlign: 'right'}}>{betalingsMetodeIkon(senesteOpkrævning?.metode)}</b>
                     {senesteOpkrævning?.betalt && <span className={Styles.betaltPill}>Betalt <Check style={{width: 15, height: 15}}/></span>}
+                    {user.isAdmin && senesteOpkrævning?.manueltRegistreret && <button className={Styles.fakturaKnap} style={{marginTop: 10}} onClick={() => sletOpkrævning(senesteOpkrævning)}>Slet opkrævning <Trash style={{width: 15, height: 15}}/></button>}
                 </div>
             </div>
             <div className={Styles.betalingerFooter}>
@@ -168,6 +174,7 @@ const SeOpkrævningerModal = (props) => {
                             <div className={Styles.betalingsMetodeIkonWrapper}>
                                 <b style={{fontFamily: 'OmnesBold'}}>{betalingsMetodeIkon(opkrævning.metode)}</b>
                                 {opkrævning?.betalt && <span className={Styles.betaltPill}>Betalt <Check style={{width: 15, height: 15}}/></span>}
+                                {user.isAdmin && opkrævning?.manueltRegistreret && <button className={Styles.fakturaKnap} style={{marginTop: 10}} onClick={() => sletOpkrævning(opkrævning)}>Slet <Trash style={{width: 15, height: 15}}/></button>}
                             </div>
                         </div>
                         <div className={Styles.betalingerFooter} style={{marginTop: 40}}>
@@ -177,7 +184,7 @@ const SeOpkrævningerModal = (props) => {
                         </div>
                         {opkrævning?.metode === 'faktura' && <>
                             {!opkrævning?.betalt && (opkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080', marginTop: 20}}>Ingen betaling registreret</button> : <button className={Styles.tjekBetalingKnap} style={{marginTop: 20}} onClick={() => tjekBetaling(opkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15 }}/></button>)}
-                            <div className={Styles.fakturaKnapperWrapper} style={{marginTop: 10}}>
+                            <div className={Styles.fakturaKnapperWrapper} style={{marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10}}>
                                 <button className={Styles.fakturaKnap} onClick={() => seFaktura(opkrævning)}>Se faktura <Search style={{width: 15, height: 15}}/></button>
                                 <button className={Styles.fakturaKnap} onClick={() => sendFakturaIgen(opkrævning)}>Send igen <Send style={{width: 15, height: 15}}/></button>
                             </div>
