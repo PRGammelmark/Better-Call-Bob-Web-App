@@ -78,33 +78,35 @@ const SeOpkrævningerModal = (props) => {
     
         const email = props.postering.kunde.email;
         const fakturaNummer = opkrævning.reference.split('/').pop();
-    
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-faktura-igen`, {
-                to: email,
-                subject: 'Påmindelse: Din faktura fra Better Call Bob',
-                body: `Hej, vedhæftet finder du faktura ${fakturaNummer}.`,
-                html: `<p>Hej,</p><p>Vedhæftet finder du faktura <b>${fakturaNummer}</b>.</p>`,
-                fakturaNummer
-            });
-    
-            console.log(response.data.message);
+        
+        if(window.confirm("Er du sikker på, at du vil sende denne faktura igen?")) {
+            try {
+                const response = await axios.post(`${import.meta.env.VITE_API_URL}/send-faktura-igen`, {
+                    to: email,
+                    subject: 'Påmindelse: Din faktura fra Better Call Bob',
+                    body: `Hej, vedhæftet finder du faktura ${fakturaNummer}.`,
+                    html: `<p>Hej,</p><p>Vedhæftet finder du faktura <b>${fakturaNummer}</b>.</p>`,
+                    fakturaNummer
+                });
+        
+                console.log(response.data.message);
 
-            const updatedOpkrævning = { ...opkrævning, fakturaSendtIgen: true };
+                const updatedOpkrævning = { ...opkrævning, fakturaSendtIgen: true };
 
-            // Hvis det er den seneste opkrævning
-            if (senesteOpkrævning._id === opkrævning._id) {
-                setSenesteOpkrævning(updatedOpkrævning);
-            } else {
-                setOpkrævninger(prev =>
-                    prev.map(o => o._id === opkrævning._id ? updatedOpkrævning : o)
-                );
+                // Hvis det er den seneste opkrævning
+                if (senesteOpkrævning._id === opkrævning._id) {
+                    setSenesteOpkrævning(updatedOpkrævning);
+                } else {
+                    setOpkrævninger(prev =>
+                        prev.map(o => o._id === opkrævning._id ? updatedOpkrævning : o)
+                    );
+                }
+
+                alert(response.data.message); // evt. vis feedback til brugeren
+            } catch (error) {
+                console.error('Fejl ved afsendelse af faktura:', error);
+                alert('Kunne ikke sende fakturaen. Prøv igen.');
             }
-
-            alert(response.data.message); // evt. vis feedback til brugeren
-        } catch (error) {
-            console.error('Fejl ved afsendelse af faktura:', error);
-            alert('Kunne ikke sende fakturaen. Prøv igen.');
         }
     }
 
