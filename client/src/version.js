@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.0.4",
+    date: "20. august 2025",
+    changes: [
+        "Rettede en fejl, hvor det ikke var alle posteringer, der blev medregnet i medarbejderens eget økonomiske overblik."
+    ]
+},{
     version: "3.0.3",
     date: "20. august 2025",
     changes: [

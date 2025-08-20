@@ -241,96 +241,126 @@ const ØkonomiOverblikModal = (props) => {
     const rådgivningAftenTillæg = grupperTillæg(posteringer, "aftenTillæg", "aftenTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
     const rådgivningNatTillæg = grupperTillæg(posteringer, "natTillæg", "natTillægHonorar", "rådgivningOpmålingVejledningHonorar", "rådgivningOpmålingVejledning");
 
-    let januarPosteringerX = []
-    let februarPosteringerX = []
-    let martsPosteringerX = []
-    let aprilPosteringerX = []
-    let majPosteringerX = []
-    let juniPosteringerX = []
-    let juliPosteringerX = []
-    let augustPosteringerX = []
-    let septemberPosteringerX = []
-    let oktoberPosteringerX = []
-    let novemberPosteringerX = []
-    let decemberPosteringerX = []  
+    // let januarPosteringerX = []
+    // let februarPosteringerX = []
+    // let martsPosteringerX = []
+    // let aprilPosteringerX = []
+    // let majPosteringerX = []
+    // let juniPosteringerX = []
+    // let juliPosteringerX = []
+    // let augustPosteringerX = []
+    // let septemberPosteringerX = []
+    // let oktoberPosteringerX = []
+    // let novemberPosteringerX = []
+    // let decemberPosteringerX = []  
 
     useEffect(() => {
-        januarPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år-1}-12-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-01-19`).format('YYYY-MM-DD')))
-        februarPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-01-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-02-19`).format('YYYY-MM-DD')))
-        martsPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-02-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-03-19`).format('YYYY-MM-DD')))
-        aprilPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-03-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-04-19`).format('YYYY-MM-DD')))
-        majPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-04-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-05-19`).format('YYYY-MM-DD')))
-        juniPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-05-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-06-19`).format('YYYY-MM-DD')))
-        juliPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-06-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-07-19`).format('YYYY-MM-DD')))
-        augustPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-07-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-08-19`).format('YYYY-MM-DD')))
-        septemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-08-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-09-19`).format('YYYY-MM-DD')))
-        oktoberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-09-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-10-19`).format('YYYY-MM-DD')))
-        novemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-10-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-11-19`).format('YYYY-MM-DD')))
-        decemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-11-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-12-19`).format('YYYY-MM-DD')))
+        // januarPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år-1}-12-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-01-19`).format('YYYY-MM-DD')))
+        // februarPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-01-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-02-19`).format('YYYY-MM-DD')))
+        // martsPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-02-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-03-19`).format('YYYY-MM-DD')))
+        // aprilPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-03-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-04-19`).format('YYYY-MM-DD')))
+        // majPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-04-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-05-19`).format('YYYY-MM-DD')))
+        // juniPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-05-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-06-19`).format('YYYY-MM-DD')))
+        // juliPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-06-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-07-19`).format('YYYY-MM-DD')))
+        // augustPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-07-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-08-19`).format('YYYY-MM-DD')))
+        // septemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-08-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-09-19`).format('YYYY-MM-DD')))
+        // oktoberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-09-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-10-19`).format('YYYY-MM-DD')))
+        // novemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-10-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-11-19`).format('YYYY-MM-DD')))
+        // decemberPosteringerX = props.posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(`${år}-11-20`).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(`${år}-12-19`).format('YYYY-MM-DD')))
 
-        setJanuarPosteringer(januarPosteringerX)
-        setFebruarPosteringer(februarPosteringerX)
-        setMartsPosteringer(martsPosteringerX)
-        setAprilPosteringer(aprilPosteringerX)
-        setMajPosteringer(majPosteringerX)
-        setJuniPosteringer(juniPosteringerX)
-        setJuliPosteringer(juliPosteringerX)
-        setAugustPosteringer(augustPosteringerX)
-        setSeptemberPosteringer(septemberPosteringerX)
-        setOktoberPosteringer(oktoberPosteringerX)
-        setNovemberPosteringer(novemberPosteringerX)
-        setDecemberPosteringer(decemberPosteringerX)
+        const lavMånedsPosteringer = (år, posteringer) => {
+            const månedNavne = [
+              "januar", "februar", "marts", "april", "maj", "juni",
+              "juli", "august", "september", "oktober", "november", "december"
+            ]
+          
+            return månedNavne.map((navn, i) => {
+              // i = 0 → januar, i = 11 → december
+              const månedIndex = i + 1
+          
+              const start = dayjs(`${år}-${String(månedIndex).padStart(2, '0')}-20`).startOf('day')
+              const end = start.add(1, 'month').date(19).endOf('day')
+          
+              const posteringerDenneMåned = posteringer.filter(p =>
+                dayjs(p.createdAt).isSameOrAfter(start) &&
+                dayjs(p.createdAt).isSameOrBefore(end)
+              )
+          
+              return {
+                navn,
+                start,
+                end,
+                posteringer: posteringerDenneMåned
+              }
+            })
+        }
+          
+        // brug:
+        const m = lavMånedsPosteringer(år, props.posteringer)
+          
+        setJanuarPosteringer(m[0].posteringer)
+        setFebruarPosteringer(m[1].posteringer)
+        setMartsPosteringer(m[2].posteringer)
+        setAprilPosteringer(m[3].posteringer)
+        setMajPosteringer(m[4].posteringer)
+        setJuniPosteringer(m[5].posteringer)
+        setJuliPosteringer(m[6].posteringer)
+        setAugustPosteringer(m[7].posteringer)
+        setSeptemberPosteringer(m[8].posteringer)
+        setOktoberPosteringer(m[9].posteringer)
+        setNovemberPosteringer(m[10].posteringer)
+        setDecemberPosteringer(m[11].posteringer)
         setÅretsPosteringer([
-            ...januarPosteringerX,
-            ...februarPosteringerX,
-            ...martsPosteringerX,
-            ...aprilPosteringerX,
-            ...majPosteringerX,
-            ...juniPosteringerX,
-            ...juliPosteringerX,
-            ...augustPosteringerX,
-            ...septemberPosteringerX,
-            ...oktoberPosteringerX,
-            ...novemberPosteringerX,
-            ...decemberPosteringerX,
-          ])
+            ...m[0].posteringer,
+            ...m[1].posteringer,
+            ...m[2].posteringer,
+            ...m[3].posteringer,
+            ...m[4].posteringer,
+            ...m[5].posteringer,
+            ...m[6].posteringer,
+            ...m[7].posteringer,
+            ...m[8].posteringer,
+            ...m[9].posteringer,
+            ...m[10].posteringer,
+            ...m[11].posteringer,
+        ])
 
-        setTjentJanuar(beregn.totalHonorar(januarPosteringerX)?.beløb - beregn.udlægHonorar(januarPosteringerX)?.beløb)
-        setUdlagtJanuar(beregn.udlægHonorar(januarPosteringerX)?.beløb)
-        setUdbetalingJanuar(beregn.totalHonorar(januarPosteringerX)?.beløb)
-        setTjentFebruar(beregn.totalHonorar(februarPosteringerX)?.beløb - beregn.udlægHonorar(februarPosteringerX)?.beløb)
-        setUdlagtFebruar(beregn.udlægHonorar(februarPosteringerX)?.beløb)
-        setUdbetalingFebruar(beregn.totalHonorar(februarPosteringerX)?.beløb)
-        setTjentMarts(beregn.totalHonorar(martsPosteringerX)?.beløb - beregn.udlægHonorar(martsPosteringerX)?.beløb)
-        setUdlagtMarts(beregn.udlægHonorar(martsPosteringerX)?.beløb)
-        setUdbetalingMarts(beregn.totalHonorar(martsPosteringerX)?.beløb)
-        setTjentApril(beregn.totalHonorar(aprilPosteringerX)?.beløb - beregn.udlægHonorar(aprilPosteringerX)?.beløb)
-        setUdlagtApril(beregn.udlægHonorar(aprilPosteringerX)?.beløb)
-        setUdbetalingApril(beregn.totalHonorar(aprilPosteringerX)?.beløb)
-        setTjentMaj(beregn.totalHonorar(majPosteringerX)?.beløb - beregn.udlægHonorar(majPosteringerX)?.beløb)
-        setUdlagtMaj(beregn.udlægHonorar(majPosteringerX)?.beløb)
-        setUdbetalingMaj(beregn.totalHonorar(majPosteringerX)?.beløb)
-        setTjentJuni(beregn.totalHonorar(juniPosteringerX)?.beløb - beregn.udlægHonorar(juniPosteringerX)?.beløb)
-        setUdlagtJuni(beregn.udlægHonorar(juniPosteringerX)?.beløb)
-        setUdbetalingJuni(beregn.totalHonorar(juniPosteringerX)?.beløb)
-        setTjentJuli(beregn.totalHonorar(juliPosteringerX)?.beløb - beregn.udlægHonorar(juliPosteringerX)?.beløb)
-        setUdlagtJuli(beregn.udlægHonorar(juliPosteringerX)?.beløb)
-        setUdbetalingJuli(beregn.totalHonorar(juliPosteringerX)?.beløb)
-        setTjentAugust(beregn.totalHonorar(augustPosteringerX)?.beløb - beregn.udlægHonorar(augustPosteringerX)?.beløb)
-        setUdlagtAugust(beregn.udlægHonorar(augustPosteringerX)?.beløb)
-        setUdbetalingAugust(beregn.totalHonorar(augustPosteringerX)?.beløb)
-        setTjentSeptember(beregn.totalHonorar(septemberPosteringerX)?.beløb - beregn.udlægHonorar(septemberPosteringerX)?.beløb)
-        setUdlagtSeptember(beregn.udlægHonorar(septemberPosteringerX)?.beløb)
-        setUdbetalingSeptember(beregn.totalHonorar(septemberPosteringerX)?.beløb)
-        setTjentOktober(beregn.totalHonorar(oktoberPosteringerX)?.beløb - beregn.udlægHonorar(oktoberPosteringerX)?.beløb)
-        setUdlagtOktober(beregn.udlægHonorar(oktoberPosteringerX)?.beløb)
-        setUdbetalingOktober(beregn.totalHonorar(oktoberPosteringerX)?.beløb)
-        setTjentNovember(beregn.totalHonorar(novemberPosteringerX)?.beløb - beregn.udlægHonorar(novemberPosteringerX)?.beløb)
-        setUdlagtNovember(beregn.udlægHonorar(novemberPosteringerX)?.beløb)
-        setUdbetalingNovember(beregn.totalHonorar(novemberPosteringerX)?.beløb)
-        setTjentDecember(beregn.totalHonorar(decemberPosteringerX)?.beløb - beregn.udlægHonorar(decemberPosteringerX)?.beløb)
-        setUdlagtDecember(beregn.udlægHonorar(decemberPosteringerX)?.beløb)
-        setUdbetalingDecember(beregn.totalHonorar(decemberPosteringerX)?.beløb)
+        setTjentJanuar(beregn.totalHonorar(m[0].posteringer)?.beløb - beregn.udlægHonorar(m[0].posteringer)?.beløb)
+        setUdlagtJanuar(beregn.udlægHonorar(m[0].posteringer)?.beløb)
+        setUdbetalingJanuar(beregn.totalHonorar(m[0].posteringer)?.beløb)
+        setTjentFebruar(beregn.totalHonorar(m[1].posteringer)?.beløb - beregn.udlægHonorar(m[1].posteringer)?.beløb)
+        setUdlagtFebruar(beregn.udlægHonorar(m[1].posteringer)?.beløb)
+        setUdbetalingFebruar(beregn.totalHonorar(m[1].posteringer)?.beløb)
+        setTjentMarts(beregn.totalHonorar(m[2].posteringer)?.beløb - beregn.udlægHonorar(m[2].posteringer)?.beløb)
+        setUdlagtMarts(beregn.udlægHonorar(m[2].posteringer)?.beløb)
+        setUdbetalingMarts(beregn.totalHonorar(m[2].posteringer)?.beløb)
+        setTjentApril(beregn.totalHonorar(m[3].posteringer)?.beløb - beregn.udlægHonorar(m[3].posteringer)?.beløb)
+        setUdlagtApril(beregn.udlægHonorar(m[3].posteringer)?.beløb)
+        setUdbetalingApril(beregn.totalHonorar(m[3].posteringer)?.beløb)
+        setTjentMaj(beregn.totalHonorar(m[4].posteringer)?.beløb - beregn.udlægHonorar(m[4].posteringer)?.beløb)
+        setUdlagtMaj(beregn.udlægHonorar(m[4].posteringer)?.beløb)
+        setUdbetalingMaj(beregn.totalHonorar(m[4].posteringer)?.beløb)
+        setTjentJuni(beregn.totalHonorar(m[5].posteringer)?.beløb - beregn.udlægHonorar(m[5].posteringer)?.beløb)
+        setUdlagtJuni(beregn.udlægHonorar(m[5].posteringer)?.beløb)
+        setUdbetalingJuni(beregn.totalHonorar(m[5].posteringer)?.beløb)
+        setTjentJuli(beregn.totalHonorar(m[6].posteringer)?.beløb - beregn.udlægHonorar(m[6].posteringer)?.beløb)
+        setUdlagtJuli(beregn.udlægHonorar(m[6].posteringer)?.beløb)
+        setUdbetalingJuli(beregn.totalHonorar(m[6].posteringer)?.beløb)
+        setTjentAugust(beregn.totalHonorar(m[7].posteringer)?.beløb - beregn.udlægHonorar(m[7].posteringer)?.beløb)
+        setUdlagtAugust(beregn.udlægHonorar(m[7].posteringer)?.beløb)
+        setUdbetalingAugust(beregn.totalHonorar(m[7].posteringer)?.beløb)
+        setTjentSeptember(beregn.totalHonorar(m[8].posteringer)?.beløb - beregn.udlægHonorar(m[8].posteringer)?.beløb)
+        setUdlagtSeptember(beregn.udlægHonorar(m[8].posteringer)?.beløb)
+        setUdbetalingSeptember(beregn.totalHonorar(m[8].posteringer)?.beløb)
+        setTjentOktober(beregn.totalHonorar(m[9].posteringer)?.beløb - beregn.udlægHonorar(m[9].posteringer)?.beløb)
+        setUdlagtOktober(beregn.udlægHonorar(m[9].posteringer)?.beløb)
+        setUdbetalingOktober(beregn.totalHonorar(m[9].posteringer)?.beløb)
+        setTjentNovember(beregn.totalHonorar(m[10].posteringer)?.beløb - beregn.udlægHonorar(m[10].posteringer)?.beløb)
+        setUdlagtNovember(beregn.udlægHonorar(m[10].posteringer)?.beløb)
+        setUdbetalingNovember(beregn.totalHonorar(m[10].posteringer)?.beløb)
+        setTjentDecember(beregn.totalHonorar(m[11].posteringer)?.beløb - beregn.udlægHonorar(m[11].posteringer)?.beløb)
+        setUdlagtDecember(beregn.udlægHonorar(m[11].posteringer)?.beløb)
+        setUdbetalingDecember(beregn.totalHonorar(m[11].posteringer)?.beløb)
 
     }, [år, props.posteringer])
 
