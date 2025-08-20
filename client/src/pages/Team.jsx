@@ -120,7 +120,7 @@ const Team = () => {
                                             </a>
                                         </div>
                                         <div className={styles.flereMedarbejderDetaljer}>
-                                            {!user.isAdmin && userID === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>}
+                                            {/* {!user.isAdmin && userID === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>} */}
                                             {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
                                         </div>
                                     </div>

@@ -15,8 +15,13 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
     }
 
     const iAltAtBetale = (posteringer) => {
-        const iAltAtBetale = beregn.totalPris(posteringer, 2, true)?.beløb - akkumuleredeBetalinger(posteringer)
-        return Math.ceil((iAltAtBetale + Number.EPSILON) * 100) / 100
+        if (!posteringer?.length) return 0
+      
+        const total = beregn.totalPris(posteringer, 2, true)?.beløb ?? 0
+        const akkumuleret = akkumuleredeBetalinger(posteringer) ?? 0
+        const iAlt = total - akkumuleret
+      
+        return Math.ceil((iAlt + Number.EPSILON) * 100) / 100
     }
 
     const handleAfslutOpgave = () => {
@@ -62,7 +67,7 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
                     
                     {/* InfoLines */}
                     <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>✔︎</span>Opgaven er afsluttet {typeof opgaveAfsluttet !== 'boolean' && `d. ${new Date(opgaveAfsluttet).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}`}.</p>
-                    
+
                     {opgave.fakturaSendt && (
                         <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <p style={{ marginTop: kunde?.virksomhed || kunde?.CVR ? -3 : 0 }}><span style={{ fontSize: '1rem', marginRight: 10 }}>📨</span>{kunde?.virksomhed || kunde?.CVR ? `Fakturakladde oprettet d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.` : `Faktura sendt til kunden d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.`}</p>
@@ -102,15 +107,15 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
                 </div>)
             )}
 
-            {!opgaveAfsluttet && (
+            {!opgaveAfsluttet && iAltAtBetale(posteringer) > 0 && (
                 <div
                     className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv}
                     style={{ display: 'flex', gap: 10, justifyContent: 'center' }}
                 >
-                    {user.isAdmin && iAltAtBetale(posteringer) > 0 && (
-                    <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} onClick={() => handleAfslutOpgave()}>
+                    {iAltAtBetale(posteringer) > 0 && (
+                    <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} style={{ fontSize: '16px' }} onClick={() => handleAfslutOpgave()}>
                         Afslut opgave <br />
-                        <span style={{ color: '#ffffff' }}>Manglende betaling: {iAltAtBetale(posteringer)} kr.</span>
+                        <span style={{ color: '#ffffff', fontSize: '13px' }}>Manglende betaling: {iAltAtBetale(posteringer)} kr.</span>
                     </button>
                     )}
                 </div>

@@ -165,10 +165,11 @@
 }
   
 .posteringWrapper.blurred {
-filter: blur(1px);
-transform: scale(0.95);
-pointer-events: none;
+    filter: blur(1px);
+    transform: scale(0.95);
+    pointer-events: none;
 }
+  
 
 .posteringCardSatsDisplay {
     width: 100%;

@@ -153,7 +153,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
         <div className={Styles.posteringFlipContainer}>
             <div className={`${Styles.posteringFlipper} ${honorarVisning ? '' : Styles.flipped}`}>
                 <div className={Styles.posteringFront}>
-                <div className={`${Styles.posteringCard} ${Styles.posteringWrapper} ${openMenuForPosteringID === postering._id ? Styles.blurred : ''}`} onClick={() => vendPostering()}>
+                <div className={`${Styles.posteringCard} ${Styles.posteringWrapper} ${(openMenuForPosteringID === postering._id && honorarVisning) ? Styles.blurred : ''}`} onClick={() => vendPostering()}>
                         <div className={`${Styles.betalingStatusPill} ${posteringBetalt === 2 ? Styles.betalt : Styles.ikkeBetalt} ${honorarVisning ? Styles.betalingStatusPillActive : ''}`}>
                             <p>{posteringStatus(posteringBetalt)}</p>
                         </div>
@@ -253,8 +253,9 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                         <PosteringMereKnap user={user} userID={userID} postering={postering} setOpenMenuForPosteringID={setOpenMenuForPosteringID} openMenuForPosteringID={openMenuForPosteringID} sletPostering={sletPostering} setOpenPosteringModalID={setOpenPosteringModalID} setHonorarVisning={setHonorarVisning} honorarVisning={honorarVisning} setOpenPosteringSatser={setOpenPosteringSatser} refetchPostering={refetchPostering} setOpenRetPrissatsModalID={setOpenRetPrissatsModalID} setOpenRetLønsatsModalID={setOpenRetLønsatsModalID} setOpenRegistrerBetalingModalID={setOpenRegistrerBetalingModalID} setOpenRegistrerOpkrævningModalID={setOpenRegistrerOpkrævningModalID} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} posteringBetalt={posteringBetalt} setOpenSeBetalingerModal={setOpenSeBetalingerModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenSeOpkrævningerModal={setOpenSeOpkrævningerModal} />
                     </div>
                 </div>
+                
                 <div className={`${Styles.posteringBack}`}>
-                    <div className={`${Styles.posteringCard} ${Styles.posteringWrapper} ${openMenuForPosteringID === postering._id ? Styles.blurred : ''}`} onClick={() => vendPostering()}>
+                    <div className={`${Styles.posteringCard} ${Styles.posteringWrapper} ${(openMenuForPosteringID === postering._id && !honorarVisning) ? Styles.blurred : ''}`} onClick={() => vendPostering()}>
                         <div className={`${Styles.betalingStatusPill} ${posteringBetalt === 2 ? Styles.betalt : Styles.ikkeBetalt} ${honorarVisning ? '' : Styles.betalingStatusPillActive}`}>
                             <p>{posteringStatus(posteringBetalt)}</p>
                         </div>

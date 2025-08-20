@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.0.3",
+    date: "20. august 2025",
+    changes: [
+        "Posteringer, der er oprettet i en tidligere lønperiode, får nu låst deres lønsatser. Dette var ved en fejl ikke tilfældet tidligere.",
+        "Rettede en fejl, der gjorde, at en posterings bagside kortvarigt ville flimre frem og væk igen når man åbnede posteringens menu på mobilen.",
+        "Rettede en afrundingsfejl, der gjorde, at 'Afslut opgave'-knappen blev vist på opgaver, hvor der slet ikke var oprettet posteringer endnu.",
+        "Medarbejdere kan nu ikke længere se deres løntrin under 'Team'. Specifikationer om lønsatser vil blive introduceret igen i en snarlig app-version, hvor medarbejdere får egne profilsider.",
+        "Rettede en fejl, hvor 'Afslut opgave'-knappen ikke altid blev vist selvom opgaven var klar til at blive afsluttet."
+    ]
+},{
     version: "3.0.2",
     date: "20. august 2025",
     changes: [

@@ -453,7 +453,7 @@ const RedigerPostering = (props) => {
             (
                 <>
                     <h2 className={ÅbenOpgaveCSS.modalHeading}>Posteringen er låst 🔒</h2>
-                    <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(postering.createdAt).format("DD. MMMM YYYY")}, og tilhører derfor en afsluttet lønperiode. Den er derfor låst. Du kan ikke redigere eller slette posteringen.</p>
+                    <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(postering.createdAt).format("DD. MMMM YYYY")}, og tilhører en afsluttet lønperiode. Den er derfor låst. Du kan ikke redigere eller slette posteringen.</p>
                     <p style={{marginBottom: 10}}>Lønperioden går fra d. 20.-19. i hver måned. Du kan redigere og slette posteringer for aktuelle lønperioder frem til og med d. 19.</p>
                     <p style={{marginBottom: 10}}>Hvis du mangler at registrere posteringsdata for denne opgave kan du oprette en ny postering, og registrere hvad du mangler. Disse data vil i så fald komme med i din næste lønperiode.</p>
                 </>

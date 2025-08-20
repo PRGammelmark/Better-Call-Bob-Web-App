@@ -5,6 +5,7 @@ import satser from '../../variables'
 import Styles from './RetSatserModal.module.css'
 import PosteringLønsatserForhåndsvisning from '../PosteringLønsatserForhåndsvisning.jsx'
 import { useAuthContext } from '../../hooks/useAuthContext'
+import dayjs from 'dayjs'
 
 const RetLønsatsModal = (props) => {
     const [forhåndsvistPostering, setForhåndsvistPostering] = useState(props?.postering)
@@ -62,10 +63,24 @@ const RetLønsatsModal = (props) => {
         });
     }
       
-      
+    const posteringTilhørerAfsluttetLønperiode = (postering) => {
+        const cutoffDate = dayjs().date(19).endOf('day');
+        const posteringDate = dayjs(postering.createdAt);
+    
+        const isPosteringBeforeCutoffDate = posteringDate.isBefore(cutoffDate);
+        const areWePastCutoffDate = dayjs().isAfter(cutoffDate);
+    
+        if (isPosteringBeforeCutoffDate && areWePastCutoffDate) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger} ref={containerRef}> 
+    {props?.postering && !posteringTilhørerAfsluttetLønperiode(props?.postering) ? (
+            <>
         <h2>Ret lønsatser for postering</h2>
         {/* {console.log(scale)} */}
         <div className={Styles.posteringContainer} style={{maxHeight: `${scale * 350}px`}}>
@@ -245,6 +260,15 @@ const RetLønsatsModal = (props) => {
                 <button className={Styles.button} onClick={() => gemLønsatser()}>Gem lønsatser</button>
             </div>
         </div>
+        </>
+        ) : (
+            <>
+                <h2>Posteringen er låst 🔒</h2>
+                <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(props?.postering?.createdAt).format("DD. MMMM YYYY")}, og tilhører en afsluttet lønperiode. Den er derfor låst. Du kan ikke redigere eller slette posteringen.</p>
+                <p style={{marginBottom: 10}}>Lønperioden går fra d. 20.-19. i hver måned. Du kan redigere og slette posteringer for aktuelle lønperioder frem til og med d. 19.</p>
+                <p style={{marginBottom: 10}}>Hvis du mangler at registrere posteringsdata for denne opgave kan du oprette en ny postering, og registrere hvad du mangler. Disse data vil i så fald komme med i din næste lønperiode.</p>
+            </>
+        )}
     </Modal>
   )
 }

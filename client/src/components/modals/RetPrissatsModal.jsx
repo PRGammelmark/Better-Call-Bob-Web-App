@@ -5,6 +5,7 @@ import satser from '../../variables'
 import Styles from './RetSatserModal.module.css'
 import PosteringPrissatserForhåndsvisning from '../PosteringPrissatserForhåndsvisning.jsx'
 import { useAuthContext } from '../../hooks/useAuthContext'
+import dayjs from 'dayjs'
 
 const RetPrissatsModal = (props) => {
     const [forhåndsvistPostering, setForhåndsvistPostering] = useState(props?.postering)
@@ -61,8 +62,6 @@ const RetPrissatsModal = (props) => {
             console.error('Fejl ved opdatering af prissatser:', error);
         });
     }
-      
-      
 
   return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger} ref={containerRef}> 
