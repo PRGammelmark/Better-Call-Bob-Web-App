@@ -14,12 +14,14 @@ export const tjekFakturaForBetaling = async (fakturaNummer) => {
         }
     });
 
+    const faktureret = response.data.grossAmount;
     const restbeløb = response.data.remainder;
+    const betaltBeløb = faktureret - restbeløb;
 
     const economicApiLink = `https://restapi.e-conomic.com/invoices/booked/${fakturaNummer}`;
     
     if(restbeløb <= 0) {
-        await registrerBetalinger(null, economicApiLink);
+        await registrerBetalinger(betaltBeløb, economicApiLink, "faktura");
     }
 
     return restbeløb <= 0;

@@ -15,13 +15,17 @@ const PersonligtØkonomiskOverblik = (props) => {
     const [månedOffset, setMånedOffset] = useState(0)
     const [åbnØkonomiOverblikModal, setÅbnØkonomiOverblikModal] = useState(false)
 
-    const startOfDenneMåned = dayjs().date() >= 20 ? dayjs().date(20) : dayjs().subtract(1, 'month').date(20);
-    const endOfDenneMåned = startOfDenneMåned.add(1, 'month').date(19);
+    const startOfDenneMåned = (dayjs().date() >= 20 
+        ? dayjs().date(20) 
+        : dayjs().subtract(1, 'month').date(20)
+    ).startOf('day');
+
+    const endOfDenneMåned = startOfDenneMåned.add(1, 'month').date(19).endOf('day');
 
     const customMåned = {
-        start: startOfDenneMåned.subtract(månedOffset, 'month'),
-        end: endOfDenneMåned.subtract(månedOffset, 'month')
-    }
+        start: startOfDenneMåned.subtract(månedOffset, 'month').startOf('day'),
+        end: endOfDenneMåned.subtract(månedOffset, 'month').endOf('day')
+    };
 
     // HENT MEDARBEJDERENS POSTERINGER
     useEffect(() => {
@@ -36,7 +40,11 @@ const PersonligtØkonomiskOverblik = (props) => {
         .catch(error => console.log(error))
     }, [])
 
-    const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+    // const denneMånedsPosteringer = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+    const denneMånedsPosteringer = posteringer.filter(postering =>
+        dayjs(postering.createdAt).isSameOrAfter(customMåned.start, 'day') &&
+        dayjs(postering.createdAt).isSameOrBefore(customMåned.end, 'day')
+    );
 
   return (
     <div className={Styles.personligtØkonomiskOverblikContainer}>

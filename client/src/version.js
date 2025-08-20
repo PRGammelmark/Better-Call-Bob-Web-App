@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.0.2",
+    date: "20. august 2025",
+    changes: [
+        "Rettede en tidszonefejl, der gjorde, at posteringer oprettet på uheldige skæringstidspunkter ikke blev vist i økonomiske overblik for medarbejdere."
+    ]
+},{
     version: "3.0.1",
     date: "19. august 2025",
     changes: [

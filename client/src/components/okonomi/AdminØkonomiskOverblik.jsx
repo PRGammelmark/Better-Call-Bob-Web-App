@@ -16,15 +16,23 @@ const AdminØkonomiskOverblik = (props) => {
 
     const user = props.user
 
-    const startOfDenneMåned = dayjs().date() >= 20 ? dayjs().date(20) : dayjs().subtract(1, 'month').date(20);
-    const endOfDenneMåned = startOfDenneMåned.add(1, 'month').date(19);
+    const startOfDenneMåned = (dayjs().date() >= 20 
+        ? dayjs().date(20) 
+        : dayjs().subtract(1, 'month').date(20)
+    ).startOf('day');
+
+    const endOfDenneMåned = startOfDenneMåned.add(1, 'month').date(19).endOf('day');
 
     const customMåned = {
-        start: startOfDenneMåned.subtract(månedOffset, 'month'),
-        end: endOfDenneMåned.subtract(månedOffset, 'month')
-    }
+        start: startOfDenneMåned.subtract(månedOffset, 'month').startOf('day'),
+        end: endOfDenneMåned.subtract(månedOffset, 'month').endOf('day')
+    };
 
-    const posteringerDenneMåned = posteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+    const posteringerDenneMåned = posteringer.filter(postering =>
+        dayjs(postering.createdAt).isSameOrAfter(customMåned.start, 'day') &&
+        dayjs(postering.createdAt).isSameOrBefore(customMåned.end, 'day')
+    );
+      
     const totalUdlagtDenneMåned = beregn.udlægHonorar(posteringerDenneMåned, 2, false).beløb;
     const totalHonorarerDenneMåned = beregn.totalHonorar(posteringerDenneMåned, 2, false).beløb;
     const totalTjentDenneMåned = totalHonorarerDenneMåned - totalUdlagtDenneMåned;
@@ -100,8 +108,9 @@ const AdminØkonomiskOverblik = (props) => {
                 </div>
             </div>
             {brugere && brugere.map((bruger, index) => {
-                const brugerensPosteringer = posteringer && posteringer.filter(postering => postering.brugerID === bruger._id)
-                const brugerensPosteringerDenneMåned = brugerensPosteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+                // const brugerensPosteringer = posteringer && posteringer.filter(postering => postering.brugerID === bruger._id)
+                // const brugerensPosteringerDenneMåned = brugerensPosteringer.filter(postering => dayjs(postering.createdAt).isAfter(dayjs(customMåned.start).format('YYYY-MM-DD')) && dayjs(postering.createdAt).isBefore(dayjs(customMåned.end).format('YYYY-MM-DD')))
+                const brugerensPosteringerDenneMåned = posteringerDenneMåned.filter(postering => postering.brugerID === bruger._id)
                 const brugerensUdlagtDenneMåned = beregn.udlægHonorar(brugerensPosteringerDenneMåned, 2, false).beløb
                 const brugerensTjentDenneMåned = beregn.totalHonorar(brugerensPosteringerDenneMåned, 2, false).beløb - brugerensUdlagtDenneMåned;
                 

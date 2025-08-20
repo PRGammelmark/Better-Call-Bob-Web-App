@@ -111,8 +111,7 @@ const SeOpkrævningerModal = (props) => {
     }
 
     const tjekBetaling = async (opkrævning) => {
-        const fakturaNummer = opkrævning.reference.split('/').pop();
-        const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/tjek-faktura-for-betaling`, { fakturaNummer });
+        const { data } = await axios.post(`${import.meta.env.VITE_API_URL}/tjek-faktura-for-betaling`, { opkrævning });
     
         const updatedOpkrævning = { ...opkrævning, betalt: data.betalt, tjekket: true };
     
@@ -156,14 +155,14 @@ const SeOpkrævningerModal = (props) => {
                 </>}
             </div>
             {senesteOpkrævning?.metode === 'faktura' && <>
-                {!senesteOpkrævning?.betalt && (senesteOpkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080'}}>Ingen betaling registreret</button> : <button className={Styles.tjekBetalingKnap} onClick={() => tjekBetaling(senesteOpkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15}}/></button>)}
+                {!senesteOpkrævning?.betalt && (senesteOpkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080'}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} onClick={() => tjekBetaling(senesteOpkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15}}/></button>)}
                 <div className={Styles.fakturaKnapperWrapper}>
                     <button className={Styles.fakturaKnap} onClick={() => seFaktura(senesteOpkrævning)}>Se faktura <Search style={{width: 15, height: 15}}/></button>
                     {!senesteOpkrævning?.fakturaSendtIgen ? <button className={Styles.fakturaKnap} onClick={() => sendFakturaIgen(senesteOpkrævning)}>Send igen <Send style={{width: 15, height: 15}}/></button> : <button className={Styles.fakturaKnap} disabled style={{cursor: 'default'}}>Sendt <Check style={{width: 15, height: 15}}/></button>}
                 </div>
             </>}
         </div>
-        <b style={{fontSize: 20, fontFamily: 'OmnesBold'}}>Tidligere opkrævninger:</b>
+        {opkrævninger.length > 0 && <b style={{fontSize: 20, fontFamily: 'OmnesBold'}}>Tidligere opkrævninger:</b>}
         <div className={Styles.opkrævningerContainer}>
             {opkrævninger.map((opkrævning) => (
                 <div key={opkrævning?._id} className={Styles.opkrævningWrapper}>
@@ -185,7 +184,7 @@ const SeOpkrævningerModal = (props) => {
                             </>}
                         </div>
                         {opkrævning?.metode === 'faktura' && <>
-                            {!opkrævning?.betalt && (opkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080', marginTop: 20}}>Ingen betaling registreret</button> : <button className={Styles.tjekBetalingKnap} style={{marginTop: 20}} onClick={() => tjekBetaling(opkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15 }}/></button>)}
+                            {!opkrævning?.betalt && (opkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080', marginTop: 20}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} style={{marginTop: 20}} onClick={() => tjekBetaling(opkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15 }}/></button>)}
                             <div className={Styles.fakturaKnapperWrapper} style={{marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10}}>
                                 <button className={Styles.fakturaKnap} onClick={() => seFaktura(opkrævning)}>Se faktura <Search style={{width: 15, height: 15}}/></button>
                                 <button className={Styles.fakturaKnap} onClick={() => sendFakturaIgen(opkrævning)}>Send igen <Send style={{width: 15, height: 15}}/></button>

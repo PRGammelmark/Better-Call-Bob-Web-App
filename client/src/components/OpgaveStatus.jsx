@@ -95,10 +95,10 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
                     ))
                     } */}
 
-                    <div className={Styles.betalingsKnapDiv}>
+                    {iAltAtBetale(posteringer) >= 0.5 && <div className={Styles.betalingsKnapDiv}>
                         <button className={Styles.betalingsKnap} onClick={() => setOpenVælgMobilePayBetalingsmetodeModal(true)}>Betal via Mobile Pay <br /> <span style={{fontSize: '0.8rem', color: '#ffffff'}}>{iAltAtBetale(posteringer)} kr.</span></button>
                         <button className={Styles.betalingsKnap} onClick={() => setOpenBetalViaFakturaModal(true)}>Betal via faktura <br /> <span style={{fontSize: '0.8rem', color: '#ffffff'}}>{iAltAtBetale(posteringer)} kr.</span></button>
-                    </div>
+                    </div>}
                 </div>)
             )}
 

@@ -26,6 +26,7 @@ import { collectKvitteringer } from './utils/collectKvitteringer.js';
 import aiRoutes from './routes/ai.js';
 import { sendFakturaIgen } from './utils/sendFakturaIgen.js';
 import { tjekFakturaForBetaling } from './utils/tjekFakturaForBetaling.js';
+import { registrerBetalinger } from './utils/registrerBetalinger.js';
 
 dotenv.config();
 const app = express();
@@ -97,9 +98,9 @@ app.post('/api/send-faktura-igen', async (req, res) => {
 // Tjek faktura for om den er betalt (true / false)
 app.post('/api/tjek-faktura-for-betaling', async (req, res) => {
     try {
-      const { fakturaNummer } = req.body;
+      const { opkrævning } = req.body;
+      const fakturaNummer = opkrævning.reference.split('/').pop();
       const betalt = await tjekFakturaForBetaling(fakturaNummer);
-      console.log(betalt);
       res.json({ betalt });
     } catch (err) {
       console.error(err);

@@ -5,24 +5,30 @@
 
 import Postering from "../models/posteringModel.js";
 
-export async function registrerBetalinger(betalingsbeløb, betalingsID) {
+export async function registrerBetalinger(betalingsbeløb, betalingsID, betalingsmetode) {
     console.log("Registrerer betalinger på posteringer ...")
+    
+    const ids = Array.isArray(betalingsID) ? betalingsID : [betalingsID];
     const posteringer = await Postering.find({
-        "opkrævninger.reference": { $in: betalingsID }
+        "opkrævninger.reference": { $in: ids }
     });
+
     const sorteredePosteringer = posteringer.sort((a, b) => a.totalPris - b.totalPris);
-    console.log("Sorterede posteringer: ", sorteredePosteringer)
-    console.log("Samlet betalingsbeløb: ", betalingsbeløb)
+    const antalPosteringer = sorteredePosteringer.length;
     
     let fikseretBetalingsbeløb = 0;
     
     if(!betalingsbeløb) {
         const manglendeBetalingsbeløbForAllePosteringer = sorteredePosteringer.reduce((sum, postering) => sum + (postering.totalPris * 1.25) - postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0), 0);
         fikseretBetalingsbeløb = manglendeBetalingsbeløbForAllePosteringer;
-        return;
     }
 
     let resterendeBetaltBeløb = betalingsbeløb || fikseretBetalingsbeløb;
+    let betalingsMetode = betalingsmetode || "mobilepay";
+
+    console.log("Antal posteringer: ", antalPosteringer)
+    console.log("Samlet betalingsbeløb til fordeling: ", resterendeBetaltBeløb)
+    console.log("Betalingsmetode: ", betalingsMetode)
 
     console.log("Looper igennem posteringer ...")
 
@@ -34,7 +40,7 @@ export async function registrerBetalinger(betalingsbeløb, betalingsID) {
             postering.betalinger.push({
                 betalingsID,
                 betalingsbeløb: resterendeBetaltBeløb,
-                betalingsmetode: 'mobilepay',
+                betalingsmetode: betalingsMetode,
                 dato: new Date()
             });
             if(posteringManglendeBeløb <= resterendeBetaltBeløb) {
@@ -55,7 +61,7 @@ export async function registrerBetalinger(betalingsbeløb, betalingsID) {
             postering.betalinger.push({
                 betalingsID,
                 betalingsbeløb: posteringManglendeBeløb,
-                betalingsmetode: 'mobilepay',
+                betalingsmetode: betalingsMetode,
                 dato: new Date()
             });
             postering.betalt = new Date();
@@ -68,7 +74,7 @@ export async function registrerBetalinger(betalingsbeløb, betalingsID) {
             postering.betalinger.push({
                 betalingsID,
                 betalingsbeløb: resterendeBetaltBeløb,
-                betalingsmetode: 'mobilepay',
+                betalingsmetode: betalingsMetode,
                 dato: new Date()
             });
             postering.låst = true;
