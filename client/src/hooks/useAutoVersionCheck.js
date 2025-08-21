@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import axios from "axios";
 
 const VERSION_URL = `${import.meta.env.VITE_API_URL}/version`;
-const CHECK_INTERVAL_MS = 10 * 1000; // 5 min
+const CHECK_INTERVAL_MS = 300 * 1000; // 5 min
 
 export default function useAutoVersionCheck() {
   const lastCheck = useRef(0);
