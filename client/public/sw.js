@@ -6,40 +6,18 @@ const PRECACHE_URLS = [];
 
 // INSTALL - Precache assets
 self.addEventListener('install', event => {
-  self.skipWaiting();
+  
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
-  // Efter aktivering kan vi fortælle klienterne, at der er en ny SW
-  event.waitUntil(
-    self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(clients => {
-      for (const client of clients) {
-        client.postMessage({ type: "NEW_VERSION_READY" });
-      }
-    })
-  );
 });
 
-// // ACTIVATE - Cleanup old caches
-// self.addEventListener('activate', event => {
-
-//   const currentCaches = [PRECACHE, RUNTIME];
-
-//   event.waitUntil(
-//     caches.keys()
-//       .then(cacheNames => {
-//         const toDelete = cacheNames.filter(name => !currentCaches.includes(name));
-//         return Promise.all(toDelete.map(name => caches.delete(name)));
-//       })
-//       .then(() => {
-//         return self.clients.claim();
-//       })
-//       .catch(err => {
-//         console.error('❌ [SW] Error during activate:', err);
-//       })
-//   );
-// });
+self.addEventListener('message', (event) => {
+  if (event.data?.action === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
 
 self.addEventListener('fetch', event => {
   event.respondWith(fetch(event.request));
