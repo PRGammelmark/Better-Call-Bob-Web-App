@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.0.5",
+    date: "20. august 2025",
+    changes: [
+        "Implementerede en funktion, der automatisk lytter efter opdateringer til app'en. Hvis der findes en opdatering, så vil brugeren blive promptet til at genstarte app'en."
+    ]
+},{
     version: "3.0.4",
     date: "20. august 2025",
     changes: [
