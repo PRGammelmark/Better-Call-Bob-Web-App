@@ -8,9 +8,6 @@ const ServiceWorkerMessageHandler = () => {
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
 
-    let registrationRef = null;
-    let onUpdateFound = null;
-
     const messageHandler = (event) => {
       if (event.data?.type === 'NAVIGATE' && event.data.url) {
         navigate(event.data.url);
@@ -23,43 +20,10 @@ const ServiceWorkerMessageHandler = () => {
     };
     navigator.serviceWorker.addEventListener('controllerchange', controllerChangeHandler);
 
-    navigator.serviceWorker.getRegistration().then((reg) => {
-      if (!reg) return;
-      registrationRef = reg;
-
-      const promptAndSkip = () => {
-        // kun prompt hvis der allerede var en controller (dvs. ikke første install)
-        if (!navigator.serviceWorker.controller) return;
-        const ok = window.confirm('Der er en ny app-version tilgængelig. Genstart nu?');
-        if (ok && registrationRef.waiting) {
-          registrationRef.waiting.postMessage({ action: 'skipWaiting' });
-        }
-      };
-
-      // hvis en waiting worker allerede ligger klar
-      if (registrationRef.waiting) {
-        promptAndSkip();
-      }
-
-      onUpdateFound = () => {
-        const newWorker = registrationRef.installing;
-        if (!newWorker) return;
-        newWorker.addEventListener('statechange', () => {
-          if (newWorker.state === 'installed') {
-            promptAndSkip();
-          }
-        });
-      };
-
-      registrationRef.addEventListener('updatefound', onUpdateFound);
-    });
 
     return () => {
       navigator.serviceWorker.removeEventListener('message', messageHandler);
       navigator.serviceWorker.removeEventListener('controllerchange', controllerChangeHandler);
-      if (registrationRef && onUpdateFound) {
-        registrationRef.removeEventListener('updatefound', onUpdateFound);
-      }
     };
   }, [navigate]);
 

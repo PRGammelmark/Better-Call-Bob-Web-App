@@ -29,11 +29,14 @@ import GendanKodeord from './pages/GendanKodeord'
 import Kunde from './pages/Kunde'
 import subscribeToPush from './utils/subscribeToPush'
 import AllePosteringer from './pages/AllePosteringer'
+import useAutoVersionCheck from './hooks/useAutoVersionCheck'
 
 function App() {
 
   const { user, authIsReady } = useAuthContext();
   const [openedInBrowser, setOpenedInBrowser] = useState(false);
+
+  useAutoVersionCheck();
 
   useEffect(() => {
     if (!window.matchMedia('(display-mode: standalone)').matches && window.innerWidth < 750) {  

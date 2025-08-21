@@ -27,6 +27,11 @@ import aiRoutes from './routes/ai.js';
 import { sendFakturaIgen } from './utils/sendFakturaIgen.js';
 import { tjekFakturaForBetaling } from './utils/tjekFakturaForBetaling.js';
 import { registrerBetalinger } from './utils/registrerBetalinger.js';
+import path from 'path';
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 const app = express();
@@ -139,21 +144,9 @@ app.use('/api/cleanup', (req, res) => {
     requestedCleanup();
     res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });
 });
-
-// Daily scheduled cleanup
-// cron.schedule('0 0 * * *', async () => {
-//     try {
-//         await scheduledCleanup();
-//         console.log('Daily cleanup of old opgaver completed successfully.');
-//     } catch (error) {
-//         console.error('Error during daily cleanup of old opgaver:', error);
-//     }
-// });
-
-// Monthly scheduled image ZIPPING
-// collectKvitteringer();
-
-// Månedlig udlægsrapport
+app.get("/api/version", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "version.json"));
+});
 
 // AI-parsing af opgaver
 app.use('/api/ai', aiRoutes);

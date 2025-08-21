@@ -6,7 +6,7 @@ const PRECACHE_URLS = [];
 
 // INSTALL - Precache assets
 self.addEventListener('install', event => {
-  
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
