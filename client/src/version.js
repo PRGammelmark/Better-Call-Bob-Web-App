@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.1.1",
+    date: "20. august 2025",
+    changes: [
+        "Fjernede 'Opdateringer'-knappen fra sidebaren på desktop-views. 'Opdateringer' kan fremover findes på desktop-views ved at trykke på 'Ændringshistorik' i bunden af siden."
+    ]
+},{
     version: "3.1.0",
     date: "20. august 2025",
     changes: [
