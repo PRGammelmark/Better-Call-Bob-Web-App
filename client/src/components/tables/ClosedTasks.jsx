@@ -99,7 +99,7 @@ const ClosedTasks = () => {
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
                   let opgaveBetalt = false;
-                  const betalingerForOpgave = posteringerForOpgave.reduce((acc, postering) => acc + postering.betalinger.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+                  const betalingerForOpgave = posteringerForOpgave?.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
                   if(betalingerForOpgave >= fakturabeløbForOpgave) {
                     opgaveBetalt = true;
                   }
@@ -153,7 +153,7 @@ const ClosedTasks = () => {
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
 
                   let opgaveBetalt = false;
-                  const betalingerForOpgave = posteringerForOpgave.reduce((acc, postering) => acc + postering.betalinger.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+                  const betalingerForOpgave = posteringerForOpgave?.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
                   if(betalingerForOpgave >= fakturabeløbForOpgave) {
                     opgaveBetalt = true;
                   }
