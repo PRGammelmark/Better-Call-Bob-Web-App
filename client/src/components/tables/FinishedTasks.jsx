@@ -69,7 +69,7 @@ const FinishedTasks = () => {
     <>
       <div className={FinishedTasksCSS.desktopTable}>
         <div className={TableCSS.opgaveListe}>
-          <h2 className={TableCSS.tabelHeader}>Færdige, ubetalte opgaver ({færdiggjorteOpgaver ? færdiggjorteOpgaver.length : 0})</h2>
+          <h2 className={TableCSS.tabelHeader}>Ubetalte opgaver ({færdiggjorteOpgaver ? færdiggjorteOpgaver.length : 0})</h2>
           <div className={TableCSS.opgaveTabel}>
             <div className={`${TableCSS.opgaveHeader} ${FinishedTasksCSS.finishedTasksHeader}`}>
               <ul>

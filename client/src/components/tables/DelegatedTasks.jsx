@@ -39,7 +39,7 @@ const DelegatedTasks = () => {
 
       if (response.ok) {
         const opgaverMedAnsvarlige = json.filter(opgave => opgave.ansvarlig.length > 0 && !opgave.isDeleted);
-        const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => !opgave.markeretSomFærdig)
+        const ufærdigeOpgaverMedAnsvarlige = opgaverMedAnsvarlige.filter(opgave => (!opgave.markeretSomFærdig && !opgave.opgaveAfsluttet))
         setUddelegeredeOpgaver(ufærdigeOpgaverMedAnsvarlige);
         setIsLoading(false)
       }

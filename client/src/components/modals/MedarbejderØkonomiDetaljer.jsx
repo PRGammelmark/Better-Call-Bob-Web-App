@@ -420,7 +420,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                     <button className={Styles.lukPosteringerButton} onClick={() => setPosteringerDetaljer(null)}>-</button>
                     <div className={Styles.posteringerDiv}>
                         {posteringerDetaljer.map((postering, index) => (
-                            <div className={PosteringCSS.posteringDiv} key={postering._id} ref={index === posteringerDetaljer.length - 1 ? bottomRef : null}>
+                            <div className={PosteringCSS.posteringDiv} onClick={() => console.log(postering)} key={postering._id} ref={index === posteringerDetaljer.length - 1 ? bottomRef : null}>
                             <div className={PosteringCSS.posteringCard} style={{padding: '10px 20px'}}>
 
                                 <div>

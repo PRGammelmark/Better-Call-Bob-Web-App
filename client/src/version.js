@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.1.2",
+    date: "26. august 2025",
+    changes: [
+        "Rettede fejl i flere tabeller, der bl.a. viste afsluttede opgaver som igangværende.",
+        "Afsluttede opgaver vises nu med en gul farve for administratorer, hvis indbetalingerne på opgavens posteringer endnu ikke matcher posteringernes akkumulerede betalingsbeløb."
+    ]
+},{
     version: "3.1.1",
     date: "20. august 2025",
     changes: [

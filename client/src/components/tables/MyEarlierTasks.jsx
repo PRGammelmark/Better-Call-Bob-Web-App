@@ -45,9 +45,9 @@ const MyEarlierTasks = ({openTableEvent}) => {
             opgave.ansvarlig.some(ansvarlig => ansvarlig._id === userID)
         );
         const filterAfsluttedeOpgaver = filterMineOpgaver.filter((opgave) => 
-            opgave.markeretSomFærdig === true
-        );
-        setMineAfsluttedeOpgaver(filterAfsluttedeOpgaver)
+            (opgave.markeretSomFærdig || opgave.opgaveAfsluttet) && !opgave.isDeleted
+          );
+        setMineAfsluttedeOpgaver(filterAfsluttedeOpgaver) 
         setIsLoading(false)
     })
     .catch(error => console.log(error))

@@ -27,7 +27,7 @@ const ClosedTasks = () => {
       const json = await response.json();
 
       if (response.ok) {
-        const afsluttedeOpgaver = json.filter(opgave => (opgave.opgaveAfsluttet || opgave.opgaveBetaltMedMobilePay) && !opgave.isDeleted);
+        const afsluttedeOpgaver = json.filter(opgave => (opgave.opgaveAfsluttet || opgave.opgaveBetaltMedMobilePay || opgave.markeretSomFærdig) && !opgave.isDeleted);
         setAfsluttedeOpgaver(afsluttedeOpgaver);
       }
       setIsLoading(false)
@@ -98,9 +98,14 @@ const ClosedTasks = () => {
                   const fakturabeløbForOpgaveEksklMoms = beregn.totalPris(posteringerForOpgave, 2, false)?.beløb;
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
+                  let opgaveBetalt = false;
+                  const betalingerForOpgave = posteringerForOpgave.reduce((acc, postering) => acc + postering.betalinger.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+                  if(betalingerForOpgave >= fakturabeløbForOpgave) {
+                    opgaveBetalt = true;
+                  }
 
                   return (
-                    <div className={TableCSS.opgaveListing} key={opgave._id}>
+                    <div className={TableCSS.opgaveListing} key={opgave._id} style={{backgroundColor: opgaveBetalt ? "" : "#EED20280"}}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
@@ -147,8 +152,14 @@ const ClosedTasks = () => {
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
 
+                  let opgaveBetalt = false;
+                  const betalingerForOpgave = posteringerForOpgave.reduce((acc, postering) => acc + postering.betalinger.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+                  if(betalingerForOpgave >= fakturabeløbForOpgave) {
+                    opgaveBetalt = true;
+                  }
+
                   return (
-                    <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
+                    <div className={TableCSS.opgaveListing} key={opgave._id} style={{backgroundColor: opgaveBetalt ? "" : "#EED20280"}} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li>{new Date(opgave.opgaveAfsluttet).toLocaleDateString()}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
