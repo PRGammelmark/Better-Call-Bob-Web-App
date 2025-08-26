@@ -21,7 +21,7 @@
 
 .opgaveHeader ul {
     padding: 12px 15px;
-    max-width: 93%; /* This value accomodates for the button in the OpgaveBody taking up 7% of horisontal width */ 
+    /* max-width: 93%; This value accomodates for the button in the OpgaveBody taking up 7% of horisontal width  */
 }
 
 .opgaveHeader ul, .opgaveBody ul {
@@ -48,6 +48,22 @@
     display: flex;
     align-items: center;
     padding: 12px 15px;
+    cursor: pointer;
+}
+
+.opgaveListing:hover {
+    background: #3c5a3f10!important;
+}
+
+.opgaveListing .chevronRight {
+    transition: 0.2s ease;
+    opacity: 0;
+    transform: translateX(-5px);
+}
+
+.opgaveListing:hover .chevronRight {
+    transform: translateX(0px);
+    opacity: 1;
 }
 
 .opgaveListing ul {

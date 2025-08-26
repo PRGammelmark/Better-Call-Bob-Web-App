@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.1.3",
+    date: "26. august 2025",
+    changes: [
+        "Endnu flere rettelser på tabelvisningerne af opgaver. Nu kan administratorer se mere detaljerede informationer om hvorvidt afsluttede opgaver er betalte eller ej.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.1.2",
     date: "26. august 2025",
     changes: [
