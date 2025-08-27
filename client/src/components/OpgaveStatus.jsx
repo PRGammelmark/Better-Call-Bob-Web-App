@@ -4,6 +4,7 @@ import ÅbenOpgaveCSS from '../pages/ÅbenOpgave.module.css'
 import * as beregn from '../utils/beregninger.js'
 import axios from 'axios'
 import dayjs from 'dayjs'
+import { Check } from 'lucide-react'
 
 const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAfsluttet, setTvingAfslutOpgaveModal, åbnForÆndringer, setUpdateOpgave, updateOpgave, setOpenVælgMobilePayBetalingsmetodeModal, setOpenBetalViaFakturaModal, setOpenBetalViaMobilePayAnmodningModal, setOpenBetalViaMobilePayScanQRModal }) => {
 
@@ -12,6 +13,12 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
         const sum = posteringerArray?.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0)
       
         return Math.round((sum + Number.EPSILON) * 100) / 100
+    }
+
+    const opkrævningerRegistreret = (posteringer) => {
+        const posteringerArray = Array.isArray(posteringer) ? posteringer : [posteringer]
+        const opkrævninger = posteringerArray?.reduce((acc, postering) => acc + postering.opkrævninger?.length, 0)
+        return opkrævninger > 0
     }
 
     const iAltAtBetale = (posteringer) => {
@@ -44,6 +51,8 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
         .catch(error => console.log(error))
     }
 
+    const erErhvervskunde = kunde?.virksomhed || kunde?.CVR
+
   return (
     <div>
       {!opgave.isDeleted && (
@@ -62,73 +71,54 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
             ))}
 
             {!opgave.fakturaOprettesManuelt && (
-                opgaveAfsluttet && (
+                
                 <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
-                    
-                    {/* InfoLines */}
-                    <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>✔︎</span>Opgaven er afsluttet {typeof opgaveAfsluttet !== 'boolean' && `d. ${new Date(opgaveAfsluttet).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}`}.</p>
 
-                    {opgave.fakturaSendt && (
-                        <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <p style={{ marginTop: kunde?.virksomhed || kunde?.CVR ? -3 : 0 }}><span style={{ fontSize: '1rem', marginRight: 10 }}>📨</span>{kunde?.virksomhed || kunde?.CVR ? `Fakturakladde oprettet d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.` : `Faktura sendt til kunden d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.`}</p>
-                            {!(kunde?.virksomhed || kunde?.CVR) && (<a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Se faktura</button></a>)}
+                    {opgaveAfsluttet && iAltAtBetale(posteringer) >= 0.5 && !opkrævningerRegistreret(posteringer) && <div className={Styles.betalingsKnapDiv}>
+                        <button className={`${Styles.betalingsKnap} ${!erErhvervskunde ? Styles.betalingsknapFremhævet : ""}`} onClick={() => setOpenVælgMobilePayBetalingsmetodeModal(true)}>Betal med Mobile Pay <br /> <span>{iAltAtBetale(posteringer)} kr.</span></button>
+                        <button className={`${Styles.betalingsKnap} ${erErhvervskunde ? Styles.betalingsknapFremhævet : ""}`} onClick={() => setOpenBetalViaFakturaModal(true)}>Betal med faktura <br /> <span>{iAltAtBetale(posteringer)} kr.</span></button>
+                    </div>}
+
+                    {!opgaveAfsluttet && iAltAtBetale(posteringer) > 0 && (
+                        <div
+                            className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv}
+                            style={{ display: 'flex', gap: 10, justifyContent: 'center' }}
+                        >
+                            
+                            <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} style={{ fontSize: '16px' }} onClick={() => handleAfslutOpgave()}>
+                                Afslut opgave <br />
+                                <span style={{ color: '#ffffff', fontSize: '13px' }}>Manglende betaling: {iAltAtBetale(posteringer)} kr.</span>
+                            </button>
+                            
                         </div>
                     )}
 
-                    {opgave.opgaveBetaltMedMobilePay && <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>💵</span>Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.</p>}
-                    {opgave.fakturaBetalt && <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>💵</span>Faktura betalt d.{' '}{new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', {day: '2-digit', month: 'long', year: 'numeric'})}.</p>}
-
-                    {/* {(kunde?.virksomhed || kunde?.CVR) && (!opgave.fakturaSendt && (
+                    {/* --- Genåbn afsluttet opgave --- */}
+                    {(opgave.opgaveAfsluttet || opgaveAfsluttet) && user.isAdmin && (
                         <button
-                        className={ÅbenOpgaveCSS.startBetalingButton}
-                        onClick={() => setÅbnOpretFakturaModal(true)}
+                        className={Styles.genåbnButtonFullWidth}
+                        onClick={() => åbnForÆndringer()}
                         >
-                        Opret faktura ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})
-                        <br />
-                        <span>Kunden er registreret som erhvervskunde</span>
+                        Genåbn opgave
                         </button>
-                    ))}
-                    {!(kunde?.virksomhed || kunde?.CVR) && (!opgave.fakturaSendt && (
-                        <button
-                        className={ÅbenOpgaveCSS.startBetalingButton}
-                        onClick={() => setÅbnOpretRegningModal(true)}
-                        >
-                        Opret regning ({beregn.totalPris(posteringer, 2, visInklMoms)?.formateret})
-                        <br />
-                        <span>Kunden er registreret som privatkunde</span>
-                        </button>
-                    ))
-                    } */}
-
-                    {iAltAtBetale(posteringer) >= 0.5 && <div className={Styles.betalingsKnapDiv}>
-                        <button className={Styles.betalingsKnap} onClick={() => setOpenVælgMobilePayBetalingsmetodeModal(true)}>Betal via Mobile Pay <br /> <span style={{fontSize: '0.8rem', color: '#ffffff'}}>{iAltAtBetale(posteringer)} kr.</span></button>
-                        <button className={Styles.betalingsKnap} onClick={() => setOpenBetalViaFakturaModal(true)}>Betal via faktura <br /> <span style={{fontSize: '0.8rem', color: '#ffffff'}}>{iAltAtBetale(posteringer)} kr.</span></button>
-                    </div>}
-                </div>)
-            )}
-
-            {!opgaveAfsluttet && iAltAtBetale(posteringer) > 0 && (
-                <div
-                    className={ÅbenOpgaveCSS.ikkeAfsluttetButtonsDiv}
-                    style={{ display: 'flex', gap: 10, justifyContent: 'center' }}
-                >
-                    {iAltAtBetale(posteringer) > 0 && (
-                    <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} style={{ fontSize: '16px' }} onClick={() => handleAfslutOpgave()}>
-                        Afslut opgave <br />
-                        <span style={{ color: '#ffffff', fontSize: '13px' }}>Manglende betaling: {iAltAtBetale(posteringer)} kr.</span>
-                    </button>
                     )}
-                </div>
-            )}
 
-            {/* --- Genåbn afsluttet opgave --- */}
-            {(opgave.opgaveAfsluttet || opgaveAfsluttet) && user.isAdmin && (
-                <button
-                className={ÅbenOpgaveCSS.genåbnButtonFullWidth}
-                onClick={() => åbnForÆndringer()}
-                >
-                Genåbn afsluttet opgave
-                </button>
+                    {opgaveAfsluttet && <div className={Styles.infoLinesDiv}>
+                    
+                        {/* InfoLines */}
+                        <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><Check style={{ width: '16px'}} />Opgaven er afsluttet {typeof opgaveAfsluttet !== 'boolean' && `d. ${new Date(opgaveAfsluttet).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}`}.</p>
+                        {opgave.fakturaSendt && (
+                            <div className={ÅbenOpgaveCSS.infoLineFaktura} style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                <p style={{ marginTop: kunde?.virksomhed || kunde?.CVR ? -3 : 0 }}><span style={{ fontSize: '1rem', marginRight: 10 }}>📨</span>{kunde?.virksomhed || kunde?.CVR ? `Fakturakladde oprettet d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.` : `Faktura sendt til kunden d. ${new Date(opgave.fakturaSendt).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.`}</p>
+                                {!(kunde?.virksomhed || kunde?.CVR) && (<a href={opgave.fakturaPDFUrl} target="_blank" rel="noopener noreferrer" className={ÅbenOpgaveCSS.åbnFakturaATag}><button className={ÅbenOpgaveCSS.åbnFakturaButton}>Se faktura</button></a>)}
+                            </div>
+                        )}
+
+                        {opgave.opgaveBetaltMedMobilePay && <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>💵</span>Mobile Pay-betaling registreret d. {new Date(opgave.opgaveBetaltMedMobilePay).toLocaleDateString('da-DK',{day:'2-digit',month:'long',year:'numeric'})}.</p>}
+                        {opgave.fakturaBetalt && <p style={{ marginTop: 10 }} className={ÅbenOpgaveCSS.infoLine}><span style={{ fontSize: '1rem', marginRight: 10 }}>💵</span>Faktura betalt d.{' '}{new Date(opgave.fakturaBetalt).toLocaleDateString('da-DK', {day: '2-digit', month: 'long', year: 'numeric'})}.</p>}
+                    
+                    </div>}
+                </div>
             )}
         </>
       )}

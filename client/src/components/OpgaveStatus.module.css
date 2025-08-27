@@ -3,23 +3,72 @@
     gap: 10px;
     margin-top: 20px;
     justify-content: center;
+    margin-bottom: 10px;
 }
 
 .betalingsKnap {
-    width: 100%;
+    width: 40%;
     padding: 10px;
     border-radius: 10px;
-    background-color: #3c5a3f;
-    color: #ffffff;
+    background-color: #e9e9e9;
+    color: #222222;
     border: none;
     cursor: pointer;
     font-size: 1rem;
     font-weight: bold;
     text-align: center;
     text-decoration: none;
-    transition: background-color 0.3s ease;
+    transition: 0.3s ease;
+}
+
+.betalingsKnap span {
+    color: #222222;
+    font-size: 0.8rem;
+    transition: 0.3s ease;
+}
+
+.betalingsknapFremhævet {
+    background-color: #3c5a3f;
+    color: #ffffff;
+    order: -1;
+    width: 60%;
+}
+
+.betalingsknapFremhævet span {
+    color: #ffffff!important;
+    font-size: 0.8rem;
 }
 
 .betalingsKnap:hover {
     background-color: #59bf1a;
+    color: #ffffff;
+}
+
+.betalingsKnap:hover span {
+    color: #ffffff;
+}
+
+.genåbnButtonFullWidth {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #e9e9e9;
+    color: #222222;
+    border: none;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: bold;
+    text-align: center;
+    transition: 0.3s ease;
+    border: 1px solid #22222200;
+}
+
+.genåbnButtonFullWidth:hover {
+    border: 1px solid #222222;
+}
+
+.infoLinesDiv {
+    margin-top: 20px;
+    border-top: 1px solid #d5d5d5;
+    padding-top: 15px;
 }

@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.1.4",
+    date: "27. august 2025",
+    changes: [
+        "Knappen 'Registrer CVR-nummer' i 'Betal via faktura'-flowet virker nu som den skal.",
+        "Betalingsknapperne på afsluttede opgaver er blevet designet om, så de er mere intuitive og lettere at bruge. Derudover er infolinjerne blevet rykket ned under betalingsknapperne, så det bliver mere intuitivt for medarbejderen at se det næste skridt i betalingsflowet.",
+        "Når man opretter eller redigerer en postering vil man nu kunne se små advarsler, der indikerer hvilke beskrivelsesfelter, der vil komme med på en evt. faktura.",
+        "Fremover vil opgaver ikke længere vise betalingsknapper, hvis der allerede er registreret opkrævninger på opgavens posteringer. Dette skal mindske risikoen for dobbeltopkrævninger. Er der behov for yderligere opkrævninger på en opgave håndterer man disse for enkelte posteringer ad gangen.",
+        "Designjusteringer og -forbedringer samt diverse smårettelser."
+    ]
+},{
     version: "3.1.3",
     date: "26. august 2025",
     changes: [

@@ -10,7 +10,7 @@ import { useAuthContext } from '../../../hooks/useAuthContext.js'
 import * as beregn from '../../../utils/beregninger.js'
 import sendFaktura from './sendFaktura.js'
 
-const betalViaFakturaModal = ({trigger, setTrigger, postering, setOpgave, refetchPostering}) => {
+const betalViaFakturaModal = ({trigger, setTrigger, postering, setOpgave, refetchPostering, setRedigerKundeModal}) => {
   const [opgaveLøstTilfredsstillende, setOpgaveLøstTilfredsstillende] = useState(false)
   const [admGebyr, setAdmGebyr] = useState(false)
   const [allePosteringerUdfyldt, setAllePosteringerUdfyldt] = useState(false)
@@ -35,13 +35,18 @@ const betalViaFakturaModal = ({trigger, setTrigger, postering, setOpgave, refetc
   useEffect(() => {
     if(!(kunde?.CVR || kunde?.virksomhed)) {
       setAdmGebyr(true)
+    } else {
+      setAdmGebyr(false)
     }
   }, [kunde])
   
   function åbnRedigerKundeModal() {
-    // setTrigger(false)
-    // setRedigerKundeModal(true)
-    console.log('åbnRedigerKundeModal')
+    if(setRedigerKundeModal) {
+        setTrigger(false)
+        setRedigerKundeModal(true)
+    } else {
+        alert("Der skete en fejl. Luk venligst vinduet her, og opdater kundens informationer manuelt.")
+    }
   }
 
   function handleOpretFaktura(e) {
@@ -122,6 +127,7 @@ const betalViaFakturaModal = ({trigger, setTrigger, postering, setOpgave, refetc
                             onClick={(e) => {
                                 handleOpretFaktura(e);
                             }}
+                            style={(kunde?.CVR || kunde?.virksomhed) ? {marginTop: "20px"} : {}}
                         >
                             Opret { (kunde?.virksomhed || kunde?.CVR)
                                 ? (

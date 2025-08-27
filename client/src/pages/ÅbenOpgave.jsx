@@ -1396,7 +1396,7 @@ const ÅbenOpgave = () => {
                 <AfslutUdenBetaling trigger={tvingAfslutOpgaveModal} setTrigger={setTvingAfslutOpgaveModal} opgave={opgave} updateOpgave={updateOpgave} setUpdateOpgave={setUpdateOpgave} />
                 <BetalViaMobilePayAnmodningModal trigger={openBetalViaMobilePayAnmodningModal} setTrigger={setOpenBetalViaMobilePayAnmodningModal} postering={posteringer} refetchPostering={refetchOpgave}/>
                 <BetalViaMobilePayQRModal trigger={openBetalViaMobilePayScanQRModal} setTrigger={setOpenBetalViaMobilePayScanQRModal} postering={posteringer} refetchPostering={refetchOpgave}/>
-                <BetalViaFakturaModal trigger={openBetalViaFakturaModal} setTrigger={setOpenBetalViaFakturaModal} postering={posteringer} refetchPostering={refetchOpgave}/>
+                <BetalViaFakturaModal trigger={openBetalViaFakturaModal} setTrigger={setOpenBetalViaFakturaModal} postering={posteringer} refetchPostering={refetchOpgave} setRedigerKundeModal={setRedigerKundeModal} />
                 <VælgMobilePayBetalingsmetode trigger={openVælgMobilePayBetalingsmetodeModal} setTrigger={setOpenVælgMobilePayBetalingsmetodeModal} postering={posteringer} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal} />
                 {posteringer.length > 0 && user.isAdmin && <div className={ÅbenOpgaveCSS.økonomiDiv}>
                 <div className={ÅbenOpgaveCSS.headerSwitcherDiv}>

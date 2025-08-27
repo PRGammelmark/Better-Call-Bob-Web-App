@@ -341,6 +341,7 @@ const AddPostering = (props) => {
                 </>}
                 <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                 <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
+                {posteringBeskrivelse && <p style={{fontSize: '0.7rem', color: '#FF0000', marginTop: "-15px", marginLeft: 10, marginBottom: 20}}>OBS! Beskrivelsen herover kommer med på fakturaen.</p>}
                 {user.isAdmin && <button type="button" className={`${ÅbenOpgaveCSS.subheadingTextButton} ${opretPosteringPåVegneAfEnAnden ? ÅbenOpgaveCSS.subheadingTextButtonActive : ""}`} onClick={() => {setOpretPosteringPåVegneAfEnAnden(!opretPosteringPåVegneAfEnAnden); setValgtMedarbejder(null)}}>{opretPosteringPåVegneAfEnAnden ? "Opret postering for en medarbejder" : "Opret postering for dig selv"}<img src={SwithArrowsBlack} alt="switch" /></button>}
                 <div className={ÅbenOpgaveCSS.dynamiskFastButtonsDiv}>
                     <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskHonorarBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskHonorarBeregning(!dynamiskHonorarBeregning)}>{dynamiskHonorarBeregning ? 'Dynamisk honorar' : 'Fast honorar'}<img src={SwithArrowsBlack} alt="switch" /></button>
@@ -495,9 +496,10 @@ const AddPostering = (props) => {
                                         value={outlay.beskrivelse}
                                         onChange={(e) => handleOutlayChange(index, e)}
                                     />
+                                    <p style={{fontSize: '0.7rem', color: '#FF0000', marginTop: 5, marginLeft: 10}}>OBS! Udlægsbeskrivelser kommer med på fakturaen.</p>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb, inkl. moms:</label>
                                     <input
                                         type="number"
                                         required

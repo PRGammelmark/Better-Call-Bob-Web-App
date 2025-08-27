@@ -50,6 +50,7 @@ const posteringSchema = new Schema({
         type: [{
             reference: String,
             url: String,
+            opkrævningsbeløb: Number,
             metode: {
                 type: String,
                 enum: ['mobilepay', 'faktura', 'bankoverførsel', 'kontant', 'betalingskort'],

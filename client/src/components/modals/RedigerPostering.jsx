@@ -261,6 +261,7 @@ const RedigerPostering = (props) => {
                         <input className={ÅbenOpgaveCSS.modalInput} type="date" value={posteringDato} onChange={(e) => setPosteringDato(e.target.value)} />
                         <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Beskrivelse</label>
                         <textarea className={ÅbenOpgaveCSS.modalInput} type="text" value={posteringBeskrivelse} onChange={(e) => setPosteringBeskrivelse(e.target.value)} />
+                        {posteringBeskrivelse && <p style={{fontSize: '0.7rem', color: '#FF0000', marginTop: "-15px", marginLeft: 10, marginBottom: 20}}>OBS! Beskrivelsen herover kommer med på fakturaen.</p>}
                         <div className={ÅbenOpgaveCSS.dynamiskFastButtonsDiv}>
                             <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskHonorarBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskHonorarBeregning(!dynamiskHonorarBeregning)}>{dynamiskHonorarBeregning ? 'Dynamisk honorar' : 'Fast honorar'}<img src={SwithArrowsBlack} alt="switch" /></button>
                             <button type="button" className={`${ÅbenOpgaveCSS.dynamiskFastButton} ${dynamiskPrisBeregning ? '' : ÅbenOpgaveCSS.dynamiskFastButtonActive}`} onClick={() => setDynamiskPrisBeregning(!dynamiskPrisBeregning)}>{dynamiskPrisBeregning ? 'Dynamisk pris' : 'Fast pris'}<img src={SwithArrowsBlack} alt="switch" /></button>
@@ -410,9 +411,10 @@ const RedigerPostering = (props) => {
                                                 value={outlay.beskrivelse}
                                                 onChange={(e) => handleOutlayChange(index, e)}
                                             />
+                                            <p style={{fontSize: '0.7rem', color: '#FF0000', marginTop: 5, marginLeft: 10}}>OBS! Udlægsbeskrivelser kommer med på fakturaen.</p>
                                         </div>
                                         <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                            <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb:</label>
+                                            <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb, inkl. moms:</label>
                                             <input
                                                 type="number"
                                                 className={ÅbenOpgaveCSS.udlægInput}
@@ -455,7 +457,7 @@ const RedigerPostering = (props) => {
                     <h2 className={ÅbenOpgaveCSS.modalHeading}>Posteringen er låst 🔒</h2>
                     <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(postering.createdAt).format("DD. MMMM YYYY")}, og tilhører en afsluttet lønperiode. Den er derfor låst. Du kan ikke redigere eller slette posteringen.</p>
                     <p style={{marginBottom: 10}}>Lønperioden går fra d. 20.-19. i hver måned. Du kan redigere og slette posteringer for aktuelle lønperioder frem til og med d. 19.</p>
-                    <p style={{marginBottom: 10}}>Hvis du mangler at registrere posteringsdata for denne opgave kan du oprette en ny postering, og registrere hvad du mangler. Disse data vil i så fald komme med i din næste lønperiode.</p>
+                    <p style={{marginBottom: 10}}>Hvis du mangler at registrere posteringsdata for denne opgave kan du oprette en ny postering, og registrere hvad du mangler. Disse data vil i så fald komme med i den næste lønperiode.</p>
                 </>
             )}
         </Modal>
