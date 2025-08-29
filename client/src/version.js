@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.1.5",
+    date: "28. august 2025",
+    changes: [
+        "Nu kan administratorer indstille enkelte kunders prissatser på den pågældende kundes side. Man kan både bestemme gebyrsatser, timesatser såvel som tillægsprocenter for aften- og natarbejde. Nyoprettede posteringer vil i så fald tage udgangspunkt i de prissatser, som kunden har fået defineret. Har kunden ikke fået særlige prissatser vil nyoprettede posteringer fortsat trække prissatserne fra de globale prissatser. Administratorer kan både indstille andre satser, eller fastfryse de nuværende, så fremtidige opdateringer i de globale prissatser ikke kommer til at påvirke kundens priser.",
+        "Hvis en kunde har fået fastsat særlige prissatser vil man kunne se dette i en info-pille i toppen af kundens side.",
+        "Når man registrerer regelmæssig ledighed, så vil de endelige tidspunkter nu ikke længere forskydes en time frem eller en time bagud når de repræsenteres i kalenderen.",
+        "Smårettelser og designjusteringer."
+    ]
+},{
     version: "3.1.4",
     date: "27. august 2025",
     changes: [

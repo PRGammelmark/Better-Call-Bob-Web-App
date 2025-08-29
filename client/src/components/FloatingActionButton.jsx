@@ -89,12 +89,12 @@ const FloatingActionButton = () => {
     function submitNewRegelmæssigLedighed(e){
         e.preventDefault();
 
-        const tidFra = "T" + selectedTimeFrom + ":00.000";
-        const tidTil = "T" + selectedTimeTo + ":00.000";
+        const tidFra = "T" + selectedTimeFrom + ":00.000" + dayjs().format("Z");
+        const tidTil = "T" + selectedTimeTo + ":00.000" + dayjs().format("Z");
 
         const ledighedsDage = weekdays.map(day => ({
-            datoTidFra: dayjs(`${day}${tidFra}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
-            datoTidTil: dayjs(`${day}${tidTil}`).subtract(1, 'hour').format("YYYY-MM-DDTHH:mm:ss.SSS"),
+            datoTidFra: dayjs(`${day}${tidFra}`),
+            datoTidTil: dayjs(`${day}${tidTil}`),
             brugerID: userID,
             kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
@@ -107,7 +107,7 @@ const FloatingActionButton = () => {
             }, 5000)
             return
         }
-
+        
         if (selectedTimeFrom >= selectedTimeTo) {
             setOpretLedighedError("'Fra kl.' skal være før 'Til kl.'.")
             setTimeout(() => {

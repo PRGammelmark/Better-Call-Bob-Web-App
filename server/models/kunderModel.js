@@ -52,6 +52,10 @@ const kundeSchema = new Schema({
         type: Boolean,
         default: false
     },
+    satser: {
+        type: Object,
+        required: false
+    },
     noter: {
         type: String,
         required: false

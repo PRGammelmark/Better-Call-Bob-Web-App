@@ -6,9 +6,10 @@ import PageAnimation from '../components/PageAnimation'
 import Styles from './Kunde.module.css'
 import { Phone, MessageCircle, Mail, Navigation } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft, ChartCandlestick, Tag } from 'lucide-react'
 import CustomersTasks from '../components/tables/CustomersTasks.jsx'
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
+import RedigerKundesPriser from '../components/modals/RedigerKundesPriser.jsx'
 
 const Kunde = () => {
 
@@ -24,6 +25,7 @@ const Kunde = () => {
     const [timer, setTimer] = useState(null)
     const [redigerKundeModal, setRedigerKundeModal] = useState(false)
     const [opdaterKunde, setOpdaterKunde] = useState(false)
+    const [redigerKundesPriserModal, setRedigerKundesPriserModal] = useState(false)
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/kunder/${kundeID}`, {
@@ -117,6 +119,8 @@ const Kunde = () => {
         .catch(error => console.log(error))
     }
 
+
+
   return (
     <>
         {loading ? "" : <PageAnimation>
@@ -134,6 +138,7 @@ const Kunde = () => {
                         {kunde.harStige ? <div className={Styles.harStige}>Har egen stige 🪜</div> : <div className={Styles.harIkkeStige}>Har ikke egen stige ❗️</div>}
                         {kunde.måKontaktesMedReklame ? <div className={Styles.vilGerneKontaktesMedReklame}>Vil gerne kontaktes med reklame</div> : <div className={Styles.vilIkkeKontaktesMedReklame}>Vil ikke kontaktes med reklame</div>}
                         {kunde.engelskKunde && <div className={Styles.infoPill}>Engelsk kunde</div>}
+                        {kunde.satser && <div className={Styles.infoPill}><Tag size="12px" style={{marginRight: 5}}/> Tilpassede prissatser</div>}
                     </div>
                     <div className={Styles.kundeNoter}>
                         <b className={Styles.bold}>Noter:</b>
@@ -145,6 +150,7 @@ const Kunde = () => {
                             />
                         )}
                     </div>
+                    {user.isAdmin && <button onClick={() => setRedigerKundesPriserModal(true)} className={Styles.redigerKundePriserKnap}><ChartCandlestick size="16px" /> Rediger kundens priser</button>}
                     <div className={Styles.kundeKontaktContainer}>
                         <h2>Kontaktinformationer</h2>
                         <p><b className={Styles.bold}>Adresse:</b> {kunde.adresse}, {kunde.postnummerOgBy}</p>
@@ -182,6 +188,7 @@ const Kunde = () => {
             {error && <div>Ikke fundet: Der skete en fejl under indlæsningen af kunden.</div>}
         </div>
         <RedigerKundeModal redigerKundeModal={redigerKundeModal} setRedigerKundeModal={setRedigerKundeModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde} />
+        <RedigerKundesPriser trigger={redigerKundesPriserModal} setTrigger={setRedigerKundesPriserModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde} />
         </PageAnimation>}
     </>
   )

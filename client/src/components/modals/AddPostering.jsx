@@ -101,7 +101,8 @@ const AddPostering = (props) => {
 
         const posteringSatser = {
             ...satser,
-            ...aktuelleSatser
+            ...aktuelleSatser,
+            ...props.opgave?.kunde?.satser
         }
         
         const posteringDynamiskHonorar = (
