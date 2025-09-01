@@ -7,11 +7,12 @@ import dayjs from 'dayjs'
 import satser from '../../variables'
 import SwithArrowsBlack from '../../assets/switchArrowsBlack.svg'
 import RabatIcon from '../../assets/rabatIcon.svg'
+import { useAuthContext } from '../../hooks/useAuthContext'
 
 const RedigerLøntrin = (props) => {
 
     const bruger = props.trigger
-
+    const { user } = useAuthContext()
     const [brugerSatser, setBrugerSatser] = useState(satser)
     const [akkumuleredeBrugerSatser, setAkkumuleredeBrugerSatser] = useState(0)
     const [forudindstilletLøntrin, setForudindstilletLøntrin] = useState(null)
@@ -79,6 +80,10 @@ const RedigerLøntrin = (props) => {
 
         axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${bruger._id}`, {
             satser: brugerSatser
+        }, {
+            headers: {
+                "Authorization": `Bearer ${user.token}`
+            }
         })
         .then(res => {
             console.log(res)
@@ -99,31 +104,31 @@ const RedigerLøntrin = (props) => {
                 <div className={styles.inputLinesContainer}>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Handymantimer<br /><span className={styles.subLabel}>Kr./timen</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.handymanTimerHonorar} min={satser.handymanTimerHonorar * 0.5} max={satser.handymanTimerHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, handymanTimerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.handymanTimerHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, handymanTimerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Tømrertimer <br /><span className={styles.subLabel}>Kr./timen</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.tømrerTimerHonorar} min={satser.tømrerTimerHonorar * 0.5} max={satser.tømrerTimerHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, tømrerTimerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.tømrerTimerHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, tømrerTimerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Rådgivning/opmåling <br /><span className={styles.subLabel}>Kr./timen</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.rådgivningOpmålingVejledningHonorar} min={satser.rådgivningOpmålingVejledningHonorar * 0.5} max={satser.rådgivningOpmålingVejledningHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, rådgivningOpmålingVejledningHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.rådgivningOpmålingVejledningHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, rådgivningOpmålingVejledningHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Opstartsgebyr <br /><span className={styles.subLabel}>Kr./gang</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.opstartsgebyrHonorar} min={satser.opstartsgebyrHonorar * 0.5} max={satser.opstartsgebyrHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, opstartsgebyrHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.opstartsgebyrHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, opstartsgebyrHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Aftentillæg <br /><span className={styles.subLabel}>Kr./timen</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.aftenTillægHonorar} min={satser.aftenTillægHonorar * 0.5} max={satser.aftenTillægHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, aftenTillægHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.aftenTillægHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, aftenTillægHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Nattillæg <br /><span className={styles.subLabel}>Kr./timen</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.natTillægHonorar} min={satser.natTillægHonorar * 0.5} max={satser.natTillægHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, natTillægHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.natTillægHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, natTillægHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                     <div className={styles.inputLine}>
                         <label className={styles.label} htmlFor="">Trailer <br /><span className={styles.subLabel}>Kr./gang</span></label>
-                        <input className={styles.modalInput} type="number" value={brugerSatser.trailerHonorar} min={satser.trailerHonorar * 0.5} max={satser.trailerHonorar} onChange={(e) => {setBrugerSatser({...brugerSatser, trailerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
+                        <input className={styles.modalInput} type="number" value={brugerSatser.trailerHonorar} min={0} max={999} onChange={(e) => {setBrugerSatser({...brugerSatser, trailerHonorar: e.target.value}), setForudindstilletLøntrin(null)}}/>
                     </div>
                 </div>
                 <h3 className={styles.modalHeading3}>Indstil minimumssatser til løntrin</h3>

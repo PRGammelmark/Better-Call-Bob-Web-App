@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.1.6",
+    date: "1. september 2025",
+    changes: [
+        "Rettede en fejl, der kunne opstå når medarbejderes lønsatser indstilles."
+    ]
+},{
     version: "3.1.5",
     date: "28. august 2025",
     changes: [
