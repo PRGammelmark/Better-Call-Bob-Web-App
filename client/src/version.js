@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.1.7",
+    date: "2. september 2025",
+    changes: [
+        "UI- & UX-forbedringer når man registrerer timer på en ny eller eksisterende postering.",
+        "Rettede en fejl, hvor besøgsdetaljer ikke fremgik korrekt øverst når man oprettede et nyt besøg fra kalenderen på opgavesiden.",
+    ]
+},{
     version: "3.1.6",
     date: "1. september 2025",
     changes: [

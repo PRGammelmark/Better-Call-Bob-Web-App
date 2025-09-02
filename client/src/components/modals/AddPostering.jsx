@@ -371,12 +371,26 @@ const AddPostering = (props) => {
                 {(dynamiskHonorarBeregning || dynamiskPrisBeregning) && 
                 <div>
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Timeregistrering</h3>
-                    <div className={ÅbenOpgaveCSS.modalKolonner}>
-                        <div>
-                            <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Handyman:</label>
-                            <input className={ÅbenOpgaveCSS.modalInput} value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                    <div className={ÅbenOpgaveCSS.inputLinesContainer} style={{marginTop: 20}}>
+                        <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => e.currentTarget.querySelector("input")?.select()}>
+                            <label htmlFor="">Handyman<br /><p>Antal timer</p></label>
+                            <input value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
-                        <div>
+                        <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => e.currentTarget.querySelector("input")?.select()}>
+                            <label htmlFor="">Tømrer<br /><p>Antal timer</p></label>
+                            <input value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                        </div>
+                        <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => e.currentTarget.querySelector("input")?.select()}>
+                            <label htmlFor="">Rådgivning<br /><p>Antal timer</p></label>
+                            <input value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                        </div>
+                    </div>
+                    {/* <div className={ÅbenOpgaveCSS.modalKolonner}>
+                        <div className={ÅbenOpgaveCSS.inputLine}>
+                            <label htmlFor="">Handyman:</label>
+                            <input value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                        </div>
+                        <div className={ÅbenOpgaveCSS.inputLine}>
                             <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Tømrer:</label>
                             <input className={ÅbenOpgaveCSS.modalInput} value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
@@ -384,7 +398,7 @@ const AddPostering = (props) => {
                             <label className={ÅbenOpgaveCSS.prefix} htmlFor="">Rådgivning:</label>
                             <input className={ÅbenOpgaveCSS.modalInput} value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                         </div>
-                    </div>
+                    </div> */}
                     <h3 className={ÅbenOpgaveCSS.modalHeading3}>Tilvalg</h3>
                     <div className={ÅbenOpgaveCSS.posteringSwitchers}>
                         <div className={SwitcherStyles.checkboxContainer}>
