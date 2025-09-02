@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.2.0",
+    date: "2. september 2025",
+    changes: [
+        "Nu er der oprettet en 'Hjælp'-sektion i app'en, hvor du kan finde svar på nogle af de mest almindelige spørgsmål.",
+        "Der vil løbende blive lavet video-guides til app'en, som du også kan finde i 'Hjælp'-sektionen.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.1.7",
     date: "2. september 2025",
     changes: [

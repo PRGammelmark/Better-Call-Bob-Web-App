@@ -1,0 +1,83 @@
+h1 {
+    font-family: OmnesBold;
+    margin-bottom: 10px;
+}
+
+.helpTopDescription {
+    margin-bottom: 30px;
+}
+
+.helpCategories {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.helpCategory {
+    max-width: 500px;
+    min-width: 300px;
+}
+
+.helpQuestions {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.helpQuestion {
+    padding: 10px 20px;
+    background: #fff;
+    cursor: pointer;
+    transition: 0.3s ease;
+    border-bottom: 1px solid #3c5a3f40;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.helpQuestion:last-child {
+    border-bottom: none;
+}
+
+.helpQuestion:hover {
+    background: #e6f5df;
+}
+
+.helpQuestion h3 {
+    font-size: 1rem;
+    transition: 0.3s ease;
+}
+
+.helpQuestion:hover h3 {
+    color: #59bf1a;
+}
+
+.playCircle {
+    transition: 0.3s ease;
+    width: 18px;
+}
+
+.helpQuestion:hover .playCircle {
+    color: #59bf1a;
+}
+
+@media screen and (max-width: 750px) {
+    .helpCategories {
+        flex-direction: column;
+    }
+
+    .helpCategory {
+        max-width: 100%;
+        min-width: 100%;
+    }
+
+    .helpTopDescription {
+        margin-top: 40px;
+    }
+}

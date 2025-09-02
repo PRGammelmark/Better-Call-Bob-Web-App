@@ -1,0 +1,44 @@
+.tagContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.tag {
+    font-size: 12px;
+    background-color: #3c5a3f20;
+    padding: 3px 10px;
+    border-radius: 50px;
+    color: #222222;
+}
+
+.modalHeading {
+    margin-bottom: 10px;
+}
+
+.modalSubheading {
+    font-family: OmnesBold;
+    margin-bottom: 5px;
+    display: block;
+    text-decoration: underline;
+    color: #222222;
+}
+
+.videoContainer {
+    width: 100%;
+    max-width: 800px;
+    aspect-ratio: 16 / 9;
+    margin: 0 auto 30px;
+    border-radius: 10px;
+    border: 1px solid #00000030;
+    overflow: hidden;
+  }
+  
+  @media (max-width: 750px) {
+    .videoContainer {
+      aspect-ratio: 9 / 16;
+      max-height: 500px;
+    }
+  }
+  

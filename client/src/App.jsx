@@ -30,6 +30,7 @@ import Kunde from './pages/Kunde'
 import subscribeToPush from './utils/subscribeToPush'
 import AllePosteringer from './pages/AllePosteringer'
 import useAutoVersionCheck from './hooks/useAutoVersionCheck'
+import Hjaelp from './pages/hjaelp/Hjaelp.jsx'
 
 function App() {
 
@@ -84,6 +85,7 @@ function App() {
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
           <Route path="indstillinger" element={<Indstillinger />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
+          <Route path="hjaelp" element={<Hjaelp />} errorElement={<ErrorPage />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-opgave" element={<NyOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-opgave/kunde/:kundeID" element={<NyOpgave />} errorElement={<ErrorPage />}/>

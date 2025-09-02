@@ -92,12 +92,12 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                             <h2>Indstillinger</h2>
                         </div>
                     </Link>
-                    <Link style={linkStyles} to={'/'} onClick={() => setShowNavMenu(false)}>
+                    <Link style={linkStyles} to={'/hjaelp'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
                                 <Library className={Styles.newMobileNavItemIcon} />
                             </div>
-                            <h2 style={{lineHeight: '1.4rem'}}>Hjælp<br /><span style={{fontSize: '0.8rem', lineHeight: '0.8rem', marginTop: '0px', color: '#ffffff80'}}>(kommer snart ...)</span></h2>
+                            <h2>Hjælp</h2>
                         </div>
                     </Link>
                 </div>

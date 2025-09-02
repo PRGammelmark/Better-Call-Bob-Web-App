@@ -36,6 +36,7 @@ const Header = () => {
     '/dokumenter': "📄 Dokumenter",
     '/indstillinger': "⚙️ Indstillinger",
     '/ny-kunde': "👥 Opret ny kunde",
+    '/hjaelp': "Hjælp",
     '/version': `Ændringslog (v${currentVersion})`,
     '/opgave/:opgaveID': "OpgaveID",
     '/ny-opgave': "📋 Opret ny opgave",
