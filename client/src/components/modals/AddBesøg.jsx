@@ -516,8 +516,8 @@ const AddBesøg = (props) => {
             
             {isOnTaskPage && <div className={Styles.modalSubheadingContainer}>
                 <label className={ModalStyles.modalLabel}>Kundeinformationer</label>
-                <h3 className={ModalStyles.modalSubheading}>{customerForChosenTask?.navn || "Ingen person"}</h3>
-                <h3 className={ModalStyles.modalSubheading}>{customerForChosenTask?.adresse || "Ingen adresse"}</h3>
+                <h3 className={ModalStyles.modalSubheading}>{chosenTask?.kunde?.navn || "Ingen person"}</h3>
+                <h3 className={ModalStyles.modalSubheading}>{chosenTask?.kunde?.adresse || "Ingen adresse"}</h3>
             </div>}
             {isOnTaskPage && <form action="" onSubmit={submitNewBesøgFromTaskPage} style={{display: "flex", flexDirection: "column", gap: "10px"}}>
                 {user.isAdmin && isOnTaskPage && props.trigger.origin !== "besøgFraLedigTid" && (
