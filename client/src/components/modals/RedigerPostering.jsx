@@ -286,15 +286,15 @@ const RedigerPostering = (props) => {
                         <div>
                             <h3 className={ÅbenOpgaveCSS.modalHeading3}>Timeregistrering</h3>
                             <div className={ÅbenOpgaveCSS.inputLinesContainer} style={{marginTop: 20, marginBottom: 30}}>
-                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 0);}}}>
+                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 20);}}}>
                                     <label htmlFor="">Handyman<br /><p>Antal timer</p></label>
                                     <input value={handymantimer} onChange={(e) => setHandymantimer(e.target.value)} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
-                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 0);}}}>
+                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 20);}}}>
                                     <label htmlFor="">Tømrer<br /><p>Antal timer</p></label>
                                     <input value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
-                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 0);}}}>
+                                <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 20);}}}>
                                     <label htmlFor="">Rådgivning<br /><p>Antal timer</p></label>
                                     <input value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value)} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
