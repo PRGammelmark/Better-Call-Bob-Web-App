@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.2.1",
+    date: "4. september 2025",
+    changes: [
+        "Fjernede 'Åbn'-knappen fra uddelegerede opgaver i tabelvisningen. Nu kan man bare klikke/trykke på tabelrækken for at gå til opgaven.",
+        "Nu vises postnummeret og byen under adressen i samme tabel.",
+        "I tabellen kan man nu også se om der er booket besøg ind på opgaven uden at gå ind på den først.",
+        "Smårettelser og designjusteringer.",
+    ]
+},{
     version: "3.2.0",
     date: "2. september 2025",
     changes: [

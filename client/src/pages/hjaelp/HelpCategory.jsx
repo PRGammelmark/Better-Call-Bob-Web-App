@@ -18,7 +18,9 @@ const HelpCategory = (props) => {
             return (
             <div className={HelpCSS.helpQuestion} key={index} onClick={() => {props.setVisSvarModal(question)}}>
                 <h3>{question.question}</h3>
-                {question.videoURL ? <PlayCircle className={HelpCSS.playCircle} /> : <FileText className={HelpCSS.playCircle} />}
+                <div className={HelpCSS.helpQuestionIconDiv}>
+                  {question.videoURL ? <PlayCircle className={HelpCSS.playCircle} /> : <FileText className={HelpCSS.playCircle} />}
+                </div>
             </div>
             )
         })}

@@ -12,25 +12,26 @@ const DelegatedTasks = () => {
   const [uddelegeredeOpgaver, setUddelegeredeOpgaver] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const {user} = useAuthContext()
-  const [kunder, setKunder] = useState(null)
+  const [kunder, setKunder] = useState([])
+  const [besøg, setBesøg] = useState([])
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
+    axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
       headers: {
         'Authorization': `Bearer ${user.token}`
       }
     })
     .then(res => {
-      setKunder(res.data)
+      setBesøg(res.data)
     })
     .catch(err => {
       console.log(err)
     })
-  }, [user])
+  }, [uddelegeredeOpgaver])
 
   useEffect(()=>{
     const fetchOpgaver = async () => {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/opgaver/populateKunder`, {
         headers: {
           'Authorization': `Bearer ${user.token}`
         }
@@ -66,18 +67,19 @@ const DelegatedTasks = () => {
               </div>
               <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : uddelegeredeOpgaver.length > 0 ? uddelegeredeOpgaver.map((opgave) => {
-                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                  
+                  const kunde = opgave?.kunde;
+                  const besøgForOpgave = besøg?.filter(besøg => besøg?.opgaveID === opgave?._id)
+                  const harBesøg = besøgForOpgave?.length > 0
+                  
                   return (
-                    <div className={TableCSS.opgaveListing} key={opgave._id}>
+                    <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
-                        <li>{kunde?.adresse}</li>
-                        <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{kunde?.adresse}</p><p style={{fontSize: "10px", color: "#22222280" }}>{kunde?.postnummerOgBy}</p></li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</p>{opgave.ansvarlig.length > 0 && (!harBesøg && <p style={{fontSize: "10px", color: "#222222", background: "#ffee8c", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}>Ingen besøg</p>)}</li>
                       </ul>
-                      <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
-                        <button className={TableCSS.button}>Åbn</button>
-                      </Link>
                     </div>
                   )
                 }) : <div className={TableCSS.noResults}><p>Ingen uddelegerede opgaver fundet.</p></div>}
@@ -98,13 +100,17 @@ const DelegatedTasks = () => {
               </div>
               <div className={`${TableCSS.opgaveBody} ${DelegatedTasksCSS.delegatedTasksBody}`}>
                 {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : uddelegeredeOpgaver.length > 0 ? uddelegeredeOpgaver.map((opgave) => {
-                  const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                  
+                  const kunde = opgave?.kunde;
+                  const besøgForOpgave = besøg?.filter(besøg => besøg?.opgaveID === opgave?._id)
+                  const harBesøg = besøgForOpgave?.length > 0
+
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={DelegatedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
-                        <li>{kunde?.adresse}</li>
-                        <li>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{kunde?.adresse}</p><p style={{fontSize: "10px", color: "#22222280" }}>{kunde?.postnummerOgBy}</p></li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{opgave.ansvarlig.length > 1 ? opgave.ansvarlig[0].navn + " + " + (opgave.ansvarlig.length - 1) : opgave.ansvarlig.length > 0 ? opgave.ansvarlig[0].navn : "Ikke uddelegeret." }</p>{opgave.ansvarlig.length > 0 && (!harBesøg && <p style={{fontSize: "10px", color: "#222222", background: "#ffee8c", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}>Ingen besøg</p>)}</li>
                       </ul>
                     </div>
                   )
