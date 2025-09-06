@@ -8,11 +8,9 @@ const Alle_opgaver = () => {
   return (
     <>
     <OpgaverLinkBjælke />
-    <PageAnimation>
       <h1 className={AlleOpgaverCSS.heading}>Afsluttede opgaver</h1>
       <p>En opgave betragtes som afsluttet, når den er markeret som færdig og betalt, eller når opgaven manuelt er markeret som afsluttet.</p>
       <ClosedTasks />
-      </PageAnimation>
     </>
   )
 }

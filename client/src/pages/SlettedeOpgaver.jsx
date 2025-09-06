@@ -59,7 +59,6 @@ const Alle_opgaver = () => {
   return (
     <>
     <OpgaverLinkBjælke />
-    <PageAnimation>
       <div className={Styles.papirkurvUpperContainer}>
         <div className={Styles.headingContainer}>
           <h1 className={AlleOpgaverCSS.heading}>Papirkurv 🗑️</h1>
@@ -68,7 +67,6 @@ const Alle_opgaver = () => {
         <p>Slettede opgaver vil ligge i papirkurven i 30 dage, hvorefter de vil blive slettet permanent.</p>
       </div>
       <SlettedeOpgaver slettedeOpgaver={slettedeOpgaver} setSlettedeOpgaver={setSlettedeOpgaver} isLoading={isLoading} setIsLoading={setIsLoading} />
-      </PageAnimation>
     </>
   )
 }

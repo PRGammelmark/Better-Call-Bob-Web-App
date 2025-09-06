@@ -123,7 +123,7 @@ const Kunde = () => {
 
   return (
     <>
-        {loading ? "" : <PageAnimation>
+        {loading ? "" : <>
         <div className={Styles.kundeContainer}>
             {kunde && (
                 <div>
@@ -189,7 +189,7 @@ const Kunde = () => {
         </div>
         <RedigerKundeModal redigerKundeModal={redigerKundeModal} setRedigerKundeModal={setRedigerKundeModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde} />
         <RedigerKundesPriser trigger={redigerKundesPriserModal} setTrigger={setRedigerKundesPriserModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde} />
-        </PageAnimation>}
+        </>}
     </>
   )
 }

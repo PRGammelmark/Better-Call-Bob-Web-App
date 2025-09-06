@@ -25,13 +25,11 @@ const Mine_opgaver = () => {
   };
   
   return (
-    <PageAnimation>
       <div>
         <h1 className={Styles.heading}>Mine opgaver</h1>
         <MyTasks openTableEvent={openTableEvent} />
         <MyEarlierTasks />
       </div>
-    </PageAnimation>
   )
 }
 

@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useLocation, useOutlet } from 'react-router-dom'
 import ContentCSS from './Content.module.css'
 import FloatingActionButton from './FloatingActionButton'
 import { useAuthContext } from '../hooks/useAuthContext'
@@ -6,12 +6,16 @@ import Header from './Header'
 import Footer from './Footer'
 import { currentVersion } from '../version.js'
 import ServiceWorkerMessageHandler from '../serviceWorkerMessageHandler';
+import { AnimatePresence, motion } from 'framer-motion'
+import PageWrapper from '../pages/PageWrapper';
+import { react, useState, useEffect } from 'react'
+import AnimatedOutlet from './AnimatedOutlet.jsx'
 
 
 const Content = () => {
 
   const { user } = useAuthContext();
-
+  const location = useLocation()
 
   return (
     <>
@@ -30,16 +34,15 @@ const Content = () => {
               {user.isAdmin && <li><NavLink to="kunder">Kunder</NavLink></li>}
               <li><NavLink to="team">Team</NavLink></li>
               <li><NavLink to="dokumenter">Dokumenter</NavLink></li>
-              <li><NavLink to="indstillinger">Indstillinger</NavLink></li>
+              <li><NavLink to="dinKonto">Profil</NavLink></li>
               <li><NavLink to="hjaelp">Hjælp</NavLink></li>
               {/* <li><NavLink to="version">Opdateringer (v{currentVersion})</NavLink></li> */}
             </ul>
           </div>
 
           <div className={ContentCSS.content}>
-            <Outlet />
+            <AnimatedOutlet />
           </div>
-
           <FloatingActionButton />
         </div>
         

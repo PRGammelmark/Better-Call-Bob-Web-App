@@ -208,19 +208,19 @@ const ÅbenOpgave = () => {
         }
       }, [opgave]);
 
-    useEffect(() => {
-        if(opgave?.kundeID){
-            axios.get(`${import.meta.env.VITE_API_URL}/kunder/${opgave?.kundeID}`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .then(res => {
-                setKunde(res.data)
-            })
-            .catch(error => console.log(error))
-        }
-    }, [opgave, opdaterKunde])
+    // useEffect(() => {
+    //     if(opgave?.kundeID){
+    //         axios.get(`${import.meta.env.VITE_API_URL}/kunder/${opgave?.kundeID}`, {
+    //             headers: {
+    //                 'Authorization': `Bearer ${user.token}`
+    //             }
+    //         })
+    //         .then(res => {
+    //             setKunde(res.data)
+    //         })
+    //         .catch(error => console.log(error))
+    //     }
+    // }, [opgave, opdaterKunde])
     
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
@@ -230,6 +230,7 @@ const ÅbenOpgave = () => {
         })
         .then(res => {
             setOpgave(res.data);
+            setKunde(res.data.kunde)
             setNyeKundeinformationer(res.data);
             setOpgaveBeskrivelse(res.data.opgaveBeskrivelse);
             setStatus(res.data.status);
@@ -1018,7 +1019,6 @@ const ÅbenOpgave = () => {
     
 
     return (
-    
         <div className={ÅbenOpgaveCSS.primærContainer}>
             <PageAnimation>
             <div className={ÅbenOpgaveCSS.tilbageOpgaveSektion}>

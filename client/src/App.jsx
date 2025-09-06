@@ -1,7 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
-import { createBrowserRouter, Route, Link, NavLink, createRoutesFromElements, RouterProvider, Navigate } from 'react-router-dom'
-import { AnimatePresence } from 'framer-motion';
+import { createBrowserRouter, Route, Link, NavLink, createRoutesFromElements, RouterProvider, Navigate, useLocation } from 'react-router-dom'
+// import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header'
 import Footer from './components/Footer'
 import Content from './components/Content'
@@ -13,7 +13,7 @@ import Overblik from './pages/Overblik'
 import AlleOpgaver from './pages/AlleOpgaver'
 import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
-import Indstillinger from './pages/Indstillinger'
+import DinKonto from './pages/DinKonto'
 import Version from './pages/Version'
 import ÅbenOpgave from './pages/ÅbenOpgave'
 import NyOpgave from './pages/NyOpgave'
@@ -31,6 +31,9 @@ import subscribeToPush from './utils/subscribeToPush'
 import AllePosteringer from './pages/AllePosteringer'
 import useAutoVersionCheck from './hooks/useAutoVersionCheck'
 import Hjaelp from './pages/hjaelp/Hjaelp.jsx'
+import { AnimatePresence, motion } from 'framer-motion'
+import PageWrapper from './pages/PageWrapper';
+
 
 function App() {
 
@@ -83,7 +86,7 @@ function App() {
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
           <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
-          <Route path="indstillinger" element={<Indstillinger />} errorElement={<ErrorPage />}/>
+          <Route path="dinKonto" element={<DinKonto />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
           <Route path="hjaelp" element={<Hjaelp />} errorElement={<ErrorPage />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>

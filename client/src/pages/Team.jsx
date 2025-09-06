@@ -64,7 +64,6 @@ const Team = () => {
     }
   
     return (
-        <PageAnimation>
             <div className={styles.teamContainer}>
                 <h1 className={`bold ${styles.heading}`}>Teamet</h1>
                 <div className={styles.adminDiv}>
@@ -131,7 +130,6 @@ const Team = () => {
                     </div>
                 </div>
             </div>
-        </PageAnimation>
     )
 }
 

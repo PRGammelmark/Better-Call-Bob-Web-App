@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.3.0",
+    date: "6. semptember 2025",
+    changes: [
+        "Siden 'Indstillinger' har fået ændret sit navn til 'Konto', og forarbejdet til et nyt design til siden er lagt.",
+        "Nu har siderne i app'en fået exit- og entry-animationer, hvilket giver en mere flydende oplevelse når man navigerer. Destinationssiden begynder desuden nu at loade i baggrunden, under exit-animationen, med det samme man trykker på knappen der navigerer derhen, så app'en fremover vil flakke mindre.",
+        "Login-skærmen har fået udvidede muligheder for at gemme login-informationer til autoudfyldning fremover."
+    ]
+},{
     version: "3.2.1",
     date: "4. september 2025",
     changes: [

@@ -16,7 +16,6 @@ const Version = () => {
   };
 
   return (
-    <PageAnimation>
         <div className={Styles.content}>
           <h1 className={Styles.heading}>Aktuel version: {currentVersion}</h1>
           {currentChanges.map((change => (
@@ -63,7 +62,6 @@ const Version = () => {
             </button>
           </div>
         </div>
-    </PageAnimation>
   )
 }
 

@@ -139,7 +139,6 @@ const NyKunde = () => {
     }
 
     return (
-        <PageAnimation>
             <div>
                 <span className={styles.headingSpan}><h1 className={styles.overskrift}>💁‍♀️ Opret ny kunde</h1></span>
                 <form onSubmit={handleSubmit} className={styles.form}>
@@ -217,7 +216,6 @@ const NyKunde = () => {
                     {error && <div className={styles.error}>{error}</div>}
                 </form>
             </div>
-        </PageAnimation>
     )
 }
 

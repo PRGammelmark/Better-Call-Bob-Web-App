@@ -436,7 +436,6 @@ const NyOpgave = () => {
     }
 
   return (
-    <PageAnimation>
         <>
         <div style={{position: "static!important"}}>
             <span className={NyOpgaveCSS.headingSpan}><h1 className={NyOpgaveCSS.overskrift}>📋 Opret ny opgave</h1></span>
@@ -688,7 +687,6 @@ const NyOpgave = () => {
             </form>
         </div>
         </>
-    </PageAnimation>
   )
 }
 

@@ -12,7 +12,6 @@ const Hjaelp = () => {
     const [visSvarModal, setVisSvarModal] = useState("")
 
   return (
-    <PageAnimation>
     <div>
       <h1>Sådan bruger du Octa</h1>
       <p className={HelpCSS.helpTopDescription}>Herunder finder du svar på nogle af de spørgsmål, vi oftest bliver spurgt om.</p>
@@ -25,7 +24,6 @@ const Hjaelp = () => {
         <HjaelpSvarModal trigger={visSvarModal} setTrigger={setVisSvarModal} />
       </div>
     </div>
-    </PageAnimation>
   )
 }
 

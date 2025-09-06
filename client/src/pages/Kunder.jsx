@@ -31,7 +31,6 @@ const Kunder = () => {
     }, [])
 
   return (
-    <PageAnimation>
         <div>
             <div className={styles.headingAndSearchContainer}>
                 <h1 className={`bold ${styles.heading}`}>Kunder</h1>
@@ -59,7 +58,6 @@ const Kunder = () => {
             </div>
             <KunderTabel search={search} filter={filter} />
         </div>
-    </PageAnimation>
   )
 }
 

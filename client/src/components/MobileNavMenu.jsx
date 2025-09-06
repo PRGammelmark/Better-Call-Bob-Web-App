@@ -84,12 +84,12 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                             <h2>Dokumenter</h2>
                         </div>
                     </Link>
-                    <Link style={linkStyles} to={'indstillinger'} onClick={() => setShowNavMenu(false)}>
+                    <Link style={linkStyles} to={'dinKonto'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
                                 <Settings className={Styles.newMobileNavItemIcon} />
                             </div>
-                            <h2>Indstillinger</h2>
+                            <h2>Din konto</h2>
                         </div>
                     </Link>
                     <Link style={linkStyles} to={'/hjaelp'} onClick={() => setShowNavMenu(false)}>

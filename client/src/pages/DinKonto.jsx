@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import PageAnimation from '../components/PageAnimation'
-import Styles from './Indstillinger.module.css'
-import { useAuthContext } from '../hooks/useAuthContext'
-import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush'
-import { useSubscribeToPush } from '../hooks/useSubscribeToPush'
+import PageAnimation from '../components/PageAnimation.jsx'
+import Styles from './DinKonto.module.css'
+import { useAuthContext } from '../hooks/useAuthContext.js'
+import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush.js'
+import { useSubscribeToPush } from '../hooks/useSubscribeToPush.js'
 import axios from 'axios'
-import LedighedCalendar from '../components/calendars/LedighedCalendar'
+import LedighedCalendar from '../components/calendars/LedighedCalendar.jsx'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal.jsx'
@@ -13,32 +13,30 @@ import LocationMarker from '../assets/locationMarker.svg'
 import { RectangleEllipsis, BellRing, BellOff, SquarePen } from 'lucide-react';
 import ToolboxIcon from '../assets/toolboxIcon.svg'
 import ClockIcon from '../assets/clockIcon.svg'
-import subscribeToPush from '../utils/subscribeToPush'
-import unSubscribeToPush from '../utils/unSubscribeToPush'
+import subscribeToPush from '../utils/subscribeToPush.js'
+import unSubscribeToPush from '../utils/unSubscribeToPush.js'
 import nyNotifikation from '../utils/nyNotifikation.js'
+import placeholderBillede from '../assets/avatarPlaceholder.png'
 
-const Indstillinger = () => {
+const DinKonto = () => {
     const {user, updateUser} = useAuthContext();
     const permission = Notification.permission;
     
     if (!user) {
         return
     }
-    const navigate = useNavigate();
+
+    useEffect(() => {
+      console.log('DinKonto mounted');
+      return () => console.log('DinKonto unmounted');
+    }, []);
 
     const [bruger, setBruger] = useState(null);
     const [redigerPersonligeOplysninger, setRedigerPersonligeOplysninger] = useState(false);
-    const [redigerLedigeTider, setRedigerLedigeTider] = useState(false);
     const [skiftKodeord, setSkiftKodeord] = useState(false)
     const [passwordError, setPasswordError] = useState("")
-    const [ledigeTider, setLedigeTider] = useState([])
-    const [selectedDate, setSelectedDate] = useState(dayjs());
-    const [opdaterLedigeTider, setOpdaterLedigeTider] = useState(false)
-    const [opgaveBesøg, setOpgaveBesøg] = useState([])
-    const [kalenderVisning, setKalenderVisning] = useState("")
     const [pushDebugMessage, setPushDebugMessage] = useState("");
 
-    
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
     const [redigerbarTitel, setRedigerbarTitel] = useState("")
@@ -47,9 +45,6 @@ const Indstillinger = () => {
     const [redigerbarEmail, setRedigerbarEmail] = useState("")
     const [nytKodeord, setNytKodeord] = useState("")
     const [gentagNytKodeord, setGentagNytKodeord] = useState("")
-    const [fraTid, setFraTid] = useState("08:00")
-    const [tilTid, setTilTid] = useState("16:00")
-    const [ledighedDato, setLedighedDato] = useState("")
     
 
     const userID = user?.id || user?._id;
@@ -68,20 +63,6 @@ const Indstillinger = () => {
             setRedigerbarAdresse(res.data.adresse)
             setRedigerbarTelefon(res.data.telefon)
             setRedigerbarEmail(res.data.email)
-            setKalenderVisning(res.data.showTraditionalCalendar)
-        })
-        .catch(error => console.log(error))
-    }, [])
-
-    useEffect(() => {
-      axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
-            headers: {
-                'Authorization': `Bearer ${user.token}`
-            }
-        })
-        .then(res => {
-            const personligeBesøg = res.data.filter(besøg => besøg.brugerID === userID)
-            setOpgaveBesøg(personligeBesøg)
         })
         .catch(error => console.log(error))
     }, [])
@@ -133,190 +114,7 @@ const Indstillinger = () => {
         setPasswordError("Kodeord matcher ikke hinanden. Prøv igen.");
       }
     }
-
-    function submitLedigeTider (e) {
-      e.preventDefault()
-
-      
-      
-      const valgtDato = selectedDate.format("YYYY-MM-DD")
-      const datoTidFra = new Date(valgtDato + "T" + fraTid + ":00")
-      const datoTidTil = new Date(valgtDato + "T" + tilTid + ":00")
-
-      const ledigTid = {
-        datoTidFra: datoTidFra,
-        datoTidTil: datoTidTil,
-        brugerID: userID
-      }
-
-      axios.post(`${import.meta.env.VITE_API_URL}/ledige-tider/`, ledigTid, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        })
-        .then(res => {
-          console.log(res.data)
-          opdaterLedigeTider ? setOpdaterLedigeTider(false) : setOpdaterLedigeTider(true);
-        })
-        .catch(error => console.log(error))
-    }
-
-    useEffect(() => {
-      axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider/`, {
-        headers: {
-            'Authorization': `Bearer ${user.token}`
-        }})
-        .then(res => {
-          const filteredData = res.data.filter(item => item.brugerID === userID);  
-          setLedigeTider(filteredData)
-        })
-        .catch(error => console.log(error))
-    }, [opdaterLedigeTider])
-
-    function sletLedighed (id) {
-      axios.delete(`${import.meta.env.VITE_API_URL}/ledige-tider/${id}`, {
-        headers: {
-            'Authorization': `Bearer ${user.token}`
-        }})
-        .then(res => {
-          const nyeLedigeTider = [...ledigeTider];
-          const index = nyeLedigeTider.findIndex(item => item._id === id);
-          if (index !== -1) {
-            nyeLedigeTider.splice(index, 1);
-          }
-          setLedigeTider(nyeLedigeTider);
-        })
-        .catch(error => console.log(error))
-    }
-
-    function navigateToOpgave(id) {
-      setRedigerLedigeTider(false)
-      navigate(`/opgave/${id}`)
-    }
-
-    function skiftKalendervisning() {
-      const updatedKalenderVisning = !kalenderVisning;
-      setKalenderVisning(updatedKalenderVisning);
-      const redigeretBrugerData = { showTraditionalCalendar: updatedKalenderVisning };
-      
-      axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${userID}`, redigeretBrugerData, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(res => {
-        console.log("User data updated.")
-      })
-      .catch(error => console.log(error))
-    }
-
-    // function urlBase64ToUint8Array(base64String) {
-    //   const padding = "=".repeat((4 - base64String.length % 4) % 4);
-    //   const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-    //   const rawData = atob(base64);
-    //   return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
-    // }
-    
-    // async function subscribeToPush() {
-    //   try {
-    //     if (!('serviceWorker' in navigator)) {
-    //       return alert("Din browser understøtter ikke notifikationer.");
-    //     }
-    
-    //     const permission = Notification.permission;
-    
-    //     if (permission === 'denied') {
-    //       return alert("Du har blokeret notifikationer. Gå til Indstillinger > Notifikationer og slå dem til.");
-    //     }
-    
-    //     if (permission !== 'granted') {
-    //       const newPermission = await Notification.requestPermission();
-    //       if (newPermission !== 'granted') {
-    //         return alert("Du skal acceptere notifikationer for at det virker.");
-    //       }
-    //     }
-
-    //     if(permission === 'granted') {
-    //       alert("Du har allerede accepteret notifikationer.");
-    //       return;
-    //     }
-    
-    //     const registration = await navigator.serviceWorker.ready;
-    
-    //     let subscription = await registration.pushManager.getSubscription();
-    
-    //     if (!subscription) {
-    //       subscription = await registration.pushManager.subscribe({
-    //         userVisibleOnly: true,
-    //         applicationServerKey: urlBase64ToUint8Array(import.meta.env.VITE_VAPID_PUBLIC_KEY)
-    //       });
-    //     }
-    
-    //     console.log("Push subscription:", subscription);
-    
-    //     // Send til backend
-    //     await axios.post(`${import.meta.env.VITE_API_URL}/brugere/push-subscribe`, {
-    //       subscription
-    //     }, {
-    //       headers: {
-    //         'Authorization': `Bearer ${user.token}`
-    //       }
-    //     });
-    
-    //     alert("Push-notifikationer er nu aktiveret.");
-    //   } catch (err) {
-    //     console.error("Fejl ved push-tilmelding:", err);
-    //     alert("Noget gik galt under tilmelding. Se konsollen for detaljer.");
-    //   }
-    // }
-    
-    const checkNotificationStatus = () => {
-      let message = '';;
-      switch (Notification.permission) {
-        case 'granted':
-          message = 'Du har givet tilladelse til notifikationer ✅';
-          break;
-        case 'denied':
-          message = 'Du har afvist notifikationer ❌. Gå til indstillinger og aktiver dem.';
-          break;
-        case 'default':
-          message = 'Du er endnu ikke blevet spurgt om notifikationer.';
-          break;
-      }
-      setPushDebugMessage(message); // eller hvordan du håndterer beskeder i dit UI
-    };
-    
-
-    // function sendTestNotification() {
-    //   if (!user.pushSubscription) {
-    //     alert("Ingen push subscription fundet på brugeren. Abonner først.");
-    //     return;
-    //   }
-    
-    //   const payload = {
-    //     title: "Test-notifikation",
-    //     body: "Dette er en test notifikation.",
-    //   };
-      
-    //   console.log("Tjekker user.pushSubscription");
-    //   console.log(user.pushSubscription);
-
-    //   axios.post(`${import.meta.env.VITE_API_URL}/send-push`, {
-    //     subscription: user.pushSubscription,
-    //     payload
-    //   }, {
-    //     headers: {
-    //       'Authorization': `Bearer ${user.token}`
-    //     }
-    //   })
-    //   .then(() => {
-    //     console.log("Test-notifikation er sendt.");
-    //   })
-    //   .catch(err => {
-    //     console.error("Fejl ved test-notifikation:", err);
-    //     alert("Fejl under afsendelse af test-notifikation. Se konsollen.");
-    //   });
-    // }
+  
 
     const unSubscribeToPush = useUnsubscribeToPush();
     const subscribeToPush = useSubscribeToPush();
@@ -332,12 +130,18 @@ const Indstillinger = () => {
 
 
   return (
-    <PageAnimation>
+    // <PageAnimation>
       <div className={Styles.pageContent}>
-        <h1 className={`bold ${Styles.heading}`}>Indstillinger</h1>
+        <div className={Styles.profilHeader}>
+          <img src={bruger?.profilbillede || placeholderBillede} alt="Profilbillede" className={Styles.profilBillede} />
+          <div className={Styles.profilInfo}>
+            <h1>{bruger?.navn}</h1>
+            <p>{bruger?.isAdmin ? "Administrator" : "Medarbejder"}{bruger?.titel ? (" • " + bruger?.titel) : "" }</p>
+          </div>
+        </div>
         <div className={Styles.personligInfo}>
           <div className={Styles.infoListe}>
-            <div className={Styles.personligInfoBox}>
+            {/* <div className={Styles.personligInfoBox}>
               <div className={Styles.infoListeElement}>
                 <b className={`${Styles.text} ${Styles.navn}`}>{bruger && bruger.navn}</b>
               </div>
@@ -355,8 +159,8 @@ const Indstillinger = () => {
                   <span className={Styles.text}>📞 {bruger && bruger.telefon}</span>
                 </div>
               </div>
-            </div>
-            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Tilpas dine informationer</button>
+            </div> */}
+            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Rediger indstillinger</button>
             <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
                 <h2 className={Styles.modalHeading}>Personlige informationer</h2>
                 <form onSubmit={submitÆndringer}>
@@ -399,8 +203,8 @@ const Indstillinger = () => {
           </div>
         </div>
       </div>
-    </PageAnimation>
+    // </PageAnimation>
   )
 }
 
-export default Indstillinger
+export default DinKonto

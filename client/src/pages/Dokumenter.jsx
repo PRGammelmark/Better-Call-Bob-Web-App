@@ -15,7 +15,6 @@ import Modal from '../components/Modal'
 import BarLoader from '../components/loaders/BarLoader.js'
 import axios from 'axios'
 
-
 const Dokumenter = () => {
 
   const navigate = useNavigate();
@@ -24,6 +23,10 @@ const Dokumenter = () => {
     if (!user) {
         return
     }
+    useEffect(() => {
+      console.log('Dokumenter mounted');
+      return () => console.log('Dokumenter unmounted');
+    }, []);
 
     const userID = user?.id || user?._id;
 
@@ -54,7 +57,8 @@ const Dokumenter = () => {
   }, [dokumenter, user])
 
   return (
-    <PageAnimation>
+    // <PageAnimation>
+    <>
       <div className={DokumenterCSS.dokumenterPage}>
         <h1 className={DokumenterCSS.heading}>Dokumenter</h1>
         {user.isAdmin ? <p>Her finder du et overblik over alle uploadede dokumenter.</p> : <p>Her finder du et overblik over dokumenter tilknyttet dig.</p>}
@@ -120,7 +124,9 @@ const Dokumenter = () => {
 
 
       </div>
-    </PageAnimation>
+      
+    {/* </PageAnimation> */}
+    </>
   )
 }
 

@@ -79,7 +79,6 @@ function autoKode(){
 }
 
 return (
-<PageAnimation>
     <div>
         <span className={styles.headingSpan}><h1 className={styles.overskrift}>👷🏼‍♂️ Opret ny bruger</h1></span>
         <form onSubmit={handleSubmit} className={styles.form}>
@@ -118,7 +117,6 @@ return (
         </form>
         {error && <div className={styles.error}>{error}</div>}
     </div>
-</PageAnimation>
 )
 }
 

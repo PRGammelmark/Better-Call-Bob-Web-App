@@ -98,7 +98,7 @@ const Overblik = () => {
   }
 
   return (
-    <PageAnimation>
+    <>
       {managerOverblik && <div className={Styles.overblikContainer}>
         <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Manager-overblik 🧑‍💻</h1>
@@ -169,7 +169,7 @@ const Overblik = () => {
                         userID={userID}
                         />
       </div>}
-    </PageAnimation>
+      </>
   )
 }
 
