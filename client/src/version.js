@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.3.1",
+    date: "6. semptember 2025",
+    changes: [
+        "Rettede en fejl, hvor mobilenheder ikke viste indhold med den korrekte højde."
+    ]
+},{
     version: "3.3.0",
     date: "6. semptember 2025",
     changes: [
