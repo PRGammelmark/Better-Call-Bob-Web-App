@@ -1,6 +1,6 @@
 // Button.jsx
 import React from 'react';
-import ButtonStyles from './button.module.css'; // CSS-modul til styling
+import ButtonStyles from './Button.module.css'; // CSS-modul til styling
 
 const Button = ({ 
   children,
