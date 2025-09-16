@@ -8,7 +8,7 @@ import InputsContainer from '../basicComponents/inputs/InputsContainer.jsx'
 import InputLine from '../basicComponents/inputs/InputLine.jsx'
 import SelectLine from '../basicComponents/inputs/SelectLine.jsx'
 import SliderLine from '../basicComponents/inputs/SliderLine.jsx'
-import Button from '../basicComponents/buttons/button.jsx'
+import Button from '../basicComponents/buttons/Button.jsx'
 
 const SeOpgavetyperModal = (props) => {
 
