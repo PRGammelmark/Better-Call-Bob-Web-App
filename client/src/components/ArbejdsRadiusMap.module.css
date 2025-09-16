@@ -1,0 +1,134 @@
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    outline: none;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: #a7da87; /* prik farve */
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #59bf1a;
+    box-shadow: 0 0 2px rgba(0,0,0,0.5);
+  }
+  
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: #59bf1a90;
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #59bf1a;
+  }
+  
+  .radiusSelectorDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    /* border: none;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding: 10px 20px;
+    border-radius: 50px; */
+  }
+
+  .radiusSelectorDiv span {
+    white-space: nowrap;
+  }
+
+  .radiusSelectorDiv p {
+    white-space: nowrap;
+  }
+
+  .mapRadiusSelectorContainer h3 {
+    font-family: "OmnesBold"
+  }
+
+  .mainMapDiv {
+    margin-top: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  }
+
+  .radiusCounter {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+    width: 100px;
+    min-width: 100px;
+    max-width: 100px;
+  }
+
+  .adresseDisplayDiv {
+    padding: 0px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .adresseDisplay {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px;
+    gap: 10px;
+    background: #f0f0f0;
+    border-radius: 5px;
+  }
+
+  .submitButtons {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+
+  .submitButton {
+    background: #3c5a3f;
+    color: #fff;
+    font-size: 1rem;
+    font-family: "OmnesBold";
+    padding: 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+
+  .submitButton:hover {
+    background: #59bf1a;
+  }
+
+.cancelButton {
+    background: #e0e0e0;
+    color: #222222;
+    font-size: 0.8rem;
+    font-family: "OmnesBold";
+    padding: 10px;
+    border: 1px solid #22222200;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.cancelButton:hover {
+    border: 1px solid #222222;
+}

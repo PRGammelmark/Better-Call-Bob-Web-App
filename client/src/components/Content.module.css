@@ -73,6 +73,13 @@
     font-size: 1.2rem;
 }
 
+.sidebarItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0px;
+}
+
 @media screen and (max-width: 750px) {
     .sidebar {
         display: none;

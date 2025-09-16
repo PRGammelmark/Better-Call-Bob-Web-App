@@ -12,6 +12,7 @@ import updateLocale from 'dayjs/plugin/updateLocale'
 import { BesøgProvider } from './context/BesøgContext.jsx'
 import { TaskAndDateProvider } from './context/TaskAndDateContext.jsx'
 import { OverblikViewProvider } from './context/OverblikViewContext.jsx'
+import { IndstillingerProvider } from './context/IndstillingerContext.jsx'
 
 dayjs.extend(updateLocale)
 dayjs.locale('da'); // Set dayjs to use Danish locale globally
@@ -22,21 +23,23 @@ dayjs.updateLocale('en', {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <AuthContextProvider>
-      <BesøgProvider>
-        <OverblikViewProvider>
-          <TaskAndDateProvider>
-            <NewDocumentProvider>
-              <LocalizationProvider 
-                dateAdapter={AdapterDayjs} 
-                adapterLocale="da" // Set the locale for AdapterDayjs
-                localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
-              >
-                <App />
-              </LocalizationProvider>
-            </NewDocumentProvider>
-          </TaskAndDateProvider>
-        </OverblikViewProvider>
-      </BesøgProvider>
+      <IndstillingerProvider>
+        <BesøgProvider>
+          <OverblikViewProvider>
+            <TaskAndDateProvider>
+              <NewDocumentProvider>
+                <LocalizationProvider 
+                  dateAdapter={AdapterDayjs} 
+                  adapterLocale="da" // Set the locale for AdapterDayjs
+                  localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
+                >
+                  <App />
+                </LocalizationProvider>
+              </NewDocumentProvider>
+            </TaskAndDateProvider>
+          </OverblikViewProvider>
+        </BesøgProvider>
+      </IndstillingerProvider>
     </AuthContextProvider>
   </React.StrictMode>
 )

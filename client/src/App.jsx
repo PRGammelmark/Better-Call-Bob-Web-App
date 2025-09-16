@@ -22,6 +22,7 @@ import NyKunde from './pages/NyKunde'
 import Login from './pages/Login'
 import Team from './pages/Team'
 import Kunder from './pages/Kunder'
+import AppIndstillinger from './pages/AppIndstillinger.jsx'
 import ErrorPage from './pages/ErrorPage'
 import AfsluttedeOpgaver from './pages/AfsluttedeOpgaver'
 import SlettedeOpgaver from './pages/SlettedeOpgaver'
@@ -86,8 +87,9 @@ function App() {
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
           <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
-          <Route path="dinKonto" element={<DinKonto />} errorElement={<ErrorPage />}/>
+          <Route path="din-konto" element={<DinKonto />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
+          <Route path="app-indstillinger" element={<AppIndstillinger />} errorElement={<ErrorPage />}/>
           <Route path="hjaelp" element={<Hjaelp />} errorElement={<ErrorPage />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-opgave" element={<NyOpgave />} errorElement={<ErrorPage />}/>

@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import opgaverRoutes from "./routes/opgaver.js"
 import kunderRoutes from "./routes/kunder.js"
 import brugerRoutes from "./routes/brugere.js"
+import opgavetyperRoutes from "./routes/opgavetyper.js"
 import posteringRoutes from "./routes/posteringer.js"
 import kommentarerRoutes from "./routes/kommentarer.js"
 import ledigeTiderRoutes from "./routes/ledigeTider.js"
@@ -13,6 +14,7 @@ import fakturaOpkraevningerRoutes from "./routes/fakturaOpkraevninger.js"
 import smsRoutes from "./routes/sms.js"
 import mobilePayRoutes from "./routes/mobilePay.js"
 import dokumenterUploadsRoutes from "./routes/dokumenterUploads.js"
+import indstillingerRoutes from "./routes/indstillinger.js";
 import mongoose from "mongoose"
 import cors from "cors"
 import { sendEmail } from './emailService.js';
@@ -138,6 +140,8 @@ app.use('/api/uploads', uploadsRoutes);
 app.use('/api/fakturaer', fakturaerRoutes);
 app.use('/api/faktura-opkraevninger', fakturaOpkraevningerRoutes);
 app.use('/api/sms', smsRoutes);
+app.use("/api/indstillinger", indstillingerRoutes);
+app.use('/api/opgavetyper', opgavetyperRoutes)
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 app.use('/api/cleanup', (req, res) => {

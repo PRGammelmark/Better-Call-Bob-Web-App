@@ -7,8 +7,7 @@ const Footer = () => {
   return (
     <footer className={Styles.footer}>
         <div>
-          <span className={Styles.footerSpan}><p className='bold'>Better Call Bob</p> &nbsp; ©</span>
-          <p>Alle rettigheder forbeholdes</p>
+          <span className={Styles.footerSpan}><p className='bold'>Better Call Bob</p></span>
         </div>
         <div className={Styles.versionDiv}>
           <p style={{fontSize: 14, marginBottom: 2}}>v.{currentVersion}</p>
@@ -16,7 +15,10 @@ const Footer = () => {
             <p style={{fontSize: 12, marginBottom: 0}}><i>Ændringshistorik</i></p>
           </Link>
         </div>
-        <p><i>Powered by OCTA</i></p>
+        <div>
+        <p style={{fontSize: "0.9rem"}}>Udviklet med ♥️ af OCTA</p>
+        <p style={{fontSize: "0.75rem"}}>Alle rettigheder forbeholdes © </p>
+        </div>
     </footer>
   )
 }

@@ -10,6 +10,8 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { currentVersion, changes } from '../version.js'
+import { LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut } from 'lucide-react';
+
 
 
 const Header = () => {
@@ -25,22 +27,23 @@ const Header = () => {
 
   // Mapping of routes to titles
   const routeTitles = {
-    '/': "🗓️ Overblik",
-    '/alle-opgaver': "🗂️ Aktuelle opgaver",
-    '/afsluttede-opgaver': "✅ Afsluttede opgaver",
-    '/slettede-opgaver': "🗑️ Papirkurv",
-    '/mine-opgaver': "📌 Mine opgaver",
-    '/team': "🤝 Teamet",
-    '/kunder': "👥 Kunder",
+    '/': (<div className={Styles.mobileTitle}> <LayoutGrid height={20} />Overblik</div>),
+    '/alle-opgaver': (<div className={Styles.mobileTitle}> <ClipboardList height={20} />Aktuelle opgaver</div>),
+    '/afsluttede-opgaver': (<div className={Styles.mobileTitle}> <ClipboardCheck height={20} />Afsluttede opgaver</div>),
+    '/slettede-opgaver': (<div className={Styles.mobileTitle}> <Trash2 height={20} />Papirkurv</div>),
+    '/mine-opgaver': (<div className={Styles.mobileTitle}> <Pin height={20} />Mine opgaver</div>),
+    '/team': (<div className={Styles.mobileTitle}> <IdCardLanyard height={20} />Teamet</div>),
+    '/kunder': (<div className={Styles.mobileTitle}> <Users height={20} />Kunder</div>),
     '/kunde/:kundeID': "Kunde",
-    '/dokumenter': "📄 Dokumenter",
-    '/dinKonto': "⚙️ Din konto",
-    '/ny-kunde': "👥 Opret ny kunde",
-    '/hjaelp': "Hjælp",
+    '/dokumenter': (<div className={Styles.mobileTitle}> <ScrollText height={20} />Dokumenter</div>),
+    '/din-konto': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
+    '/app-indstillinger': (<div className={Styles.mobileTitle}> <Settings height={20} />App-indstillinger</div>),
+    '/ny-kunde': (<div className={Styles.mobileTitle}> <UserRoundPlus height={20} />Opret ny kunde</div>),
+    '/hjaelp': (<div className={Styles.mobileTitle}> <CircleQuestionMark height={20} />Hjælp</div>),
     '/version': `Ændringslog (v${currentVersion})`,
     '/opgave/:opgaveID': "OpgaveID",
-    '/ny-opgave': "📋 Opret ny opgave",
-    '/ny-bruger': "👷🏼‍♂️ Opret ny bruger",
+    '/ny-opgave': (<div className={Styles.mobileTitle}> <ClipboardPlus height={20} />Opret ny opgave</div>),
+    '/ny-bruger': (<div className={Styles.mobileTitle}> <UserRoundPlus height={20} />Opret ny bruger</div>),
     '/login': "Log ind"
   }
 
@@ -68,7 +71,7 @@ useEffect(() => {
   if (location.pathname.startsWith('/opgave/')) {
     const opgaveID = location.pathname.split('/').pop() || "";
     const lastThreeChars = opgaveID.slice(-3);
-    setNavTitle(`📋 Opgave #${lastThreeChars}`);
+    setNavTitle(<div className={Styles.mobileTitle}><ClipboardList height={20} />Opgave #{lastThreeChars}</div>);
   } else if (currentTitleRoute) {
     setNavTitle(routeTitles[currentTitleRoute]);
   } else {
@@ -101,7 +104,7 @@ useEffect(() => {
           <img className={Styles.headerImg} src={Logo} alt="" />
           <nav>
               <ul className={Styles.headerUl}>
-                  {user ? <li className={Styles.headerLi} onClick={handleLogout}>Log ud</li> : null}
+                  {user ? <li className={Styles.headerLi} onClick={handleLogout}><LogOut />Log ud</li> : null}
               </ul>
           </nav>
       </header>

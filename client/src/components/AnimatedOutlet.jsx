@@ -11,8 +11,8 @@ const AnimatedOutlet = () => {
       {outlet && (
         <motion.div
           key={location.pathname} // <- dette er vigtigt
-          initial={{ opacity: 0, x: 10 }}
-          animate={{ opacity: 1, x: 0, transition: {duration: 0.2, delay: 0.7} }}
+          initial={{ opacity: 0, x: 25 }}
+          animate={{ opacity: 1, x: 0, transition: {duration: 0.15, delay: 0.6} }}
           exit={{ opacity: 0, x: -150, transition: {duration: 0.3} }}
         //   style={{ height: '100%' }}
         >

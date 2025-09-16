@@ -23,11 +23,24 @@
 .headerLi {
     list-style-type: none;
     cursor: pointer;
-    font-size: clamp(1rem, 1.4vw, 1.6rem)
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .mobileHeader {
     display: none;
+}
+
+.mobileTitle {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: center;
 }
 
 .switchButtonContainer {

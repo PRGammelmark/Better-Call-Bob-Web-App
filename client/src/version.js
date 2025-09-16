@@ -14,6 +14,19 @@
 // 
 
 const changes = [{
+    version: "3.4.0",
+    date: "16. september 2025",
+    changes: [
+        "Nu kan administratorer downloade mapper med medarbejdernes udlægskvitteringer direkte fra overblikssiden.",
+        "En ny side, 'App-indstillinger', er blevet oprettet i systemet. Administratorer har adgang til siden, hvor de fremover kan indstille overordnede rammer for brug af app'en.",
+        "Implementerede visuel feedback på bl.a. luk-knappen på modaler, samt flere submit-knapper i app'en.",
+        "Sidebaren har nu fået passende ikoner på desktop-versionen af app'en.",
+        "Siden 'Profil' er blevet udbygget med arbejdspræferencer. Nu kan medarbejdere definere det område, hvor de gerne vil arbejde i, på et kort. Derudover kan medarbejdere nu også vælge de opgavetyper, som de har kompetencerne til at udføre.",
+        "'Profil' har også fået indført en lille statistik-sektion, hvor man bl.a. kan se hvor meget man har tjent over en given periode, hvor mange opgaver man har udført samt hvilken rating man i gennemsnit har fået fra de kunder, man har haft ansvaret for. Rating-systemet bliver fuldt implementeret og finpudset i en senere opdatering.",
+        "App'en har som standard et sæt opgavetyper og kategorier, der benyttes. Administratorer har mulighed for at tilføje flere efter behov via siden 'App-indstillinger'.",
+        "Ændringsloggen var begyndt at indeholde mange sider, hvilket gav en udfordring med at repræsentere antallet af sider i navigationslinjen i bunden. Dette er nu blevet rettet til, så man i navigationen nu ser den første side, den sidste side samt den aktuelle side + 2 sider i hver retning, og ellers blot '...', der repræsenterer skulte sider i navigationen."
+    ]
+},{
     version: "3.3.1",
     date: "6. semptember 2025",
     changes: [

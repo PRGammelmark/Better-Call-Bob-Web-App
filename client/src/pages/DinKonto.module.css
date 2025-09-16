@@ -1,9 +1,71 @@
+.arbejdsPræferencerSektion h2 {
+    margin-bottom: 14px;
+}
+
+.arbejdsPræferencerKnapperDiv {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 10px;
+    /* padding: 10px 20px; */
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.arbejdsPræferencerKnap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px 10px 20px;
+    overflow: hidden;
+    transition: 0.2s ease;
+    cursor: pointer;
+    border-bottom: 1px solid #22222220;
+}
+
+.arbejdsPræferencerKnap:last-child {
+    border-bottom: none;
+}
+
+.arbejdsPræferencerKnap:hover {
+    background: #f0f0f0;
+}
+
+.arbejdsPræferencerKnap:hover .arbejdsPræferencerKnapGraaInfoBoks {
+    border: 1px solid #59bf1a;
+}
+
+.arbejdsPræferencerKnapEndDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+.arbejdsPræferencerKnapGraaInfoBoks {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px; 
+    font-size: 14px;
+    border: 1px solid #22222230;
+}
+
+.arbejdsPræferencerKnap h3 {
+    font-family: "OmnesBold"
+}
+
+
+
 .profilHeader {
     display: flex;
     flex-direction: row;
     align-items: center;
     gap: 20px;
     width: 100%;
+    margin-bottom: 40px;
 }
 
 .profilBillede {
@@ -31,6 +93,138 @@
     font-style: italic;
     color: #a9a9a9;
     font-size: 0.9rem;
+}
+
+.statistikSektion {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    margin-bottom: 40px;
+}
+
+.statistikSektion h2 {
+    margin-bottom: 0px;
+}
+
+.boxFrame {
+    border: none;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.flex {
+    display: flex;
+    align-items: center;
+}
+
+.opgaverStatistik {
+    border-right: 1px solid #e0e0e0;
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-evenly;
+    padding-right: 20px;
+}
+
+.ratings {
+    flex: 1;
+    gap: 5px;
+}
+
+.statistikItem {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 5px;
+}
+
+.statistikItem b {
+    font-size: 1.6rem;
+    font-family: "OmnesBold"
+}
+
+.statistikItem p {
+    font-size: 0.85rem;
+}
+
+.statistikSektionHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.statistikButtonsDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: nowrap;
+}
+
+.statistikButton {
+    white-space: nowrap;
+    background: #f0f0f0;
+    border: 1px solid #22222230;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    cursor: pointer;
+    border-radius: 5px;
+    padding: 8px 12px;
+    transition: 0.2s ease;
+    color: #222222;
+    display: flex;
+    align-items: center;
+    gap: 0px;
+}
+
+.activeStatistikButton {
+    background: #59bf1a30;
+    color: #59bf1a;
+    border: 1px solid #59bf1a;
+}
+
+.statistikButton:hover {
+    border: 1px solid #59bf1a;
+}
+
+.ratings {
+    display: flex;
+    flex-direction: column;
+    padding-left: 20px;
+}
+
+.icon {
+    width: 30px;
+    height: 30px;
+    color: #c8c8c8; /* grå (tailwind gray-400) */
+    transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.icon.full {
+    color: #59bf1a; /* gul (tailwind yellow-400/500) */
+    fill: #59bf1a90;
+}
+
+.ratingStarsDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+  
+.ratingsHeaderDiv {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: -3px;
+}
+
+.ratingsHeaderDiv p {
+    font-size: 0.85rem;
 }
 
 .pageContent {
@@ -117,6 +311,8 @@
     color: #fff;
     border: 1px solid #59bf1a;
 }
+
+
 
 .newButton {
     background: #f0f0f0;
@@ -476,10 +672,8 @@
     .personligInfoBox {
         box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
     }
-}
 
-@media screen and (display-mode: standalone) {
-    .heading {
-        display: none;
+    .pageContent {
+        padding-top: 40px;
     }
 }

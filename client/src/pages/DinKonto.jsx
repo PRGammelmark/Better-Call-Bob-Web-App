@@ -1,41 +1,40 @@
 import React, { useEffect, useState } from 'react'
-import PageAnimation from '../components/PageAnimation.jsx'
 import Styles from './DinKonto.module.css'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush.js'
 import { useSubscribeToPush } from '../hooks/useSubscribeToPush.js'
 import axios from 'axios'
-import LedighedCalendar from '../components/calendars/LedighedCalendar.jsx'
-import dayjs from 'dayjs'
-import { useNavigate } from 'react-router-dom'
 import Modal from '../components/Modal.jsx'
-import LocationMarker from '../assets/locationMarker.svg'
 import { RectangleEllipsis, BellRing, BellOff, SquarePen } from 'lucide-react';
-import ToolboxIcon from '../assets/toolboxIcon.svg'
-import ClockIcon from '../assets/clockIcon.svg'
-import subscribeToPush from '../utils/subscribeToPush.js'
-import unSubscribeToPush from '../utils/unSubscribeToPush.js'
-import nyNotifikation from '../utils/nyNotifikation.js'
 import placeholderBillede from '../assets/avatarPlaceholder.png'
+import Rating from 'react-rating'
+import { Star, Radius, MapPin, Hammer, Box } from "lucide-react"
+import ArbejdsRadiusMap from '../components/ArbejdsRadiusMap.jsx'
+import ArbejdsOmrådeModal from '../components/modals/ArbejdsOmrådeModal.jsx'
+import VælgOpgavetyperModal from '../components/modals/VælgOpgavetyperModal.jsx'
+import { useIndstillinger } from '../context/IndstillingerContext.jsx'
+import * as beregn from '../utils/beregninger.js'
 
 const DinKonto = () => {
     const {user, updateUser} = useAuthContext();
+    const { indstillinger } = useIndstillinger();
     const permission = Notification.permission;
     
     if (!user) {
         return
     }
 
-    useEffect(() => {
-      console.log('DinKonto mounted');
-      return () => console.log('DinKonto unmounted');
-    }, []);
-
     const [bruger, setBruger] = useState(null);
+    const [refetchBruger, setRefetchBruger] = useState(false)
+    const [opgaver, setOpgaver] = useState([]);
+    const [posteringer, setPosteringer] = useState([])
     const [redigerPersonligeOplysninger, setRedigerPersonligeOplysninger] = useState(false);
     const [skiftKodeord, setSkiftKodeord] = useState(false)
     const [passwordError, setPasswordError] = useState("")
     const [pushDebugMessage, setPushDebugMessage] = useState("");
+
+    // state for statistics range
+    const [statisticsRange, setStatisticsRange] = useState("altid")
 
     // state for form fields
     const [redigerbartNavn, setRedigerbartNavn] = useState("")
@@ -45,8 +44,12 @@ const DinKonto = () => {
     const [redigerbarEmail, setRedigerbarEmail] = useState("")
     const [nytKodeord, setNytKodeord] = useState("")
     const [gentagNytKodeord, setGentagNytKodeord] = useState("")
-    
 
+    // state for popups
+    const [arbejdsOmrådePopup, setArbejdsOmrådePopup] = useState(false)
+    const [opgaveTyperPopup, setOpgaveTyperPopup] = useState(false)
+    const [opgavetyper, setOpgavetyper] = useState([])
+    
     const userID = user?.id || user?._id;
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -65,7 +68,61 @@ const DinKonto = () => {
             setRedigerbarEmail(res.data.email)
         })
         .catch(error => console.log(error))
+    }, [refetchBruger])
+
+    useEffect(() => {
+      axios.get(`${import.meta.env.VITE_API_URL}/opgavetyper`, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(res => {
+            setOpgavetyper(res.data)
+        })
+        .catch(error => console.log(error))
     }, [])
+
+    useEffect(() => {
+      if(userID){
+        axios.get(`${import.meta.env.VITE_API_URL}/posteringer/bruger/${userID}`, {
+          headers: {
+              'Authorization': `Bearer ${user.token}`
+          }
+      })
+      .then(res => {
+          setPosteringer(res.data)
+      })
+      .catch(error => console.log(error))
+      }
+    }, [userID])
+
+    useEffect(() => {
+      if(userID){
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/medarbejder/${userID}`, {
+          headers: {
+              'Authorization': `Bearer ${user.token}`
+          }
+      })
+      .then(res => {
+          setOpgaver(res.data)
+      })
+      .catch(error => console.log(error))
+      }
+    }, [userID])
+
+    useEffect(() => {
+      if(userID){
+        axios.get(`${import.meta.env.VITE_API_URL}/opgavetyper`, {
+          headers: {
+              'Authorization': `Bearer ${user.token}`
+          }
+      })
+      .then(res => {
+          setOpgavetyper(res.data)
+      })
+      .catch(error => console.log(error))
+      }
+    }, [userID])
 
     function submitÆndringer (e) {
       e.preventDefault();
@@ -127,41 +184,122 @@ const DinKonto = () => {
       subscribeToPush(user, updateUser);
     };
 
+    const SVGIcon = (props) =>
+      <svg className={props.className} pointerEvents="none">
+        <use xlinkHref={props.href} />
+      </svg>;
 
+    const antalKategorierFraOpgavetyper = (typer) => {
+
+    }
 
   return (
     // <PageAnimation>
       <div className={Styles.pageContent}>
         <div className={Styles.profilHeader}>
+
           <img src={bruger?.profilbillede || placeholderBillede} alt="Profilbillede" className={Styles.profilBillede} />
           <div className={Styles.profilInfo}>
-            <h1>{bruger?.navn}</h1>
+            <h2>{bruger?.navn}</h2>
             <p>{bruger?.isAdmin ? "Administrator" : "Medarbejder"}{bruger?.titel ? (" • " + bruger?.titel) : "" }</p>
           </div>
         </div>
-        <div className={Styles.personligInfo}>
-          <div className={Styles.infoListe}>
-            {/* <div className={Styles.personligInfoBox}>
-              <div className={Styles.infoListeElement}>
-                <b className={`${Styles.text} ${Styles.navn}`}>{bruger && bruger.navn}</b>
-              </div>
-              <div className={Styles.infoListeElement}>
-                <i className={`${Styles.text} ${Styles.titel}`}>{bruger && bruger.titel}</i>
-              </div>
-              <div className={Styles.subPersonligInfo}>
-                <div className={`${Styles.infoListeElement} ${Styles.marginTop10}`}>
-                  <span className={Styles.text}>🏠 {bruger && bruger.adresse}</span>
-                </div>
-                <div className={Styles.infoListeElement}>
-                  <span className={Styles.text}>✉️ {bruger && bruger.email}</span>
-                </div>
-                <div className={Styles.infoListeElement}>
-                  <span className={Styles.text}>📞 {bruger && bruger.telefon}</span>
-                </div>
-              </div>
+        <div className={Styles.statistikSektion}>
+          <div className={Styles.statistikSektionHeader}>
+            <h2>Statistik</h2>
+            {/* <div className={Styles.statistikButtonsDiv}>
+              <button onClick={() => setStatisticsRange("denneMåned")} className={`${Styles.statistikButton} ${statisticsRange === "denneMåned" && Styles.activeStatistikButton}`}>
+                Denne måned
+              </button>
+              <button onClick={() => setStatisticsRange("treMåneder")} className={`${Styles.statistikButton} ${statisticsRange === "treMåneder" && Styles.activeStatistikButton}`}>
+                Sidste 3 måneder
+              </button>
+              <button onClick={() => setStatisticsRange("altid")} className={`${Styles.statistikButton} ${statisticsRange === "altid" && Styles.activeStatistikButton}`}>
+                Altid
+              </button>
             </div> */}
+          </div>
+          <div className={`${Styles.boxFrame} ${Styles.flex}`}>
+            <div className={Styles.opgaverStatistik}>
+              <div className={Styles.statistikItem}>
+                <b>{opgaver?.length}</b>
+                <p>opgaver</p>
+              </div>
+              <div className={Styles.statistikItem}>
+                <b>{beregn.totalHonorar(posteringer).formateret}</b>
+                <p>tjent til dato</p>
+              </div>
+            </div>
+            <div className={Styles.ratings} style={{position: "relative"}}>
+              <p style={{position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", fontSize: 14, fontFamily: "OmnesBold"}}>Ratings – kommer snart ...</p>
+              <div style={{opacity: 0.15}}>
+              <Rating
+                  fractions={2}
+                  initialRating={3}
+                  readonly
+                  emptySymbol={<Star className={Styles.icon} />}
+                  fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                />
+                </div>
+              {/* <div className={Styles.ratingStarsDiv}>
+                <Rating
+                  fractions={2}
+                  initialRating={3}
+                  readonly
+                  emptySymbol={<Star className={Styles.icon} />}
+                  fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                />
+              </div>
+              <div className={Styles.ratingsHeaderDiv}>
+                <p>4 vurderinger</p>
+                <p>Gns.: 4.8</p>
+              </div> */}
+            </div>
+          </div>
+        </div>
+        <div className={Styles.arbejdsPræferencerSektion}>
+          <h2>Arbejdspræferencer</h2>
+          <div className={Styles.arbejdsPræferencerKnapperDiv}>
+            <div className={Styles.arbejdsPræferencerKnap} onClick={() => setArbejdsOmrådePopup(true)}>
+              <h3>Område</h3>
+              <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                  <MapPin height={14} />
+                  {bruger?.arbejdsOmråde?.adresse}
+                </div>
+                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                  <Radius height={14} />
+                  {bruger?.arbejdsOmråde?.radius / 1000} km.
+                </div>
+              </div>
+            </div>
+            <div className={Styles.arbejdsPræferencerKnap} onClick={() => setOpgaveTyperPopup(true)}>
+              <h3>Opgavetyper</h3>
+              <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                  <Hammer height={14} />
+                  {bruger?.opgavetyper?.length || 0} valgte
+                </div>
+                {/* <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                  <Box height={14} />
+                  {antalKategorierFraOpgavetyper(bruger?.opgavetyper)} kategorier
+                </div> */}
+              </div>
+            </div>
+          </div>
+          {/* <ArbejdsRadiusMap /> */}
+        </div>
+        <div className={Styles.indstillingerSektion}>
+          <h2>Indstillinger</h2>
+          <div className={Styles.infoListe}>
             <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Rediger indstillinger</button>
-            <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
+            <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>
+          {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
+          {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
+          <p>{pushDebugMessage}</p>
+          </div>
+        </div>
+        <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>
                 <h2 className={Styles.modalHeading}>Personlige informationer</h2>
                 <form onSubmit={submitÆndringer}>
                   <label className={Styles.label}>Navn</label>
@@ -177,8 +315,7 @@ const DinKonto = () => {
                   <button className={Styles.buttonFullWidth}>Gem ændringer</button>
                 </form>
             </Modal>
-          <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>
-          <Modal trigger={skiftKodeord} setTrigger={setSkiftKodeord}>
+            <Modal trigger={skiftKodeord} setTrigger={setSkiftKodeord}>
                 <h2 className={Styles.modalHeading}>Skift kodeord</h2>
                 <p className={`${Styles.text} ${Styles.marginBottom10}`}>Tips til et stærkt kodeord:</p>
                 <ul>
@@ -197,11 +334,8 @@ const DinKonto = () => {
                   {passwordError && <p>{passwordError}</p>}
                 </form>
           </Modal>
-          {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
-          {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
-          <p>{pushDebugMessage}</p>
-          </div>
-        </div>
+          <ArbejdsOmrådeModal trigger={arbejdsOmrådePopup} setTrigger={setArbejdsOmrådePopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
+          <VælgOpgavetyperModal trigger={opgaveTyperPopup} setTrigger={setOpgaveTyperPopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} opgavetyper={opgavetyper}/>
       </div>
     // </PageAnimation>
   )

@@ -84,7 +84,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                             <h2>Dokumenter</h2>
                         </div>
                     </Link>
-                    <Link style={linkStyles} to={'dinKonto'} onClick={() => setShowNavMenu(false)}>
+                    <Link style={linkStyles} to={'din-konto'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
                                 <Settings className={Styles.newMobileNavItemIcon} />
@@ -102,7 +102,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                     </Link>
                 </div>
                 <div className={Styles.mobileNavFooter}>
-                    <p className={Styles.mobileNavFooterHeading}><b style={{fontFamily: 'OmnesBold'}}>Powered by OCTA</b></p>
+                    <p className={Styles.mobileNavFooterHeading}><b style={{fontFamily: 'OmnesBold'}}>Udviklet med ♥️ af OCTA</b></p>
                     <div className={Styles.mobileNavFooterVersion}>
                         <p className={Styles.mobileNavFooterVersionText}>v.{currentVersion}</p>
                         <Link to={'version'} onClick={() => setShowNavMenu(false)} style={{textDecoration: 'none', color: '#fff'}}>

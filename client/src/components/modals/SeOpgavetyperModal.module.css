@@ -1,0 +1,175 @@
+.modalHeader {
+    margin-bottom: 20px;
+}
+
+.modalDescription {
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.buttons {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.opretOpgavetypeButton {
+    padding: 10px 20px;
+    color: #222222;
+    background: #e0e0e0;
+    border: 1px solid #22222200;
+    border-radius: 10px;
+    font-family: "OmnesBold";
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.opretOpgavetypeButton .buttonIcon {
+    height: 18px;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.opretOpgavetypeButton:hover {
+    border: 1px solid #222222;
+}
+
+.tilbageKnap {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+.subpageHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.subpageBeskrivelse {
+    margin-bottom: 20px;
+}
+
+.animatedContainer {
+    max-height: 0;
+    overflow: hidden;
+    transition: 0.4s ease;
+    opacity: 0;
+    padding: 0;
+    margin: 0;
+}
+  
+.animatedContainer.show {
+    max-height: 60px;
+    opacity: 1;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.buttonsDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.flexButtonsDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.opgavetypePillContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.opgavetypePill {
+    font-size: 0.8rem;
+    background: #e0e0e0;
+    border-radius: 5px;
+    padding: 4px 8px;
+    cursor: pointer;
+    border: 1px solid #22222200;
+    transition: 0.2s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.opgavetypePill * {
+    height: 14px;
+    width: 14px;
+}
+
+.opgavetypePill:hover {
+    border: 1px solid #222222;
+}
+
+.opgavetypePill:active {
+    transform: scale(0.94)
+}
+
+.opgavetypeKategorierContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.opgavetypeKategori {
+    border: 1px solid #d0d0d0;
+    padding: 26px 20px 10px 10px;
+    border-radius: 10px;
+    position: relative;
+}
+
+.opgavetypeKategori h3 {
+    position: absolute;
+    top: calc(-0.5rem);
+    left: 10px;
+    font-size: 1rem;
+    line-height: 1rem;
+    margin: 0;
+    padding: 4px 10px;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    font-family: "OmnesBold";
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: row;
+}
+
+.opgavetypeKategori h3 * {
+    height: 16px;
+    width: 16px;
+}
+
+.addNewOpgavetypePill {
+    background: #59bf1a50;
+}
+
+.addNewOpgavetypePill:hover {
+    border: 1px solid #59bf1a;
+}

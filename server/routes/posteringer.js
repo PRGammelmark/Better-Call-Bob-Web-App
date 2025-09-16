@@ -1,5 +1,5 @@
 import express from "express"
-import { getPosteringer, getPostering, createPostering, deletePostering, updatePostering, getPosteringerForBruger } from "../controllers/posteringController.js"
+import { getPosteringer, getPostering, createPostering, deletePostering, updatePostering, getPosteringerForBruger, downloadSelectedUdlaeg } from "../controllers/posteringController.js"
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
@@ -14,6 +14,10 @@ router.get("/bruger/:userID", getPosteringerForBruger)
 
 // GET en enkelt postering
 router.get('/:id', getPostering)
+
+// POST en download-udlæg request  
+router.post("/udlaeg/download-selected", downloadSelectedUdlaeg)
+
 
 // POST en ny postering
 router.post('/', createPostering)

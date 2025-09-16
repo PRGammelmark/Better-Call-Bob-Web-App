@@ -1,0 +1,139 @@
+.inputLinesContainer {
+    display: flex;
+    flex-direction: column;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+}
+
+.inputLinesContainer .inputLine {
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.inputLinesContainer .inputLine:last-child {
+    border-bottom: none;
+}
+
+.inputLine {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 15px 15px;
+    cursor: text;
+    transition: 0.2s ease;
+    transform: translateY(-1px);
+    max-height: 50px;
+}
+
+.inputLine:focus-within {
+    background: #f0f0f0;
+}
+
+.inputLine label {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    flex: 0 0 auto;
+    margin-right: 10px;
+}
+
+.inputLine label p {
+    font-size: 0.7rem;
+    color: rgba(0, 0, 0, 0.5);
+    font-family: Omnes;
+}
+
+.inputLine input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: Omnes;
+    font-size: 1rem;
+    outline: none;
+    cursor: inherit;
+    text-align: right;
+    /* Hide input arrows for number inputs */
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    &[type='number'] {
+        -moz-appearance: textfield;
+    }
+}
+
+.inputLine select {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: Omnes;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+    text-align: right;
+  }
+  
+  .sliderWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    gap: 10px;
+  }
+  
+  .slider {
+    -webkit-appearance: none;
+    max-width: 200px;
+    height: 6px;
+    border-radius: 5px;
+    background: #d0d0d0!important;
+    outline: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  /* Hover effekt */
+  .slider:hover {
+    background: #d0d0d0;
+  }
+  
+  /* Thumb styling (Chrome, Safari, Edge) */
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #59bf1a;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    background: #59bf1a;
+  }
+  
+  /* Thumb styling (Firefox) */
+  .slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #59bf1a;
+    cursor: pointer;
+    border: none;
+    transition: background 0.2s ease;
+  }
+  
+  .slider::-moz-range-thumb:hover {
+    background: #005bb5;
+  }
+  
+  .sliderValue {
+    min-width: 80px;
+    text-align: right;
+    font-family: Omnes;
+    font-size: 1rem;
+    color: #222222;
+  }
+  

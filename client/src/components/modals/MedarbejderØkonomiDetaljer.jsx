@@ -4,13 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import BackArrow from '../../assets/back.svg'
 import dayjs from 'dayjs'
 import Styles from './MedarbejderØkonomiDetaljer.module.css'
-import BilledStyles from './VisBillede.module.css'
-// import PosteringCSS from '../../pages/ÅbenOpgave.module.css'
 import PosteringCSS from '../../components/Postering.module.css'
 import Modal from '../Modal.jsx'
 import satser from '../../variables'
 import PageAnimation from '../PageAnimation.jsx'
 import * as beregn from '../../utils/beregninger.js'
+import { ReceiptText, Download, ClipboardList } from 'lucide-react'
 
 
 const MedarbejderØkonomiDetaljer = (props) => {
@@ -165,6 +164,78 @@ const MedarbejderØkonomiDetaljer = (props) => {
         const kunde = kunder && kunder.find(kunde => kunde._id === opgave.kundeID);
         return kunde?.adresse || 'Adresse utilgængelig';
     };
+
+    const handleDownload = async (selectedPosteringer) => {
+        try {
+          const ids = selectedPosteringer.map(p => p._id)
+          const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/posteringer/udlaeg/download-selected`,
+            { posteringIds: ids },
+            { headers: { Authorization: `Bearer ${user.token}` }, responseType: 'blob' }
+          )
+      
+          const disposition = response.headers['content-disposition']
+        //   let filename = 'udlaeg.zip'
+          let filename = `${navn && navn.split(' ')[0]}s-udlæg-${props.customMåned.end.format('MMMM-YYYY')}.zip`
+          if (disposition && disposition.includes('filename=')) {
+            filename = disposition.split('filename=')[1]
+          }
+      
+          const url = window.URL.createObjectURL(new Blob([response.data]))
+          const link = document.createElement('a')
+          link.href = url
+          link.setAttribute('download', filename)
+          document.body.appendChild(link)
+          link.click()
+          link.remove()
+        } catch (err) {
+          console.error('Fejl ved download af zip:', err)
+        }
+      }
+      
+
+    // const handleDownload = async (selectedPosteringer) => {
+    //     try {
+    //         const ids = selectedPosteringer.map(p => p._id)
+    //         const response = await axios.post(`${import.meta.env.VITE_API_URL}/posteringer/udlaeg/download-selected`, { posteringIds: ids }, {headers: { Authorization: `Bearer ${user.token}` }, responseType: "blob"})
+              
+    //         // Få filnavn fra response header
+    //         const disposition = response.headers["content-disposition"]
+    //         let filename = "kvittering.jpg"
+    //         if (disposition && disposition.includes("filename=")) {
+    //           filename = disposition.split("filename=")[1]
+    //         }
+        
+    //         const url = window.URL.createObjectURL(new Blob([response.data]))
+    //         const link = document.createElement("a")
+    //         link.href = url
+    //         link.setAttribute("download", filename)
+    //         document.body.appendChild(link)
+    //         link.click()
+    //         link.remove()
+    //       } catch (err) {
+    //         console.error("Fejl ved download:", err)
+    //       }
+        
+    //     try {
+    //         const ids = selectedPosteringer.map(p => p._id)
+    
+    //         const response = await axios.post(`${import.meta.env.VITE_API_URL}/posteringer/udlaeg/download-selected`, { posteringIds: ids }, { headers: {
+    //             'Authorization': `Bearer ${user.token}`
+    //         }}, { responseType: "blob" })
+    
+    //         // Lav en blob og force download
+    //         const url = window.URL.createObjectURL(new Blob([response.data]))
+    //         const link = document.createElement("a")
+    //         link.href = url
+    //         link.setAttribute("download", "udlaeg.zip")
+    //         document.body.appendChild(link)
+    //         link.click()
+    //         link.remove()
+    //     } catch (err) {
+    //         console.error("Fejl ved download:", err)
+    //     }
+    // }
   
     return (
     <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => setPosteringerDetaljer(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}> 
@@ -514,6 +585,28 @@ const MedarbejderØkonomiDetaljer = (props) => {
                     ))}
                 </div>
             </div>}
+            <div className={Styles.akkumuleretContainer}>
+                <b style={{fontFamily: "OmnesBold", display: "block", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 8}}><ReceiptText height={16} width={16} />Alle {navn && navn.split(' ')[0]}s udlægskvitteringer for {props.customMåned.end.format('MMMM YYYY')}</b>
+                <div className={Styles.posteringerUdlægDiv}>
+                {posteringer && posteringer.length > 0 && posteringer?.map((p) =>
+                    p.udlæg.map((udlaeg, idx) => 
+                        udlaeg.kvittering ? (
+                            <div className={Styles.udlægskvitteringDiv} key={p._id}>
+                            <img
+                            key={`${p._id}-${idx}`}
+                            src={udlaeg.kvittering}
+                            alt={`Kvittering ${idx + 1} for postering ${p._id}`}
+                            style={{ maxWidth: '100px', maxHeight: '100px', margin: '4px', objectFit: 'cover', borderRadius: 4 }}
+                            />
+                            <button className={Styles.udlægskvitteringButton} onClick={() => navigate(`/opgave/${p.opgaveID}`)}><ClipboardList />Opg.</button>
+                            </div>
+                        ) : null
+
+                    )
+                )}
+                </div>
+                <button onClick={() => handleDownload(posteringer)} className={Styles.hentKvitteringerButton}><Download height={16} width={16} />Hent alle {navn && navn.split(' ')[0]}s kvitteringer for {props.customMåned.end.format('MMMM YYYY')}</button>
+            </div>
             </> 
             : 
                 <PageAnimation>

@@ -54,6 +54,24 @@ const brugerSchema = new Schema({
     pushSubscription: {
         type: Object,
         required: false
+    },
+    arbejdsOmråde: {
+        center: {
+          type: [Number], // [lat, lng]
+          required: false
+        },
+        radius: {
+          type: Number, // meter
+          required: false
+        },
+        adresse: {
+          type: String,
+          required: false
+        }
+    },
+    opgavetyper: {
+        type: [String],
+        default: []
     }
 })
 

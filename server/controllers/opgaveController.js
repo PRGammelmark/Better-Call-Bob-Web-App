@@ -62,10 +62,17 @@ const getOpgaverForKunde = async (req, res) => {
     res.status(200).json(opgaver);
 }
 
+
 const getOpgaverForMedarbejder = async (req, res) => {
     const { id } = req.params;
-    const opgaver = await Opgave.find({ ansvarlig: id });
-    res.status(200).json(opgaver);
+    try {
+        const opgaver = await Opgave.find({
+            ansvarlig: { $elemMatch: { _id: id } }
+        });
+        res.status(200).json(opgaver);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 }
 
 const getOpgave = async (req, res) => {
