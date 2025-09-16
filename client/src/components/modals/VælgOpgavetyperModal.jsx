@@ -3,7 +3,7 @@ import axios from 'axios'
 import Modal from '../Modal.jsx'
 import Styles from './VælgOpgavetyperModal.module.css'
 import { Box, Check } from 'lucide-react'
-import Button from '../basicComponents/buttons/button.jsx'
+import Button from '../basicComponents/buttons/Button.jsx'
 
 const VælgOpgavetyperModal = (props) => {
     const { trigger, setTrigger, user, bruger, opgavetyper, refetchBruger, setRefetchBruger } = props;
