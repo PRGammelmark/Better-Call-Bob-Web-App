@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useLogout } from '../hooks/useLogout.js'
 import { currentVersion } from '../version.js'
-import { LayoutGrid, ClipboardCheck, User, Users, ScrollText, Settings, Library, X } from 'lucide-react';
+import { LayoutGrid, ClipboardCheck, User, Users, ScrollText, Settings, Library, X, House } from 'lucide-react';
 
 
 const MobileNavMenu = ({ setShowNavMenu}) => {
@@ -71,7 +71,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                     <Link style={linkStyles} to={'team'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
-                                <User className={Styles.newMobileNavItemIcon} />
+                                <House className={Styles.newMobileNavItemIcon} />
                             </div>
                             <h2>Team</h2>
                         </div>
@@ -87,11 +87,19 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                     <Link style={linkStyles} to={'din-konto'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
-                                <Settings className={Styles.newMobileNavItemIcon} />
+                                <User className={Styles.newMobileNavItemIcon} />
                             </div>
-                            <h2>Din konto</h2>
+                            <h2>Profil</h2>
                         </div>
                     </Link>
+                    {user.isAdmin && <Link style={linkStyles} to={'app-indstillinger'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <Settings className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>App-indstillinger</h2>
+                        </div>
+                    </Link>}
                     <Link style={linkStyles} to={'/hjaelp'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
