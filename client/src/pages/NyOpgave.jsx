@@ -188,7 +188,7 @@ const NyOpgave = () => {
     useEffect(() => {
     const timer = setTimeout(() => {
         inputRef.current?.focus();
-    }, 1000); // timeout hjælper på mobil
+    }, 1500); // timeout hjælper på mobil
     return () => clearTimeout(timer);
     }, []);
 
