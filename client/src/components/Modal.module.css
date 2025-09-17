@@ -1,10 +1,6 @@
 .modal {
     top: 50%;
     left: 50%;
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -ms-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
     padding: 20px 40px;
     position: fixed;
     background: white;
@@ -17,7 +13,6 @@
     max-height: 80vh;
     overflow: hidden;
     overflow-y: auto;
-    transition: 0.2s ease;
     will-change: transform;
 }
 
@@ -211,11 +206,6 @@
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         bottom: 0px;
-        -webkit-transform: translateX(-50%) translateY(0%);
-        -moz-transform: translateX(-50%) translateY(0%);
-        -ms-transform: translateX(-50%) translateY(0%);
-        transform: translateX(-50%) translateY(0%);
-        /* animation: fade-in-mobile 0.50s ease; */
     }
 
     .buttonFullWidth {
