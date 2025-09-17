@@ -158,7 +158,8 @@ export default function ArbejdsRadiusMap(props) {
           zoomSnap={0.01}
           zoomDelta={0.01}
           scrollWheelZoom={false}
-            doubleClickZoom={false}
+          doubleClickZoom={false}
+          touchZoom={false}
           style={{ height: "500px", width: "100%" }}
         >
           <TileLayer
