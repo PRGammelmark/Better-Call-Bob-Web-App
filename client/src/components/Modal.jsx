@@ -14,70 +14,70 @@ const overlayAnimation = {
 
 // Define animations for desktop and mobile
 const desktopAnimation = {
-    initial: { opacity: 0, transform: "translate(-50%, -40%)" }, // Start slightly above center
-    animate: { opacity: 1, transform: "translate(-50%, -50%)" }, // Move to center
-    exit: { opacity: 0, transform: "translate(-50%, -50%)" }, // Move slightly below center
-  };
+  initial: { transform: "translate(-50%, -40%)" }, // Start slightly above center
+  animate: { transform: "translate(-50%, -50%)" }, // Move to center
+  exit: { transform: "translate(-50%, -50%)" }, // Move slightly below center
+};
   
-  const mobileAnimation = {
-    initial: { opacity: 0, transform: "translate(-50%, 100%)" }, // Start off-screen
-    animate: { opacity: 1, transform: "translate(-50%, 0%)" }, // Slide to center
-    exit: { opacity: 0, transform: "translate(-50%, 100%)" }, // Slide off-screen
-  };
-  
+const mobileAnimation = {
+  initial: { y: 500, x: "-50%" },
+  animate: { y: 0, x: "-50%" },
+  exit: { y: 500, x: "-50%" }
+}
 
 const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackButton, setBackFunction }, ref) => {
 
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 750);
+
 
     // // Prevent scrolling of the background when modal is open
-    useEffect(() => {
-      const contentElement = document.querySelector(`${ContentStyles.content}`); // Select the element
+    // useEffect(() => {
+    //   const contentElement = document.querySelector(`${ContentStyles.content}`); // Select the element
       
-      const preventScroll = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      };
+    //   const preventScroll = (e) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+    //     return false;
+    //   };
     
-      if (trigger) {
-        document.body.style.overflow = "hidden";
-        document.body.style.touchAction = "none";
+    //   if (trigger) {
+    //     document.body.style.overflow = "hidden";
+    //     document.body.style.touchAction = "none";
     
-        if (contentElement) {
-          contentElement.style.overflow = "hidden";
-          contentElement.style.touchAction = "none";
+    //     if (contentElement) {
+    //       contentElement.style.overflow = "hidden";
+    //       contentElement.style.touchAction = "none";
           
-          // Fully block scroll behavior
-          contentElement.addEventListener("wheel", preventScroll, { passive: false });
-          contentElement.addEventListener("touchmove", preventScroll, { passive: false });
-        }
-      } else {
-        document.body.style.overflow = "";
-        document.body.style.touchAction = "";
+    //       // Fully block scroll behavior
+    //       contentElement.addEventListener("wheel", preventScroll, { passive: false });
+    //       contentElement.addEventListener("touchmove", preventScroll, { passive: false });
+    //     }
+    //   } else {
+    //     document.body.style.overflow = "";
+    //     document.body.style.touchAction = "";
     
-        if (contentElement) {
-          contentElement.style.overflow = "";
-          contentElement.style.touchAction = "";
+    //     if (contentElement) {
+    //       contentElement.style.overflow = "";
+    //       contentElement.style.touchAction = "";
           
-          // Remove listeners when modal closes
-          contentElement.removeEventListener("wheel", preventScroll);
-          contentElement.removeEventListener("touchmove", preventScroll);
-        }
-      }
+    //       // Remove listeners when modal closes
+    //       contentElement.removeEventListener("wheel", preventScroll);
+    //       contentElement.removeEventListener("touchmove", preventScroll);
+    //     }
+    //   }
     
-      return () => {
-        document.body.style.overflow = "";
-        document.body.style.touchAction = "";
+    //   return () => {
+    //     document.body.style.overflow = "";
+    //     document.body.style.touchAction = "";
     
-        if (contentElement) {
-          contentElement.style.overflow = "";
-          contentElement.style.touchAction = "";
-          contentElement.removeEventListener("wheel", preventScroll);
-          contentElement.removeEventListener("touchmove", preventScroll);
-        }
-      };
-    }, [trigger]);
+    //     if (contentElement) {
+    //       contentElement.style.overflow = "";
+    //       contentElement.style.touchAction = "";
+    //       contentElement.removeEventListener("wheel", preventScroll);
+    //       contentElement.removeEventListener("touchmove", preventScroll);
+    //     }
+    //   };
+    // }, [trigger]);
     
     useEffect(() => {
       const handleResize = () => {
@@ -97,7 +97,8 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
     }, []);
 
   return ReactDom.createPortal(
-    <AnimatePresence>
+    <>
+    <AnimatePresence initial={false} mode="wait">
       {trigger && (
         <motion.div
           className={ModalStyles.overlay}
@@ -109,16 +110,14 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
           animate="animate"
           exit="exit"
           variants={overlayAnimation}
+          transition={{duration: 0.2, ease: "easeOut"}}
         >
           <motion.div
             className={ModalStyles.modal}
             ref={ref}
             onClick={(e) => e.stopPropagation()}
-            initial="initial"
-            animate="animate"
-            exit="exit"
             variants={isMobile ? mobileAnimation : desktopAnimation}
-            transition={{ duration: 0.45 }} // Added transition duration
+            transition={{duration: 0.3}}
           >
             <button
               onClick={() => {
@@ -137,7 +136,8 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>,
+    </AnimatePresence>
+    </>,
     document.getElementById("portal")
   );
 });

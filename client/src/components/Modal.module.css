@@ -18,6 +18,7 @@
     overflow: hidden;
     overflow-y: auto;
     transition: 0.2s ease;
+    will-change: transform;
 }
 
 .overlay {
@@ -28,6 +29,7 @@
     width: 100vw;
     background: rgba(0, 0, 0, 0.8);
     z-index: 99;
+    will-change: opacity;
 }
 
 .lukModal {
