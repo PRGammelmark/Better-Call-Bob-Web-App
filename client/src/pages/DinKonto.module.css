@@ -656,6 +656,10 @@
     border-radius: 50%;
   }
 
+  .mobileInfoBox {
+    display: none;
+  }
+
 @media screen and (max-width: 750px) {
     .heading {
         display: none;
@@ -715,6 +719,14 @@
     }
 
     .arbejdsPræferencerKnapEndDiv {
-        flex-direction: column;
+        flex-direction: row;
+    }
+
+    .desktopInfoBox {
+        display: none;
+    }
+
+    .mobileInfoBox {
+        display: inline;
     }
 }

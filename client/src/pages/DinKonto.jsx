@@ -265,10 +265,8 @@ const DinKonto = () => {
               <div className={Styles.arbejdsPræferencerKnapEndDiv}>
                 <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
                   <MapPin height={14} />
-                  {bruger?.arbejdsOmråde?.adresse?.length > 20
-                    ? `${bruger.arbejdsOmråde.adresse.substring(0, 20)}...`
-                    : bruger?.arbejdsOmråde?.adresse}
-
+                  <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
+                  <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse.split(", ")[1]}</span>
                 </div>
                 <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
                   <Radius height={14} />

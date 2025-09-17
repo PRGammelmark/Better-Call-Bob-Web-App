@@ -61,14 +61,17 @@ function ZoomUpdater({ zoom, center }) {
 }
 
 export default function ArbejdsRadiusMap(props) {
-  const [center, setCenter] = useState(props?.bruger?.arbejdsLOmråde?.center || [55.6761, 12.5683]);
+  const [center, setCenter] = useState(props?.bruger?.arbejdsOmråde?.center || [55.6761, 12.5683]);
   const [adresse, setAdresse] = useState(props?.bruger?.arbejdsOmråde?.adresse || "")
   const [radius, setRadius] = useState(props?.bruger?.arbejdsOmråde?.radius || 1000);
   const [zoom, setZoom] = useState(12); // midlertidig init, bliver beregnet efter mount
 
   // Mål overlay-cirklens faktiske px-størrelse (så JS == CSS)
   const circleRef = useRef(null);
-  const [circlePx, setCirclePx] = useState(400);
+  const [circlePx, setCirclePx] = useState(300);
+
+  console.log(props?.bruger?.arbejdsOmråde?.center)
+  console.log(center)
 
   const user = props.user;
 
@@ -87,7 +90,7 @@ export default function ArbejdsRadiusMap(props) {
     return () => ro.disconnect();
   }, []);
 
-  // Reberegn zoom når radius, center-lat eller cirkel-px ændrer sig
+  // Genberegn zoom når radius, center-lat eller cirkel-px ændrer sig
     useEffect(() => {
         const newZoom = radiusToZoom(radius, center[0], circlePx);
         if (Math.abs(newZoom - zoom) > 0.01) { // undgå mikro-diff loops
@@ -160,7 +163,7 @@ export default function ArbejdsRadiusMap(props) {
           scrollWheelZoom={false}
           doubleClickZoom={false}
           touchZoom={false}
-          style={{ height: "500px", width: "100%" }}
+          style={{ height: "400px", width: "100%" }}
         >
           <TileLayer
             url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}{r}.png"
@@ -177,19 +180,19 @@ export default function ArbejdsRadiusMap(props) {
             position: "absolute",
             top: "50%",
             left: "50%",
-            width: "400px",         // kan styres i CSS — JS måler den reelle px
-            height: "400px",
-            marginLeft: "-200px",
-            marginTop: "-200px",
+            width: "300px",         // kan styres i CSS — JS måler den reelle px
+            height: "300px",
+            marginLeft: "-150px",
+            marginTop: "-150px",
             borderRadius: "50%",
             border: "3px solid #59bf1a",
             backgroundColor: "rgba(89,191,26,0.2)",
             pointerEvents: "none",
-            zIndex: 10000,
+            zIndex: 1000,
           }}
-        />
-        <div
-          style={{
+        >
+          <div
+            style={{
             position: "absolute",
             top: "50%",
             left: "50%",
@@ -200,10 +203,11 @@ export default function ArbejdsRadiusMap(props) {
             borderRadius: "50%",
             border: "2px solid #3c5a3f",
             backgroundColor: "#59bf1a00",
-            pointerEvents: "none",
-            zIndex: 10000,
+            zIndex: 1020,
           }}
         />
+      </div>
+        
       </div>
         <div className={Styles.radiusSelectorDiv}>
             <p>Radius</p>

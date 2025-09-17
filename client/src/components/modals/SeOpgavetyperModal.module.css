@@ -87,7 +87,7 @@
 .flexButtonsDiv {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: stretch;
     gap: 10px;
     margin-top: 10px;
     margin-bottom: 10px;

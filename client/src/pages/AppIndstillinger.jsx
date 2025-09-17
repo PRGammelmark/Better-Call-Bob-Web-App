@@ -29,6 +29,7 @@ const AppIndstillinger = () => {
           })
           .then(res => {
               setOpgavetyper(res.data)
+              console.log(res.data)
           })
           .catch(error => console.log(error))
       }, [refetchOpgavetyper])
@@ -41,7 +42,7 @@ const AppIndstillinger = () => {
         <div className={Styles.indstillingerKnapperDiv}>
         
         <div className={Styles.indstillingerKnap} onClick={() => setVisOpgavetyperModal(true)}>
-            <h3>Opsæt opgavetyper</h3>
+            <h3>Opgavetyper</h3>
             <div className={Styles.indstillingerKnapEndDiv}>
                 <div className={Styles.indstillingerKnapGraaInfoBoks}>
                     <Hammer height={14} />

@@ -9,7 +9,7 @@ const SelectLine = ({
   value, 
   onChange, 
   options = [],
-  placeholder = "Vælg kategori ..." 
+  placeholder = " " 
 }) => {
 
   return (

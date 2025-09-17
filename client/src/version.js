@@ -14,6 +14,18 @@
 // 
 
 const changes = [{
+    version: "3.4.2",
+    date: "17. september 2025",
+    changes: [
+        "Rettede højden på arbejdsområde-kortet, så den ikke optager al skærmens højde på mobilen.",
+        "Nu viser arbejdsområdekortet den sidst valgte adresse når du åbner kortet.",
+        "Arbejdsområdekortet blev ikke vist på mobilen med en prik i centrum. Det gør den nu.",
+        "Rettede en fejl, der gjorde, at man med to fingre kunne zoome ind og ud på kortet på mobilen uden at radius ændrede sig proportionelt. Nu skal man altid tilpasse arbejdsradius via slideren under kortet.",
+        "Førhen viste kortet arbejdsradiuscirklen i forkert opløsning når man åbnede det første gang på mobilen. Nu vises det korrekt.",
+        "Rettede en fejl på modal-popup's, som hakkede når man åbnede dem efter sidste opdatering.",
+        "Lavede flere designforbedringer i opgavetyper-popup'en fra app-indstillinger-siden."
+    ]
+},{
     version: "3.4.1",
     date: "16. september 2025",
     changes: [

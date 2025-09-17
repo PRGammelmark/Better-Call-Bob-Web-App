@@ -64,15 +64,25 @@
 }
 
 .inputLine select {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-family: Omnes;
-    font-size: 1rem;
-    outline: none;
-    cursor: pointer;
-    text-align: right;
-  }
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-family: Omnes;
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+  text-align: right;
+  color: #222222;
+
+  /* Fjern native iOS/Android styling */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* Sikrer at teksten faktisk aligner til højre */
+  direction: rtl;
+  text-align: left;
+}
   
   .sliderWrapper {
     display: flex;
@@ -84,6 +94,8 @@
   
   .slider {
     -webkit-appearance: none;
+    flex: 1;          /* slider skal fylde resten */
+    min-width: 0; 
     max-width: 200px;
     height: 6px;
     border-radius: 5px;
@@ -129,11 +141,19 @@
     background: #005bb5;
   }
   
+  .sliderWrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    gap: 10px;
+  }
+  
   .sliderValue {
-    min-width: 80px;
+    flex: 0 0 80px; /* fast plads */
     text-align: right;
     font-family: Omnes;
     font-size: 1rem;
     color: #222222;
   }
+  
   
