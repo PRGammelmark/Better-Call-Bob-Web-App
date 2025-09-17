@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.4.3",
+    date: "17. september 2025",
+    changes: [
+        "Rettede en fejl, hvor 'Opret opgave'-siden automatisk ville scrolle et stykke ned på siden ved load."
+    ]
+},{
     version: "3.4.2",
     date: "17. september 2025",
     changes: [

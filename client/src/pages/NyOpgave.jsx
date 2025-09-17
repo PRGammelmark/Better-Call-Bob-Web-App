@@ -8,7 +8,7 @@
 //
 // Den gamle formular er implementeret i NyOpgave (deprecated).jsx.
 
-import React, { useEffect, useState } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import NyOpgaveCSS from "./NyOpgave.module.css"
 import PageAnimation from '../components/PageAnimation'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -182,6 +182,15 @@ const NyOpgave = () => {
     useEffect(() => {
         setDataUdtrukket(false)
     }, [opgaveBeskrivelse])
+
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+    const timer = setTimeout(() => {
+        inputRef.current?.focus();
+    }, 1000); // timeout hjælper på mobil
+    return () => clearTimeout(timer);
+    }, []);
 
     const submitOpgave = async (e) => {
         e.preventDefault();
@@ -482,7 +491,7 @@ const NyOpgave = () => {
                     <div>
                         <label className={NyOpgaveCSS.label}>Opgavebeskrivelse</label>
                         <div className={NyOpgaveCSS.opgavebeskrivelseContainer}>
-                            <textarea className={NyOpgaveCSS.opgavebeskrivelse} type="textarea" autoFocus name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required onBlur={() => checkOpgaveBeskrivelse()} onFocus={() => setOpgavebeskrivelseError(null)}/>
+                            <textarea className={NyOpgaveCSS.opgavebeskrivelse} ref={inputRef} type="textarea" name="opgavebeskrivelse" placeholder="Beskriv opgaven ..." onChange={(e) => setOpgaveBeskrivelse(e.target.value)} value={opgaveBeskrivelse} required onBlur={() => checkOpgaveBeskrivelse()} onFocus={() => setOpgavebeskrivelseError(null)}/>
                             {opgaveBeskrivelse.length > 10 && <button type="button" className={`${NyOpgaveCSS.aiParseButton} ${dataUdtrukket ? NyOpgaveCSS.aiParseButtonSuccess : ""}`} onClick={aiUdtrækData}>{dataUdtrukket ? "Succes!" : (udtrækkerData ? <PulseLoader color="#fff" size={5} /> : <><Bot size={16} style={{marginBottom: 2, marginLeft: -2}} /> Udtræk data</>)}</button>}
                         </div>
                         {opgavebeskrivelseError && <p className={NyOpgaveCSS.opgavebeskrivelseError}>{opgavebeskrivelseError}</p>}
