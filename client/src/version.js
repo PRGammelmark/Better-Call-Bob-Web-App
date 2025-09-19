@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.4.4",
+    date: "19. september 2025",
+    changes: [
+        "Nu vil administratorers ændringer i app'ens globale indstillinger automatisk blive pushet ud til alle brugeres enheder med det samme. Førhen krævede en ændring en genindlæsning af hver enheds app før ændringerne blev afspejlet.",
+        "Administratorer kan nu styre den maksimale arbejdsradius, som medarbejdere kan indstille under deres profil, fra 'Indstillinger'-siden.",
+        "Flere funktionelle og designmæssige rettelser til 'Indstillinger'-siden og 'Profil'-siden."
+    ]
+},{
     version: "3.4.3",
     date: "17. september 2025",
     changes: [

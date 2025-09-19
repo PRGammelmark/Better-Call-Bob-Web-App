@@ -4,6 +4,8 @@ import "leaflet/dist/leaflet.css";
 import Styles from "./ArbejdsRadiusMap.module.css";
 import { Radius, MapPin } from "lucide-react"
 import axios from "axios"
+import { useIndstillinger } from '../context/IndstillingerContext.jsx'
+
 
 const EARTH_RADIUS = 6378137;         // meter
 const TILE_SIZE = 256;                // Leaflet CSS px
@@ -61,6 +63,9 @@ function ZoomUpdater({ zoom, center }) {
 }
 
 export default function ArbejdsRadiusMap(props) {
+
+  const { indstillinger } = useIndstillinger();
+
   const [center, setCenter] = useState(props?.bruger?.arbejdsOmråde?.center || [55.6761, 12.5683]);
   const [adresse, setAdresse] = useState(props?.bruger?.arbejdsOmråde?.adresse || "")
   const [radius, setRadius] = useState(props?.bruger?.arbejdsOmråde?.radius || 1000);
@@ -70,10 +75,8 @@ export default function ArbejdsRadiusMap(props) {
   const circleRef = useRef(null);
   const [circlePx, setCirclePx] = useState(300);
 
-  console.log(props?.bruger?.arbejdsOmråde?.center)
-  console.log(center)
-
   const user = props.user;
+  const maxArbejdsRadius = indstillinger?.arbejdsområdeKilometerRadius * 1000
 
   useEffect(() => {
     if (!circleRef.current) return;
@@ -214,7 +217,7 @@ export default function ArbejdsRadiusMap(props) {
             <input
                 type="range"
                 min="200"
-                max="20000"
+                max={maxArbejdsRadius}
                 step="200"
                 value={radius}
                 onChange={(e) => setRadius(Number(e.target.value))}

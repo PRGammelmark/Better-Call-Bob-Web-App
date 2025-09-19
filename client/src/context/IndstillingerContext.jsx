@@ -8,9 +8,27 @@ export const IndstillingerProvider = ({ children }) => {
   const [indstillinger, setIndstillinger] = useState(null);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/indstillinger`)
-      .then(res => setIndstillinger(res.data))
-      .catch(err => console.error("Kunne ikke hente indstillinger", err))
+    // Start SSE connection
+    const eventSource = new EventSource(`${import.meta.env.VITE_API_URL}/indstillinger/stream`);
+
+    eventSource.onmessage = (e) => {
+      try {
+        const data = JSON.parse(e.data);
+        setIndstillinger(data);
+        console.log("Nye indstillinger sat.")
+      } catch (err) {
+        console.error("Kunne ikke parse indstillinger event:", err);
+      }
+    };
+
+    eventSource.onerror = (err) => {
+      console.error("SSE fejl:", err);
+      eventSource.close();
+    };
+
+    return () => {
+      eventSource.close();
+    };
   }, []);
 
   return (
