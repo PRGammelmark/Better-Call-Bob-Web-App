@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.4.5",
+    date: "21. september 2025",
+    changes: [
+        "Rettede en fejl, hvor mellemregningerne i det økonomiske overblik for medarbejdere ikke blev vist korrekt."
+    ]
+},{
     version: "3.4.4",
     date: "19. september 2025",
     changes: [
