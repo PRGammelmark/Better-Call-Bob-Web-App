@@ -2,7 +2,6 @@ import Kunde from "../models/kunderModel.js";
 import Opgave from "../models/opgaveModel.js";
 
 export const handleElementorWebhook = async (req, res) => {
-  return res.status(200).send("OK");
 
     try {
 
