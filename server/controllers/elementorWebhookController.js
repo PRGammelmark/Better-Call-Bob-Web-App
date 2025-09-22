@@ -10,26 +10,29 @@ export const handleElementorWebhook = async (req, res) => {
       console.log("Elementor felter:", req.body);
 
       const fields = {
-        beskrivelse: req.body["Beskriv din opgave"] || req.body['Describe your task'] || "",
-        navn: req.body["Navn"] || req.body["Name"] || "",
-        email: req.body["E-mail"] || "",
-        telefon: req.body["Tlf."] || req.body["Phone"] || "",
-        adresse: req.body["Din adresse"] || req.body["Your adress"] || "",
-        postnummer: req.body["Postnummer"] || req.body["ZIP code"] || "",
+        beskrivelse: req.body["Beskriv din opgave"] || req.body["Beskriv jeres opgave"] || req.body['Describe your task'] || "",
+        navn: req.body["Navn"] || req.body["Navn på kontaktperson"] || req.body["Name"] || req.body["Fulde navn"] || "",
+        email: req.body["E-mail"] || req.body["Mail"] || "",
+        telefon: req.body["Tlf."] || req.body["Telefonnummer"] || req.body["Telefonnummer (valgfri)"] || req.body["Phone"] || req.body["Phone Number"] || "",
+        adresse: req.body["Din adresse"] || req.body["Adresse"] || req.body["Your adress"] || "",
+        postnummer: req.body["Postnummer"] || req.body["ZIP code"] || req.body["Postal code"] || "",
         by: req.body["By"] || req.body["City"] || "",
-        onsketDato: req.body["Ønsket dato"] || req.body["Preferred date"] || "",
+        onsketDato: req.body["Ønsket dato"] || req.body["Preferred date"] || req.body["Preferred day"] || req.body["Hvilken dag skal vi komme?"] || "",
+        onsketTidsrum: req.body["Hvilket tidsrum?"] || req.body["Which time slot?"] || req.body["Preferred time"] || req.body["Hvad tid?"] || "",
         typiskHjemme: req.body["Hvornår er du typisk hjemme?"] || req.body["When are you usually at home?"] || "",
         billeder: req.body["Vedhæft op til 3 billeder (valgfrit)"] || req.body["Attach up to 3 pictures (optional)"] || [],
+        virksomhed: req.body["Virksomhed"] || req.body["Organisation"] || req.body["Company"] || "",
+        CVR: req.body["CVR"] || req.body["CVR-nummer"] || req.body["CVR number"] || req.body["CVR-nummer (valgfri)"] || req.body["VAT-number (optional)"] || "",
       };
 
       console.log("Formaterede Elementor-felter:", fields);
 
-      const onsketDato = fields?.onsketDato ? ` – Ønsket dato: ${fields.onsketDato}` : "";
+      const onsketDato = fields?.onsketDato ? ` – Ønsket dato: ${fields.onsketDato} ${fields.onsketTidsrum ? ` – Ønsket tidsrum: ${fields.onsketTidsrum}` : ""}` : "";
       const typiskHjemme = fields?.typiskHjemme ? ` – Typisk hjemme: ${fields.typiskHjemme}` : "";
       const navnSplit = fields?.navn?.split(" ") || [];
       const fornavn = navnSplit[0] || "";
       const efternavn = navnSplit.slice(1).join(" ") || "";
-      const billeder = fields.billeder
+      const billeder = fields?.billeder
         ? fields.billeder.split(",").map(url => url.trim()).filter(url => url)
         : [];
 
