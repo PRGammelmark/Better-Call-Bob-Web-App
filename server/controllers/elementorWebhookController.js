@@ -19,6 +19,7 @@ export const handleElementorWebhook = async (req, res) => {
         by: req.body["By"] || "",
         onsketDato: req.body["Ønsket dato"] || "",
         typiskHjemme: req.body["Hvornår er du typisk hjemme?"] || "",
+        billeder: req.body["Vedhæft op til 3 billeder (valgfrit)"] || [],
       };
 
       console.log("Formaterede Elementor-felter:", fields);
@@ -28,6 +29,10 @@ export const handleElementorWebhook = async (req, res) => {
       const navnSplit = fields?.navn?.split(" ") || [];
       const fornavn = navnSplit[0] || "";
       const efternavn = navnSplit.slice(1).join(" ") || "";
+      const billeder = fields.billeder
+        ? fields.billeder.split(",").map(url => url.trim()).filter(url => url)
+        : [];
+
 
       const counter = await Counter.findOneAndUpdate(
         { name: 'opgaveID' },
@@ -44,7 +49,8 @@ export const handleElementorWebhook = async (req, res) => {
         status: "Modtaget",
         ansvarlig: [],
         createdAt: new Date(),
-        incrementalID: counter.value
+        incrementalID: counter.value,
+        opgaveBilleder: billeder
       };
 
       // Map Elementor felter til vores kundemodel
