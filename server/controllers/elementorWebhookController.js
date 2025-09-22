@@ -1,5 +1,6 @@
 import Kunde from "../models/kunderModel.js";
 import Opgave from "../models/opgaveModel.js";
+import Counter from "../models/counterModel.js";
 
 export const handleElementorWebhook = async (req, res) => {
 
@@ -27,14 +28,20 @@ export const handleElementorWebhook = async (req, res) => {
       const navnSplit = fields?.navn?.split(" ") || [];
       const fornavn = navnSplit[0] || "";
       const efternavn = navnSplit.slice(1).join(" ") || "";
-      
+
+      const counter = await Counter.findOneAndUpdate(
+        { name: 'opgaveID' },
+        { $inc: { value: 1 } },
+        { new: true, upsert: true }
+    );
   
       // Map Elementor felter til vores opgavemodel
       const nyOpgaveObjekt = {
         opgaveBeskrivelse: fields?.beskrivelse + onsketDato + typiskHjemme || "",
         status: "Modtaget",
         ansvarlig: [],
-        createdAt: new Date()
+        createdAt: new Date(),
+        incrementalID: counter.value
       };
 
       // Map Elementor felter til vores kundemodel
