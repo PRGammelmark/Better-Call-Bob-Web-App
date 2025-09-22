@@ -102,23 +102,6 @@ const getOpgave = async (req, res) => {
 };
 
 // CREATE en opgave
-// const createOpgave = async (req, res) => {
-
-//     const counter = await Counter.findOneAndUpdate(
-//         { name: 'opgaveID' },
-//         { $inc: { value: 1 } },
-//         { new: true, upsert: true }
-//     );
-
-//     const { opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID } = req.body;
-//     try {
-//         const opgave = await Opgave.create({opgaveBeskrivelse, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, opgaveBilleder, kundeID})
-//         res.status(200).json(opgave)
-//     } catch (error) {
-//         res.status(400).json({error: error.message})
-//     }
-// }
-
 const createOpgave = async (req, res) => {
     const counter = await Counter.findOneAndUpdate(
         { name: 'opgaveID' },

@@ -33,7 +33,10 @@ export const handleElementorWebhook = async (req, res) => {
         { name: 'opgaveID' },
         { $inc: { value: 1 } },
         { new: true, upsert: true }
-    );
+      );
+
+      console.log("Counter:", counter);
+      console.log("Counter value:", counter.value);
   
       // Map Elementor felter til vores opgavemodel
       const nyOpgaveObjekt = {
