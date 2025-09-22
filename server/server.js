@@ -31,6 +31,7 @@ import { tjekFakturaForBetaling } from './utils/tjekFakturaForBetaling.js';
 import { registrerBetalinger } from './utils/registrerBetalinger.js';
 import path from 'path';
 import { fileURLToPath } from "url";
+import elementorWebhookRouter from "./routes/elementorWebhook.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +50,9 @@ const emailLimiter = rateLimit({
 const allowedOrigins = [
     'https://bcb-pwa-app.onrender.com',  // Production
     'https://app.bettercallbob.dk',      // Production
+    'https://bettercallbob.dk',          // Website
+    'https://handymankbh.dk',            // Website  
+    'https://handymanfrederiksberg.dk',  // Website
     'http://localhost:3000',             // Development
     'http://localhost:5173',             // Development
     'http://localhost:5174'              // Development
@@ -144,6 +148,7 @@ app.use("/api/indstillinger", indstillingerRoutes);
 app.use('/api/opgavetyper', opgavetyperRoutes)
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
+app.use("/api/webhook", elementorWebhookRouter);
 app.use('/api/cleanup', (req, res) => {
     requestedCleanup();
     res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });
