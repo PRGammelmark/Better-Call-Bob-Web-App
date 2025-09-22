@@ -72,6 +72,8 @@ export const handleElementorWebhook = async (req, res) => {
         postnummerOgBy: fields?.postnummer.trim() + " " + fields?.by.trim() || "",
         createdAt: new Date(),
         engelskKunde: !!req.body['Describe your task'],
+        virksomhed: fields?.virksomhed || "",
+        CVR: fields?.CVR || "",
         kilde: "HandymanKBH / HandymanFrederiksberg"
       };
 
