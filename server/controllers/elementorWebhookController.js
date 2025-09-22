@@ -9,15 +9,15 @@ export const handleElementorWebhook = async (req, res) => {
       console.log("Elementor felter:", req.body);
 
       const fields = {
-        beskrivelse: req.body["Beskriv_din_opgave"],
-        navn: req.body["Navn"],
-        email: req.body["E-mail"],
-        telefon: req.body["Tlf_"],
-        adresse: req.body["Din_adresse"],
-        postnummer: req.body["Postnummer"],
-        by: req.body["By"],
-        onsketDato: req.body["Ønsket_dato"],
-        typiskHjemme: req.body["Hvornår_er_du_typisk_hjemme?"],
+        beskrivelse: req.body["Beskriv din opgave"] || "",
+        navn: req.body["Navn"] || "",
+        email: req.body["E-mail"] || "",
+        telefon: req.body["Tlf."] || "",
+        adresse: req.body["Din adresse"] || "",
+        postnummer: req.body["Postnummer"] || "",
+        by: req.body["By"] || "",
+        onsketDato: req.body["Ønsket dato"] || "",
+        typiskHjemme: req.body["Hvornår er du typisk hjemme?"] || "",
       };
 
       console.log("Formaterede Elementor-felter:", fields);
