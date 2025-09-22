@@ -32,9 +32,14 @@ export const handleElementorWebhook = async (req, res) => {
       const navnSplit = fields?.navn?.split(" ") || [];
       const fornavn = navnSplit[0] || "";
       const efternavn = navnSplit.slice(1).join(" ") || "";
-      const billeder = fields?.billeder
-        ? fields.billeder.split(",").map(url => url.trim()).filter(url => url)
-        : [];
+      const billeder = Array.isArray(fields.billeder)
+        ? fields.billeder // allerede et array (tomt eller med links)
+        : typeof fields.billeder === "string"
+          ? fields.billeder
+              .split(",")
+              .map(url => url.trim())
+              .filter(url => url.length > 0) // fjerner tomme entries
+          : [];
 
       const counter = await Counter.findOneAndUpdate(
         { name: 'opgaveID' },
