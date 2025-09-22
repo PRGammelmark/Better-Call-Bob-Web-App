@@ -36,6 +36,10 @@ const opgaverSchema = new Schema({
     kunde: {
         type: Schema.Types.ObjectId,
         ref: 'Kunde'
+    },
+    kilde: {
+        type: String,
+        required: false
     }
 }, { timestamps: true })
 

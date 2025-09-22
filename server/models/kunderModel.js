@@ -59,6 +59,10 @@ const kundeSchema = new Schema({
     noter: {
         type: String,
         required: false
+    },
+    kilde: {
+        type: String,
+        required: false
     }
 }, { timestamps: true })
 

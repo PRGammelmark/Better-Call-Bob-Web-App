@@ -10,16 +10,16 @@ export const handleElementorWebhook = async (req, res) => {
       console.log("Elementor felter:", req.body);
 
       const fields = {
-        beskrivelse: req.body["Beskriv din opgave"] || "",
-        navn: req.body["Navn"] || "",
+        beskrivelse: req.body["Beskriv din opgave"] || req.body['Describe your task'] || "",
+        navn: req.body["Navn"] || req.body["Name"] || "",
         email: req.body["E-mail"] || "",
-        telefon: req.body["Tlf."] || "",
-        adresse: req.body["Din adresse"] || "",
-        postnummer: req.body["Postnummer"] || "",
-        by: req.body["By"] || "",
-        onsketDato: req.body["Ønsket dato"] || "",
-        typiskHjemme: req.body["Hvornår er du typisk hjemme?"] || "",
-        billeder: req.body["Vedhæft op til 3 billeder (valgfrit)"] || [],
+        telefon: req.body["Tlf."] || req.body["Phone"] || "",
+        adresse: req.body["Din adresse"] || req.body["Your adress"] || "",
+        postnummer: req.body["Postnummer"] || req.body["ZIP code"] || "",
+        by: req.body["By"] || req.body["City"] || "",
+        onsketDato: req.body["Ønsket dato"] || req.body["Preferred date"] || "",
+        typiskHjemme: req.body["Hvornår er du typisk hjemme?"] || req.body["When are you usually at home?"] || "",
+        billeder: req.body["Vedhæft op til 3 billeder (valgfrit)"] || req.body["Attach up to 3 pictures (optional)"] || [],
       };
 
       console.log("Formaterede Elementor-felter:", fields);
@@ -32,7 +32,6 @@ export const handleElementorWebhook = async (req, res) => {
       const billeder = fields.billeder
         ? fields.billeder.split(",").map(url => url.trim()).filter(url => url)
         : [];
-
 
       const counter = await Counter.findOneAndUpdate(
         { name: 'opgaveID' },
@@ -50,7 +49,8 @@ export const handleElementorWebhook = async (req, res) => {
         ansvarlig: [],
         createdAt: new Date(),
         incrementalID: counter.value,
-        opgaveBilleder: billeder
+        opgaveBilleder: billeder,
+        kilde: "HandymanKBH / HandymanFrederiksberg"
       };
 
       // Map Elementor felter til vores kundemodel
@@ -62,7 +62,9 @@ export const handleElementorWebhook = async (req, res) => {
         telefon: fields?.telefon.trim() || "",
         adresse: fields?.adresse || "",
         postnummerOgBy: fields?.postnummer.trim() + " " + fields?.by.trim() || "",
-        createdAt: new Date()
+        createdAt: new Date(),
+        engelskKunde: !!req.body['Describe your task'],
+        kilde: "HandymanKBH / HandymanFrederiksberg"
       };
 
       console.log("Opgave godkendt. Tjekker kundedata med databasen ...")
