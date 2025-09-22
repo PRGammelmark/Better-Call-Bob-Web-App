@@ -84,7 +84,6 @@ const getOpgave = async (req, res) => {
 
     try {
         const opgave = await Opgave.findById(id).populate('kunde');
-        console.log(opgave)
 
         if (!opgave) {
             return res.status(404).json({ error: 'Ingen opgaver fundet med et matchende ID.' });
