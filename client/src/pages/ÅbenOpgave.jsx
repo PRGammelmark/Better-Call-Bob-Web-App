@@ -35,7 +35,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
-import PopUpMenuKnap from '../components/basicComponents/popUpMenuKnap.jsx'
+import PopUpMenuKnap from '../components/basicComponents/PopUpMenuKnap.jsx'
 
 const ÅbenOpgave = () => {
     
