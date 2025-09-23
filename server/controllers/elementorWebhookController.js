@@ -46,9 +46,6 @@ export const handleElementorWebhook = async (req, res) => {
         { $inc: { value: 1 } },
         { new: true, upsert: true }
       );
-
-      console.log("Counter:", counter);
-      console.log("Counter value:", counter.value);
   
       // Map Elementor felter til vores opgavemodel
       const nyOpgaveObjekt = {
@@ -58,7 +55,7 @@ export const handleElementorWebhook = async (req, res) => {
         createdAt: new Date(),
         incrementalID: counter.value,
         opgaveBilleder: billeder,
-        kilde: "HandymanKBH / HandymanFrederiksberg"
+        kilde: "Web-formular"
       };
 
       // Map Elementor felter til vores kundemodel
@@ -74,7 +71,7 @@ export const handleElementorWebhook = async (req, res) => {
         engelskKunde: !!req.body['Describe your task'],
         virksomhed: fields?.virksomhed || "",
         CVR: fields?.CVR || "",
-        kilde: "HandymanKBH / HandymanFrederiksberg"
+        kilde: "Web-formular"
       };
 
       console.log("Opgave godkendt. Tjekker kundedata med databasen ...")
@@ -83,21 +80,21 @@ export const handleElementorWebhook = async (req, res) => {
       let nyOpgave;
       
       if(eksisterendeKunde){
-        console.log("Eksisterende kunde fundet:", eksisterendeKunde);
+        console.log("Eksisterende kunde fundet (ID: " + eksisterendeKunde._id + ").");
         nyOpgaveObjekt.kundeID = eksisterendeKunde._id;
         nyOpgaveObjekt.kunde = eksisterendeKunde._id;
         nyOpgave = await Opgave.create(nyOpgaveObjekt);
-        console.log("Opgave oprettet og tilknyttet eksisterende kunde:", nyOpgave);
+        console.log("Opgave oprettet (ID: " + nyOpgave._id + ") og tilknyttet eksisterende kunde (ID: " + eksisterendeKunde._id + ").");
       }
 
       if(!eksisterendeKunde){
         console.log("Ingen eksisterende kunde fundet. Opretter ny kunde ...")
         const nyKunde = await Kunde.create(nyKundeObjekt);
-        console.log("Ny kunde oprettet:", nyKunde);
+        console.log("Ny kunde oprettet (ID: " + nyKunde._id + ").");
         nyOpgaveObjekt.kundeID = nyKunde._id;
         nyOpgaveObjekt.kunde = nyKunde._id;
         nyOpgave = await Opgave.create(nyOpgaveObjekt);
-        console.log("Opgave oprettet og tilknyttet ny kunde:", nyOpgave);
+        console.log("Opgave oprettet (ID: " + nyOpgave._id + ") og tilknyttet ny kunde (ID: " + nyKunde._id + ").");
       }
   
       return res.status(200).json({ success: true, opgave: nyOpgave });

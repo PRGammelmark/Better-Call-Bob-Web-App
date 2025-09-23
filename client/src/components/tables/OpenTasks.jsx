@@ -8,6 +8,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime' // ES 2015
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { Check, X, ChevronRight } from 'lucide-react'
 
 
 dayjs.extend(relativeTime)
@@ -60,73 +61,144 @@ const OpenTasks = () => {
   }
 
   return (
-        <>
-          <div className={OpenTasksCSS.desktopTable}>
-            <div className={TableCSS.opgaveListe}>
-              <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
-              <div className={TableCSS.opgaveTabel}>
-                <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderDesktop}`}>
-                  <ul>
-                    <li>ID</li>
-                    <li>Modtaget</li>
-                    <li>Status</li>
-                    <li>Kunde</li>
-                    <li>Adresse</li>
-                  </ul>
-                </div>
-                <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyDesktop}`}>
-                  {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
-                    const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
-                    return (
-                      <div className={TableCSS.opgaveListing} key={opgave._id}>
-                        <ul>
-                          <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
-                          <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
-                          <li>{opgave.status}</li>
-                          <li>{kunde?.navn}</li>
-                          <li>{kunde?.adresse}</li>
-                        </ul>
-                        <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
-                          <button className={TableCSS.button}>Åbn</button>
-                        </Link>
-                      </div>
-                    )
-                  }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
-                </div>
-              </div>
+    <>
+      <div className={OpenTasksCSS.desktopTable}>
+        <div className={TableCSS.opgaveListe}>
+          <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
+          <div className={TableCSS.opgaveTabel}>
+            <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderDesktop}`}>
+              <ul>
+                <li>Modtaget</li>
+                <li>Kunde</li>
+                <li>Adresse</li>
+                <li>Opgavebeskrivelse</li>
+                <li></li>
+              </ul>
+            </div>
+            <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyDesktop}`}>
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+
+                return (
+                  <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
+                    <div className={TableCSS.opgaveIdMarker}>
+                      #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}
+                    </div>
+                    <ul>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{dayjs(opgave.createdAt).fromNow()}{opgave.status === "Afventer svar" ? <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#59bf1a99", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><Check size={10} color="#222222" />Afventer svar</p> : <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#EED202", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><X size={10} color="#222222" />Ikke kontaktet</p>}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{kunde?.adresse}</p><p style={{fontSize: "10px", color: "#22222280" }}>{kunde?.postnummerOgBy}</p></li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p className={TableCSS.ellipsisThreeLines}>{opgave.opgaveBeskrivelse}</p></li>
+                      <li className={TableCSS.chevronRight}><ChevronRight size={16} color="#222222" /></li>
+                    </ul>
+                  </div>
+                )
+              }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
             </div>
           </div>
-          <div className={OpenTasksCSS.mobileTable}>
-            <div className={TableCSS.opgaveListe}>
-              <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
-              <div className={TableCSS.opgaveTabel}>
-                <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderMobile}`}>
-                  <ul>
-                    <li>Modtaget</li>
-                    <li>Kunde</li>
-                    <li>Adresse</li>
-                    <li>Status</li>
-                  </ul>
-                </div>
-                <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyMobile}`}>
-                  {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
-                    const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
-                    return (
-                      <div className={`${TableCSS.opgaveListing} ${opgave.status === "Dato aftalt" && OpenTasksCSS.markerKlarTilUddelegering}`} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
-                        <ul>
-                          <li>{dayjs(opgave.createdAt).fromNow()}</li>
-                          <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
-                          <li>{kunde?.adresse}</li>
-                          <li>{opgave.status}</li>
-                        </ul>
-                      </div>
-                    )
-                  }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
-                </div>
-              </div>
+        </div>
+      </div>
+      <div className={OpenTasksCSS.mobileTable}>
+        <div className={TableCSS.opgaveListe}>
+          <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
+          <div className={TableCSS.opgaveTabel}>
+            <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderMobile}`}>
+              <ul>
+                <li>Modtaget</li>
+                <li>Kunde</li>
+                <li>Adresse</li>
+                <li></li>
+              </ul>
+            </div>
+            <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyMobile}`}>
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+
+                return (
+                  <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
+                    <div className={TableCSS.opgaveIdMarker}>
+                      #{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}
+                    </div>
+                    <ul>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{dayjs(opgave.createdAt).fromNow()}{opgave.status === "Afventer svar" ? <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#59bf1a99", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><Check size={10} color="#222222" />Afventer svar</p> : <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#EED202", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><X size={10} color="#222222" />Ikke kontaktet</p>}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{kunde?.adresse}</p><p style={{fontSize: "10px", color: "#22222280" }}>{kunde?.postnummerOgBy}</p></li>
+                      <li><ChevronRight size={16} color="#222222" /></li>
+                    </ul>
+                  </div>
+                )
+              }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
             </div>
           </div>
-        </>
+        </div>
+      </div>
+      {/* <div className={OpenTasksCSS.desktopTable}>
+        <div className={TableCSS.opgaveListe}>
+          <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
+          <div className={TableCSS.opgaveTabel}>
+            <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderDesktop}`}>
+              <ul>
+                <li>ID</li>
+                <li>Modtaget</li>
+                <li>Status</li>
+                <li>Kunde</li>
+                <li>Adresse</li>
+              </ul>
+            </div>
+            <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyDesktop}`}>
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                return (
+                  <div className={TableCSS.opgaveListing} key={opgave._id}>
+                    <ul>
+                      <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
+                      <li>{new Date(opgave.createdAt).toLocaleDateString()}</li>
+                      <li>{opgave.status}</li>
+                      <li>{kunde?.navn}</li>
+                      <li>{kunde?.adresse}</li>
+                    </ul>
+                    <Link className={TableCSS.link} to={`../opgave/${opgave._id}`}>
+                      <button className={TableCSS.button}>Åbn</button>
+                    </Link>
+                  </div>
+                )
+              }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={OpenTasksCSS.mobileTable}>
+        <div className={TableCSS.opgaveListe}>
+          <h2 className={TableCSS.tabelHeader}>Åbne opgaver ({opgaver ? opgaver.length : 0})</h2>
+          <div className={TableCSS.opgaveTabel}>
+            <div className={`${TableCSS.opgaveHeader} ${OpenTasksCSS.openTasksHeaderMobile}`}>
+              <ul>
+                <li>Modtaget</li>
+                <li>Kunde</li>
+                <li>Adresse</li>
+                <li>Status</li>
+              </ul>
+            </div>
+            <div className={`${TableCSS.opgaveBody} ${OpenTasksCSS.openTasksBodyMobile}`}>
+              {isLoading ? <div className={TableCSS.loadingSubmission}><BarLoader color="#59bf1a" width={100} ariaLabel="oval-loading" wrapperStyle={{}} wrapperClass="" /></div> : opgaver.length > 0 ? opgaver.map((opgave) => {
+                const kunde = kunder?.find(kunde => kunde._id === opgave.kundeID)
+                return (
+                  <div className={`${TableCSS.opgaveListing} ${opgave.status === "Dato aftalt" && OpenTasksCSS.markerKlarTilUddelegering}`} key={opgave._id} onClick={() => åbnOpgave(opgave._id)}>
+                    <ul>
+                      <li>{dayjs(opgave.createdAt).fromNow()}</li>
+                      <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={OpenTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
+                      <li>{kunde?.adresse}</li>
+                      <li>{opgave.status}</li>
+                    </ul>
+                  </div>
+                )
+              }) : <div className={TableCSS.noResults}><p>Ingen åbne opgaver fundet.</p></div>}
+            </div>
+          </div>
+        </div>
+      </div> */}
+    </>
       
   )
 }

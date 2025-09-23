@@ -13,6 +13,9 @@ import OpenTasks from '../components/tables/OpenTasks'
 import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkonomiskOverblik'
 import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
+import { getHilsen } from '../utils/hilsener.js'
+import PopUpMenuKnap from '../components/basicComponents/popUpMenuKnap.jsx'
+import { ArrowLeftRight } from 'lucide-react'
 
 const Overblik = () => {
   const {user} = useAuthContext();
@@ -97,13 +100,17 @@ const Overblik = () => {
     </div>
   }
 
+
+  // <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
   return (
     <>
-      {managerOverblik && <div className={Styles.overblikContainer}>
-        <div className={Styles.overblikHeader}>
-          <h1 className={`bold ${Styles.heading}`}>Manager-overblik 🧑‍💻</h1>
-          <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
+      <div className={Styles.overblikHeader}>
+          <b className={Styles.hilsenTekst}>{getHilsen(user.navn.split(" ")[0])}</b>
+
+          {user.isAdmin && <PopUpMenuKnap actions={[{ icon: <ArrowLeftRight />, label: managerOverblik ? 'Skift til personligt overblik' : 'Skift til manager-overblik', onClick: () => setManagerOverblik(!managerOverblik) }]} />}
         </div>
+      {managerOverblik && <div className={Styles.overblikContainer}>
+        
         <OpenTasks />
         <p className={Styles.alleOpgaverButton} onClick={() => {
           navigate(`/alle-opgaver`)
@@ -137,10 +144,10 @@ const Overblik = () => {
       </div>}
       
       {!managerOverblik && <div className={Styles.overblikContainer}>
-        <div className={Styles.overblikHeader}>
+        {/* <div className={Styles.overblikHeader}>
           <h1 className={`bold ${Styles.heading}`}>Dit personlige overblik 👨‍🔧</h1>
           {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>Skift til manager-overblik →</button>}
-        </div>
+        </div> */}
         <PersonligtØkonomiskOverblik user={user}/>
         <MyTasks openTableEvent={openTableEvent} />
         <ÅbenOpgaveCalendar 

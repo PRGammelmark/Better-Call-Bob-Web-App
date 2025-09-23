@@ -6,22 +6,42 @@
     margin-top: 40px;
 }
 
+.opgaveIdMarker {
+    position: absolute;
+    top: 50%;
+    left: -14px;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    aspect-ratio: 1/1;
+    background: #3c5a3f;
+    color: #fff;
+    font-family: OmnesBold;
+    font-size: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 20px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
 .opgaveTabel {
     margin-top: 15px;
     width: 100%;
     border-radius: 10px;
-    overflow: hidden;
     background: #e7eae7;
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
 }
 
 .opgaveHeader {
     background: #3c5a3f;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0;
 }
 
 .opgaveHeader ul {
-    padding: 12px 15px;
-    /* max-width: 93%; This value accomodates for the button in the OpgaveBody taking up 7% of horisontal width  */
+    padding: 12px 15px 12px 25px;
+    max-width: 100%;
 }
 
 .opgaveHeader ul, .opgaveBody ul {
@@ -47,8 +67,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    padding: 12px 15px;
+    padding: 12px 15px 12px 25px;
     cursor: pointer;
+    max-width: 100%;
 }
 
 .opgaveListing:hover {
@@ -67,7 +88,7 @@
 }
 
 .opgaveListing ul {
-    flex: 93%;
+    flex: 100%;
 }
 
 .opgaveListing::before {
@@ -116,6 +137,14 @@ button.button {
     justify-content: center;
     align-items: center;
 }
+
+.ellipsisThreeLines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;      /* maks 3 linjer */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 
 .noResults {
     padding: 20px;

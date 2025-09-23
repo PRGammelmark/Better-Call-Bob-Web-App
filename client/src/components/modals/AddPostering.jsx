@@ -514,7 +514,7 @@ const AddPostering = (props) => {
                                     <p style={{fontSize: '0.7rem', color: '#FF0000', marginTop: 5, marginLeft: 10}}>OBS! Udlægsbeskrivelser kommer med på fakturaen.</p>
                                 </div>
                                 <div className={ÅbenOpgaveCSS.udlægBeløb}>
-                                    <label className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb, inkl. moms:</label>
+                                    <label style={{whiteSpace: 'nowrap'}} className={ÅbenOpgaveCSS.prefix} htmlFor={`beløb-${index}`}>Beløb, inkl. moms:</label>
                                     <input
                                         type="number"
                                         required

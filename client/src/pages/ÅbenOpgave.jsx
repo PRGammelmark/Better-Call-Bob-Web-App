@@ -24,7 +24,7 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
-import { ImagePlus, Trash2, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, Clock5, UserRoundPlus, Send } from 'lucide-react';
+import { ImagePlus, RotateCcw, Trash2, Edit, ArrowRightToLine, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, ArrowLeftRight, Clock5, UserRoundPlus, Send, CircleAlert } from 'lucide-react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../firebase.js'
 import imageCompression from 'browser-image-compression';
@@ -35,6 +35,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
+import PopUpMenuKnap from '../components/basicComponents/popUpMenuKnap.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -319,7 +320,7 @@ const ÅbenOpgave = () => {
         }
         
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-            status: syncOpgavestatus
+            status: e.target.value
         },{
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -586,7 +587,8 @@ const ÅbenOpgave = () => {
     function genåbnOpgave() {
         axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
             isDeleted: null,
-            markeretSomFærdig: false
+            markeretSomFærdig: false,
+            opgaveAfsluttet: null
         }, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -1007,16 +1009,12 @@ const ÅbenOpgave = () => {
         }
     }
 
-    // const handleError = (index) => {
-    //     setErrorIndexes(prev => new Set(prev.add(index)));
-    //   };
-
     const handleTildelAnsvarKlik = () => {
         if (selectRef.current) {
-            selectRef.current.focus();
+          selectRef.current.focus();
+          selectRef.current.click();
         }
     };
-    
 
     return (
         <div className={ÅbenOpgaveCSS.primærContainer}>
@@ -1036,8 +1034,31 @@ const ÅbenOpgave = () => {
                 {user.isAdmin && (
                     <>
                         <div className={ÅbenOpgaveCSS.sletOpgaveKnap}>
-                            {!opgave.isDeleted && !opgave.markeretSomFærdig && <button className={ÅbenOpgaveCSS.sletOpgave} onClick={() => setSletOpgaveModal(true)}>Slet</button>}
-                            {opgave.isDeleted && <button className={ÅbenOpgaveCSS.genåbnOpgave} onClick={() => setGenåbnOpgaveModal(true)}>Genåbn opgave</button>}
+                        {user.isAdmin && (
+                            <PopUpMenuKnap
+                                actions={[
+                                // Kun vis "Slet" hvis opgaven ikke er slettet og ikke markeret færdig
+                                !opgave.isDeleted && !opgave.markeretSomFærdig && !opgave.opgaveAfsluttet && {
+                                    icon: <Trash2 />,
+                                    label: "Slet opgave",
+                                    onClick: () => setSletOpgaveModal(true),
+                                },
+                                // Kun vis "Genåbn" hvis opgaven er slettet
+                                opgave.isDeleted && {
+                                    icon: <RotateCcw />,
+                                    label: "Genåbn opgave",
+                                    onClick: () => setGenåbnOpgaveModal(true),
+                                },
+                                opgave.opgaveAfsluttet && {
+                                    icon: <RotateCcw />,
+                                    label: "Genåbn opgave",
+                                    onClick: () => setGenåbnOpgaveModal(true),
+                                },
+                                ].filter(Boolean)} // fjerner "false" entries
+                            />
+                        )}
+                            {/* {!opgave.isDeleted && !opgave.markeretSomFærdig && <button className={ÅbenOpgaveCSS.sletOpgave} onClick={() => setSletOpgaveModal(true)}>Slet</button>}
+                            {opgave.isDeleted && <button className={ÅbenOpgaveCSS.genåbnOpgave} onClick={() => setGenåbnOpgaveModal(true)}>Genåbn opgave</button>} */}
                         </div>
                         <Modal trigger={sletOpgaveModal} setTrigger={setSletOpgaveModal}>
                             <h2 className={ÅbenOpgaveCSS.modalHeading}>ADVARSEL!</h2>
@@ -1074,6 +1095,8 @@ const ÅbenOpgave = () => {
                         {(kunde?.CVR || kunde?.virksomhed) ? <div className={ÅbenOpgaveCSS.infoPill}>Erhvervskunde</div> : <div className={ÅbenOpgaveCSS.infoPill}>Privatkunde</div>}
                         {kunde?.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
                         {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}
+                        {opgave.createdAt && <div className={ÅbenOpgaveCSS.infoPill}>Oprettet d. {dayjs(opgave.createdAt).format("DD. MMMM [kl.] HH:mm")}</div>}
+                        {opgave.kilde && <div className={ÅbenOpgaveCSS.infoPill}>Kilde: {opgave.kilde}</div>}
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
                         {opgaveBilleder?.length > 0 && opgaveBilleder.map((medie, index) => {
@@ -1133,15 +1156,30 @@ const ÅbenOpgave = () => {
                         </div>}
                     </div>
                     <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede} handleDeleteFile={handleDeleteFile} index={imageIndex} />
-                </form>}
-                {!færdiggjort && <b onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></b>}            
-
+                </form>}            
+                <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
+                    {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
+                        <div className={ÅbenOpgaveCSS.mobileOpgaveStatusContainer}>
+                            <select name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
+                                <option value="Modtaget">Opgave modtaget</option>
+                                <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
+                                <option value="Dato aftalt">Status: Dato aftalt</option>
+                            </select>
+                            <div className={ÅbenOpgaveCSS.mobileOpgaveStatusIcon}>
+                                {status === "Modtaget" && <CircleCheck size="20px" />}
+                                {status === "Afventer svar" && <Clock5 size="20px" />}
+                                {status === "Dato aftalt" && <Handshake size="20px" />}
+                            </div>
+                            
+                        </div>
+                    </form>}  
+                </div>
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>
                         <div className={ÅbenOpgaveCSS.kundeInformationerContainer}>
                             <div className={ÅbenOpgaveCSS.kundeHeadingContainer}>
                                 <b className={ÅbenOpgaveCSS.kundeHeading} onClick={() => navigate(`/kunde/${kunde?._id}`)}>{kunde?.virksomhed ? kunde?.virksomhed : kunde?.navn}</b>
-                                {(!kunde?.CVR && !kunde?.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>CVR: {kunde?.CVR} • Erhvervskunde</p>}
+                                {(!kunde?.CVR && !kunde?.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>{kunde?.CVR && "CVR.: " + kunde?.CVR || <span style={{color: "#ff0000cc", display: "flex", alignItems: "center", gap: "2px"}}><CircleAlert size="12px" color="#ff0000cc" /> CVR-nummer ikke oplyst</span>} • Erhvervskunde</p>}
                                 {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button>}
                             </div>
                             
@@ -1151,15 +1189,15 @@ const ÅbenOpgave = () => {
                                 <b className={`${ÅbenOpgaveCSS.prefix} ${ÅbenOpgaveCSS.virksomhedHeading}`}>Kontaktperson</b>
                                 {kunde?.navn ? <p className={ÅbenOpgaveCSS.virksomhedTekst}>{kunde?.navn}</p> : null}
                                 <div className={ÅbenOpgaveCSS.kundeKontaktDesktop}>
-                                    <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>
-                                    <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>
+                                    {kunde?.telefon && <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>}
+                                    {kunde?.email && <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>}
                                 </div>
                             </div>}
                             {!(kunde?.virksomhed || kunde?.CVR) && <div className={ÅbenOpgaveCSS.privatKundeKontaktDesktop}>
                                 <a href={"tel:" + kunde?.telefon}><Phone size="16px" />{kunde?.telefon}</a>
                                 <a href={"mailto:" + kunde?.email}><Mail size="16px" />{kunde?.email}</a>
                             </div>}
-                            {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>}
+                            {/* {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonDesktop} onClick={() => setRedigerKundeModal(true)}>Rediger kundeinformationer</button>} */}
                             <div className={ÅbenOpgaveCSS.kundeKontaktMobile}>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"tel:" + kunde?.telefon}><Phone size="20px"/> {kunde?.telefon}</a>
                                 <a className={`${ÅbenOpgaveCSS.postfix} ${ÅbenOpgaveCSS.link}`} href={"sms:" + kunde?.telefon + "&body=Hej%20" + kunde?.fornavn + ", "}><MessageCircle size="20px" /> SMS</a>
@@ -1168,58 +1206,13 @@ const ÅbenOpgave = () => {
                         </div>
                         <RedigerKundeModal redigerKundeModal={redigerKundeModal} setRedigerKundeModal={setRedigerKundeModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde}/>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
-                            <b className={ÅbenOpgaveCSS.prefix}>Opgavestatus{færdiggjort ? ": " : null}</b>{færdiggjort ? <span className={ÅbenOpgaveCSS.statusTekstVedFærdiggjort}>{status}</span> : null}
-                            {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
-                                <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                    <option value="Modtaget">Opgave modtaget</option>
-                                    <option value="Afventer svar">Kunde kontaktet – afventer</option>
-                                    <option value="Dato aftalt">Dato aftalt</option>
-                                </select>
-                            </form>}
-                            {sætPåmindelseSMS && 
-                            <div className={ÅbenOpgaveCSS.påmindOmOpgave}>
-                                {smsPåmindelseIndstillet ? 
-                                <div className={ÅbenOpgaveCSS.påmindOmOpgaveKnapper}>
-                                    <p className={ÅbenOpgaveCSS.smsPåmindelseIndstillet}>{smsPåmindelseIndstillet}</p>
-                                </div>
-                                :
-                                <PageAnimation>
-                                    <>
-                                        <b style={{fontSize: "0.9rem"}}>- indstil SMS-påmindelse?</b>
-                                        <div className={ÅbenOpgaveCSS.påmindOmOpgaveKnapper}>
-                                            <button className={ÅbenOpgaveCSS.påmindOmOpgaveKnap} onClick={() => indstilPåmindelseSMS(24)}>24 timer</button>
-                                            <button className={ÅbenOpgaveCSS.påmindOmOpgaveKnap} onClick={() => indstilPåmindelseSMS(48)}>48 timer</button>
-                                        </div>
-                                    </>
-                                </PageAnimation>
-                                }
-                            </div>}
-                        </div>  
-                        <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
-                            {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
-                                {/* <select style={conditionalStyles} name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                    <option value="Modtaget">Status: Opgave modtaget</option>
-                                    <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
-                                    <option value="Dato aftalt">Status: Dato aftalt</option>
-                                </select> */}
-                                <div className={ÅbenOpgaveCSS.mobileOpgaveStatusContainer}>
-                                    <select name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
-                                        <option value="Modtaget">Opgave modtaget</option>
-                                        <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
-                                        <option value="Dato aftalt">Status: Dato aftalt</option>
-                                    </select>
-                                    <div className={ÅbenOpgaveCSS.mobileOpgaveStatusIcon}>
-                                        {status === "Modtaget" && <CircleCheck size="20px" />}
-                                        {status === "Afventer svar" && <Clock5 size="20px" />}
-                                        {status === "Dato aftalt" && <Handshake size="20px" />}
-                                    </div>
-                                    
-                                </div>
-                            </form>}
-                            
-                        </div>
-                        
+                        {user.isAdmin && <PopUpMenuKnap actions={[
+                            { icon: <Edit />, label: 'Rediger kundeinfo', onClick: () => setRedigerKundeModal(true) },
+                            { icon: <ArrowRightToLine />, label: 'Gå til kunde', onClick: () => navigate(`/kunde/${kunde?._id}`) }
+                        ]} />}
+                        </div>                         
                     </div>
+                    {!færdiggjort && <b onClick={åbnKortLink} className={ÅbenOpgaveCSS.kortLink}>Find vej <Navigation size="18"/></b>}
                 </div>
 
                 <div className={ÅbenOpgaveCSS.praktisk}>

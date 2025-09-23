@@ -5,13 +5,14 @@
 
 .sidebar {
     background: #fff;
-    padding: 25px 25px;
+    padding: 25px 25px 64px 25px;;
     width: clamp(150px, 20%, 250px);
     border-right: 1px solid rgba(0, 0, 0, 0.15);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px;
     display: flex;
     overflow-y: auto;
     flex-direction: column;
+    justify-content: space-between;
 }
 
 .sidebar ul li {
@@ -80,14 +81,16 @@
     gap: 0px;
 }
 
+.datoTekst {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    color: #33333380;
+}
+
 @media screen and (max-width: 750px) {
     .sidebar {
         display: none;
     }
-
-    /* .main {
-        
-    } */
 
     .content h1 {
         text-align: center;
@@ -99,6 +102,8 @@
         padding-top: 50px;
     }
 }
+
+
 
 @media screen and (display-mode: standalone) {
     .content {

@@ -11,6 +11,7 @@ import PageWrapper from '../pages/PageWrapper';
 import { react, useState, useEffect } from 'react'
 import AnimatedOutlet from './AnimatedOutlet.jsx'
 import { LayoutGrid, Clipboard, ClipboardList, ClipboardCheck, Trash2, Pin, IdCardLanyard, User, Users, House, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut } from 'lucide-react';
+import dayjs from 'dayjs';
 
 
 const Content = () => {
@@ -25,9 +26,11 @@ const Content = () => {
         <div className={ContentCSS.main}>
 
           <div className={ContentCSS.sidebar}>
-            <div className={ContentCSS.velkomst}>
+            {/* <div className={ContentCSS.velkomst}>
               <p className={ContentCSS.velkomstBesked}>Hej {user.navn.split(" ")[0]}! 👋</p>
-            </div>
+            </div> */}
+            <div>
+            <h3 style={{ fontFamily: 'OmnesBold', fontSize: '1.1rem', color: '#333333', marginBottom: '20px', textDecoration: 'underline' }}>Navigation</h3>
             <ul>
               <li><NavLink to="/" className={ContentCSS.sidebarItem}><LayoutGrid height={16} />Overblik</NavLink></li>
               {user.isAdmin && <li><NavLink to="alle-opgaver" className={ContentCSS.sidebarItem}><Clipboard height={16} />Alle opgaver</NavLink></li>}
@@ -39,6 +42,10 @@ const Content = () => {
               <li><NavLink to="app-indstillinger" className={ContentCSS.sidebarItem}><Settings height={16} />Indstillinger</NavLink></li>
               <li><NavLink to="hjaelp" className={ContentCSS.sidebarItem}><CircleQuestionMark height={16} />Hjælp</NavLink></li>
             </ul>
+            </div>
+            <div className={ContentCSS.dato}>
+              <p className={ContentCSS.datoTekst}>{dayjs().format("DD. MMMM [kl.] HH:mm")}</p>
+            </div>
           </div>
 
           <div className={ContentCSS.content}>

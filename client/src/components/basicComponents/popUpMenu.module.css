@@ -1,0 +1,73 @@
+.popUpMenuContainer { position: relative; display: inline-block; }
+
+.popUpMenuButton {
+  font-family: OmnesBold;
+  border: 1px solid #22222230;
+  background: none;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  height: 100%;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: 0.2s ease;
+  flex-shrink: 0;
+}
+
+.popUpMenuButton:hover { border-color: rgba(60, 90, 63, 0.5); font-weight: 800; }
+
+.popUpMenu {
+  position: absolute;
+  right: 0;
+  top: 45px; /* ændret fra bottom til top for at åbne under */
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  overflow: hidden;
+  z-index: 10;
+  min-width: 200px;
+}
+
+.popUpMenu button {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  gap: 10px;
+  font-family: Omnes;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.popUpMenu button:hover { background: #f0f0f0; }
+
+.popUpMenuInnerIcon * {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.popUpMenuInnerIcon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+  }
+
+.opening { animation: fadeSlideDown 0.2s forwards; }
+.closing { animation: fadeSlideUp 0.2s forwards; }
+
+.popUpMenuIcon { width: 16px; height: 16px; position: absolute; opacity: 0; transform: translateY(4px); }
+.iconOpen { opacity: 1; transform: translateY(0); }
+.iconClose { opacity: 1; transform: translateY(0); }
+
+@keyframes fadeSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeSlideUp { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-10px); } }

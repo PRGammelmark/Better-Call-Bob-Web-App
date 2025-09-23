@@ -8,6 +8,12 @@
     padding: 0px 10px;
 }
 
+.hilsenTekst {
+    font-family: OmnesBold;
+    font-size: 1.8rem;
+    color: #222222;
+}
+
 .moderneBesøgsKalenderDiv {
     width: 50%;
     max-width: 400px;

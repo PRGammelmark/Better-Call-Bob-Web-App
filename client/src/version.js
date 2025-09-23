@@ -14,6 +14,23 @@
 // 
 
 const changes = [{
+    version: "3.4.6",
+    date: "23. september 2025",
+    changes: [
+        "Systemserveren er nu sat op til at kunne modtage nye åbne opgaver og oprette dertilhørende kunder direkte fra Better Call Bob's webformularer.",
+        "Designjusteringer på infopillerne under opgavebeskrivelsen – nu kan pillerne bl.a. rulle hele vejen over mobilskærmen uden at blive 'klippet over' af margener.",
+        "Alle opgaver indeholder nu en ekstra infopille, der viser dato og klokkeslet for opgavens oprettelse.",
+        "Hvis en opgave er blevet automatisk oprettet i systemet via en web-formular, så vil en ny infopille vise denne information.",
+        "En dynamisk hilsen er blevet implementeret i toppen af 'Overblik'siden.",
+        "Sidebar'en har fået overskriften 'Navigation'. Derudover viser sidebaren nu også den aktuelle dato og klokkeslet i bunden.",
+        "Hvis en tilknyttet erhvervskunde ikke er blevet registreret med et CVR-nummer vil dette nu fremgå korrekt af opgave-siden.",
+        "Hvis en kunde mangler enten email eller telefonnummer vil disse nu ikke længere blive vist i tomme felter på opgave-siden.",
+        "Nu er der kommet dedikerede knapper til at redigere i både opgave- og kundeindstillinger og -informationer på opgavesiderne.",
+        "Når man opretter eller redigerer posteringer på mobilen vil udlægslinjer nu ikke længere stå skævt.",
+        "'Find vej'-knappen er blevet rykket ned til kunde-sektionen på opgaver. 'Opgavestatus'-knappen er blevet rykket op under opgavebilleder, umiddelbart under opgavebeskrivelsen.",
+        "'Åbne opgaver'-tabellen under 'Overblik' og 'Alle opgaver' viser nu mere relevante og fyldestgørende informationer."
+    ]
+},{
     version: "3.4.5",
     date: "21. september 2025",
     changes: [

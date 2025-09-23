@@ -71,14 +71,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 30px;
+    margin-top: 8px;
     text-decoration: none;
     color: #fff;
     background-color: #3c5a3f;
     padding: 8px 20px;
     border-radius: 10px;
     font-family: "OmnesBold";
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
+    /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px; */
     gap: 10px;
     cursor: pointer;
     transition: 0.2s ease;
@@ -150,7 +150,7 @@
     outline: none;
 }
 
-.opgavestatus {
+/* .opgavestatus {
     width: 100%;
     border-radius: 10px;
     padding: 4px 15px;
@@ -165,8 +165,24 @@
     box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.18) 0px 0px 0px 1px;
 }
 
+*/
+
 .opgavestatus:focus {
     outline: none;
+} 
+
+.opgavestatus {
+    height: 40px;
+    padding-left: 32px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    border-radius: 10px 0px 0px 10px;
+    margin-top: 0px;
+    background: #3c5a3f;
+    color: #fff;
+    border: none;
+    box-shadow: none;
+    font-family: "OmnesBold"
 }
 
 .kolonner {
@@ -1244,12 +1260,16 @@
 }
 
 .opgavestatusContainerDesktop {
-    display: block;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    width: 100%;
 }
 
-.opgavestatusContainerMobile {
+/* .opgavestatusContainerMobile {
     display: none;
-}
+} */
 
 .uddelegeringMobile {
     display: none;
@@ -1299,7 +1319,7 @@
     font-size: 0.9rem;
 }
 
-.sletOpgave {
+/* .sletOpgave {
     position: absolute;
     top: 0;
     right: 0;
@@ -1313,6 +1333,14 @@
     background: none;
     background-color: #FF000030;
     cursor: pointer;
+} */
+
+.sletOpgaveKnap {
+    display: flex;
+    align-items: start;
+    justify-content: flex-end;
+    width: 100%;
+    height: 60px;
 }
 
 .sletOpgave:hover {
@@ -1375,6 +1403,9 @@
 .privatEllerErhvervskunde {
     font-size: 0.8rem;
     color: #696969;
+    display: flex;
+    align-items: center;
+    gap: 2px;
 }
 
 .kundeHeadingContainer {
@@ -1656,15 +1687,15 @@
 
 .infoPillsDiv {
     display: flex;
-    padding: 0px 20px;
+    padding: 0px 30px;
     margin-bottom: 20px;
     margin-top: 5px;
     align-items: center;
     gap: 10px;
     overflow-x: auto;
     overflow-y: hidden;
-    width: 100%;
-    transform: translateX(-20px);
+    width: calc(100% + (2 * 30px));
+    transform: translateX(-30px);
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* Internet Explorer/Edge */
 }
@@ -1879,6 +1910,25 @@
     background: #59bf1a30;
 }
 
+.mobileOpgaveStatusContainer {
+    display: flex;
+    gap: 0;
+    align-items: center;
+    height: 40px;
+}
+
+.mobileOpgaveStatusIcon {
+    height: 100%;
+    padding-left: 0px;
+    padding-right: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    background: #3c5a3f;
+    border-radius: 0px 10px 10px 0px;
+}
+
 @media screen and (max-width: 750px) {
 
     .privatKundeKontaktDesktop {
@@ -1934,9 +1984,18 @@
     }
     
     .infoPillsDiv {
+        display: flex;
+        padding: 0px 52px 0 40px;
+        margin-bottom: 20px;
+        margin-top: 5px;
+        align-items: center;
+        gap: 10px;
+        overflow-x: auto;
+        overflow-y: hidden;
         width: 100vw;
-        margin-left: 0;
-        margin-right: 0;
+        transform: translateX(-40px);
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* Internet Explorer/Edge */
     }
     
     .kommentarFlexDiv textarea {
@@ -2120,7 +2179,8 @@
         color: #fff;
         border: none;
         box-shadow: none;
-        font-family: "OmnesBold"
+        font-family: "OmnesBold";
+        width: 100%;
     }
 
     .mobileOpgaveStatusContainer {

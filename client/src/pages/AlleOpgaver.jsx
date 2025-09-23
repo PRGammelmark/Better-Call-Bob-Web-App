@@ -13,7 +13,7 @@ const Alle_opgaver = () => {
       <p>Alle nye og igangværende opgaver vil blive vist her.</p>
       <OpenTasks />
       <DelegatedTasks />
-      <FinishedTasks />
+      {/* <FinishedTasks /> */}
     </>
   )
 }
