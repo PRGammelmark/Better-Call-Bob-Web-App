@@ -414,6 +414,10 @@
     .switchButton {
         display: none;
     }
+
+    .hilsenTekst {
+        font-size: 1.4rem;
+    }
 }
 
 @media screen and (display-mode: standalone) {
