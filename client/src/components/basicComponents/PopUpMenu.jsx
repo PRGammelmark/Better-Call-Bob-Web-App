@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Styles from './PopUpMenu.module.css';
+import Styles from './popUpMenu.module.css';
 import { Ellipsis, X } from 'lucide-react';
 
 const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassName }) => {
