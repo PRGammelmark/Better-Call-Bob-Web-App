@@ -14,7 +14,7 @@ import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkono
 import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { getHilsen } from '../utils/hilsener.js'
-import PopUpMenu from '../components/basicComponents/popUpMenu.jsx'
+import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
 import { ArrowLeftRight } from 'lucide-react'
 
 const Overblik = () => {
