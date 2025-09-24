@@ -18,6 +18,8 @@
   flex-shrink: 0;
 }
 
+/* TODO: Fjern fast bredde */
+
 .popUpMenuButton:hover { border-color: rgba(60, 90, 63, 0.5); font-weight: 800; }
 
 .popUpMenu {
