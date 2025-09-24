@@ -14,7 +14,7 @@ import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkono
 import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { getHilsen } from '../utils/hilsener.js'
-import PopUpMenuKnap from '../components/basicComponents/popUpMenuKnap.jsx'
+import PopUpMenu from '../components/basicComponents/popUpMenu.jsx'
 import { ArrowLeftRight } from 'lucide-react'
 
 const Overblik = () => {
@@ -107,7 +107,7 @@ const Overblik = () => {
       <div className={Styles.overblikHeader}>
           <b className={Styles.hilsenTekst}>{getHilsen(user.navn.split(" ")[0])}</b>
 
-          {user.isAdmin && <PopUpMenuKnap actions={[{ icon: <ArrowLeftRight />, label: managerOverblik ? 'Skift til personligt overblik' : 'Skift til manager-overblik', onClick: () => setManagerOverblik(!managerOverblik) }]} />}
+          {user.isAdmin && <PopUpMenu actions={[{ icon: <ArrowLeftRight />, label: managerOverblik ? 'Skift til personligt overblik' : 'Skift til manager-overblik', onClick: () => setManagerOverblik(!managerOverblik) }]} />}
         </div>
       {managerOverblik && <div className={Styles.overblikContainer}>
         

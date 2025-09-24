@@ -25,6 +25,7 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
     }, 200);
   };
 
+  // Handle toggle
   const handleToggle = () => {
     if (open) handleClose();
     else setOpen(true);

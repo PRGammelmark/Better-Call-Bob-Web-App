@@ -35,7 +35,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
-import PopUpMenuKnap from '../components/basicComponents/PopUpMenuKnap.jsx'
+import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -1035,7 +1035,7 @@ const ÅbenOpgave = () => {
                     <>
                         <div className={ÅbenOpgaveCSS.sletOpgaveKnap}>
                         {user.isAdmin && (
-                            <PopUpMenuKnap
+                            <PopUpMenu
                                 actions={[
                                 // Kun vis "Slet" hvis opgaven ikke er slettet og ikke markeret færdig
                                 !opgave.isDeleted && !opgave.markeretSomFærdig && !opgave.opgaveAfsluttet && {
@@ -1206,7 +1206,7 @@ const ÅbenOpgave = () => {
                         </div>
                         <RedigerKundeModal redigerKundeModal={redigerKundeModal} setRedigerKundeModal={setRedigerKundeModal} kunde={kunde} opdaterKunde={opdaterKunde} setOpdaterKunde={setOpdaterKunde}/>
                         <div className={ÅbenOpgaveCSS.opgavestatusContainerDesktop}>
-                        {user.isAdmin && <PopUpMenuKnap actions={[
+                        {user.isAdmin && <PopUpMenu actions={[
                             { icon: <Edit />, label: 'Rediger kundeinfo', onClick: () => setRedigerKundeModal(true) },
                             { icon: <ArrowRightToLine />, label: 'Gå til kunde', onClick: () => navigate(`/kunde/${kunde?._id}`) }
                         ]} />}
