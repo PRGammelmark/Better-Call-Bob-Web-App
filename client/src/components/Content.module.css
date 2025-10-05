@@ -46,23 +46,14 @@
     color: #333333;
     transition: 0.2s ease;
 }
-
-/* .content {
-    padding: 20px 30px;
-    flex: 2;
-    padding-bottom: 140px;
-    max-height: calc(100vh - 70px - 65px);
-    overflow-y: scroll;
-} */
  
 .content {
     padding: 20px 30px 120px 30px;
     flex: 1;
-    /* max-height: calc(100vh - 70px - 80px); */
     height: calc(100vh - 70px - 80px);
     overflow-y: scroll;
     overflow-x: hidden;
-    box-sizing: border-box; /* <- tilføj dette */
+    box-sizing: border-box;
 }
 
 .velkomst {
@@ -107,8 +98,21 @@
 
 @media screen and (display-mode: standalone) {
     .content {
-        padding-top: 80px;
+        /* padding-top: 80px; */
         padding-left: 10px;
         padding-right: 10px;
     }
+
+    @supports (padding-top: env(safe-area-inset-top)) {
+        .content {
+          padding-top: calc(40px + env(safe-area-inset-top));
+        }
+    }
 }
+
+/* === Dynamisk safe area til PWA === */
+/* @supports (padding-top: env(safe-area-inset-top)) {
+    .content {
+      padding-top: calc(40px + env(safe-area-inset-top));
+    }
+} */

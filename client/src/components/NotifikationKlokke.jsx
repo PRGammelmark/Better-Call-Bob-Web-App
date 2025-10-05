@@ -99,9 +99,16 @@ useEffect(() => {
         setÅbenNotifikationer(false);
       }
     };
+  
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+  
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
   }, []);
+  
 
   const handleClick = (notifikation) => {    
     axios.patch(`${import.meta.env.VITE_API_URL}/notifikationer/laest/${notifikation._id}`, {}, {
@@ -229,7 +236,7 @@ useEffect(() => {
           <div className={Styles.notifikationerHeader}>
             <b className={Styles.notifikationerHeaderTitle}>Notifikationer</b>
             <div>
-              <button onClick={() => handleÅbnSettings()}><Settings size={20} /></button>
+              <button onClick={() => handleÅbnSettings()}><Settings size={20} color="#222222" /></button>
             </div>
           </div>
           <div className={Styles.notifikationerContainer}>

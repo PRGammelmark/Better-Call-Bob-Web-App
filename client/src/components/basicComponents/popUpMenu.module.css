@@ -68,7 +68,7 @@
 .opening { animation: fadeSlideDown 0.2s forwards; }
 .closing { animation: fadeSlideUp 0.2s forwards; }
 
-.popUpMenuIcon { width: 16px; height: 16px; position: absolute; opacity: 0; transform: translateY(4px); }
+.popUpMenuIcon { width: 16px; height: 16px; position: absolute; opacity: 0; transform: translateY(4px); color: #222222; }
 .iconOpen { opacity: 1; transform: translateY(0); }
 .iconClose { opacity: 1; transform: translateY(0); }
 

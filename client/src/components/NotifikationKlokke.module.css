@@ -275,12 +275,16 @@
       height: calc(100vh - 52px);
       max-height: calc(100vh - 52px);
       border-radius: 0px;
-      /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
-                  rgba(0, 0, 0, 0.12) 0px 0px 0px 1px; */
       box-shadow: none;
       border: 1px solid #e0e0e0;
       background: #fff;
-  }
+    }
+
+    @supports (padding-top: env(safe-area-inset-top)) {
+      .dropdownContainer {
+        top: calc(54px + env(safe-area-inset-top));
+      }
+    }
   
   .dropdown {
       max-height: calc(100vh - 60px);

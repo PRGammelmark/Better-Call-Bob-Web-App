@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.1",
+    date: "5. oktober 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at notifikationer ikke blev vist korrekt på mobilen.",
+        "Nu viser app'ens header en mere korrekt højde på mobilen, afhængigt af den pågældende enheds skærmstørrelse."
+    ]
+},{
     version: "3.5.0",
     date: "5. oktober 2025",
     changes: [
