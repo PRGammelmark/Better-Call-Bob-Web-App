@@ -25,7 +25,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "build": "tsc && cp -r ./public ./dist/public && cp -r ./config ./dist/config",
+    "build": "tsc && cp -r ./public ./dist/public",
     "server": "npm run build && npm run dev",
     "start": "node dist/server.js"
   },
