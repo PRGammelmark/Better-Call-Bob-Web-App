@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.5.0",
+    date: "5. oktober 2025",
+    changes: [
+        "Interne live-notifikationer er blevet implementeret i app'en, og kan tilgås via 'Notifikationer'-knappen i headeren.",
+        "Notifikationer oprettes automatisk for bestemte brugere ved bestemte hændelser – fx hvis man får en opgave, hvis opgavebeskrivelsen bliver ændret undervejs i et opgaveforløb, eller hvis der kommer kommentarer på en opgave.",
+        "Ikke-sete notifikationer indikeres med et notifikation-badge over notifikation-knappen. Notifikationer, man ikke har handlet på, markeres med en grøn prik i notifikationsmenuen, eller med en farvemarkering på mobilen.",
+        "Et par simple handlingsmuligheder er også blevet implementeret i notifikationsmenuen.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.4.6",
     date: "23. september 2025",
     changes: [

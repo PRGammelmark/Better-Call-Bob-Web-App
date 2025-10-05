@@ -32,7 +32,7 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
   };
 
   return (
-    <div className={Styles.popUpMenuContainer} style={{ width: buttonSize, height: buttonSize }}>
+    <div className={Styles.popUpMenuContainer} style={{ width: buttonSize, height: buttonSize }} onClick={e => e.stopPropagation()}>
       <button className={`${Styles.popUpMenuButton} ${buttonClassName}`} onClick={handleToggle}>
         <X className={`${Styles.popUpMenuIcon} ${open ? Styles.iconClose : ''}`} />
         <Ellipsis className={`${Styles.popUpMenuIcon} ${open ? '' : Styles.iconOpen}`} />

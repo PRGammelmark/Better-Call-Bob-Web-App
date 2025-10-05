@@ -34,12 +34,72 @@
     display: none;
 }
 
+.headerButtonsContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.headerButton {
+    display: flex;
+    background: #e7eae7;
+    height: 40px;
+    width: 40px;
+    border-radius: 50px;
+    padding: 10px;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    transition: 0.2s ease;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px solid #22222200;
+}
+
+.headerButton:hover {
+    border: 1px solid #222222;
+}
+
+.hamburgerMobileContainer {
+    background: #ffffff20;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #ffffff00;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.hamburgerMobileContainer:hover {
+    border: 1px solid #ffffff;
+}
+
+.switchIconContainer {
+    background: #ffffff20;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    border: 1px solid #ffffff00;
+    transition: 0.2s ease;
+    cursor: pointer;
+}
+
+.switchIconContainer:hover {
+    border: 1px solid #ffffff;
+}
+
 .mobileTitle {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     gap: 10px;
-    align-items: center;
+    align-items: center!important;
     justify-content: center;
 }
 
@@ -47,14 +107,15 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 40px;
-    height: 32px;
-    transform: translateY(-5px);
+    position: relative;
+    /* width: 40px;
+    height: 32px; */
+    /* transform: translateY(-5px); */
 }
 
 .switchButtonContainer p {
-    color: #fff;
-    font-size: 0.6rem;
+    color: #ffffff;
+    font-size: 0.5rem;
     border-radius: 10px;
 }
 
@@ -65,13 +126,18 @@
 .switchText {
     transition: 0.4s ease;
     opacity: 0;
-    height: 0px;
-    transform: translateY(8px);
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translate(-50%, 9px);
+    background: #556f58;
+    padding: 0px 6px;
+    border: 1px solid #677f6a;
   }
   
   .switchTextVisible {
     opacity: 1;
-    transform: translateY(0px);
+    transform: translateY(-50%, 1px);
   }
 
 @media screen and (max-width: 750px) {

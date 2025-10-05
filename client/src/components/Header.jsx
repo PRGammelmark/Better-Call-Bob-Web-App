@@ -10,8 +10,8 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { currentVersion, changes } from '../version.js'
-import { LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut } from 'lucide-react';
-
+import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut, Menu } from 'lucide-react';
+import NotifikationKlokke from './NotifikationKlokke'
 
 
 const Header = () => {
@@ -83,7 +83,9 @@ useEffect(() => {
 
 
   const handleLogout = () => {
-    logout()
+    if(window.confirm("Er du sikker på, at du vil logge ud?")) {
+      logout()
+    }
   }
 
   const handleBackClick = () => {
@@ -102,11 +104,17 @@ useEffect(() => {
     <>
       <header className={`${Styles.header} ${Styles.desktopHeader}`}>
           <img className={Styles.headerImg} src={Logo} alt="" />
-          <nav>
+          <div className={Styles.headerButtonsContainer}>
+            <NotifikationKlokke background="#e7eae7" color="#222222" />
+            <div className={Styles.headerButton} onClick={handleLogout}>
+              <LogOut />
+            </div>
+          </div>
+          {/* <nav>
               <ul className={Styles.headerUl}>
                   {user ? <li className={Styles.headerLi} onClick={handleLogout}><LogOut />Log ud</li> : null}
               </ul>
-          </nav>
+          </nav> */}
       </header>
       <header className={`${Styles.header} ${Styles.mobileHeader}`}>
           <nav className={Styles.mobileNavList}>
@@ -114,17 +122,24 @@ useEffect(() => {
                 {showBackIcon && <img src={BackIcon} alt="" className={Styles.backIconMobile} onClick={handleBackClick}/>}
                 {user.isAdmin && location.pathname === '/' && 
                 <div className={Styles.switchButtonContainer} onClick={handleSwitchClick}>
-                  <p className={`${Styles.switchText} ${managerOverblik ? Styles.switchTextVisible : ''}`}>
-                    Manager
-                  </p>
-                  <p className={`${Styles.switchText} ${!managerOverblik ? Styles.switchTextVisible : ''}`}>
-                    Personlig
-                  </p>
-                  <img src={SwitchArrows} alt="" className={`${Styles.backIconMobile} ${Styles.switchIcon}`} />
+                    <p className={`${Styles.switchText} ${managerOverblik ? Styles.switchTextVisible : ''}`}>
+                      Manager
+                    </p>
+                    <p className={`${Styles.switchText} ${!managerOverblik ? Styles.switchTextVisible : ''}`}>
+                      Personlig
+                    </p>
+                  <div className={Styles.switchIconContainer}>
+                    <ArrowLeftRight size={20} />
+                    {/* <img src={SwitchArrows} alt="" className={`${Styles.backIconMobile} ${Styles.switchIcon}`} /> */}
+                  </div>
                 </div>}
               </div>
               <h3 className={Styles.mobileNavHeading}>{navTitle || "Ingen titel"}</h3>
-              <img onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} src={HamburgerIcon} alt="" />
+              <div className={Styles.headerButtonsContainer}>
+              <NotifikationKlokke background="#ffffff20" color="#ffffff" />
+              <div className={Styles.hamburgerMobileContainer}><Menu onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} size={20} /></div>
+              </div>
+              {/* <img onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} src={HamburgerIcon} alt="" /> */}
           </nav>
           {showNavMenu ? <MobileNavMenu handleLogout={handleLogout} setShowNavMenu={setShowNavMenu}/> : null}
       </header>

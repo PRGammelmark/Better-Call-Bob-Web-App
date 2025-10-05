@@ -1,6 +1,8 @@
 import Kunde from "../models/kunderModel.js";
 import Opgave from "../models/opgaveModel.js";
+import Bruger from '../models/brugerModel.js'
 import Counter from "../models/counterModel.js";
+import { opretNotifikation } from "../utils/notifikationFunktioner.js";
 
 export const handleElementorWebhook = async (req, res) => {
 
@@ -84,6 +86,7 @@ export const handleElementorWebhook = async (req, res) => {
         nyOpgaveObjekt.kundeID = eksisterendeKunde._id;
         nyOpgaveObjekt.kunde = eksisterendeKunde._id;
         nyOpgave = await Opgave.create(nyOpgaveObjekt);
+        await opretNotifikation({ modtagerID: "admin", udløserID: "admin", type: "opgaveOprettet", titel: "En ny opgave er modtaget fra en eksisterende kunde.", besked: `Opgaven skal løses på ${nyOpgave.kunde.adresse}, ${nyOpgave.kunde.postnummerOgBy}.`, link: `/opgave/${nyOpgave._id}` })
         console.log("Opgave oprettet (ID: " + nyOpgave._id + ") og tilknyttet eksisterende kunde (ID: " + eksisterendeKunde._id + ").");
       }
 
@@ -94,6 +97,7 @@ export const handleElementorWebhook = async (req, res) => {
         nyOpgaveObjekt.kundeID = nyKunde._id;
         nyOpgaveObjekt.kunde = nyKunde._id;
         nyOpgave = await Opgave.create(nyOpgaveObjekt);
+        await opretNotifikation({ modtagerID: "admin", udløserID: "admin", type: "opgaveOprettet", titel: "En ny opgave er modtaget fra en ny kunde.", besked: `Opgaven skal løses på ${nyOpgave.kunde.adresse}, ${nyOpgave.kunde.postnummerOgBy}.`, link: `/opgave/${nyOpgave._id}` })
         console.log("Opgave oprettet (ID: " + nyOpgave._id + ") og tilknyttet ny kunde (ID: " + nyKunde._id + ").");
       }
   

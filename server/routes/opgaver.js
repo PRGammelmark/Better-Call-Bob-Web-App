@@ -1,5 +1,5 @@
 import express from "express"
-import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder } from "../controllers/opgaveController.js"
+import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder, tilfoejAnsvarlig, fjernAnsvarlig, opdaterOpgavebeskrivelse, afslutOpgave, genåbnOpgave, tilføjBilleder } from "../controllers/opgaveController.js"
 import requireAuth from "../middleware/requireAuth.js";
 import { shortTermLimiter, dailyLimiter } from "../middleware/rateLimit.js"
 
@@ -33,5 +33,27 @@ router.delete('/:id', requireAuth, deleteOpgave)
 
 // OPDATER en opgave
 router.patch('/:id', requireAuth, updateOpgave)
+
+// Specifikke routes for patch af opgaver ================================
+
+// Tilføj ansvarlig til en opgave
+router.patch('/:id/tilfoejAnsvarlig', requireAuth, tilfoejAnsvarlig)
+
+// Fjern ansvarlig fra en opgave
+router.patch('/:id/fjernAnsvarlig', requireAuth, fjernAnsvarlig)
+
+// Opdater opgavebeskrivelse på opgave
+router.patch('/:id/opdaterOpgavebeskrivelse', requireAuth, opdaterOpgavebeskrivelse)
+
+// Afslut opgave
+router.patch('/:id/afslutOpgave', requireAuth, afslutOpgave)
+
+// Genåbn opgave
+router.patch('/:id/genåbnOpgave', requireAuth, genåbnOpgave)
+
+// Tilføj nye billeder til en opgave
+router.patch('/:id/tilføjBilleder', requireAuth, tilføjBilleder)
+
+// ========================================================================
 
 export default router;

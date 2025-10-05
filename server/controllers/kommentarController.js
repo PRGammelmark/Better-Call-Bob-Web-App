@@ -1,5 +1,9 @@
 import Kommentar from '../models/kommentarModel.js'
 import mongoose from "mongoose"
+import { opretNotifikation } from "../utils/notifikationFunktioner.js"
+import Bruger from '../models/brugerModel.js'
+import Opgave from '../models/opgaveModel.js'
+import Kunde from '../models/kunderModel.js'
 
 // GET alle kommentarer
 const getKommentarer = async (req,res) => {
@@ -28,6 +32,13 @@ const createKommentar = async (req, res) => {
     const { kommentarIndhold, brugerID, opgaveID } = req.body;
     try {
         const kommentar = await Kommentar.create({kommentarIndhold, brugerID, opgaveID})
+        
+        const bruger = await Bruger.findById(req.user._id);
+        const opgave = await Opgave.findById(opgaveID);
+        const kunde = await Kunde.findById(opgave.kundeID);
+        await opretNotifikation({ modtagerID: opgave.ansvarlige, udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
+
         res.status(200).json(kommentar)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -66,6 +77,15 @@ const updateKommentar = async (req,res) => {
     if(!kommentar) {
         return res.status(400).json({error: 'Ingen kommentarer fundet med et matchende ID.'})
     }
+
+    const bruger = await Bruger.findById(req.user._id);
+    const opgave = await Opgave.findById(kommentar.opgaveID);
+    const ansvarlige = opgave.ansvarlig;
+    const kunde = await Kunde.findById(opgave.kundeID);
+    for (const ansvarlig of ansvarlige) {
+        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se flere detaljer.`, link: `/opgave/${opgave._id}` })
+    }
+    await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
 
     res.status(200).json(kommentar)
 }

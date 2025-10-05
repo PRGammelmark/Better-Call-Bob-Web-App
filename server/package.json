@@ -24,7 +24,10 @@
     "web-push": "^3.6.7"
   },
   "scripts": {
-    "start": "node server.js"
+    "dev": "nodemon",
+    "build": "tsc && cp -r ./public ./dist/public && cp -r ./config ./dist/config",
+    "server": "npm run build && npm run dev",
+    "start": "node dist/server.js"
   },
   "name": "server",
   "type": "module",
@@ -32,5 +35,10 @@
   "main": "server.js",
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
 }

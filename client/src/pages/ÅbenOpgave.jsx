@@ -299,8 +299,9 @@ const ÅbenOpgave = () => {
     }
 
     function indsendOpgavebeskrivelse (x) {    
-        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-            opgaveBeskrivelse: x
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}/opdaterOpgavebeskrivelse`, {
+            opgaveBeskrivelse: x,
+            ansvarlige: nuværendeAnsvarlige
         }, {
             headers: {
                 'Authorization': `Bearer ${user.token}`
@@ -355,8 +356,8 @@ const ÅbenOpgave = () => {
 
             const opdateretAnsvarlige = [...nuværendeAnsvarlige, nyAnsvarlig];
         
-            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                ansvarlig: opdateretAnsvarlige,
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}/tilfoejAnsvarlig`, {
+                ansvarlig: nyAnsvarlig,
             }, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`
@@ -381,8 +382,8 @@ const ÅbenOpgave = () => {
         const opdateredeAnsvarlige = nuværendeAnsvarlige.filter(ansvarlig => ansvarlig !== ansvarligDerSkalFjernes);
 
         if (window.confirm("Er du sikker på, at du vil fjerne " + ansvarligDerSkalFjernes.navn + " fra opgaven?")) {
-            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                ansvarlig: opdateredeAnsvarlige,
+            axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}/fjernAnsvarlig`, {
+                ansvarlig: ansvarligDerSkalFjernes,
             }, {
                 headers: {
                     'Authorization': `Bearer ${user.token}`

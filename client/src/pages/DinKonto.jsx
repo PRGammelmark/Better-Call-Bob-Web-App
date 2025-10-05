@@ -266,7 +266,7 @@ const DinKonto = () => {
                 <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
                   <MapPin height={14} />
                   <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
-                  <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse.split(", ")[1]}</span>
+                  <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse?.split(", ")[1]}</span>
                 </div>
                 <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
                   <Radius height={14} />

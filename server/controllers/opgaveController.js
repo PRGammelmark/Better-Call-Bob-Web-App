@@ -1,8 +1,11 @@
 import Opgave from '../models/opgaveModel.js'
+import Bruger from '../models/brugerModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
 import Joi from "joi"
 import axios from 'axios'
+
+import { opretNotifikation } from '../utils/notifikationFunktioner.js'
 
 const opgaveSchema = Joi.object({
     opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
@@ -20,6 +23,8 @@ const opgaveSchema = Joi.object({
     kundeID: Joi.string().required()
 })
 
+const debounceTimers = {};
+
 const verifyCaptcha = async (token) => {
     const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
     const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
@@ -35,13 +40,13 @@ const getOpgaver = async (req, res) => {
     try {
         const opgaver = await Opgave.find({}).sort({ createdAt: -1 });
 
-        // Convert fakturaPDF buffer to base64 for each opgave
-        const opgaverWithBase64PDF = opgaver.map(opgave => ({
-            ...opgave.toObject(),
-            fakturaPDF: opgave.fakturaPDF ? opgave.fakturaPDF.toString('base64') : null
-        }));
+        // // Convert fakturaPDF buffer to base64 for each opgave
+        // const opgaverWithBase64PDF = opgaver.map(opgave => ({
+        //     ...opgave.toObject(),
+        //     fakturaPDF: opgave.fakturaPDF ? opgave.fakturaPDF.toString('base64') : null
+        // }));
 
-        res.status(200).json(opgaverWithBase64PDF);
+        res.status(200).json(opgaver);
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
@@ -58,7 +63,12 @@ const getOpgaverPopulateKunder = async (req, res) => {
 
 const getOpgaverForKunde = async (req, res) => {
     const { id } = req.params;
-    const opgaver = await Opgave.find({ kundeID: id });
+    try {
+        const opgaver = await Opgave.find({ kundeID: id });
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
     res.status(200).json(opgaver);
 }
 
@@ -152,12 +162,19 @@ const createOpgave = async (req, res) => {
         if (_id) data._id = _id;
 
         const opgave = await Opgave.create(data);
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+
+        if (ansvarlig.length > 0) {
+            for (const ansvarlig of ansvarlig) {
+                await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveTildelt", titel: "Du har fået en ny opgave.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+            }
+        }
+
         res.status(200).json(opgave);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
-
 
 // CREATE en opgave (åben route)
 const openCreateOpgave = async (req, res) => {
@@ -183,6 +200,9 @@ const openCreateOpgave = async (req, res) => {
 
     try {
         const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, opgaveBilleder})
+
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+        
         res.status(200).json(opgave)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -248,6 +268,105 @@ const updateOpgave = async (req, res) => {
     }
 };
 
+const tilfoejAnsvarlig = async (req, res) => {
+    const { id } = req.params;
+    const { ansvarlig } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $push: { ansvarlig: ansvarlig } }, { new: true }).populate('kunde');
+    await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveTildelt", titel: "Du har fået en ny opgave.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+
+    res.status(200).json(opgave);
+}
+
+const fjernAnsvarlig = async (req, res) => {
+    // opgave-ID
+    const { id } = req.params;
+    // ansvarlig-objekt
+    const { ansvarlig } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $pull: { ansvarlig: ansvarlig } }, { new: true }).populate('kunde');
+    await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveFjernet", titel: `${bruger.navn} har fjernet dig fra en opgave.`, besked: `Du er ikke længere ansvarlig for opgaven på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+
+    res.status(200).json(opgave);
+}
+
+const opdaterOpgavebeskrivelse = async (req, res) => {
+    const { id } = req.params;
+    const { opgaveBeskrivelse, ansvarlige } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $set: { opgaveBeskrivelse: opgaveBeskrivelse } }, { new: true }).populate('kunde');
+    
+    if (debounceTimers[id]) clearTimeout(debounceTimers[id]);
+    console.log("Starter timer ...")
+
+    // Start en ny timer på 2 minutter
+    debounceTimers[id] = setTimeout(async () => {
+        for (const ansvarlig of ansvarlige) {
+            await opretNotifikation({
+                modtagerID: ansvarlig._id, 
+                udløserID: req.user._id,
+                type: "opgaveBeskrivelseOpdateret",
+                titel: `${bruger.navn} har rettet i opgavebeskrivelsen på en opgave, du er ansvarlig for.`,
+                besked: `Opgavebeskrivelsen er blevet ændret for opgaven på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`,
+                link: `/opgave/${opgave._id}`
+            });
+        }
+
+        delete debounceTimers[id]; // ryd op efter afsendelse
+    }, 2 * 60 * 1000); // 2 minutter
+
+    res.status(200).json(opgave);
+}
+
+const afslutOpgave = async (req, res) => {
+    const { id } = req.params;
+    const { ansvarlige } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $set: { opgaveAfsluttet: new Date() } }, { new: true }).populate('kunde');
+    
+    for (const ansvarlig of ansvarlige) {
+        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveAfsluttet", titel: `${bruger.navn} har afsluttet en opgave, du er ansvarlig for.`, besked: `Opgaven på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy} er blevet afsluttet.`, link: `/opgave/${opgave._id}` })
+    }
+
+    await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveAfsluttet", titel: `${bruger.navn} har afsluttet en opgave.`, besked: `Opgaven på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy} er blevet afsluttet.`, link: `/opgave/${opgave._id}` })
+
+    res.status(200).json(opgave);
+}
+
+const genåbnOpgave = async (req, res) => {
+    const { id } = req.params;
+    const { ansvarlige } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $set: { opgaveAfsluttet: undefined, markeretSomFærdig: false, isDeleted: undefined } }, { new: true }).populate('kunde');
+    
+    for (const ansvarlig of ansvarlige) {
+        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveGenåbnet", titel: `${bruger.navn} har genåbnet en opgave, du er ansvarlig for.`, besked: `En opgave på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy} er blevet genåbnet.`, link: `/opgave/${opgave._id}` })
+    }
+
+    await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveGenåbnet", titel: `${bruger.navn} har genåbnet en opgave.`, besked: `En opgave på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy} er blevet genåbnet.`, link: `/opgave/${opgave._id}` })
+
+    res.status(200).json(opgave);
+}
+
+const tilføjBilleder = async (req, res) => {
+    const { id } = req.params;
+    const { nyeBilleder, ansvarlige } = req.body;
+    const bruger = await Bruger.findById(req.user._id);
+
+    const opgave = await Opgave.findByIdAndUpdate(id, { $push: { opgaveBilleder: nyeBilleder } }, { new: true }).populate('kunde');
+    
+    for (const ansvarlig of ansvarlige) {
+        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveBillederTilføjet", titel: `${bruger.navn} har tilføjet nye billeder til en opgave, du er ansvarlig for.`, besked: `Billeder tilføjet til opgaven på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+    }
+
+    res.status(200).json(opgave);
+}
+
 export {
     getOpgaver,
     getOpgaverPopulateKunder,
@@ -257,5 +376,11 @@ export {
     deleteOpgave,
     updateOpgave,
     getOpgaverForKunde,
-    getOpgaverForMedarbejder
+    getOpgaverForMedarbejder,
+    tilfoejAnsvarlig,
+    fjernAnsvarlig,
+    opdaterOpgavebeskrivelse,
+    afslutOpgave,
+    genåbnOpgave,
+    tilføjBilleder
 }

@@ -32,6 +32,8 @@ import { registrerBetalinger } from './utils/registrerBetalinger.js';
 import path from 'path';
 import { fileURLToPath } from "url";
 import elementorWebhookRouter from "./routes/elementorWebhook.js";
+import notifikationerRouter from "./routes/notifikationer.js";
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -149,6 +151,7 @@ app.use('/api/opgavetyper', opgavetyperRoutes)
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 app.use("/api/webhook", elementorWebhookRouter);
+app.use("/api/notifikationer", notifikationerRouter);
 app.use('/api/cleanup', (req, res) => {
     requestedCleanup();
     res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });

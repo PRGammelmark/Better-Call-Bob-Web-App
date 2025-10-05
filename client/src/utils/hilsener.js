@@ -6,6 +6,7 @@ const hilsener = {
       "Godmorgen {navn} ☀️☕️",
       "Godmorgen, håber du får en dejlig dag 🌸",
       "Hej {navn} – klar til en ny dag? 💪",
+      "Hej {navn}. Klar til at gå i gang?",
       "Morgen, {navn}! Tid til at shine 🌞",
       "Godmorgen! Lad os gi' den gas i dag 🚀",
       "Godmorgen {navn}. Lad os gøre dagen værdifuld 🌟"

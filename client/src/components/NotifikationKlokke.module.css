@@ -1,0 +1,330 @@
+.notifikationKlokkeContainer * {
+    user-select: none;
+}
+
+.bell {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.15s ease;
+    border: 1px solid #22222200;
+    position: relative;
+}
+
+.bell:hover {
+    border: 1px solid #222222;
+}
+
+.bell:active {
+    transform: scale(0.92);
+}
+
+.useteBadge {
+    position: absolute;
+    bottom: -5px;
+    left: -5px;
+    width: 18px;
+    height: 18px;
+    background: #ff3f3f;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    aspect-ratio: 1/1;
+    cursor: pointer;
+    user-select: none;
+}
+
+.notifikationKlokkeContainer {
+    position: relative;
+    display: inline-block;
+    transition: 0.15s ease;
+}
+
+/* .notifikationKlokkeContainer:active {
+    transform: scale(0.92);
+} */
+
+.dropdownContainer {
+    overflow: hidden;
+    border-radius: 0px;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1000;
+    margin-top: 6px;
+    min-width: 350px;
+    max-height: 80vh;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+                rgba(0, 0, 0, 0.12) 0px 0px 0px 1px;
+}
+
+.dropdown {
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background: white;
+    border-radius: 6px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+                rgba(0, 0, 0, 0.12) 0px 0px 0px 1px;
+  }
+  
+  .notifikationRow {
+    padding: 12px 12px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 10px;
+    transition: 0.15s ease;
+    position: relative;
+  }
+
+  .notifikationRow:last-child {
+    border-bottom: none;
+  }
+  
+  .notifikationRow:hover {
+    background: #f0f0f0;
+  }
+
+  .notifikationRow:active {
+    background: #e0e0e0;
+  }
+
+  .notifikationRow:active .notifikationIcon, .notifikationRow:hover .notifikationIcon {
+    background: #FF000000!important;
+  }
+  
+  .title b {
+    font-family: "OmnesBold";
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #222222;
+  }
+  
+  .besked {
+    font-size: 0.85rem;
+    color: #555;
+    margin-top: 3px;
+  }
+  
+  .empty {
+    padding: 10px;
+    text-align: center;
+    color: grey;
+    font-size: 0.9rem;
+  }
+
+  .notifikationDatoTid {
+    font-size: 0.7rem;
+    font-family: "OmnesBold";
+    color: #59bf1a;
+    margin-top: 3px;
+  }
+
+  .notifikationIcon {
+    width: 40px;
+    height: 40px;
+    color: #222222;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 50%;
+    padding: 12px;
+    transition: 0.15s ease;
+  }
+
+  .læstDivContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
+    min-width: 10px;
+  }
+
+  .læstDiv {
+    width: 10px;
+    height: 10px;
+    background: #59bf1a;
+    border-radius: 50%;
+  }
+
+  .notifikationerHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px 10px 15px;
+  }
+
+  .notifikationerHeaderTitle {
+    font-size: 1.3rem;
+    font-family: "OmnesBold";
+    color: #222222;
+  }
+
+  .notifikationerHeader button {
+    background: #f0f0f0;
+    padding: 7px;
+    border-radius: 50%;
+    height: 30px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1/1;
+    border: 1px solid #22222200;;
+    cursor: pointer;
+    transition: 0.15s ease;
+  }
+
+  .notifikationerHeader button:hover {
+    border: 1px solid #222222;
+  }
+
+  .notifikationerContainer {
+    border-top: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+  }
+
+  .hentFlereNotifikationerDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .hentFlereNotifikationerButton {
+    background: #f0f0f0;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.15s ease;
+    border: 1px solid #22222200;
+    font-family: "OmnesBold";
+    font-size: 0.8rem;
+    color: #222222;
+  }
+
+  .hentFlereNotifikationerButton:hover {
+    border: 1px solid #222222;
+  }
+
+  .hentFlereNotifikationerButton:active {
+    transform: scale(0.97);
+  }
+
+  .hentFlereNotifikationerButton:disabled {
+    background: #f0f0f0;
+    border: 1px solid #22222200;
+    color: #22222280;
+    cursor: default;
+  }
+
+  .popUpMenuContainer {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    right: 0;
+    z-index: 2000;
+    top: 50%;
+    transform: translate(100%, -50%);
+    right: 10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.35s ease;
+  }
+
+  .notifikationRow:hover > .popUpMenuContainer {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(0%, -50%);
+  }
+
+  .notifikationRow:active:has(.popUpMenuContainer:active) {
+    background: #f0f0f0;
+  }
+
+@media (max-width: 750px) {
+    .bell:hover {
+        border: 1px solid #fff;
+    }
+
+    .dropdownContainer {
+      overflow: hidden;
+      border-radius: 0px;
+      position: fixed;
+      top: 54px;
+      right: 0;
+      z-index: 1000;
+      margin-top: 6px;
+      width: 100vw;
+      height: calc(100vh - 52px);
+      max-height: calc(100vh - 52px);
+      border-radius: 0px;
+      /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+                  rgba(0, 0, 0, 0.12) 0px 0px 0px 1px; */
+      box-shadow: none;
+      border: 1px solid #e0e0e0;
+      background: #fff;
+  }
+  
+  .dropdown {
+      max-height: calc(100vh - 60px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      background: white;
+      border-radius: 0px;
+      /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+                  rgba(0, 0, 0, 0.12) 0px 0px 0px 1px; */
+                  box-shadow: none;
+    }
+
+    .læstDivContainer {
+      display: none;
+    }
+
+    .notifikationRow {
+      padding-right: 60px;
+    }
+
+    .ikkeLæstRow {
+      background: #51bf1a30;
+    }
+
+    .ikkeLæstRow .notifikationIcon {
+      background: #51bf1a30;
+    }
+
+    .popUpMenuContainer {
+      position: absolute;
+      display: inline-block;
+      top: 0;
+      right: 0;
+      z-index: 2000;
+      top: 50%;
+      transform: translate(0%, -50%);
+      right: 10px;
+      opacity: 1;
+      pointer-events: auto;
+      transition: 0.35s ease;
+    }
+  
+    .notifikationRow:hover > .popUpMenuContainer {
+      opacity: 1;
+      transform: translate(0%, -50%);
+    }
+}
