@@ -164,10 +164,18 @@ const createOpgave = async (req, res) => {
         await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
 
         if (ansvarlig.length > 0) {
-            for (const ansvarlig of ansvarlig) {
-                await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "opgaveTildelt", titel: "Du har fået en ny opgave.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+            for (const person of ansvarlig) {
+              await opretNotifikation({
+                modtagerID: person._id,
+                udløserID: req.user._id,
+                type: "opgaveTildelt",
+                titel: "Du har fået en ny opgave.",
+                besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`,
+                link: `/opgave/${opgave._id}`
+              });
             }
-        }
+          }
+          
 
         res.status(200).json(opgave);
     } catch (error) {

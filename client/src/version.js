@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.4",
+    date: "6. oktober 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at app'en i nogle tilfælde ikke kunne oprette en opgave, hvor en ansvarlig medarbejder blev tilknyttet i samme oprettelsesflow."
+    ]
+},{
     version: "3.5.3",
     date: "6. oktober 2025",
     changes: [
