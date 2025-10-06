@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.3",
+    date: "6. oktober 2025",
+    changes: [
+        "Nu viser overblikstabellen for 'Åbne opgaver' den korrekte status for opgaver, hvor datoen er blevet aftalt."
+    ]
+},{
     version: "3.5.2",
     date: "6. oktober 2025",
     changes: [
