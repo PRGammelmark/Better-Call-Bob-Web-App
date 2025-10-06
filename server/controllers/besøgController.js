@@ -44,11 +44,13 @@ const getEtBesøg = async (req,res) => {
 const createBesøg = async (req, res) => {
     const { datoTidFra, datoTidTil, brugerID, opgaveID, kundeID, kommentar, eventColor } = req.body;
     const bruger = await Bruger.findById(req.user._id);
-    const kunde = await Kunde.findById(kundeID);
+    const opgave = await Opgave.findById(opgaveID);
+    const udledtKundeID = opgave?.kundeID;
+    const kunde = await Kunde.findById(udledtKundeID);
 
     try {
-        const besøg = await Besøg.create({ datoTidFra, datoTidTil, brugerID, opgaveID, kundeID, kommentar, eventColor })
-        await opretNotifikation({ modtagerID: brugerID, udløserID: req.user._id, type: "besøgOprettet", titel: `Du har fået et besøg i kalenderen (reg. af ${bruger.navn}) d. ${dayjs(datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(datoTidTil).format("HH:mm")} på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
+        const besøg = await Besøg.create({ datoTidFra, datoTidTil, brugerID, opgaveID, kundeID: udledtKundeID, kommentar, eventColor })
+        await opretNotifikation({ modtagerID: brugerID, udløserID: req.user._id, type: "besøgOprettet", titel: `Du har fået et besøg i kalenderen (reg. af ${bruger.navn}) d. ${dayjs(datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(datoTidTil).format("HH:mm")} på ${kunde?.adresse || "(adresse ikke fundet)"}, ${kunde?.postnummerOgBy || "(område ikke fundet)"}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
         res.status(200).json(besøg)
     } catch (error) {
         res.status(400).json({error: error.message})
@@ -70,8 +72,21 @@ const deleteBesøg = async (req, res) => {
         return res.status(400).json({error: 'Ingen besøg fundet med et matchende ID.'})
     }
 
-    const kunde = await Kunde.findById(besøg.kundeID);
-    await opretNotifikation({ modtagerID: besøg.brugerID, udløserID: req.user._id, type: "besøgFjernet", titel: `${bruger.navn} har fjernet dit besøg på ${kunde.adresse}, ${kunde.postnummerOgBy} d. ${dayjs(besøg.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(besøg.datoTidTil).format("HH:mm")}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
+    let kundeID = besøg.kundeID;
+
+    if (!kundeID) {
+        const opgave = await Opgave.findById(besøg.opgaveID);
+        if (opgave) kundeID = opgave.kundeID;
+    }    
+
+    const kunde = await Kunde.findById(kundeID);
+
+    if(kunde) {
+        await opretNotifikation({ modtagerID: besøg.brugerID, udløserID: req.user._id, type: "besøgFjernet", titel: `${bruger.navn} har fjernet dit besøg på ${kunde?.adresse || "(adresse ikke fundet)"}, ${kunde?.postnummerOgBy || "(område ikke fundet)"} d. ${dayjs(besøg.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(besøg.datoTidTil).format("HH:mm")}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
+    } else {
+        await opretNotifikation({ modtagerID: besøg.brugerID, udløserID: req.user._id, type: "besøgFjernet", titel: `${bruger.navn} har fjernet dit besøg hos en kunde d. ${dayjs(besøg.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(besøg.datoTidTil).format("HH:mm")}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
+    }
+    
 
     res.status(200).json(besøg)
 }
@@ -93,8 +108,16 @@ const updateBesøg = async (req,res) => {
         return res.status(400).json({error: 'Ingen besøg fundet med et matchende ID.'})
     }
 
-    const kunde = await Kunde.findById(besøg.kundeID);
-    await opretNotifikation({ modtagerID: besøg.brugerID, udløserID: req.user._id, type: "besøgOpdateret", titel: `${bruger.navn} har ændret dit besøg på ${kunde.adresse}, ${kunde.postnummerOgBy} fra ${dayjs(besøg.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(besøg.datoTidTil).format("HH:mm")} til ${dayjs(req.body.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(req.body.datoTidTil).format("HH:mm")}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
+    let kundeID = besøg.kundeID;
+
+    if (!kundeID) {
+        const opgave = await Opgave.findById(besøg.opgaveID);
+        if (opgave) kundeID = opgave.kundeID;
+    }
+
+    const kunde = await Kunde.findById(kundeID);
+
+    await opretNotifikation({ modtagerID: besøg.brugerID, udløserID: req.user._id, type: "besøgOpdateret", titel: `${bruger.navn} har ændret dit besøg på ${kunde?.adresse || "(adresse ikke fundet)"}, ${kunde?.postnummerOgBy || "(område ikke fundet)"} fra ${dayjs(besøg.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(besøg.datoTidTil).format("HH:mm")} til ${dayjs(req.body.datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(req.body.datoTidTil).format("HH:mm")}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
 
     res.status(200).json(besøg)
 }

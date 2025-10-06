@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.2",
+    date: "6. oktober 2025",
+    changes: [
+        "Rettede flere fejl, der gjorde, at serveren crashede ved nogle handlinger med besøgsdata."
+    ]
+},{
     version: "3.5.1",
     date: "5. oktober 2025",
     changes: [
