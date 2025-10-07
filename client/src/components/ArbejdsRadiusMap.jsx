@@ -66,7 +66,14 @@ export default function ArbejdsRadiusMap(props) {
 
   const { indstillinger } = useIndstillinger();
 
-  const [center, setCenter] = useState(props?.bruger?.arbejdsOmråde?.center || [55.6761, 12.5683]);
+  const defaultCenter = [55.6761, 12.5683];
+  const [center, setCenter] = useState(
+    props?.bruger?.arbejdsOmråde?.center?.length === 2
+      ? props.bruger.arbejdsOmråde.center
+      : defaultCenter
+  );
+
+  // const [center, setCenter] = useState(props?.bruger?.arbejdsOmråde?.center || [55.6761, 12.5683]);
   const [adresse, setAdresse] = useState(props?.bruger?.arbejdsOmråde?.adresse || "")
   const [radius, setRadius] = useState(props?.bruger?.arbejdsOmråde?.radius || 1000);
   const [zoom, setZoom] = useState(12); // midlertidig init, bliver beregnet efter mount
@@ -77,6 +84,10 @@ export default function ArbejdsRadiusMap(props) {
 
   const user = props.user;
   const maxArbejdsRadius = indstillinger?.arbejdsområdeKilometerRadius * 1000
+
+  console.log(props.bruger)
+  if (!center || !Array.isArray(center) || center.length !== 2) return null;
+  
 
   useEffect(() => {
     if (!circleRef.current) return;
@@ -107,14 +118,14 @@ export default function ArbejdsRadiusMap(props) {
             `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
           );
           const data = await res.json();
-          const formateretAdresse = ((data.address.road ? data.address.road : "Et sted nær") + (data.address.house_number ? (" " + data.address.house_number) : "") + (data.address.road ? ", " : " ") + data.address.postcode + " " + (data.address.city || data.address.town || data.address.village || data.address.municipality || ""))
+          const formateretAdresse = ((data.address.road ? data.address.road : "Et sted nær") + (data.address.house_number ? (" " + data.address.house_number) : "") + (data.address.road ? ", " : " ") + (data.address.postcode || "") + " " + (data.address.city || data.address.town || data.address.village || data.address.municipality || ""))
           setAdresse(formateretAdresse)
         } catch (err) {
           console.error("Geocoding fejl:", err);
         }
-      };
+    };
 
-      function CenterUpdater({ onMoveEnd }) {
+    function CenterUpdater({ onMoveEnd }) {
         const map = useMapEvents({
         dragend: () => {
             const c = map.getCenter();
@@ -153,9 +164,8 @@ export default function ArbejdsRadiusMap(props) {
   
   return (
     <div className={Styles.mapRadiusSelectorContainer}>
-        <h2>Hvor vil du gerne arbejde?</h2>
+        <h2>Hvor vil du arbejde?</h2>
         <p>Træk i kortet og tilpas cirklen herunder, så markeringen viser hvor du vil arbejde.</p>
-
       <div className={Styles.mainMapDiv} style={{ position: "relative" }}>
         <MapContainer
           center={center}
@@ -234,7 +244,7 @@ export default function ArbejdsRadiusMap(props) {
           <button className={Styles.submitButton} onClick={gemArbejdsOmråde}>
             Gem
           </button>
-          <button className={Styles.cancelButton}>
+          <button className={Styles.cancelButton} onClick={() => props.setTrigger(false)}>
             Annuller
           </button>
         </div>

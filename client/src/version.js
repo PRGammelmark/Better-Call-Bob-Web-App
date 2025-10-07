@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.5",
+    date: "7. oktober 2025",
+    changes: [
+        "Tabellen over åbne opgaver viser nu en anden farve på statusikonet, hvis en dato er aftalt med kunden.",
+        "Smårettelser og justeringer af arbejdsområdekortet."
+    ]
+},{
     version: "3.5.4",
     date: "6. oktober 2025",
     changes: [

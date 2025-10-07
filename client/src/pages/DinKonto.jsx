@@ -263,6 +263,7 @@ const DinKonto = () => {
             <div className={Styles.arbejdsPræferencerKnap} onClick={() => setArbejdsOmrådePopup(true)}>
               <h3>Område</h3>
               <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                {bruger?.arbejdsOmråde?.adresse && <>
                 <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
                   <MapPin height={14} />
                   <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
@@ -272,6 +273,7 @@ const DinKonto = () => {
                   <Radius height={14} />
                   {bruger?.arbejdsOmråde?.radius / 1000} km.
                 </div>
+                </>}
               </div>
             </div>
             <div className={Styles.arbejdsPræferencerKnap} onClick={() => setOpgaveTyperPopup(true)}>
