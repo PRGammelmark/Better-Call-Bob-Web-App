@@ -127,9 +127,9 @@ const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering
                   {posteringBetalt === 0 && <button onClick={() => { setOpenRetPrissatsModalID(postering._id); handleClose(); }}>
                     <span><Settings2 className={Styles.posteringMereInnerKnapIcon}/> Prissats</span>
                   </button>}
-                  <button onClick={() => { setOpenRetLønsatsModalID(postering._id); handleClose(); }}>
+                  {user.isAdmin && <button onClick={() => { setOpenRetLønsatsModalID(postering._id); handleClose(); }}>
                     <span><Settings2 className={Styles.posteringMereInnerKnapIcon}/> Lønsats</span>
-                  </button>
+                  </button>}
                   {!(posteringBetalt === 2) && <button onClick={() => { setOpenRegistrerBetalingModalID(postering._id); handleClose(); }}>
                     <span><Check className={Styles.posteringMereInnerKnapIcon}/> Reg. betaling</span>
                   </button>}

@@ -32,7 +32,7 @@ const helpQuestions = [
     {
         question: "Hvordan opretter jeg en postering?",
         answer: "Åbn en opgave, du har fået tildelt, og tryk på 'Opret postering'. Her udfylder du de relevante oplysninger, og trykker på 'Registrér' når du er færdig.",
-        videoURL: "",
+        videoURL: "https://www.youtube.com/shorts/n6zKnTIqvIU",
         tags: ["posteringer"],
         visible: true
     },
@@ -74,7 +74,7 @@ const helpQuestions = [
     {
         question: "Hvordan opkræver jeg betaling for en opgave?",
         answer: "Normalt vil du skulle opkræve betaling for en opgave når du er færdig med at udføre den. I dette tilfælde trykker du 'Afslut opgave' på opgavesiden, hvorefter det foretrukne betalingsflow automatisk vil igangsættes. Privatkunder opkræves via Mobile Pay, mens erhvervskunder skal have en faktura.",
-        videoURL: "",
+        videoURL: "https://www.youtube.com/shorts/Zpin4MCTwN0",
         tags: ["betalinger"],
         visible: true
     },
@@ -95,20 +95,34 @@ const helpQuestions = [
     {
         question: "Hvordan opretter jeg et besøg på en opgave?",
         answer: "Du kan oprette et besøg på en opgave ved at gå ind på opgaven, rulle ned til kalenderen og holde et kortvarigt tryk på den dato, du gerne vil oprette et besøg på. Du kan også trykke på den runde '+'-knap i nederste højre hjørne på opgavesiden.",
-        videoURL: "",
+        videoURL: "https://www.youtube.com/shorts/e2NYQL-Hs8o",
         tags: ["opgaver"],
         visible: true
     },
     {
         question: "Hvordan viser jeg, at jeg kan arbejde i et givent tidsrum?",
         answer: "Fra overblikssiden kan du trykke på '+'-knappen nede i højre hjørne af skærmen. Her kan du oprette ledige tider – både enkeltstående tider samt generelle ugedage, hvor du er ledig i givne tidsrum.",
-        videoURL: "",
-        tags: ["opgaver"],
+        videoURL: "https://www.youtube.com/watch?v=wh3l_u00fd8",
+        tags: ["generelt"],
+        visible: true
+    },
+    {
+        question: "Hvordan kan jeg indstille hvor og med hvad jeg gerne vil arbejde?",
+        answer: "På din profil kan du under 'Arbejdspræferencer' bl.a. indstille dit foretrukne arbejdsområde samt de opgavetyper, du gerne vil arbejde med.",
+        videoURL: "https://www.youtube.com/shorts/LWyjAePCZVg",
+        tags: ["generelt"],
         visible: true
     },
     {
         question: "Kan der være flere ansvarlige på én opgave?",
         answer: "Ja, der kan sagtens være flere ansvarlige på samme opgave. Du kan altid se hvem der er sat på en opgave på opgavens side. Er I flere på samme opgave skal du være opmærksom på at koordinere arbejdet med de andre ansvarlige – og opgaven skal ikke afsluttes før alles arbejde på opgaven er færdiggjort og repræsenteret i posteringer på opgaven.",
+        videoURL: "",
+        tags: ["opgaver"],
+        visible: true
+    },
+    {
+        question: "Hvor kan jeg finde oplysninger om min opgave?",
+        answer: "Når du har fået tildelt en opgave vil den ligge tilgængelig for dig under 'Overblik'-siden i app'en. Tryk på opgaven i tabellen for at gå ind på den – inde på opgavesiden finder du alle relevante oplysninger om opgaven.",
         videoURL: "",
         tags: ["opgaver"],
         visible: true
