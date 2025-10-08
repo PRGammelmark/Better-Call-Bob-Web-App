@@ -204,102 +204,104 @@ const DinKonto = () => {
             <p>{bruger?.isAdmin ? "Administrator" : "Medarbejder"}{bruger?.titel ? (" • " + bruger?.titel) : "" }</p>
           </div>
         </div>
-        <div className={Styles.statistikSektion}>
-          <div className={Styles.statistikSektionHeader}>
-            <h2>Statistik</h2>
-            {/* <div className={Styles.statistikButtonsDiv}>
-              <button onClick={() => setStatisticsRange("denneMåned")} className={`${Styles.statistikButton} ${statisticsRange === "denneMåned" && Styles.activeStatistikButton}`}>
-                Denne måned
-              </button>
-              <button onClick={() => setStatisticsRange("treMåneder")} className={`${Styles.statistikButton} ${statisticsRange === "treMåneder" && Styles.activeStatistikButton}`}>
-                Sidste 3 måneder
-              </button>
-              <button onClick={() => setStatisticsRange("altid")} className={`${Styles.statistikButton} ${statisticsRange === "altid" && Styles.activeStatistikButton}`}>
-                Altid
-              </button>
-            </div> */}
-          </div>
-          <div className={`${Styles.boxFrame} ${Styles.flex}`}>
-            <div className={Styles.opgaverStatistik}>
-              <div className={Styles.statistikItem}>
-                <b>{opgaver?.length}</b>
-                <p>opgaver</p>
-              </div>
-              <div className={Styles.statistikItem}>
-                <b>{beregn.totalHonorar(posteringer).formateret}</b>
-                <p>tjent til dato</p>
-              </div>
-            </div>
-            <div className={Styles.ratings} style={{position: "relative"}}>
-              <p style={{position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", fontSize: 14, fontFamily: "OmnesBold"}}>Ratings – kommer snart ...</p>
-              <div style={{opacity: 0.15}}>
-              <Rating
-                  fractions={2}
-                  initialRating={3}
-                  readonly
-                  emptySymbol={<Star className={Styles.icon} />}
-                  fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
-                />
-                </div>
-              {/* <div className={Styles.ratingStarsDiv}>
-                <Rating
-                  fractions={2}
-                  initialRating={3}
-                  readonly
-                  emptySymbol={<Star className={Styles.icon} />}
-                  fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
-                />
-              </div>
-              <div className={Styles.ratingsHeaderDiv}>
-                <p>4 vurderinger</p>
-                <p>Gns.: 4.8</p>
+        <div className={Styles.indstillingerContent}>
+          <div className={Styles.statistikSektion}>
+            <div className={Styles.statistikSektionHeader}>
+              <h2>Statistik</h2>
+              {/* <div className={Styles.statistikButtonsDiv}>
+                <button onClick={() => setStatisticsRange("denneMåned")} className={`${Styles.statistikButton} ${statisticsRange === "denneMåned" && Styles.activeStatistikButton}`}>
+                  Denne måned
+                </button>
+                <button onClick={() => setStatisticsRange("treMåneder")} className={`${Styles.statistikButton} ${statisticsRange === "treMåneder" && Styles.activeStatistikButton}`}>
+                  Sidste 3 måneder
+                </button>
+                <button onClick={() => setStatisticsRange("altid")} className={`${Styles.statistikButton} ${statisticsRange === "altid" && Styles.activeStatistikButton}`}>
+                  Altid
+                </button>
               </div> */}
             </div>
-          </div>
-        </div>
-        <div className={Styles.arbejdsPræferencerSektion}>
-          <h2>Arbejdspræferencer</h2>
-          <div className={Styles.arbejdsPræferencerKnapperDiv}>
-            <div className={Styles.arbejdsPræferencerKnap} onClick={() => setArbejdsOmrådePopup(true)}>
-              <h3>Område</h3>
-              <div className={Styles.arbejdsPræferencerKnapEndDiv}>
-                {bruger?.arbejdsOmråde?.adresse && <>
-                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                  <MapPin height={14} />
-                  <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
-                  <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse?.split(", ")[1]}</span>
+            <div className={`${Styles.boxFrame} ${Styles.flex}`}>
+              <div className={Styles.opgaverStatistik}>
+                <div className={Styles.statistikItem}>
+                  <b>{opgaver?.length}</b>
+                  <p>opgaver</p>
                 </div>
-                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                  <Radius height={14} />
-                  {bruger?.arbejdsOmråde?.radius / 1000} km.
+                <div className={Styles.statistikItem}>
+                  <b>{beregn.totalHonorar(posteringer).formateret}</b>
+                  <p>tjent til dato</p>
                 </div>
-                </>}
               </div>
-            </div>
-            <div className={Styles.arbejdsPræferencerKnap} onClick={() => setOpgaveTyperPopup(true)}>
-              <h3>Opgavetyper</h3>
-              <div className={Styles.arbejdsPræferencerKnapEndDiv}>
-                <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                  <Hammer height={14} />
-                  {bruger?.opgavetyper?.length || 0} valgte
+              <div className={Styles.ratings} style={{position: "relative"}}>
+                <p style={{position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", fontSize: 14, fontFamily: "OmnesBold"}}>Ratings – kommer snart ...</p>
+                <div style={{opacity: 0.15}}>
+                <Rating
+                    fractions={2}
+                    initialRating={3}
+                    readonly
+                    emptySymbol={<Star className={Styles.icon} />}
+                    fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                  />
+                  </div>
+                {/* <div className={Styles.ratingStarsDiv}>
+                  <Rating
+                    fractions={2}
+                    initialRating={3}
+                    readonly
+                    emptySymbol={<Star className={Styles.icon} />}
+                    fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                  />
                 </div>
-                {/* <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                  <Box height={14} />
-                  {antalKategorierFraOpgavetyper(bruger?.opgavetyper)} kategorier
+                <div className={Styles.ratingsHeaderDiv}>
+                  <p>4 vurderinger</p>
+                  <p>Gns.: 4.8</p>
                 </div> */}
               </div>
             </div>
           </div>
-          {/* <ArbejdsRadiusMap /> */}
-        </div>
-        <div className={Styles.indstillingerSektion}>
-          <h2>Indstillinger</h2>
-          <div className={Styles.infoListe}>
-            <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Rediger indstillinger</button>
-            <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>
-          {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
-          {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
-          <p>{pushDebugMessage}</p>
+          <div className={Styles.arbejdsPræferencerSektion}>
+            <h2>Arbejdspræferencer</h2>
+            <div className={Styles.arbejdsPræferencerKnapperDiv}>
+              <div className={Styles.arbejdsPræferencerKnap} onClick={() => setArbejdsOmrådePopup(true)}>
+                <h3>Område</h3>
+                <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                  {bruger?.arbejdsOmråde?.adresse && <>
+                  <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                    <MapPin height={14} />
+                    <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
+                    <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse?.split(", ")[1]}</span>
+                  </div>
+                  <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                    <Radius height={14} />
+                    {bruger?.arbejdsOmråde?.radius / 1000} km.
+                  </div>
+                  </>}
+                </div>
+              </div>
+              <div className={Styles.arbejdsPræferencerKnap} onClick={() => setOpgaveTyperPopup(true)}>
+                <h3>Opgavetyper</h3>
+                <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                  <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                    <Hammer height={14} />
+                    {bruger?.opgavetyper?.length || 0} valgte
+                  </div>
+                  {/* <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                    <Box height={14} />
+                    {antalKategorierFraOpgavetyper(bruger?.opgavetyper)} kategorier
+                  </div> */}
+                </div>
+              </div>
+            </div>
+            {/* <ArbejdsRadiusMap /> */}
+          </div>
+          <div className={Styles.indstillingerSektion}>
+            <h2>Indstillinger</h2>
+            <div className={Styles.infoListe}>
+              <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Rediger indstillinger</button>
+              <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>
+            {isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
+            {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
+            <p>{pushDebugMessage}</p>
+            </div>
           </div>
         </div>
         <Modal trigger={redigerPersonligeOplysninger} setTrigger={setRedigerPersonligeOplysninger}>

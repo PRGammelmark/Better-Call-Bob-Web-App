@@ -63,6 +63,7 @@ const AppIndstillinger = () => {
   return (
     <div className={Styles.pageContent}>
         <h1>App-indstillinger</h1>
+        <div className={Styles.indstillingerContainer}>
         <h2>Arbejdspræferencer <Info className={`${Styles.infoIcon} ${visOpgavetyperInfo ? Styles.active : ""}`} onClick={() => setVisOpgavetyperInfo(!visOpgavetyperInfo)}/></h2>
         <p className={`${Styles.infoText} ${visOpgavetyperInfo ? Styles.visible : ""}`}>Herunder kan du bl.a. indstille hvilke opgavetyper, I arbejder med i jeres virksomhed. Du kan også definere maks. radius i dine medarbejderes områdeindstillinger.</p>
         <SettingsButtons
@@ -87,6 +88,7 @@ const AppIndstillinger = () => {
                 }
             ]}
         />
+        </div>
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
     </div>
   )

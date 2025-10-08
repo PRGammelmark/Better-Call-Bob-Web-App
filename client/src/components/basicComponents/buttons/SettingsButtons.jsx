@@ -60,7 +60,7 @@ const SettingsButtons = ({ items = [] }) => {
               {item.prefix ? " " + item.prefix : ""}
               {item.value}
               {item.postfix}
-              {item.onClick && <ChevronRight height={18}/>}
+              {item.onClick && <ChevronRight height={16}/>}
             </div>
           ) : null}
         </div>

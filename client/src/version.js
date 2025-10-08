@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.8",
+    date: "9. oktober 2025",
+    changes: [
+        "Designjusteringer og -forbedringer på 'Profil'-, 'App-indstillinger' og 'Hjælp'-siderne."
+    ]
+},{
     version: "3.5.7",
     date: "8. oktober 2025",
     changes: [
