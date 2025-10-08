@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.7",
+    date: "8. oktober 2025",
+    changes: [
+        "Når en administrator opretter et nyt besøg på en ny opgave, så vil tidspunkterne nu ikke længere nulstille hvis man efterfølgende justerer datoen.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.5.6",
     date: "8. oktober 2025",
     changes: [

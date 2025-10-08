@@ -65,21 +65,40 @@ const AddBesøgPåNyOpgave = (props) => {
         }
     }, [user])
     
+    // useEffect(() => {
+    //     if (props?.trigger?.action === "select") {
+    //         setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
+    //         setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
+    //     } else if (props?.trigger?.action === "ledigTidSelect") {
+    //         const ansvarlig = medarbejdere ? medarbejdere.find(bruger => bruger._id === props.trigger.ansvarligID) : null;
+    //         setTilknyttetAnsvarlig(ansvarlig)
+    //         setChosenDate(dayjs(props.trigger.start).format("YYYY-MM-DD"))
+    //         setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
+    //         setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
+    //     } else {
+    //         setSelectedTimeFrom("08:00")
+    //         setSelectedTimeTo("12:00")
+    //     }
+    // }, [props, medarbejdere])
+
     useEffect(() => {
-        if (props?.trigger?.action === "select") {
-            setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
-            setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
-        } else if (props?.trigger?.action === "ledigTidSelect") {
-            const ansvarlig = medarbejdere ? medarbejdere.find(bruger => bruger._id === props.trigger.ansvarligID) : null;
-            setTilknyttetAnsvarlig(ansvarlig)
-            setChosenDate(dayjs(props.trigger.start).format("YYYY-MM-DD"))
-            setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"))
-            setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"))
+        if (!props.trigger) return;
+      
+        if (props.trigger.action === "select") {
+          setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"));
+          setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"));
+        } else if (props.trigger.action === "ledigTidSelect") {
+          const ansvarlig = medarbejdere?.find(bruger => bruger._id === props.trigger.ansvarligID);
+          setTilknyttetAnsvarlig(ansvarlig);
+          setChosenDate(dayjs(props.trigger.start).format("YYYY-MM-DD"));
+          setSelectedTimeFrom(dayjs(props.trigger.start).format("HH:mm"));
+          setSelectedTimeTo(dayjs(props.trigger.end).format("HH:mm"));
         } else {
-            setSelectedTimeFrom("08:00")
-            setSelectedTimeTo("12:00")
+          setSelectedTimeFrom(prev => prev || "08:00");
+          setSelectedTimeTo(prev => prev || "12:00");
         }
-    }, [props, medarbejdere])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }, []); // <-- kun kør ved første mount
 
     function opretBesøgsKladde(e){
         if (document.activeElement && document.activeElement.blur) {
