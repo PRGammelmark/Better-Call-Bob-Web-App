@@ -123,7 +123,7 @@ const helpQuestions = [
     {
         question: "Hvor kan jeg finde oplysninger om min opgave?",
         answer: "Når du har fået tildelt en opgave vil den ligge tilgængelig for dig under 'Overblik'-siden i app'en. Tryk på opgaven i tabellen for at gå ind på den – inde på opgavesiden finder du alle relevante oplysninger om opgaven.",
-        videoURL: "",
+        videoURL: "https://www.youtube.com/watch?v=PD6l2IGga34",
         tags: ["opgaver"],
         visible: true
     },
