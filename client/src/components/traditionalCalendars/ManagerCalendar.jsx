@@ -14,6 +14,7 @@ import ThreeDayView from './ThreeDayView.jsx'
 import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
+import { justerForDST } from '../../utils/justerForDST.js'
 
 const localizer = dayjsLocalizer(dayjs)
 
@@ -175,14 +176,18 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
 
     // === EVENT VISNINGSFORMATER ===
 
-    const alleBesøgFormateret = alleBesøg.map((besøg) => ({
+    const alleBesøgFormateret = alleBesøg.map((besøg) => {
+      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+
+      return {
       ...besøg,
-      start: new Date(besøg.datoTidFra),
-      end: new Date(besøg.datoTidTil),
+      start,
+      end,
       brugerID: besøg.brugerID,
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
-      title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(besøg.datoTidFra).format("HH:mm")}-{dayjs(besøg.datoTidTil).format("HH:mm")}</p><b style={besøgBStyles}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b></span>
-    }));
+      title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(start).format("HH:mm")}-{dayjs(end).format("HH:mm")}</p><b style={besøgBStyles}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b></span>
+    };
+  });
 
     const ledigeTiderMinusBesøg = alleLedigeTider.flatMap(tid => {
       let updatedTider = [tid];
@@ -218,14 +223,18 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
       return updatedTider;
     });
 
-    const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => ({
+    const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => {
+      const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+
+      return {
       ...ledigTid,
-      start: new Date(ledigTid.datoTidFra),
-      end: new Date(ledigTid.datoTidTil),
+      start,
+      end,
       brugerID: ledigTid.brugerID,
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor + '60' || '#3c5a3f60',
-      title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(ledigTid.datoTidFra).format("HH:mm")}-{dayjs(ledigTid.datoTidTil).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
-    }))
+      title: <span style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor}}><p style={{color: brugere && brugere.find(ansvarlig => ansvarlig._id === ledigTid.brugerID)?.eventColor, ledigTidPStyles}}>{dayjs(start).format("HH:mm")}-{dayjs(end).format("HH:mm")}</p><b style={ledigTidBStyles}>{ledigTid && ledigTid.brugerID === userID ? "Din ledighed" : getBrugerName(ledigTid.brugerID)}</b></span>
+    };
+  });
 
    const openCalendarEvent = useCallback((callEvent) => {
 
@@ -433,6 +442,8 @@ const onRedigerBesøg = (e) => {
         messages={messages}
         style={{ height: 500 }}
         defaultView={"month"}
+        view={view}
+        date={chosenDate}
         views={views}
         formats={{
           dayHeaderFormat:(date)=>dayjs(date).format("ddd, D. MMM"),

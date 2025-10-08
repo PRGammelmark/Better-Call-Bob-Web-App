@@ -148,7 +148,6 @@ const Overblik = () => {
           <h1 className={`bold ${Styles.heading}`}>Dit personlige overblik 👨‍🔧</h1>
           {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>Skift til manager-overblik →</button>}
         </div> */}
-        <PersonligtØkonomiskOverblik user={user}/>
         <MyTasks openTableEvent={openTableEvent} />
         <ÅbenOpgaveCalendar 
                         user={user} 
@@ -175,6 +174,7 @@ const Overblik = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
+        <PersonligtØkonomiskOverblik user={user}/>
       </div>}
       </>
   )

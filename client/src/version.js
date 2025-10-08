@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.6",
+    date: "8. oktober 2025",
+    changes: [
+        "App'ens kalendere viser nu korrekte tider for events både i sommer- og vintertid.",
+        "Flyttede det økonomiske overblik for medarbejdere til bunden af 'Overblik'-siden, så det første man ser er hvilke opgaver man skal ud på."
+    ]
+},{
     version: "3.5.5",
     date: "7. oktober 2025",
     changes: [
