@@ -38,7 +38,7 @@ const GlemtKodeord = (props) => {
             </div>}
             {!success && <p className={Styles.modalText}>Indtast din email herunder – så sender vi dig et link til gendannelse af dit kodeord.</p>}
             {!success && <form className={`${ÅbenOpgaveCSS.modalForm} ${Styles.modalForm}`} onSubmit={handleSubmit}>
-                <input className={ÅbenOpgaveCSS.modalInput} type="email" id="email" name="email" value={email} required onChange={(e) => setEmail(e.target.value)} />
+                <input className={ÅbenOpgaveCSS.modalInput} type="email" id="email" name="email" value={email} required onTouchEnd={(e) => e.preventDefault()} onFocus={(e) => e.target.focus()} onChange={(e) => setEmail(e.target.value)} />
                 <button className={Styles.modalButton} >Send link</button>
             </form>}
             {success && 

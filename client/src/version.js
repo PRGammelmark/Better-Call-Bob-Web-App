@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.9",
+    date: "9. oktober 2025",
+    changes: [
+        "Små justeringer og bugfixes."
+    ]
+},{
     version: "3.5.8",
     date: "9. oktober 2025",
     changes: [

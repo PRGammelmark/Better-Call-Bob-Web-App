@@ -20,7 +20,7 @@ const Login = () => {
       <form action="" className={styles.loginForm} onSubmit={handleSubmit} autoComplete="on">
         <h1 className={styles.heading}>Log ind</h1>
         <label className={styles.label}>Email:</label>
-        <input className={styles.input} type="email" name="email" autoComplete="email" onChange={(e) => setEmail(e.target.value)} value={email} />
+        <input className={styles.input} type="email" name="email" autoComplete="email" onTouchEnd={(e) => e.preventDefault()} onFocus={(e) => e.target.focus()} onChange={(e) => setEmail(e.target.value)} value={email} />
         <label className={styles.label}>Kodeord:</label>
         <input className={styles.input} type="password" name="password" autoComplete="current-password" onChange={(e) => setPassword(e.target.value)} value={password} />
         <button className={styles.button} disabled={isLoading}>Log ind</button>

@@ -73,7 +73,7 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
               onClick={() => {
                 if(!closeIsBackButton){
                   setTrigger(false)
-                  onClose()
+                  onClose && onClose()
                 } else {
                   setBackFunction(false)
                 }
