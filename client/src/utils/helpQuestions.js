@@ -46,14 +46,14 @@ const helpQuestions = [
     {
         question: "Hvornår skal jeg give kunden rabat?",
         answer: "Som medarbejder kan du vælge at give kunden rabat på et stykke udført arbejde. Hvis kunden er utilfreds med arbejdet, resultatet, prisen eller andet, så kan du bruge rabatten til at fremme kundetilfredsheden og forbedre dine ratings. Rabatten angives i procent, og vil både påvirke den endelige pris kunden betaler, samt dit honorar for opgaven.",
-        videoURL: "",
+        videoURL: "https://youtu.be/Vs8m-dt6kmY",
         tags: ["posteringer"],
         visible: true
     },
     {
         question: "Hvad er forskellen på dynamisk honorar og pris, og fast honorar og pris?",
         answer: "Hvis en postering arbejder med dynamisk honorar og/eller pris, så betyder det, at honoraret/prisen beregnes automatisk ud fra de oplysninger, du registrerer i posteringen – fx hvor mange timer du har arbejdet, hvilke tilvalg der gør sig gældende, osv. De dynamiske priser og honorarer tager udgangspunkt i hhv. kundens prissatser og dine lønsatser, med mindre andet er angivet. Faste priser eller honorarer betyder derimod, at prisen/honoraret er aftalt på forhånd, og at antallet af arbejdstimer eller øvrige vilkår ikke får indflydelse på den endelige beregning. I udgangspunktet oprettes en postering med dynamiske pris- og honorarberegninger.",
-        videoURL: "",
+        videoURL: "https://youtu.be/SutvhFTE_VE",
         tags: ["posteringer"],
         visible: true
     },
