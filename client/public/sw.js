@@ -19,9 +19,9 @@ self.addEventListener('message', (event) => {
   }
 });
 
-self.addEventListener('fetch', event => {
-  event.respondWith(fetch(event.request));
-});
+// self.addEventListener('fetch', event => {
+//   event.respondWith(fetch(event.request));
+// });
 
 
 // PUSH NOTIFICATIONS
