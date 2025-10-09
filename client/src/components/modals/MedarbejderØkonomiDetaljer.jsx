@@ -586,7 +586,7 @@ const MedarbejderØkonomiDetaljer = (props) => {
                 </div>
             </div>}
             <div className={Styles.akkumuleretContainer}>
-                <b style={{fontFamily: "OmnesBold", display: "block", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 8}}><ReceiptText height={16} width={16} />Alle {navn && navn.split(' ')[0]}s udlægskvitteringer for {props.customMåned.end.format('MMMM YYYY')}</b>
+                <b style={{fontFamily: "OmnesBold", marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "flex-start", gap: 8}}><ReceiptText height={16} width={16} />Alle {navn && navn.split(' ')[0]}s udlægskvitteringer for {props.customMåned.end.format('MMMM YYYY')}</b>
                 <div className={Styles.posteringerUdlægDiv}>
                 {posteringer && posteringer.length > 0 && posteringer?.map((p) =>
                     p.udlæg.map((udlaeg, idx) => 
