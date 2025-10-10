@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.10",
+    date: "10. oktober 2025",
+    changes: [
+        "Forbedringer af app'ens fejlhåndtering.",
+        "Forbedrede app'ens integrationen til hjemmesidernes webformularer for at mindske risikoen for fejl."
+    ]
+},{
     version: "3.5.9",
     date: "9. oktober 2025",
     changes: [

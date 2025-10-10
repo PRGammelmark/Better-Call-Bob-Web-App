@@ -1,5 +1,7 @@
 import React from 'react'
 import * as Sentry from '@sentry/react';
+// import { BrowserTracing } from '@sentry/react'
+// import { createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from 'react-router-dom'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
 import { AuthContextProvider } from './context/AuthContext.jsx'
@@ -17,14 +19,17 @@ import { IndstillingerProvider } from './context/IndstillingerContext.jsx'
 import { NotifikationProvider } from './context/NotifikationContext.jsx'
 
 Sentry.init({
-  dsn: "https://83dbd12ed4e8b7ad6d5d2b0acf4ce7e0@o4510158250049536.ingest.de.sentry.io/4510158252998736",
-  // Setting this option to true will send default PII data to Sentry.
-  // For example, automatic IP address collection on events
-  sendDefaultPii: true
-});
+  dsn: 'https://83dbd12ed4e8b7ad6d5d2b0acf4ce7e0@o4510158250049536.ingest.de.sentry.io/4510158252998736',
+  integrations: [
+    Sentry.browserTracingIntegration(),
+    Sentry.replayIntegration()
+  ],
+  tracesSampleRate: 1.0,
+  sendDefaultPii: true,
+})
 
 dayjs.extend(updateLocale)
-dayjs.locale('da'); // Set dayjs to use Danish locale globally
+dayjs.locale('da');
 dayjs.updateLocale('en', {
     weekStart: 1,
 })

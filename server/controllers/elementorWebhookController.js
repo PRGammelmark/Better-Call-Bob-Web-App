@@ -16,7 +16,7 @@ export const handleElementorWebhook = async (req, res) => {
         navn: req.body["Navn"] || req.body["Navn på kontaktperson"] || req.body["Name"] || req.body["Fulde navn"] || "",
         email: req.body["E-mail"] || req.body["Mail"] || "",
         telefon: req.body["Tlf."] || req.body["Telefonnummer"] || req.body["Telefonnummer (valgfri)"] || req.body["Phone"] || req.body["Phone Number"] || "",
-        adresse: req.body["Din adresse"] || req.body["Adresse"] || req.body["Your adress"] || "",
+        adresse: req.body["Din adresse"] || req.body["Adresse"] || req.body["Your adress"] || req.body["Adress"] || "Fejl i adresse",
         postnummer: req.body["Postnummer"] || req.body["ZIP code"] || req.body["Postal code"] || "",
         by: req.body["By"] || req.body["City"] || "",
         onsketDato: req.body["Ønsket dato"] || req.body["Preferred date"] || req.body["Preferred day"] || req.body["Hvilken dag skal vi komme?"] || "",
@@ -33,7 +33,7 @@ export const handleElementorWebhook = async (req, res) => {
       const typiskHjemme = fields?.typiskHjemme ? ` – Typisk hjemme: ${fields.typiskHjemme}` : "";
       const navnSplit = fields?.navn?.split(" ") || [];
       const fornavn = navnSplit[0] || "";
-      const efternavn = navnSplit.slice(1).join(" ") || "";
+      const efternavn = navnSplit.slice(1).join(" ") || "(efternavn mangler)";
       const billeder = Array.isArray(fields.billeder)
         ? fields.billeder // allerede et array (tomt eller med links)
         : typeof fields.billeder === "string"
