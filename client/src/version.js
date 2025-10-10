@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.11",
+    date: "10. oktober 2025",
+    changes: [
+        "Diverse forbedringer af stabiliteten på kortet til arbejdsområdeindstillinger.",
+        "Tidligere hen opdaterede opgaver ikke altid ordentligt før et page refresh når man foretog betalinger via Mobile Pay. Det gør de nu.",
+    ]
+},{
     version: "3.5.10",
     date: "10. oktober 2025",
     changes: [

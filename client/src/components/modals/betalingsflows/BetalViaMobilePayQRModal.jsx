@@ -42,8 +42,7 @@ const BetalViaMobilePayQRModal = ({trigger, setTrigger, postering, setOpgave, re
 
     function opretQR() {
         setLoading(true)
-        opretMobilePayQR({posteringer: postering, user, setLoading, setBetalingsfristTimer, setQrOprettet, setQrURL, setPaymentCaptured, setErrorMessage})
-        // sendMobilePayAnmodning({posteringer: postering, user, telefonnummerTilAnmodning, setLoading, setBetalingsfristTimer, setPaymentRequested, setPaymentCaptured, setErrorMessage})
+        opretMobilePayQR({posteringer: postering, user, setLoading, setBetalingsfristTimer, setQrOprettet, setQrURL, setPaymentCaptured, setErrorMessage, refetchPostering})
     }
 
     const posteringer = Array.isArray(postering) ? postering : [postering];

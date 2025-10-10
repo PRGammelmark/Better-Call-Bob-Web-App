@@ -4,7 +4,7 @@ import satser from "../../../variables";
 import sendKvittering from './sendKvittering.js'
 import * as beregn from '../../../utils/beregninger.js'
 
-const mobilePayAnmodning = ({posteringer, user, setLoading, setBetalingsfristTimer, setQrOprettet, setQrURL, setPaymentCaptured, setErrorMessage}) => {
+const mobilePayAnmodning = ({posteringer, user, setLoading, setBetalingsfristTimer, setQrOprettet, setQrURL, setPaymentCaptured, setErrorMessage, refetchPostering}) => {
 
     console.log("Betaling med Mobile Pay via ny anmodning igangsættes.")
 
@@ -47,6 +47,7 @@ const mobilePayAnmodning = ({posteringer, user, setLoading, setBetalingsfristTim
             if (response.data?.status === 'CAPTURED') {
                 setPaymentCaptured(true);
                 sendKvittering({ posteringer: posteringerListe, user, kunde: paymentInformation.kunde, opgave: paymentInformation.opgave, setErrorMessage });
+                refetchPostering();
                 setQrOprettet(false);
                 setLoading(false);
             } else {

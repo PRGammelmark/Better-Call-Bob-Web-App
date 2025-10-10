@@ -93,6 +93,7 @@ export default function ArbejdsRadiusMap(props) {
     if (!circleRef.current) return;
  
     const update = () => {
+      if (!circleRef.current) return;
       const w = circleRef.current.getBoundingClientRect().width;
       if (w > 0) setCirclePx(w);
     };
