@@ -21,6 +21,15 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
         return opkrævninger > 0
     }
 
+    const fakturaOpkrævningerRegistreret = (posteringer) => {
+        return posteringer.some((postering) =>
+            postering?.opkrævninger?.length > 0 &&
+            postering.opkrævninger.some(
+              (opkrævning) => opkrævning.metode === 'faktura'
+            )
+        );
+    };
+
     const iAltAtBetale = (posteringer) => {
         if (!posteringer?.length) return 0
       
@@ -74,7 +83,7 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
                 
                 <div className={ÅbenOpgaveCSS.færdigOpgaveDiv}>
 
-                    {opgaveAfsluttet && iAltAtBetale(posteringer) >= 0.5 && !opkrævningerRegistreret(posteringer) && <div className={Styles.betalingsKnapDiv}>
+                    {opgaveAfsluttet && iAltAtBetale(posteringer) >= 0.5 && !fakturaOpkrævningerRegistreret(posteringer) && <div className={Styles.betalingsKnapDiv}>
                         <button className={`${Styles.betalingsKnap} ${!erErhvervskunde ? Styles.betalingsknapFremhævet : ""}`} onClick={() => setOpenVælgMobilePayBetalingsmetodeModal(true)}>Betal med Mobile Pay <br /> <span>{iAltAtBetale(posteringer)} kr.</span></button>
                         <button className={`${Styles.betalingsKnap} ${erErhvervskunde ? Styles.betalingsknapFremhævet : ""}`} onClick={() => setOpenBetalViaFakturaModal(true)}>Betal med faktura <br /> <span>{iAltAtBetale(posteringer)} kr.</span></button>
                     </div>}
