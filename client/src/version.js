@@ -18,6 +18,7 @@ const changes = [{
     date: "14. oktober 2025",
     changes: [
         "Rettede en fejl, der gjorde, at telefoner med andre sprogindstillinger nogle gange ikke kunne registrere timer på mobilen når man oprettede eller redigerede en postering.",
+        "En anden fejl gjorde tidligere, at man ikke kunne opkræve samlet for en opgave igen via hverken mobile pay eller faktura når først en enkelt mobile pay-opkrævning var sendt ud. Dette skabte problemer, hvis den pågældende mobile pay-betaling fejlede eller ikke blev betalt – så kunne man ikke opkræve igen. Det kan man nu.",
         "Smårettelser og justeringer."
     ]
 },{
