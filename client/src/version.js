@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.5.12",
+    date: "14. oktober 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at telefoner med andre sprogindstillinger nogle gange ikke kunne registrere timer på mobilen når man oprettede eller redigerede en postering.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.5.11",
     date: "10. oktober 2025",
     changes: [
