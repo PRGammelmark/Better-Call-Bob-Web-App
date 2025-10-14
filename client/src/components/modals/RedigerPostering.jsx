@@ -288,15 +288,15 @@ const RedigerPostering = (props) => {
                             <div className={ÅbenOpgaveCSS.inputLinesContainer} style={{marginTop: 20, marginBottom: 30}}>
                                 <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 50);}}}>
                                     <label htmlFor="">Handyman<br /><p>Antal timer</p></label>
-                                    <input value={handymantimer} onChange={(e) => setHandymantimer(e.target.value.replace(',', '.'))} type="number" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                                    <input value={handymantimer} onChange={(e) => {const val = e.target.value.replace(',', '.'); if (/^[0-9]*\.?[0-9]*$/.test(val)) {setHandymantimer(val)}}} type="text" step="0.5" min="0" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
                                 <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 50);}}}>
                                     <label htmlFor="">Tømrer<br /><p>Antal timer</p></label>
-                                    <input value={tømrertimer} onChange={(e) => setTømrertimer(e.target.value.replace(',', '.'))} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                                    <input value={tømrertimer} onChange={(e) => {const val = e.target.value.replace(',', '.'); if (/^[0-9]*\.?[0-9]*$/.test(val)) {setTømrertimer(val)}}} type="text" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
                                 <div className={ÅbenOpgaveCSS.inputLine} onClick={(e) => {const input = e.currentTarget.querySelector("input"); if (input) {input.focus(); setTimeout(() => input.select(), 50);}}}>
                                     <label htmlFor="">Rådgivning<br /><p>Antal timer</p></label>
-                                    <input value={rådgivningOpmålingVejledning} onChange={(e) => setRådgivningOpmålingVejledning(e.target.value.replace(',', '.'))} type="number" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
+                                    <input value={rådgivningOpmålingVejledning} onChange={(e) => {const val = e.target.value.replace(',', '.'); if (/^[0-9]*\.?[0-9]*$/.test(val)) {setRådgivningOpmålingVejledning(val)}}} type="text" min="0" step="0.5" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" />
                                 </div>
                             </div>
                             <h3 className={ÅbenOpgaveCSS.modalHeading3}>Tilvalg</h3>
