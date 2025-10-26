@@ -177,7 +177,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
 
     // "Vis dine besøg" - formatering af egne besøg
     const egneBesøgFormateret = filterEgneBesøgDenneOpgave.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
         ...besøg,
@@ -193,7 +195,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
 
     // Formattering af besøg
     const egneBesøgAlleOpgaverFormateret = egneBesøg.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
         ...besøg,
@@ -216,7 +220,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
 
     // "Vis alle besøg" - formatering af alle andre besøg ved siden af egne
     const alleBesøgDenneOpgaveFormateret = filterAlleBesøgDenneOpgave.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
       ...besøg,
@@ -229,7 +235,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
   });
 
     const alleBesøgFormateret = alleBesøg.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
       ...besøg,
@@ -242,7 +250,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
   });
 
     const egneLedigeTiderFormateret =  egneLedigeTider.map((ledigTid) => {
-      const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      // const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      const start = dayjs(ledigTid.datoTidFra).toDate();
+      const end = dayjs(ledigTid.datoTidTil).toDate();
 
       return {
       ...ledigTid,
@@ -289,7 +299,9 @@ const ÅbenOpgaveCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
     });
 
     const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => {
-      const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      // const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      const start = dayjs(ledigTid.datoTidFra).toDate();
+      const end = dayjs(ledigTid.datoTidTil).toDate();
 
       return {
         ...ledigTid,

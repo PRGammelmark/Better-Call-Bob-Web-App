@@ -5,11 +5,17 @@ import dayjs from 'dayjs'
 import Opgave from '../models/opgaveModel.js'
 import mongoose from "mongoose"
 import { opretNotifikation } from "../utils/notifikationFunktioner.js"
+import { justerForDST } from "../utils/justerForDST.js"
 
 // GET alle besøg
 const getAlleBesøg = async (req,res) => {
-    const besøg = await Besøg.find({}).sort({createdAt: -1})
-    res.status(200).json(besøg)
+    const besøg = await Besøg.find({}).sort({ createdAt: -1 }).lean();
+    const besøgMedJusteretTid = besøg.map(b => {
+        const { start, end } = justerForDST(b.datoTidFra, b.datoTidTil);
+        return { ...b, datoTidFra: start, datoTidTil: end };
+    });
+
+    res.status(200).json(besøgMedJusteretTid)
 }
 
 // GET alle besøg for en enkelt bruger
@@ -17,8 +23,12 @@ const getAlleBesøgForEnBruger = async (req, res) => {
     const { userID } = req.params;
 
     try {
-        const besøg = await Besøg.find({ brugerID: userID }).sort({ createdAt: -1 });
-        res.status(200).json(besøg); // returner altid liste (kan være tom)
+        const besøg = await Besøg.find({ brugerID: userID }).sort({ createdAt: -1 }).lean();
+        const besøgMedJusteretTid = besøg.map(b => {
+            const { start, end } = justerForDST(b.datoTidFra, b.datoTidTil);
+            return { ...b, datoTidFra: start, datoTidTil: end };
+        });
+        res.status(200).json(besøgMedJusteretTid); // returner altid liste (kan være tom)
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -32,12 +42,18 @@ const getEtBesøg = async (req,res) => {
     }
 
     const besøg = await Besøg.findById(id)
+    const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+    const besøgMedJusteretTid = {
+        ...besøg,
+        datoTidFra: start,
+        datoTidTil: end
+    };
 
     if(!besøg) {
         return res.status(404).json({error: 'Ingen besøg fundet med et matchende ID.'})
     }
 
-    res.status(200).json(besøg)
+    res.status(200).json(besøgMedJusteretTid)
 }
 
 // CREATE et besøg

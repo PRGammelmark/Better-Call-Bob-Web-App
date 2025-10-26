@@ -177,7 +177,9 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
     // === EVENT VISNINGSFORMATER ===
 
     const alleBesøgFormateret = alleBesøg.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
       ...besøg,
@@ -224,7 +226,9 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
     });
 
     const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => {
-      const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      // const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      const start = dayjs(ledigTid.datoTidFra).toDate();
+      const end = dayjs(ledigTid.datoTidTil).toDate();
 
       return {
       ...ledigTid,

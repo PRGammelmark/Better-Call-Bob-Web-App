@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.13",
+    date: "26. oktober 2025",
+    changes: [
+        "Rettede flere fejl relateret til vintertid i kalenderen samt visninger af besøg og ledige tider."
+    ]
+},{
     version: "3.5.12",
     date: "14. oktober 2025",
     changes: [

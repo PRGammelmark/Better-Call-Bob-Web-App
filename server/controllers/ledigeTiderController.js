@@ -3,18 +3,28 @@ import mongoose from "mongoose"
 import { opretNotifikation } from "../utils/notifikationFunktioner.js"
 import Bruger from '../models/brugerModel.js'
 import dayjs from 'dayjs'
+import { justerForDST } from "../utils/justerForDST.js"
 
 // GET alle ledige tider
 const getLedigeTider = async (req,res) => {
-    const ledigeTider = await LedigTid.find({}).sort({createdAt: -1})
-    res.status(200).json(ledigeTider)
+    const ledigeTider = await LedigTid.find({}).sort({createdAt: -1}).lean();
+    const ledigeTiderMedJusteretTid = ledigeTider.map(lt => {
+        const { start, end } = justerForDST(lt.datoTidFra, lt.datoTidTil);
+        return { ...lt, datoTidFra: start, datoTidTil: end };
+    });
+    res.status(200).json(ledigeTiderMedJusteretTid)
 }
 
 // GET alle ledige tider for en medarbejder
 const getLedigeTiderForMedarbejder = async (req, res) => {
     const { id } = req.params;
-    const ledigeTider = await LedigTid.find({ brugerID: id });
-    res.status(200).json(ledigeTider);
+    const ledigeTider = await LedigTid.find({ brugerID: id }).lean();
+    const ledigeTiderMedJusteretTid = ledigeTider.map(lt => {
+        const { start, end } = justerForDST(lt.datoTidFra, lt.datoTidTil);
+        return { ...lt, datoTidFra: start, datoTidTil: end };
+    });
+
+    res.status(200).json(ledigeTiderMedJusteretTid);
 }
 
 // GET en enkelt ledig tid
@@ -24,7 +34,13 @@ const getLedigTid = async (req,res) => {
         return res.status(404).json({error: 'Ingen ledige tider fundet med et matchende ID.'})
     }
 
-    const ledigTid = await LedigTid.findById(id)
+    const ledigTid = await LedigTid.findById(id).lean();
+    const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+    const ledigTidMedJusteretTid = {
+        ...ledigTid,
+        datoTidFra: start,
+        datoTidTil: end
+    };
 
     if(!ledigTid) {
         return res.status(404).json({error: 'Ingen ledige tider fundet med et matchende ID.'})

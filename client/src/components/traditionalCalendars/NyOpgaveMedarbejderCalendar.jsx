@@ -203,7 +203,9 @@ const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, setValgtMedar
 
     // Formatering af besøg for denne medarbejder
     const medarbejdersBesøgFormateret = medarbejdersBesøg.map((besøg) => {
-      const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      // const { start, end } = justerForDST(besøg.datoTidFra, besøg.datoTidTil);
+      const start = dayjs(besøg.datoTidFra).toDate();
+      const end = dayjs(besøg.datoTidTil).toDate();
 
       return {
       ...besøg,
@@ -250,7 +252,9 @@ const NyOpgaveMedarbejderCalendar = ({user, tilknyttetMedarbejder, setValgtMedar
     });
 
     const medarbejdersLedigeTiderFormateret =  ledigeTiderMinusBesøg.map((ledigTid) => {
-      const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      // const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
+      const start = dayjs(ledigTid.datoTidFra).toDate();
+      const end = dayjs(ledigTid.datoTidTil).toDate();
 
       return {
         ...ledigTid,
