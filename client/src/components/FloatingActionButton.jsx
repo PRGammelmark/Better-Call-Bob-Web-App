@@ -96,7 +96,6 @@ const FloatingActionButton = () => {
             datoTidFra: dayjs(`${day}${tidFra}`),
             datoTidTil: dayjs(`${day}${tidTil}`),
             brugerID: userID,
-            kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
         }));
 
@@ -177,7 +176,6 @@ const FloatingActionButton = () => {
             datoTidFra,
             datoTidTil,
             brugerID: userID,
-            kommentar: selectedTimeFrom + " - " + selectedTimeTo,
             objectIsLedigTid: true
         }
 
