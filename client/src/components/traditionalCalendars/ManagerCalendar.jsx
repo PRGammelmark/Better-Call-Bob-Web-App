@@ -15,6 +15,12 @@ import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
 import { justerForDST } from '../../utils/justerForDST.js'
+import utc from "dayjs/plugin/utc";
+// import timezone from "dayjs/plugin/timezone";
+
+dayjs.extend(utc);
+// dayjs.extend(timezone);
+// dayjs.tz.setDefault("Europe/Copenhagen");
 
 const localizer = dayjsLocalizer(dayjs)
 

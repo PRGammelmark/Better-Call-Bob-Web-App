@@ -15,7 +15,8 @@ const getAlleBesøg = async (req,res) => {
         return { ...b, datoTidFra: start, datoTidTil: end };
     });
 
-    res.status(200).json(besøgMedJusteretTid)
+    // res.status(200).json(besøgMedJusteretTid)
+    res.status(200).json(besøg)
 }
 
 // GET alle besøg for en enkelt bruger
@@ -28,7 +29,8 @@ const getAlleBesøgForEnBruger = async (req, res) => {
             const { start, end } = justerForDST(b.datoTidFra, b.datoTidTil);
             return { ...b, datoTidFra: start, datoTidTil: end };
         });
-        res.status(200).json(besøgMedJusteretTid); // returner altid liste (kan være tom)
+        res.status(200).json(besøgMedJusteretTid);
+        // res.status(200).json(besøg);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
