@@ -112,7 +112,7 @@ const AddBesøg = (props) => {
             setSelectedTimeFrom("08:00")
             setSelectedTimeTo("12:00")
         }
-    }, [props, medarbejdere])
+    }, [props.trigger])
 
     useEffect(()=>{
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver`, {
@@ -159,8 +159,11 @@ const AddBesøg = (props) => {
     function submitNewBesøgFromOverblikPage(e){
         e.preventDefault();
 
-        const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
-        const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
+        // const datoTidFra = `${chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`;
+        // const datoTidTil = `${chosenEndDate ? dayjs(chosenEndDate).format("YYYY-MM-DD") : chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`;
+        const datoTidFra = `${chosenDate}T${selectedTimeFrom}:00`;
+        const datoTidTil = `${chosenEndDate || chosenDate}T${selectedTimeTo}:00`;
+
 
         const besøg = {
             datoTidFra: datoTidFra,

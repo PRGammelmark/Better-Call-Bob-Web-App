@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.5.14",
+    date: "27. oktober 2025",
+    changes: [
+        "Rettede en fejl, der ved datoskift genstartede til- og fra-tidspunkterne for et besøg under oprettelse når man ville oprette et nyt besøg via manager-kalenderen.",
+    ]
+},{
     version: "3.5.13",
     date: "26. oktober 2025",
     changes: [
