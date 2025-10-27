@@ -15,7 +15,9 @@ import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøgPåNyOpgave from '../modals/AddBesøgPåNyOpgave.jsx'
 import { justerForDST } from '../../utils/justerForDST.js'
+import utc from "dayjs/plugin/utc";
 
+dayjs.extend(utc);
 const localizer = dayjsLocalizer(dayjs)
 
 const lang = {

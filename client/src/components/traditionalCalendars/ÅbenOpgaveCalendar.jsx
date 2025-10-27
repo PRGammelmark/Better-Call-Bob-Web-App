@@ -17,7 +17,7 @@ import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
 import { justerForDST } from '../../utils/justerForDST.js'
 
-// dayjs.extend(utc);
+dayjs.extend(utc);
 const localizer = dayjsLocalizer(dayjs)
 
 const lang = {

@@ -12,7 +12,8 @@ const getLedigeTider = async (req,res) => {
         const { start, end } = justerForDST(lt.datoTidFra, lt.datoTidTil);
         return { ...lt, datoTidFra: start, datoTidTil: end };
     });
-    res.status(200).json(ledigeTiderMedJusteretTid)
+    // res.status(200).json(ledigeTiderMedJusteretTid)
+    res.status(200).json(ledigeTider)
 }
 
 // GET alle ledige tider for en medarbejder
@@ -24,7 +25,8 @@ const getLedigeTiderForMedarbejder = async (req, res) => {
         return { ...lt, datoTidFra: start, datoTidTil: end };
     });
 
-    res.status(200).json(ledigeTiderMedJusteretTid);
+    // res.status(200).json(ledigeTiderMedJusteretTid);
+    res.status(200).json(ledigeTider);
 }
 
 // GET en enkelt ledig tid
@@ -46,6 +48,7 @@ const getLedigTid = async (req,res) => {
         return res.status(404).json({error: 'Ingen ledige tider fundet med et matchende ID.'})
     }
 
+    // res.status(200).json(ledigTidMedJusteretTid)
     res.status(200).json(ledigTid)
 }
 

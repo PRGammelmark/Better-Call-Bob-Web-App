@@ -15,7 +15,6 @@ const getAlleBesøg = async (req,res) => {
         return { ...b, datoTidFra: start, datoTidTil: end };
     });
 
-    // res.status(200).json(besøgMedJusteretTid)
     res.status(200).json(besøg)
 }
 
@@ -29,8 +28,8 @@ const getAlleBesøgForEnBruger = async (req, res) => {
             const { start, end } = justerForDST(b.datoTidFra, b.datoTidTil);
             return { ...b, datoTidFra: start, datoTidTil: end };
         });
-        res.status(200).json(besøgMedJusteretTid);
-        // res.status(200).json(besøg);
+        // res.status(200).json(besøgMedJusteretTid);
+        res.status(200).json(besøg);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
@@ -55,7 +54,8 @@ const getEtBesøg = async (req,res) => {
         return res.status(404).json({error: 'Ingen besøg fundet med et matchende ID.'})
     }
 
-    res.status(200).json(besøgMedJusteretTid)
+    // res.status(200).json(besøgMedJusteretTid)
+    res.status(200).json(besøg)
 }
 
 // CREATE et besøg
