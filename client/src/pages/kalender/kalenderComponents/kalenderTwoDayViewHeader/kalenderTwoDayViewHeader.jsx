@@ -4,7 +4,7 @@ import dayjs from 'dayjs'
 
 // Silence ...
 
-const kalenderTwoDayViewHeader = ({ selectedDate, setSelectedDate, weekStart, weekOffset, setWeekOffset, prevWeek, currentWeek, nextWeek, allWeekDays }) => {
+const KalenderTwoDayViewHeader = ({ selectedDate, setSelectedDate, weekStart, weekOffset, setWeekOffset, prevWeek, currentWeek, nextWeek, allWeekDays }) => {
 
   const [enableTransition, setEnableTransition] = useState(false)
 
@@ -39,4 +39,4 @@ const kalenderTwoDayViewHeader = ({ selectedDate, setSelectedDate, weekStart, we
   )
 }
 
-export default kalenderTwoDayViewHeader
+export default KalenderTwoDayViewHeader
