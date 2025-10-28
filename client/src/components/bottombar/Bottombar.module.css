@@ -1,0 +1,139 @@
+.bottomBar * {
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important; /* forhindrer iOS link-popup */
+    -webkit-tap-highlight-color: transparent !important; /* fjerner grå highlight */
+    user-select: none !important;
+    outline: none !important;
+}
+
+.bottomBar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 9px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    z-index: 10;
+    min-height: calc(env(safe-area-inset-bottom) + 40px);
+    max-height: calc(env(safe-area-inset-bottom) + 40px);
+    /* max-height: 80px; */
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    padding: 6px calc(env(safe-area-inset-right) + 10px) env(safe-area-inset-bottom) calc(env(safe-area-inset-left) + 10px);
+    display: none;
+    gap: 3px;
+}
+
+.bottomBarItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* flex-grow: 1; */
+    width: 20%;
+    height: 40px;
+    cursor: pointer;
+    transition: 0.3s ease;
+    background: #fff;
+    text-decoration: none!important;
+    gap: 3px;
+    padding: 4px 0px 3px 0px;
+    border-radius: 6px;
+}
+
+.bottomBarItemIcon {
+    width: 21px;
+    height: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bottomBarCenterItemIcon {
+    width: 17px;
+    height: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+}
+
+.bottomBarItem p {
+    font-size: 10px;
+    font-family: 'Omnes';
+    margin-bottom: 0;
+}
+
+/* .bottomBarItem a.active {
+    background: #f0f0f0;
+} */
+
+/* .bottomBarItemContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+} */
+
+.bottomBarCenterPlus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 2;
+    height: 40px;
+    position: relative;
+    user-select: none;
+}
+
+.bottomBarCenterPlusButton {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 62px;
+    height: 62px;
+    background: #3c5a3f;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    color: #fff;
+    font-family: OmnesBold;
+    font-size: 1.2rem;
+    border: 2px solid #fff;
+    transition: 0.2s ease;
+    user-select: none;
+}
+
+.bottomBarCenterPlusButton:hover {
+    background: #59bf1a;
+}
+
+.bottomBarCenterPlusButton:active {
+    transform: scale(0.92) translateX(-54%);
+}
+
+.bottomBarItem:hover {
+    background: #f0f0f0;
+}
+
+.bottomBarItem:active {
+    background: #e0e0e0;
+    transition: 0.1s ease;
+}
+
+.bottomBarItem:active {
+    transform: scale(0.92);
+    transition: 0.1s ease;
+} 
+
+@media screen and (max-width: 750px) {
+    .bottomBar {
+        display: flex;
+        /* display: none; */
+    }
+}

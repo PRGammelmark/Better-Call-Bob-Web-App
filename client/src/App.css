@@ -22,9 +22,23 @@ ul li a:hover {
 }
 
 ul li a.active {
-    color: #59bf1a!important;
+    background: #59bf1a!important;
     transition: 0.2s ease;
-    padding-left: 5px;
+    color: #fff!important;
+    border-radius: 20px;
+}
+
+ul li a.active p {
+    color: #fff;
+}
+
+a.active {
+    background: #59bf1a40;
+    color: #3c5a3f;
+}
+
+a.active p {
+    color: #3c5a3f;
 }
 
 .bold {

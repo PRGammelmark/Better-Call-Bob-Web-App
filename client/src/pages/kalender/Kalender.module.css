@@ -1,0 +1,17 @@
+@media screen and (max-width: 750px) {
+  .kalenderContainer {
+    margin-top: 20px;
+    z-index: 1;
+    width: 100vw;
+    background: #fff;
+    height: calc(100vh - 60px - 140px);
+    margin-left: -10px;
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    position: sticky;
+    overscroll-behavior: contain!important;
+  }   
+}
+

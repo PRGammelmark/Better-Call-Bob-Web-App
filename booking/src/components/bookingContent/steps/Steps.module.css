@@ -1,0 +1,15 @@
+.headingH2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #222222;
+    font-family: OmnesBold;
+}
+
+.headingH3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #222222;
+    font-family: OmnesBold;
+}

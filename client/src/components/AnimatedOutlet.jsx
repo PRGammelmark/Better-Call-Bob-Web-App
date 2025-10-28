@@ -1,8 +1,9 @@
 import { useOutlet, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import React from 'react';
+import React, { useEffect } from 'react';
+import ContentCSS from './Content.module.css';
 
-const AnimatedOutlet = () => {
+const AnimatedOutlet = ({ contentRef}) => {
   const location = useLocation();
   const outlet = useOutlet();
 
@@ -10,16 +11,22 @@ const AnimatedOutlet = () => {
     <AnimatePresence mode="sync">
       {outlet && (
         <motion.div
-          key={location.pathname} // <- dette er vigtigt
+          key={location.pathname}
           initial={{ opacity: 0, x: 25 }}
           animate={{ opacity: 1, x: 0, transition: {duration: 0.15, delay: 0.6} }}
           exit={{ opacity: 0, x: -150, transition: {duration: 0.3} }}
-        //   style={{ height: '100%' }}
+          className={ContentCSS.animatedOutlet}
+          onAnimationComplete={() => {
+            if (contentRef?.current) {
+              contentRef.current.scrollTo({ top: 0, behavior: 'instant' });
+            }
+          }}
         >
           {outlet}
-          <div style={{height: 100}}>
-            {/* This extra div gives some padding to the bottom of the viewport due to a bug introduced by using useOutlet */}
-          </div>
+          {/* This extra div gives some padding to the bottom of the viewport due to a bug introduced by using useOutlet */}
+          {/* <div style={{height: 100}}>
+          
+          </div> */}
         </motion.div>
       )}
     </AnimatePresence>

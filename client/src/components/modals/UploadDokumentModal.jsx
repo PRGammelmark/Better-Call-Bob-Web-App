@@ -12,7 +12,7 @@ import { storage } from '../../firebase.js'
 import {v4} from 'uuid'
 import MoonLoader from "react-spinners/MoonLoader";
 
-const UploadDokumentModal = ({åbnUploadDokumentModal, setÅbnUploadDokumentModal}) => {
+const UploadDokumentModal = (props) => {
 
 const { user } = useAuthContext();
 const { refetchDocuments, setRefetchDocuments } = useNewDocument();
@@ -92,7 +92,7 @@ async function uploadDokument(e) {
 
 
   return (
-    <Modal trigger={åbnUploadDokumentModal} setTrigger={setÅbnUploadDokumentModal} onClose={() => {setFile(null); setTitel(""); setBeskrivelse(""); setKraevSamtykke(false); setBegrænsBrugerAdgang(false); setBrugerAdgang([])}}>
+    <Modal trigger={props.trigger} setTrigger={props.setTrigger} onClose={() => {setFile(null); setTitel(""); setBeskrivelse(""); setKraevSamtykke(false); setBegrænsBrugerAdgang(false); setBrugerAdgang([])}}>
         <h2 className={Styles.heading}>Upload dokument</h2>
         <p style={{marginBottom: '15px'}}>Billeder og PDF-filer er tilladte.</p>
         <form onSubmit={(e) => uploadDokument(e)} method="" encType="multipart/form-data">

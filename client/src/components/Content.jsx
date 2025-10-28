@@ -8,14 +8,16 @@ import { currentVersion } from '../version.js'
 import ServiceWorkerMessageHandler from '../serviceWorkerMessageHandler';
 import { AnimatePresence, motion } from 'framer-motion'
 import PageWrapper from '../pages/PageWrapper';
-import { react, useState, useEffect } from 'react'
+import { react, useState, useEffect, useRef } from 'react'
 import AnimatedOutlet from './AnimatedOutlet.jsx'
 import { LayoutGrid, Clipboard, ClipboardList, ClipboardCheck, Trash2, Pin, IdCardLanyard, User, Users, House, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut } from 'lucide-react';
 import dayjs from 'dayjs';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import Bottombar from './bottombar/Bottombar'
 
 
 const Content = () => {
-
+  const contentRef = useRef(null)
   const { user } = useAuthContext();
   const location = useLocation()
 
@@ -24,39 +26,34 @@ const Content = () => {
         <ServiceWorkerMessageHandler />
         <Header />
         <div className={ContentCSS.main}>
-
           <div className={ContentCSS.sidebar}>
-            {/* <div className={ContentCSS.velkomst}>
-              <p className={ContentCSS.velkomstBesked}>Hej {user.navn.split(" ")[0]}! 👋</p>
-            </div> */}
             <div>
-            <h3 style={{ fontFamily: 'OmnesBold', fontSize: '1.1rem', color: '#333333', marginBottom: '20px', textDecoration: 'underline' }}>Navigation</h3>
-            <ul>
-              <li><NavLink to="/" className={ContentCSS.sidebarItem}><LayoutGrid height={16} />Overblik</NavLink></li>
-              {user.isAdmin && <li><NavLink to="alle-opgaver" className={ContentCSS.sidebarItem}><Clipboard height={16} />Alle opgaver</NavLink></li>}
-              {!user.isAdmin && <li><NavLink to="mine-opgaver" className={ContentCSS.sidebarItem}><Clipboard height={16} />Mine opgaver</NavLink></li>}
-              {user.isAdmin && <li><NavLink to="kunder" className={ContentCSS.sidebarItem}><Users height={16} />Kunder</NavLink></li>}
-              <li><NavLink to="team" className={ContentCSS.sidebarItem}><House height={16} />Team</NavLink></li>
-              <li><NavLink to="dokumenter" className={ContentCSS.sidebarItem}><ScrollText height={16} />Dokumenter</NavLink></li>
-              <li><NavLink to="din-konto" className={ContentCSS.sidebarItem}><User height={16} />Profil</NavLink></li>
-              <li><NavLink to="app-indstillinger" className={ContentCSS.sidebarItem}><Settings height={16} />Indstillinger</NavLink></li>
-              <li><NavLink to="hjaelp" className={ContentCSS.sidebarItem}><CircleQuestionMark height={16} />Hjælp</NavLink></li>
-            </ul>
+              <ul>
+                <li><NavLink to="/" className={ContentCSS.sidebarItem}><LayoutGrid height={16} className={ContentCSS.sidebarIcon} /><p>Overblik</p></NavLink></li>
+                {user.isAdmin && <li><NavLink to="alle-opgaver" className={ContentCSS.sidebarItem}><Clipboard height={16} className={ContentCSS.sidebarIcon} /><p>Alle opgaver</p></NavLink></li>}
+                {!user.isAdmin && <li><NavLink to="mine-opgaver" className={ContentCSS.sidebarItem}><Clipboard height={16} className={ContentCSS.sidebarIcon} /><p>Mine opgaver</p></NavLink></li>}
+                {user.isAdmin && <li><NavLink to="kunder" className={ContentCSS.sidebarItem}><Users height={16} className={ContentCSS.sidebarIcon} /><p>Kunder</p></NavLink></li>}
+                <li><NavLink to="team" className={ContentCSS.sidebarItem}><House height={16} className={ContentCSS.sidebarIcon} /><p>Team</p></NavLink></li>
+                <li><NavLink to="dokumenter" className={ContentCSS.sidebarItem}><ScrollText height={16} className={ContentCSS.sidebarIcon} /><p>Dokumenter</p></NavLink></li>
+                <li><NavLink to="din-konto" className={ContentCSS.sidebarItem}><User height={16} className={ContentCSS.sidebarIcon} /><p>Profil</p></NavLink></li>
+                <li><NavLink to="app-indstillinger" className={ContentCSS.sidebarItem}><Settings height={16} className={ContentCSS.sidebarIcon} /><p>Indstillinger</p></NavLink></li>
+                <li><NavLink to="hjaelp" className={ContentCSS.sidebarItem}><CircleQuestionMark height={16} className={ContentCSS.sidebarIcon} /><p>Hjælp</p></NavLink></li>
+              </ul>
             </div>
-            <div className={ContentCSS.dato}>
-              <p className={ContentCSS.datoTekst}>{dayjs().format("DD. MMMM [kl.] HH:mm")}</p>
-            </div>
+            <p className={ContentCSS.datoTekst}>{dayjs().format("DD. MMMM [kl.] HH:mm")}</p>
           </div>
 
-          <div className={ContentCSS.content}>
-            <AnimatedOutlet />
+          <div className={ContentCSS.content} ref={contentRef} style={{ overscrollBehavior: location.pathname === '/kalender' ? 'none' : 'auto' }}>
+            <AnimatedOutlet contentRef={contentRef} />
           </div>
-          <FloatingActionButton />
+          
+          <Bottombar />
+          {/* <FloatingActionButton /> */}
         </div>
         
         <Footer />
     </>
   )
 }
-
+ 
 export default Content

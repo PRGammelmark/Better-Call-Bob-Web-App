@@ -10,13 +10,14 @@ router.use(requireAuth);
 // POST registrer opkrævninger
 router.post('/registrer-opkraevninger', async (req, res) => {
     
-    const { posteringer, reference, metode } = req.body;
+    const { posteringer, reference, metode, opkrævningsbeløb } = req.body;
 
             for (const postering of posteringer) {
                 const dbPostering = await Postering.findById(postering._id);
                 if (dbPostering) {
                     dbPostering.opkrævninger.push({
                         reference: reference,
+                        opkrævningsbeløb: opkrævningsbeløb,
                         metode: metode,
                         dato: new Date()
                     });

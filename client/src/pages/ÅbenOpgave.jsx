@@ -36,6 +36,7 @@ import { fetchFile } from '@ffmpeg/util';
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
 import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
+import { useOpgave } from '../context/OpgaveContext.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -51,7 +52,7 @@ const ÅbenOpgave = () => {
 
     // state managers
     const { egneLedigeTider, alleLedigeTider, egneBesøg, alleBesøg, setEgneLedigeTider, setEgneBesøg, refetchLedigeTider, refetchBesøg, setRefetchLedigeTider, setRefetchBesøg, setAlleLedigeTider, setAlleBesøg, userID } = useBesøg();
-    const [opgave, setOpgave] = useState(null);
+    const { opgave, setOpgave, refetchPosteringer } = useOpgave();
     const [kunde, setKunde] = useState({});
     const [opdaterKunde, setOpdaterKunde] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -272,9 +273,9 @@ const ÅbenOpgave = () => {
             setPosteringer(filteredPosteringer);
         })
         .catch(error => console.log(error))
-    }, [openModal, openPosteringModalID, kunde])
+    }, [openModal, openPosteringModalID, kunde, refetchPosteringer])
 
-    const refetchPosteringer = async () => {
+    const refetchLocalPosteringer = async () => {
         try {
           const res = await axios.get(`${import.meta.env.VITE_API_URL}/posteringer/${postering._id}`, {
             headers: {
@@ -664,7 +665,7 @@ const ÅbenOpgave = () => {
 
     function refetchOpgave() {
         setUpdateOpgave(!updateOpgave)
-        refetchPosteringer();
+        refetchLocalPosteringer();
     }
 
     function informerKundenOmPåVej() {
@@ -1103,7 +1104,10 @@ const ÅbenOpgave = () => {
             </div>
             
             <div className={ÅbenOpgaveCSS.opgaveContainer}>
-                {færdiggjort ? <div><b className={ÅbenOpgaveCSS.prefix}>Opgavebeskrivelse</b><p className={ÅbenOpgaveCSS.færdiggjortOpgavebeskrivelse}>{opgaveBeskrivelse}</p></div> : <form>
+                {færdiggjort ? 
+                <div><b className={ÅbenOpgaveCSS.prefix}>Opgavebeskrivelse</b><p className={ÅbenOpgaveCSS.færdiggjortOpgavebeskrivelse}>{opgaveBeskrivelse}</p></div> 
+                : 
+                <form>
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
                     <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                     <div className={ÅbenOpgaveCSS.infoPillsDiv}>
@@ -1340,7 +1344,7 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     {færdiggjort ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} userID={userID} user={user} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave} posteringer={posteringer}/>
+                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave} posteringer={posteringer}/>
                     <OpgaveStatus user={user} opgave={opgave} posteringer={posteringer} kunde={kunde} færdiggjort={færdiggjort} opgaveAfsluttet={opgaveAfsluttet} visInklMoms={visInklMoms} setTvingAfslutOpgaveModal={setTvingAfslutOpgaveModal} åbnForÆndringer={åbnForÆndringer} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal}/>
                     {!kunde.virksomhed && !kunde.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} isEnglish={isEnglish} />}
                     {(kunde.virksomhed || kunde.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}

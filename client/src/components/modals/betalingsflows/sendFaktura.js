@@ -25,6 +25,9 @@ const sendFaktura = async ({ posteringer, inklAdministrationsGebyr, user, altern
     const erErhvervskunde = kunde?.CVR || kunde?.virksomhed;
     const isEnglish = kunde?.isEnglish || false;
     const opgaveID = posteringer[0]?.opgaveID;
+    const posteringerTotalPris = posteringer.reduce((acc, postering) => acc + postering.totalPris, 0);
+    const alleredeBetaltBeløb = posteringer.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+    const restbeløbTilOpkrævning = posteringerTotalPris - alleredeBetaltBeløb;
 
     // Importer linjer til faktura fra posteringer
     const economicLines = useEconomicLines(posteringer, inklAdministrationsGebyr, isEnglish);
@@ -66,6 +69,7 @@ const sendFaktura = async ({ posteringer, inklAdministrationsGebyr, user, altern
             layout: {
                 layoutNumber: 3
             },
+            remainder: Number(Number(restbeløbTilOpkrævning).toFixed(2)),
             recipient: {
                 ...(erErhvervskunde && { name: kunde?.virksomhed ? kunde?.virksomhed : "Virksomhedsnavn ikke oplyst" }),
                 ...(!erErhvervskunde && { name: kunde?.navn ? kunde?.navn : "Intet navn oplyst" }),
@@ -169,6 +173,7 @@ try {
 try {
   await axios.post(`${import.meta.env.VITE_API_URL}/faktura-opkraevninger/registrer-opkraevninger`, {
     posteringer: posteringer,
+    opkrævningsbeløb: restbeløbTilOpkrævning,
     reference: bookingResponse.data.self,
     metode: "faktura"
   }, { headers: authHeaders });

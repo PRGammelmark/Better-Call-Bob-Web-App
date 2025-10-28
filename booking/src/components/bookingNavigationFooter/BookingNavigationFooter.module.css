@@ -1,0 +1,65 @@
+.bookingNavigationFooter {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    height: 50px;
+    min-height: 50px;
+    padding-top: 15px;
+    border-top: 1px solid #e0e0e0;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+
+}
+
+/* Tvinger næste-knappen til højre når der kun er én knap */
+.bookingNavigationFooter button:only-child {
+  margin-left: auto;
+}
+
+.nextButton {
+    background: #59bf1a;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transition: 0.2s ease;
+}
+
+.nextButton:hover {
+    background: #3c5a3f;
+}
+
+.nextButton:active {
+    transform: scale(0.92);
+}
+
+.nextButton:disabled {
+    background: #e0e0e0;
+    color: #bbbbbb;
+    pointer-events: none;
+}
+
+.backButton {
+    background: #e8e8e8;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #222222;
+    transition: 0.2s ease;
+}
+
+.backButton:hover {
+    background: #3c5a3f;
+    color: #fff;
+}
+
+.backButton:active {
+    transform: scale(0.92);
+}

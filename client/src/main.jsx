@@ -17,6 +17,7 @@ import { TaskAndDateProvider } from './context/TaskAndDateContext.jsx'
 import { OverblikViewProvider } from './context/OverblikViewContext.jsx'
 import { IndstillingerProvider } from './context/IndstillingerContext.jsx'
 import { NotifikationProvider } from './context/NotifikationContext.jsx'
+import { OpgaveProvider } from './context/OpgaveContext.jsx'
 
 Sentry.init({
   dsn: 'https://83dbd12ed4e8b7ad6d5d2b0acf4ce7e0@o4510158250049536.ingest.de.sentry.io/4510158252998736',
@@ -43,13 +44,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             <OverblikViewProvider>
               <TaskAndDateProvider>
                 <NewDocumentProvider>
-                  <LocalizationProvider 
-                    dateAdapter={AdapterDayjs} 
-                    adapterLocale="da" // Set the locale for AdapterDayjs
-                    localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
-                  >
-                    <App />
-                  </LocalizationProvider>
+                  <OpgaveProvider>
+                    <LocalizationProvider 
+                      dateAdapter={AdapterDayjs} 
+                      adapterLocale="da" // Set the locale for AdapterDayjs
+                      localeText={daDK.components.MuiLocalizationProvider.defaultProps.localeText}
+                    >
+                      <App />
+                    </LocalizationProvider>
+                  </OpgaveProvider>
                 </NewDocumentProvider>
               </TaskAndDateProvider>
             </OverblikViewProvider>

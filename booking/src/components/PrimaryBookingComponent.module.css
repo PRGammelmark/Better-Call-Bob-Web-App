@@ -1,0 +1,29 @@
+.primaryBookingComponent {
+    display: flex;
+    flex-direction: row;
+    height: clamp(500px, 70vh, 1200px);
+    width: clamp(400px, 80vw, 1200px);
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bookingContainer {
+    width: 70%;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.summaryContainer {
+    width: 30%;
+    border-left: 1px solid #e0e0e0;
+    padding: 15px 20px;
+}
+
+.bookingHeaderContentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}

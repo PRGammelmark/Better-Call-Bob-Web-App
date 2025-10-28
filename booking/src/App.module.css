@@ -1,0 +1,26 @@
+* {
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: Omnes;
+}
+
+.app {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* ========================== Font imports ========================== */
+
+@font-face {
+  font-family: Omnes;
+  src: url(./fonts/Omnes.ttf);
+}
+
+@font-face {
+  font-family: OmnesBold;
+  src: url(./fonts/OmnesBold.ttf);
+}

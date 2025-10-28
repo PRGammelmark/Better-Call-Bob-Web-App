@@ -1,5 +1,5 @@
 import express from "express"
-import { getPosteringer, getPostering, createPostering, deletePostering, updatePostering, getPosteringerForBruger, downloadSelectedUdlaeg } from "../controllers/posteringController.js"
+import { getPosteringer, getPostering, createPostering, deletePostering, updatePostering, getPosteringerForBruger, getPosteringerForOpgave, downloadSelectedUdlaeg } from "../controllers/posteringController.js"
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
@@ -11,6 +11,9 @@ router.get("/", getPosteringer)
 
 // GET alle posteringer for en bruger
 router.get("/bruger/:userID", getPosteringerForBruger)
+
+// GET alle posteringer for en opgave
+router.get("/opgave/:opgaveID", getPosteringerForOpgave)
 
 // GET en enkelt postering
 router.get('/:id', getPostering)

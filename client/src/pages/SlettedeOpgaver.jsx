@@ -46,7 +46,8 @@ const Alle_opgaver = () => {
 
       if (response.ok) {
         const opgaverDerErSlettet = json.filter(opgave => opgave.isDeleted != null);
-        setSlettedeOpgaver(opgaverDerErSlettet);
+        const opgaverDerErSlettetSorteret = opgaverDerErSlettet.sort((a, b) => new Date(b.isDeleted) - new Date(a.isDeleted));
+        setSlettedeOpgaver(opgaverDerErSlettetSorteret);
         setIsLoading(false)
       }
     }

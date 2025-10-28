@@ -16,13 +16,13 @@ import {v4} from 'uuid'
 import MoonLoader from "react-spinners/MoonLoader";
 import PageAnimation from '../PageAnimation.jsx'
 import BackArrow from '../../assets/back.svg'
+import { useOpgave } from '../../context/OpgaveContext.jsx'
 
 const AddPostering = (props) => {
 
     const {user} = useAuthContext()
-    const nuværendeAnsvarlige = props.nuværendeAnsvarlige;
-    const opgave = props.opgave;
-
+    const userID = user?.id;
+    const { setRefetchOpgave, setRefetchPosteringer } = useOpgave();
     const [opretPosteringPåVegneAfEnAnden, setOpretPosteringPåVegneAfEnAnden] = useState(false)
     const [medarbejdere, setMedarbejdere] = useState([])
     const [valgtMedarbejder, setValgtMedarbejder] = useState("")
@@ -49,8 +49,40 @@ const AddPostering = (props) => {
     const [rabatProcent, setRabatProcent] = useState(0);
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
 
+    const [opgave, setOpgave] = useState(props.opgave || null);
+    const [opgaveID, setOpgaveID] = useState(props.opgaveID || null);
+    const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(props.nuværendeAnsvarlige || []);
+    const [posteringer, setPosteringer] = useState(props.posteringer || []);
+
+
     const aftenTillægMultiplikator = aftenTillæg ? 1 + (satser.aftenTillægHonorar / 100) : 1;
     const natTillægMultiplikator = natTillæg ? 1 + (satser.natTillægHonorar / 100) : 1;
+
+    // Hvis der ikke er en opgaveID, så hent den fra URL'en (så er addPostering nemlig blevet kaldt fra bottomBaren som kræver yderligere kontekst)
+    useEffect(() => {
+    if (!props.opgaveID) {
+        const opgaveIDFromURL = window.location.pathname.split("/").pop();
+
+        axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveIDFromURL}`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        })
+        .then(response => {
+            setOpgave(response.data);
+            setOpgaveID(response.data._id);
+            setNuværendeAnsvarlige(response.data.ansvarlig);
+        })
+        .catch(console.log);
+
+        axios.get(`${import.meta.env.VITE_API_URL}/posteringer/opgave/${opgaveIDFromURL}`, {
+            headers: { 'Authorization': `Bearer ${user.token}` }
+        })
+        .then(response => {
+            setPosteringer(response.data);
+        })
+        .catch(console.log);
+    }
+    }, [props.trigger]);
+
 
     useEffect(() => {
         const xPosteringDynamiskHonorar = (
@@ -78,7 +110,7 @@ const AddPostering = (props) => {
         } 
         
         if(medarbejdere?.length > 0 && !valgtMedarbejder){
-            const mineSatser = medarbejdere.find(medarbejder => medarbejder._id === props.userID)?.satser || satser;
+            const mineSatser = medarbejdere.find(medarbejder => medarbejder._id === userID)?.satser || satser;
             setAktuelleSatser(mineSatser)
         }
     }, [valgtMedarbejder, medarbejdere])
@@ -148,12 +180,12 @@ const AddPostering = (props) => {
             dynamiskPris: posteringDynamiskPris,
             totalHonorar: dynamiskHonorarBeregning ? Number(posteringDynamiskHonorar) : Number(posteringFastHonorar),
             totalPris: dynamiskPrisBeregning ? Number(posteringDynamiskPris) : Number(posteringFastPris),
-            opgaveID: props.opgaveID,
-            brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID,
-            kundeID: props?.opgave?.kundeID,
-            kunde: props?.opgave?.kundeID,
-            bruger: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || props.userID) : props.userID,
-            opgave: props.opgaveID
+            opgaveID: opgaveID,
+            brugerID: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || userID) : userID,
+            kundeID: opgave?.kundeID,
+            kunde: opgave?.kundeID,
+            bruger: opretPosteringPåVegneAfEnAnden ? (valgtMedarbejder?._id || userID) : userID,
+            opgave: opgaveID
         }
 
         if(!postering.totalHonorar && !postering.totalPris){
@@ -163,6 +195,16 @@ const AddPostering = (props) => {
 
         if(!postering.kundeID){
             window.alert("Kunde ikke registreret. Prøv igen.")
+            return
+        }
+
+        if(!opgaveID){
+            window.alert("Opgave ikke registreret. Prøv igen.")
+            return
+        }
+
+        if(!userID){
+            window.alert("Bruger ikke registreret. Prøv igen.")
             return
         }
 
@@ -181,7 +223,9 @@ const AddPostering = (props) => {
                     }
                 })
                 .then(res => {
-                    props.setNuværendeAnsvarlige([...nuværendeAnsvarlige, valgtMedarbejder]);
+                    if(props?.setNuværendeAnsvarlige){
+                        props.setNuværendeAnsvarlige([...nuværendeAnsvarlige, valgtMedarbejder]);
+                    }
                     console.log("Medarbejderen for hvem posteringen er blevet oprettet var ikke ansvarlig for opgaven – vedkommende er blevet tilføjet som ansvarlig.")
 
                     axios.get(`${import.meta.env.VITE_API_URL}/kunder/${props.opgave.kundeID}`, {
@@ -195,8 +239,8 @@ const AddPostering = (props) => {
                         axios.post(`${import.meta.env.VITE_API_URL}/send-email`, {
                             to: valgtMedarbejder?.email,
                             subject: "Du har fået tildelt en ny opgave",
-                            body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + kunde?.navn + "\n\nAdresse: " + kunde?.adresse + "\n\nOpgavebeskrivelse: " + props.opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
-                            html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + kunde?.navn + "<br />Adresse: " + kunde?.adresse + "<br />Opgavebeskrivelse: " + props.opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
+                            body: "Du har fået tildelt en ny opgave hos Better Call Bob.\n\nOpgaveinformationer:\n\nKundens navn: " + kunde?.navn + "\n\nAdresse: " + kunde?.adresse + "\n\nOpgavebeskrivelse: " + opgave.opgaveBeskrivelse + "\n\nGå ind på app'en for at se opgaven.\n\n//Better Call Bob",
+                            html: "<p>Du har fået tildelt en ny opgave hos Better Call Bob.</p><b>Opgaveinformationer:</b><br />Kundens navn: " + kunde?.navn + "<br />Adresse: " + kunde?.adresse + "<br />Opgavebeskrivelse: " + opgave.opgaveBeskrivelse + "</p><p>Gå ind på <a href='https://app.bettercallbob.dk'>app'en</a> for at se opgaven.</p><p>//Better Call Bob</p>"
                         })
                         .then(res => {
                             console.log("Email-notifikation sendt til medarbejderen.")
@@ -227,22 +271,26 @@ const AddPostering = (props) => {
             setRabatProcent(0);
             setOpretPosteringPåVegneAfEnAnden(false)
             setValgtMedarbejder("")
-            // setMedarbejdere([])
+
+            if(!props.opgaveID) {
+                setRefetchPosteringer(true);
+            }
+            
         })
         .catch(error => console.log(error))
     }
 
     useEffect(() => {
-        if((!props.posteringer?.length > 0) && (props.opgave?.fakturaOprettesManuelt)){
+        if((!posteringer?.length > 0) && (opgave?.fakturaOprettesManuelt)){
             console.log("Der er 0 posteringer, og opgaven er en tilbudsopgave.")
             // Hvis posteringen er den første på en opgave, hvor der er givet fast tilbud, så skal initial state være med en fast pris på tilbudsprisen
             setDynamiskPrisBeregning(false)
-            setPosteringFastPris(Number(props.opgave.tilbudAfgivet))
+            setPosteringFastPris(Number(opgave.tilbudAfgivet))
             setFastPrisInfobox(true)
         } else {
             setFastPrisInfobox(false)
         }
-    }, [props.posteringer])
+    }, [posteringer])
     
 
     const handleOutlayChange = (index, event) => {
@@ -319,10 +367,40 @@ const AddPostering = (props) => {
             }
         );
     };
-    
+
+    const clearState = () => {
+        setOpretPosteringPåVegneAfEnAnden(false)
+        setMedarbejdere([])
+        setValgtMedarbejder("")
+        setOutlays([]);
+        setKvitteringLoadingStates({});
+        setHandymantimer(0);
+        setTømrertimer(0);
+        setPosteringDato(dayjs().format('YYYY-MM-DD'));
+        setPosteringBeskrivelse("");
+        setInkluderOpstart(1);
+        setAftenTillæg(false)
+        setNatTillæg(false)
+        setTrailer(false)
+        setRådgivningOpmålingVejledning(0)
+        setAktuelleSatser(satser);
+        setDynamiskHonorarBeregning(true);
+        setDynamiskPrisBeregning(true);
+        setPosteringFastHonorar(0);
+        setPosteringFastPris(0);
+        setFastPrisInfobox(false);
+        setPreviewDynamiskHonorar(0);
+        setPreviewDynamiskOutlays(0);
+        setRabatProcent(0);
+        setKvitteringBillede(null)
+        setOpgave(null);
+        setOpgaveID(null);
+        setNuværendeAnsvarlige([]);
+        setPosteringer([]);
+    }
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede} onClose={clearState}>
             {!kvitteringBillede ? <>
                 <h2 className={ÅbenOpgaveCSS.modalHeading}>Ny postering 📄</h2>
             <form className={`${ÅbenOpgaveCSS.modalForm} ${ÅbenOpgaveCSS.posteringForm}`} onSubmit={(e) => {

@@ -10,7 +10,7 @@ import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { currentVersion, changes } from '../version.js'
-import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut, Menu } from 'lucide-react';
+import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut, Menu, Calendar } from 'lucide-react';
 import NotifikationKlokke from './NotifikationKlokke'
 
 
@@ -35,6 +35,7 @@ const Header = () => {
     '/team': (<div className={Styles.mobileTitle}> <IdCardLanyard height={20} />Teamet</div>),
     '/kunder': (<div className={Styles.mobileTitle}> <Users height={20} />Kunder</div>),
     '/kunde/:kundeID': "Kunde",
+    '/kalender': (<div className={Styles.mobileTitle}> <Calendar height={20} />Kalender</div>),
     '/dokumenter': (<div className={Styles.mobileTitle}> <ScrollText height={20} />Dokumenter</div>),
     '/din-konto': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
     '/app-indstillinger': (<div className={Styles.mobileTitle}> <Settings height={20} />App-indstillinger</div>),
@@ -137,7 +138,7 @@ useEffect(() => {
               <h3 className={Styles.mobileNavHeading}>{navTitle || "Ingen titel"}</h3>
               <div className={Styles.headerButtonsContainer}>
               <NotifikationKlokke background="#ffffff20" color="#ffffff" />
-              <div className={Styles.hamburgerMobileContainer}><Menu onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} size={20} /></div>
+              {/* <div className={Styles.hamburgerMobileContainer}><Menu onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} size={20} /></div> */}
               </div>
               {/* <img onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} src={HamburgerIcon} alt="" /> */}
           </nav>

@@ -1,18 +1,72 @@
 .main {
     display: flex;
-    min-height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
 }
+
+.content {
+    padding: 20px 30px 120px 30px;
+    flex: 1;
+    height: calc(100vh - 70px - 60px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
+/* .content {
+    padding: 20px 30px 120px 30px;
+    flex: 1;
+    height: calc(100vh - 70px - 60px);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    position:
+} */
 
 .sidebar {
     background: #fff;
-    padding: 25px 25px 64px 25px;;
-    width: clamp(150px, 20%, 250px);
+    padding: 14px 14px 64px 14px;;
+    width: 56px;
     border-right: 1px solid rgba(0, 0, 0, 0.15);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px;
     display: flex;
     overflow-y: auto;
+    overflow-x: hidden;
     flex-direction: column;
     justify-content: space-between;
+    transition: 0.3s ease;
+}
+
+.sidebar:hover {
+    width: 200px;
+}
+
+.sidebarItem .sidebarIcon {
+    width: 26px!important;
+    height: 26px!important;
+    padding: 6px;
+    aspect-ratio: 1/1;
+    transition: 0.2s ease;
+    flex-shrink: 0;
+}
+
+.sidebarItem p {
+    opacity: 0;
+    max-width: 0;
+    white-space: nowrap;
+    transition: 0.3s ease;
+}
+
+.sidebar:hover .sidebarItem {
+    gap: 5px;
+}
+
+.sidebar:hover .sidebarItem p {
+    opacity: 1;
+    max-width: 100%;
+}
+
+.sidebar h3 {
+    transition: 0.2s ease;
 }
 
 .sidebar ul li {
@@ -30,7 +84,7 @@
 .sidebar ul li::before {
     content: '';
     position: absolute;
-    top: -9px;
+    top: -8px;
     left: 0;
     width: 100%;
     height: 1px;
@@ -45,15 +99,24 @@
     text-decoration: none;
     color: #333333;
     transition: 0.2s ease;
+    gap: 0px;
+    margin-left: 1px;
+    border-radius: 20px;
 }
- 
-.content {
-    padding: 20px 30px 120px 30px;
-    flex: 1;
-    height: calc(100vh - 70px - 80px);
-    overflow-y: scroll;
-    overflow-x: hidden;
-    box-sizing: border-box;
+
+ul li a:hover {
+    background: #f0f0f0;
+}
+
+ul li a.active {
+    background: #59bf1a!important;
+    transition: 0.2s ease;
+    color: #fff!important;
+    border-radius: 20px;
+}
+
+ul li a.active p {
+    color: #fff;
 }
 
 .velkomst {
@@ -69,16 +132,35 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    justify-content: flex-start;
     gap: 0px;
+    transition: 0.2s ease;
 }
 
 .datoTekst {
     font-family: Omnes;
     font-size: 0.75rem;
     color: #33333380;
+    white-space: nowrap;
+    opacity: 0;
+    transition: 0.2s ease;
+    position: absolute;
+    bottom: 90px;
+    left: 20px;
+    max-width: 0;
+}   
+
+.sidebar:hover .datoTekst {
+    opacity: 1;
+    max-width: 100%;
 }
 
 @media screen and (max-width: 750px) {
+    .content {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    
     .sidebar {
         display: none;
     }
@@ -91,28 +173,25 @@
         max-height: 100vh;
         height: 100vh!important;
         padding-top: 50px;
+
     }
 }
 
-
-
 @media screen and (display-mode: standalone) {
     .content {
-        /* padding-top: 80px; */
         padding-left: 10px;
         padding-right: 10px;
     }
 
     @supports (padding-top: env(safe-area-inset-top)) {
         .content {
-          padding-top: calc(40px + env(safe-area-inset-top));
+            max-height: calc(100vh - 70px - 50px - env(safe-area-inset-top));
+            margin-top: calc(40px + env(safe-area-inset-top));
+            padding: 0px 10px 0px 10px;
         }
+        
+        /* .content {
+          padding-top: calc(40px + env(safe-area-inset-top));
+        } */
     }
 }
-
-/* === Dynamisk safe area til PWA === */
-/* @supports (padding-top: env(safe-area-inset-top)) {
-    .content {
-      padding-top: calc(40px + env(safe-area-inset-top));
-    }
-} */

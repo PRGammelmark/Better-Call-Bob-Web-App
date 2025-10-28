@@ -31,6 +31,13 @@
     color: #696969;
 }
 
+.opgaveBetalingStatusDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+}
+
 @media (max-width: 750px) {
     .mobileTable {
         display: block;

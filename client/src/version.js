@@ -14,6 +14,18 @@
 // 
 
 const changes = [{
+    version: "3.6.0",
+    date: "28. oktober 2025",
+    changes: [
+        "App'en har fået en bottombar, der gør det lettere og hurtigere at navigere. Den flydende action-knap er blevet fjernet, og erstattet med en mere funktionel plus-knap, der ligger i bunden af actionbaren.",
+        "Plus-knappen giver både mulighed for at oprette nye opgaver, kunder, dokumenter og medarbejdere. Almindelige brugere kan også oprette ledige tider gennem knappen, og er man på en opgave vil man også kunne oprette både besøg og posteringer gennem knappen.",
+        "Menu-knappen er på mobil blevet flyttet fra headeren og til bunden.",
+        "På desktop har sidebaren fået nyt design, og den skrumper også når man er færdig med at navigere.",
+        "Når en delvist betalt postering opkræves for resten via faktura, så vil fakturaen nu også modtage data om hvad der allerede er betalt på posteringen.",
+        "Flere tabeller er blevet opdateret, så de i udgangspunktet nu viser indhold sorteret efter dato.",
+        "Diverse designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.5.14",
     date: "27. oktober 2025",
     changes: [

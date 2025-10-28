@@ -8,9 +8,11 @@ import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as beregn from '../../utils/beregninger.js'
 import dayjs from 'dayjs'
-import { Check, X, ChevronRight } from 'lucide-react'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { Check, X, ChevronRight, CircleAlert, Send } from 'lucide-react'
 
 const ClosedTasks = () => {
+  dayjs.extend(relativeTime)
 
   const navigate = useNavigate()
   const [afsluttedeOpgaver, setAfsluttedeOpgaver] = useState(null)
@@ -30,7 +32,8 @@ const ClosedTasks = () => {
 
       if (response.ok) {
         const afsluttedeOpgaver = json.filter(opgave => (opgave.opgaveAfsluttet || opgave.opgaveBetaltMedMobilePay || opgave.markeretSomFærdig) && !opgave.isDeleted);
-        setAfsluttedeOpgaver(afsluttedeOpgaver);
+        const afsluttedeOpgaverSorteret = afsluttedeOpgaver.sort((a, b) => new Date(b.opgaveAfsluttet) - new Date(a.opgaveAfsluttet));
+        setAfsluttedeOpgaver(afsluttedeOpgaverSorteret);
       }
       setIsLoading(false)
     }
@@ -102,18 +105,41 @@ const ClosedTasks = () => {
                   const honorarBeløbForOpgave = beregn.totalHonorar(posteringerForOpgave, 2, false)?.beløb;
                   const dbBeløb = fakturabeløbForOpgaveEksklMoms - honorarBeløbForOpgave;
                   let opgaveBetalt = false;
-                  const betalingerForOpgave = posteringerForOpgave?.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
-                  if(betalingerForOpgave >= fakturabeløbForOpgave) {
+                  let opgaveOpkrævet = '';
+
+                  const betalingerForOpgave = posteringerForOpgave?.reduce(
+                    (acc, postering) =>
+                      acc +
+                      (postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0) || 0),
+                    0
+                  );
+
+                  if (betalingerForOpgave >= fakturabeløbForOpgave) {
                     opgaveBetalt = true;
                   }
+
+                  if (!opgaveBetalt) {
+                    const opkrævningerForOpgave = posteringerForOpgave
+                      ?.flatMap(p => p.opkrævninger || [])
+                      ?.filter(opk => opk.metode); // kun dem med metode
+                    
+                    if (opkrævningerForOpgave?.length > 0) {
+                      const senesteOpkrævning = opkrævningerForOpgave.at(-1);
+                      opgaveOpkrævet = senesteOpkrævning.metode;
+                    }
+                  }
+                  
 
                   return (
                     <div className={TableCSS.opgaveListing} key={opgave._id} onClick={() => navigate(`../opgave/${opgave._id}`)}>
                       <ul>
                         <li>#{opgave._id.slice(opgave._id.length - 3, opgave._id.length)}</li>
                         <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}>{kunde?.navn}{(kunde?.virksomhed || kunde?.CVR) && <br />}<span className={ClosedTasksCSS.opgaveVirksomhedNavn}>{(kunde?.virksomhed && kunde?.virksomhed) || (kunde?.CVR && "CVR.: " + kunde?.CVR)}</span></li>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center"}}><p>{dayjs(opgave?.opgaveAfsluttet).format("D. MMMM")}</p><p style={{fontSize: "10px", color: "grey"}}>{dayjs(opgave?.opgaveAfsluttet).format("YYYY")}</p></li>
-                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p>{opgaveBetalt ? <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#59bf1a99", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><Check size={10} color="#222222" />Betalt</p> : <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#EED202", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><X size={10} color="#222222" />Ikke betalt</p>}</li>
+                        <li style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center" }}>
+                          <p>{dayjs(opgave?.opgaveAfsluttet).fromNow()}</p>
+                          <p style={{ fontSize: "10px", color: "grey" }}>{dayjs(opgave?.opgaveAfsluttet).format("D. MMMM YYYY")}</p>
+                        </li>
+                        <li style={{display: "flex", flexDirection: "column", alignItems: "flex-start", justifyContent: "center", gap: "2px"}}><p>{fakturabeløbForOpgave?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</p><div className={ClosedTasksCSS.opgaveBetalingStatusDiv}>{opgaveBetalt ? <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#59bf1a99", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><Check size={10} color="#222222" />Betalt</p> : (opgaveOpkrævet && <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#EED202", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><X size={10} color="#222222" />Ikke betalt</p>)}{!opgaveBetalt && (opgaveOpkrævet ? (opgaveOpkrævet === "mobilepay" ? <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#EED202", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><CircleAlert size={10} color="#222222" />{opgaveOpkrævet.charAt(0).toUpperCase() + opgaveOpkrævet.slice(1)}</p> : "") : <p style={{fontSize: "10px", color: "#222222", backgroundColor: "#F97145", padding: "2px 6px", borderRadius: "4px", display: "flex", alignItems: "center", gap: "2px"}}><CircleAlert size={10} color="#222222" />Ikke opkrævet</p>)}</div></li>
                         <li>{dbBeløb?.toLocaleString('da-DK', { style: 'currency', currency: 'DKK' })}</li>
                         <li className={TableCSS.chevronRight}><ChevronRight size={16} color="#222222" /></li>
                       </ul>

@@ -157,6 +157,7 @@ const updatePostering = async (req,res) => {
 
 export {
     getPosteringer,
+    getPosteringerForOpgave,
     createPostering,
     getPostering,
     deletePostering,

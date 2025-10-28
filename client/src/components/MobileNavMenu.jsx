@@ -19,7 +19,9 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
     };
 
     const handleLogout = () => {
-        logout()
+        if(window.confirm("Er du sikker på, at du vil logge ud?")) {
+          logout()
+        }
     }
 
     function handleLogoutClick(){

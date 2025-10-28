@@ -6,9 +6,12 @@ import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
+import Button from '../components/basicComponents/buttons/Button.jsx'
+import { useNavigate } from 'react-router-dom'
 
 const AppIndstillinger = () => {
 
+    const navigate = useNavigate();
     const { user } = useAuthContext();
     const { indstillinger } = useIndstillinger();
 
@@ -89,7 +92,10 @@ const AppIndstillinger = () => {
             ]}
         />
         </div>
+
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
+    
+        <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>
     </div>
   )
 }

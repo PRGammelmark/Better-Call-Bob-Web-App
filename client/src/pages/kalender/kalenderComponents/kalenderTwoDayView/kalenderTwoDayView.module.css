@@ -1,0 +1,156 @@
+.kalenderTwoDayViewContainer {
+    width: 100%;
+    height: calc(100% - 65px - 30px);
+    position: absolute;
+    top: calc(65px + 30px);
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    display: flex;
+    overflow-x: hidden;
+    flex-direction: row;
+    padding: 10px 0px 10px 0px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.kalenderTwoDayViewContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.kalenderTwoDayViewSidebar {
+    width: 44px;
+    flex-shrink: 0!important;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    touch-action: none;
+    background: #fff;
+    z-index: 10;
+    height: fit-content;
+}
+
+.kalenderTwoDayViewContentGrid {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    height: fit-content;
+    /* transition: transform 0.5s ease; */
+    /* transform: translateX(calc(-100% / 3)); */
+    /* transform: translateX(calc(-100% / 3)); */
+}
+
+.dayGrid {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    width: calc(50vw - 22px);
+    height: fit-content;
+    position: relative;
+    border-top: 0.8px solid #ddd;
+}
+
+.kalenderHourCell:first-child::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: -0.8px;
+    height: 11px;
+    background: #fff;
+    width: 100%;
+    border-left: 0.8px solid #ddd;
+    border-bottom: 0.8px solid #ddd;
+}
+
+.dayGridHeader {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 3;
+}
+
+.dayGridHeader p {
+    font-size: 10px;
+    color: #aaaaaa!important;
+}
+
+.kalenderHourCell {
+    border-left: 0.8px solid #ddd;
+    border-bottom: 0.8px solid #ddd;
+    min-height: 48px;
+    height: 48px;
+    max-height: 48px;
+    position: relative;
+    background: #ffffff;
+    z-index: 2;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+/* .kalenderHourCell:first-child {
+    border-top: 0.8px solid red!important;
+} */
+
+.kalenderHourCell:first-child::before {
+    content: '';
+    position: absolute;
+    top: -11px;
+    left: -0.8px;
+    height: 11px;
+    /* background: #ff000050; */
+    width: 100%;
+    border-left: 0.8px solid #ddd;
+}
+
+.kalenderHourCell:last-child::after {
+    content: '';
+    position: absolute;
+    bottom: -30px;
+    left: -0.8px;
+    height: 30px;
+    /* background: #ff000050; */
+    width: 100%;
+    border-left: 0.8px solid #ddd;
+}
+
+.timeSlot {
+    min-height: 48px;
+    height: 48px;
+    max-height: 48px;
+    font-size: 10px;
+    color: #888888;
+    text-align: right;
+    width: 100%;
+    padding-right: 4px;
+    transform: translateY(-8px);
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+.kalenderTwoDayViewBackgroundLines {
+    width: 100%;
+    height: calc(100% - 65px - 30px);
+    position: absolute;
+    top: calc(65px + 30px);
+    overflow-y: hidden;
+    overscroll-behavior-y: none;
+    z-index: -1;
+    display: flex;
+}
+
+.kalenderTwoDayViewBackgroundLineSidebar {
+    width: 44px;;
+    border-left: none;
+    border-right: none;
+}
+
+.kalenderTwoDayViewBackgroundLineFirstDayContainer {
+    flex: 4;
+    border-right: 0.8px solid #e0e0e0;
+    border-left: 0.8px solid #e0e0e0;
+    display: flex;
+}
+
+.kalenderTwoDayViewBackgroundLineSecondDayContainer {
+    flex: 4;
+}

@@ -13,6 +13,7 @@
     max-height: 80vh;
     overflow: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
     will-change: transform;
 }
 
@@ -25,6 +26,7 @@
     background: rgba(0, 0, 0, 0.8);
     z-index: 99;
     will-change: opacity;
+    overscroll-behavior: none!important;
 }
 
 .lukModal {
@@ -206,6 +208,7 @@
         border-bottom-left-radius: 0;
         border-bottom-right-radius: 0;
         bottom: 0px;
+        overscroll-behavior: contain!important;
     }
 
     .buttonFullWidth {

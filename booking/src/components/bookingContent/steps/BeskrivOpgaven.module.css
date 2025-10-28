@@ -1,0 +1,146 @@
+.opgavebeskrivelseContainer {
+    width: 100%;
+}
+
+.opgavebeskrivelse {
+    width: 100%!important;
+    border-radius: 10px;
+    margin-bottom: 0px;
+    padding: 8px 20px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    height: 180px!important;
+    resize: none;
+    border: none;
+    transition: 0.2s ease;
+    box-shadow: rgba(0, 0, 0, 0.02) 0px 6px 24px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+}
+
+.opgavebeskrivelse:focus {
+    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 24px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 2px;
+    outline: none;
+    transform: translateY(-2px);
+}
+
+/* Images styles */
+.fileInput {
+    border: 1px dashed #3c5a4080;
+    color: grey;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    width: 50px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileInput:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.2);
+}
+
+.fileInput:focus {
+    border-color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.4);
+    outline: none;
+}
+
+.fileInput.dragover {
+    border-color: #59bf1a;
+    background-color: #e6ffe6;
+}
+
+.billederDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap
+}
+
+.uploadetBillede {
+    border: 1px solid #c9c9c9;
+    color: grey;
+    border-radius: 10px;
+    width: 50px;
+    height: 70px;
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.imagePreview {
+    height: 100%;
+    width: 48px;
+    object-fit: cover;
+    border-radius: 9px;
+}
+
+.deleteButton {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 10;
+    height: 24px;
+    width: 24px;
+    border: 1px solid #FF000000;
+    background: #ffbbbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: -12px;
+    left: 12px;
+    color: #FF0000;
+    border-radius: 20px;
+    transition: 0.2s ease;
+    cursor: pointer;
+    transform: translateY(6px);
+    padding: 5px;
+}
+
+.deleteButton:hover {
+    border: 1px solid #FF0000;
+}
+
+.uploadetBillede:hover > .deleteButton {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0)
+}
+
+.spinnerDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    /* transform: translateY(-10px); */
+    min-width: 50px;
+}
+
+.playVideoPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s ease;
+    flex-direction: column;
+    border-radius: 9px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.playVideoPlaceholder:hover {
+    color: #59bf1a;
+}

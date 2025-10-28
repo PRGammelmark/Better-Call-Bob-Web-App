@@ -34,6 +34,8 @@ import useAutoVersionCheck from './hooks/useAutoVersionCheck'
 import Hjaelp from './pages/hjaelp/Hjaelp.jsx'
 import { AnimatePresence, motion } from 'framer-motion'
 import PageWrapper from './pages/PageWrapper';
+import Kalender from './pages/kalender/Kalender'
+import KalenderV2 from './pages/kalender/KalenderV2'
 
 
 function App() {
@@ -84,6 +86,7 @@ function App() {
           <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="slettede-opgaver" element={<SlettedeOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="mine-opgaver" element={<MineOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="kalender" element={<KalenderV2 />} errorElement={<ErrorPage />}/>
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
           <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
