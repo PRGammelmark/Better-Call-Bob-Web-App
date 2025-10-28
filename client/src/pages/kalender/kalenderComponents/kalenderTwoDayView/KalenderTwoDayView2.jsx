@@ -1,8 +1,8 @@
 import React, { useState, useLayoutEffect, useEffect, useRef } from 'react'
-import Styles from './KalenderTwoDayView.module.css'
+import Styles from './KalenderTwoDayView2.module.css'
 import dayjs from 'dayjs'
 
-const kalenderTwoDayView = ({ weekStart, selectedDate, setSelectedDate, weekOffset, setWeekOffset, prevWeek, currentWeek, nextWeek, allWeekDays }) => {
+const KalenderTwoDayView2 = ({ weekStart, selectedDate, setSelectedDate, weekOffset, setWeekOffset, prevWeek, currentWeek, nextWeek, allWeekDays }) => {
     const today = dayjs()
     const [enableTransition, setEnableTransition] = useState(false)
     const [dragTranslate, setDragTranslate] = useState(0)
@@ -140,4 +140,4 @@ const kalenderTwoDayView = ({ weekStart, selectedDate, setSelectedDate, weekOffs
   )
 }
 
-export default kalenderTwoDayView
+export default KalenderTwoDayView2

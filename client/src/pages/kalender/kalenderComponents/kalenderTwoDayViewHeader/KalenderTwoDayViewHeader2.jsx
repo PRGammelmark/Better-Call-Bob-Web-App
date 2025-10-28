@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect } from 'react'
-import Styles from './KalenderTwoDayViewHeader.module.css'
+import Styles from './KalenderTwoDayViewHeader2.module.css'
 import dayjs from 'dayjs'
 
 // Silence ...
