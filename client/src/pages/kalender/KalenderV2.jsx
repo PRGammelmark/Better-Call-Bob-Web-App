@@ -5,7 +5,7 @@ import { useAuthContext } from '../../hooks/useAuthContext'
 import { format, addDays, startOfWeek, addWeeks, subWeeks, isSameDay } from "date-fns";
 import KalenderHeader from './kalenderComponents/kalenderHeader/KalenderHeader'
 import KalenderContentGrid from './kalenderComponents/kalenderContentGrid/KalenderContentGrid.jsx'
-import KalenderTwoDayViewHeader2 from './kalenderComponents/kalenderTwoDayViewHeader/kalenderTwoDayViewHeader2.jsx'
+import KalenderTwoDayViewHeader2 from './kalenderComponents/kalenderTwoDayViewHeader/KalenderTwoDayViewHeader2.jsx'
 import KalenderTwoDayView2 from './kalenderComponents/kalenderTwoDayView/KalenderTwoDayView.jsx'
 import dayjs from 'dayjs'
 
