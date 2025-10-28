@@ -6,7 +6,7 @@ import { format, addDays, startOfWeek, addWeeks, subWeeks, isSameDay } from "dat
 import KalenderHeader from './kalenderComponents/kalenderHeader/KalenderHeader'
 import KalenderContentGrid from './kalenderComponents/kalenderContentGrid/KalenderContentGrid.jsx'
 import KalenderTwoDayViewHeader2 from './kalenderComponents/kalenderTwoDayViewHeader/KalenderTwoDayViewHeader2.jsx'
-import KalenderTwoDayView2 from './kalenderComponents/kalenderTwoDayView/KalenderTwoDayView.jsx'
+import KalenderTwoDayView2 from './kalenderComponents/kalenderTwoDayView/KalenderTwoDayView2.jsx'
 import dayjs from 'dayjs'
 
 
