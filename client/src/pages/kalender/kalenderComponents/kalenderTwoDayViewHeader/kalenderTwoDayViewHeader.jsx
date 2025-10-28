@@ -2,6 +2,8 @@ import React, { useState, useLayoutEffect } from 'react'
 import Styles from './KalenderTwoDayViewHeader.module.css'
 import dayjs from 'dayjs'
 
+// Silence ...
+
 const kalenderTwoDayViewHeader = ({ selectedDate, setSelectedDate, weekStart, weekOffset, setWeekOffset, prevWeek, currentWeek, nextWeek, allWeekDays }) => {
 
   const [enableTransition, setEnableTransition] = useState(false)
