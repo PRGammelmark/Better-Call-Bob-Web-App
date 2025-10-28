@@ -163,6 +163,5 @@ export {
     deletePostering,
     updatePostering,
     getPosteringerForBruger,
-    getPosteringerForOpgave,
     downloadSelectedUdlaeg
 }
