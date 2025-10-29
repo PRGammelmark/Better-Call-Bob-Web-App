@@ -60,14 +60,14 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
           animate="animate"
           exit="exit"
           variants={overlayAnimation}
-          transition={{duration: 0.3, ease: "easeOut"}}
+          transition={{duration: 0.2, ease: "easeOut"}}
         >
           <motion.div
             className={ModalStyles.modal}
             ref={ref}
             onClick={(e) => e.stopPropagation()}
             variants={isMobile ? mobileAnimation : desktopAnimation}
-            transition={{duration: 0.5}}
+            transition={{duration: 0.8, ease: "easeOut"}}
           >
             <button
               onClick={() => {

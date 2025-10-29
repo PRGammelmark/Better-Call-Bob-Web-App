@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.6.1",
+    date: "29. oktober 2025",
+    changes: [
+        "Bottombarens tredje knap leder nu til 'Kunder' for administratorer, og 'Profil' for almindelige medarbejdere."
+    ]
+},{
     version: "3.6.0",
     date: "28. oktober 2025",
     changes: [

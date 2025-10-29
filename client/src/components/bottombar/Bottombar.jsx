@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import BottombarCSS from './Bottombar.module.css'
-import { LayoutGrid, Calendar, PlusCircle, MessageCircle, Menu, Plus, User, ClipboardList } from 'lucide-react'
+import { LayoutGrid, Calendar, PlusCircle, MessageCircle, Menu, Plus, User, Users, ClipboardList } from 'lucide-react'
 import { Link, NavLink } from 'react-router-dom'
 import { useLogout } from '../../hooks/useLogout.js'
 import MobileNavMenu from '../MobileNavMenu.jsx'
@@ -52,10 +52,14 @@ const Bottombar = () => {
                 <Plus className={BottombarCSS.bottomBarCenterItemIcon} />
             </div>
         </div>
-        <NavLink to="/din-konto" className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`}>
+        {!user.isAdmin && <NavLink to="/din-konto" className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`}>
             <User className={BottombarCSS.bottomBarItemIcon} />
             <p>Profil</p>
-            </NavLink>
+        </NavLink>}
+        {user.isAdmin && <NavLink to="/kunder" className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`}>
+            <Users className={BottombarCSS.bottomBarItemIcon} />
+            <p>Kunder</p>
+        </NavLink>}
         <div className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`} onClick={() => setShowNavMenu(true)}>
             <Menu className={BottombarCSS.bottomBarItemIcon} />
           <p>Menu</p>
