@@ -48,7 +48,7 @@ const Content = () => {
           </div>
           
           <Bottombar />
-          {/* <FloatingActionButton /> */}
+          <FloatingActionButton />
         </div>
         
         <Footer />

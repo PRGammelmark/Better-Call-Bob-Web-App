@@ -240,7 +240,7 @@ const FloatingActionButton = () => {
 
 
   return (
-    <>
+    <div className={FloatingActionButtonCSS.mainDiv}>
         {user.isAdmin && <div className={FloatingActionButtonCSS.floatingActionButton} onClick={isOnTaskPage ? addNewBesøg : (isOnDocumentsPage ? addNewDocument : toggleMenu)}>
             <img src={isOnTaskPage ? AddNewBesøgIcon : isOnDocumentsPage ? AddNewDocumentIcon : AddNewIcon} draggable="false" alt="" className={FloatingActionButtonCSS.addNewIcon} style={isOnTaskPage ? {} : isOnDocumentsPage ? {} : {transform: menuOpen ? "rotate(0deg) scale(0.8)" : "rotate(135deg) scale(1)"}}/>
         </div>}
@@ -325,7 +325,7 @@ const FloatingActionButton = () => {
             </form>}
         </Modal>
         <AddBesøg trigger={modalOpen} setTrigger={setModalOpen} />
-    </>
+    </div>
   )
 }
 

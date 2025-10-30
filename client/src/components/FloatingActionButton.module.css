@@ -1,3 +1,7 @@
+.mainDiv {
+    display: block;
+}
+
 .floatingActionButton {
     height: 60px;
     width: 60px;
@@ -168,7 +172,12 @@
     top: 0;
     left: 0;
 }
+
 @media screen and (max-width: 750px) {
+    .mainDiv {
+        display: none
+    }
+
     .floatingActionButton {
         bottom: 25px;
     }
