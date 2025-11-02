@@ -21,7 +21,7 @@ import { useOpgave } from '../../context/OpgaveContext.jsx'
 const AddPostering = (props) => {
 
     const {user} = useAuthContext()
-    const userID = user?.id;
+    const userID = user?.id || user?._id;
     const { setRefetchOpgave, setRefetchPosteringer } = useOpgave();
     const [opretPosteringPåVegneAfEnAnden, setOpretPosteringPåVegneAfEnAnden] = useState(false)
     const [medarbejdere, setMedarbejdere] = useState([])
@@ -49,6 +49,7 @@ const AddPostering = (props) => {
     const [rabatProcent, setRabatProcent] = useState(0);
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
 
+    // States, der enten skal bruge props eller yderligere fetches
     const [opgave, setOpgave] = useState(props.opgave || null);
     const [opgaveID, setOpgaveID] = useState(props.opgaveID || null);
     const [nuværendeAnsvarlige, setNuværendeAnsvarlige] = useState(props.nuværendeAnsvarlige || []);
@@ -60,7 +61,7 @@ const AddPostering = (props) => {
 
     // Hvis der ikke er en opgaveID, så hent den fra URL'en (så er addPostering nemlig blevet kaldt fra bottomBaren som kræver yderligere kontekst)
     useEffect(() => {
-    if (!props.opgaveID) {
+    if (window.location.pathname.includes("opgave") && !props.opgaveID) {
         const opgaveIDFromURL = window.location.pathname.split("/").pop();
 
         axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveIDFromURL}`, {
