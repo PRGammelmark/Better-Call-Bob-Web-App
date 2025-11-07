@@ -14,6 +14,30 @@
 // 
 
 const changes = [{
+    version: "3.7.1",
+    date: "7. november 2025",
+    changes: [
+        "CVR-felter understøtter nu område-præfikser, fx DK12345678 eller SE123456789012.",
+    ]
+},{
+    version: "3.7.0",
+    date: "2. november 2025",
+    changes: [
+        "Administratorer kan nu sætte påmindelser på opgaver. En påmindelse dukker op blandt notifikationer, men bliver fremhævet for ekstra synlighed.",
+        "Notifikationer kan nu markeres som vigtige. Vigtige notifikationer har fået deres egen tab i notifikationsvinduet, ved siden af 'Alle', som lister alle notifikationer.",
+        "Når man opretter en faktura eller en fakturakladde vil alle fakturaens linjer nu altid være markeret med datoer i dansk format.",
+        "Nogle gange kunne der førhen opstå udfordringer med at trykke på inputfelterne på Login-siden. Dette er nu rettet.",
+        "Rettede en fejl, hvor nogle brugere oplevede, at det ikke var muligt at oprette posteringer.",
+        "Det er nu muligt at arkivere opgaver. Arkiverede opgaver vil blive lagt til side, men dataene om dem og den dertilknyttede kunde vil blive gemt til fremtidig reference, brug eller opfølgning."
+    ]
+},{
+    version: "3.6.2",
+    date: "29. oktober 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at der på mobiler var en lille del af skærmens nederste område, som app'en ikke udfyldte.",
+        
+    ]
+},{
     version: "3.6.1",
     date: "29. oktober 2025",
     changes: [

@@ -8,7 +8,7 @@ const kundeSchema = Joi.object({
     fornavn: Joi.string().min(2).max(100).required(),
     efternavn: Joi.string().min(2).max(100).required(),
     virksomhed: Joi.string().max(100).allow("", null),
-    CVR: Joi.string().length(8).pattern(/^\d+$/).allow("", null),
+    CVR: Joi.string().max(20).pattern(/^[A-Z]{0,2}\d+$/).allow("", null),
     adresse: Joi.string().min(5).max(200).required(),
     postnummerOgBy: Joi.string().pattern(/^\d{4}\s[a-zA-ZæøåÆØÅ\s\-]+$/).required(),
     telefon: Joi.string().pattern(/^\d{8}$/).required(),

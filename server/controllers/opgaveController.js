@@ -16,7 +16,7 @@ const opgaveSchema = Joi.object({
     onsketDato: Joi.date().iso().required(),
     telefon: Joi.string().pattern(/^\d{8}$/).required(),
     email: Joi.string().email().required(),
-    CVR: Joi.string().length(8).pattern(/^\d+$/).allow("", null),
+    CVR: Joi.string().max(20).pattern(/^[A-Z]{0,2}\d+$/).allow("", null),
     virksomhed: Joi.string().max(100).allow("", null),
     harStige: Joi.boolean().required(),
     recaptchaToken: Joi.string().required(),
@@ -161,7 +161,7 @@ const createOpgave = async (req, res) => {
         if (_id) data._id = _id;
 
         const opgave = await Opgave.create(data);
-        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
 
         if (ansvarlig.length > 0) {
             for (const person of ansvarlig) {
@@ -171,7 +171,8 @@ const createOpgave = async (req, res) => {
                 type: "opgaveTildelt",
                 titel: "Du har fået en ny opgave.",
                 besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`,
-                link: `/opgave/${opgave._id}`
+                link: `/opgave/${opgave._id}`,
+                erVigtig: true
               });
             }
           }
@@ -208,7 +209,7 @@ const openCreateOpgave = async (req, res) => {
     try {
         const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, opgaveBilleder})
 
-        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}` })
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
         
         res.status(200).json(opgave)
     } catch (error) {
@@ -374,6 +375,103 @@ const tilføjBilleder = async (req, res) => {
     res.status(200).json(opgave);
 }
 
+// Fetch opgaver for tab: New
+const getOpgaverNew = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({
+            status: "Modtaget",
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            opgaveAfsluttet: { $exists: false },
+            $or: [
+                { ansvarlig: { $size: 0 } },
+                { ansvarlig: { $exists: false } }
+            ]
+        }).sort({ createdAt: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for tab: Open
+const getOpgaverOpen = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({
+            status: "Afventer svar",
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            opgaveAfsluttet: { $exists: false },
+            $or: [
+                { ansvarlig: { $size: 0 } },
+                { ansvarlig: { $exists: false } }
+            ]
+        }).sort({ createdAt: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for tab: Planned
+const getOpgaverPlanned = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            opgaveAfsluttet: { $exists: false },
+            ansvarlig: { $not: { $size: 0 } }
+        }).sort({ createdAt: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for tab: Done (paid, afsluttet, not deleted)
+const getOpgaverDone = async (req, res) => {
+    try {
+        // Paid filter is simplified here. Advanced: also check posteringers.
+        const opgaver = await Opgave.find({
+            opgaveAfsluttet: { $exists: true, $ne: null },
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            $or: [
+                { fakturaBetalt: { $exists: true, $ne: null, $ne: "" } },
+                { opgaveBetaltMedMobilePay: { $exists: true, $ne: null, $ne: "" } },
+                { opgaveBetaltPåAndenVis: { $exists: true, $ne: null } }
+            ]
+        }).sort({ createdAt: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for tab: Archived
+const getOpgaverArchived = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({
+            isArchived: { $exists: true, $ne: null }
+        }).sort({ isArchived: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for tab: Deleted
+const getOpgaverDeleted = async (req, res) => {
+    try {
+        const opgaver = await Opgave.find({
+            isDeleted: { $exists: true, $ne: null }
+        }).sort({ isDeleted: -1 }).populate("kunde");
+        res.status(200).json(opgaver);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export {
     getOpgaver,
     getOpgaverPopulateKunder,
@@ -389,5 +487,11 @@ export {
     opdaterOpgavebeskrivelse,
     afslutOpgave,
     genåbnOpgave,
-    tilføjBilleder
+    tilføjBilleder,
+    getOpgaverNew,
+    getOpgaverOpen,
+    getOpgaverPlanned,
+    getOpgaverDone,
+    getOpgaverArchived,
+    getOpgaverDeleted
 }

@@ -46,7 +46,7 @@ const NyKunde = () => {
     
         const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         const isValidTelefon = (telefon) => "" || /^\d{8}$/.test(telefon);
-        const isValidCVR = (cvr) => cvr === "" || /^\d{8}$/.test(cvr);
+        const isValidCVR = (cvr) => cvr === "" || /^[A-Z]{0,2}\d+$/.test(cvr);
         const isValidPostnummerOgBy = (val) => /^\d{4}\s+\D+/.test(val);
     
         if (!trimmedFornavn || !efternavn || !adresse || !postnummerOgBy || !trimmedEmail) {
@@ -65,7 +65,7 @@ const NyKunde = () => {
         }
     
         if (!isValidCVR(trimmedCvr)) {
-            setError("CVR skal være 8 cifre.");
+            setError("CVR skal være et gyldigt CVR-nummer (fx. DK12345678 eller SE123456789012).");
             return;
         }
     
@@ -158,7 +158,7 @@ const NyKunde = () => {
                             <label className={styles.label}>Postnummer og by</label>
                             <input tabIndex={4} type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={styles.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required onBlur={(e) => setPostnummerOgBy(e.target.value.trim())}/>
                             <label className={styles.label}>Evt. CVR</label>
-                            <input tabIndex={6} type="text" name="cvr" placeholder="CVR" className={styles.input} onChange={(e) => setCvr(e.target.value)} value={cvr} onBlur={(e) => setCvr(e.target.value.replace(/\s+/g, ''))}/>
+                            <input tabIndex={6} type="text" name="cvr" placeholder="CVR (fx. DK12345678)" className={styles.input} onChange={(e) => setCvr(e.target.value.toUpperCase().replace(/\s+/g, ''))} value={cvr} onBlur={(e) => setCvr(e.target.value.toUpperCase().replace(/\s+/g, ''))}/>
                         </div>
                     </div>
                     <div className={styles.noterWrapper}>

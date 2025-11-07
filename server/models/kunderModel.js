@@ -20,7 +20,7 @@ const kundeSchema = new Schema({
         required: false
     },
     CVR: {
-        type: Number,
+        type: String,
         required: false
     },
     adresse: {
