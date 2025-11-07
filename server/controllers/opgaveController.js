@@ -16,7 +16,7 @@ const opgaveSchema = Joi.object({
     onsketDato: Joi.date().iso().required(),
     telefon: Joi.string().pattern(/^\d{8}$/).required(),
     email: Joi.string().email().required(),
-    CVR: Joi.string().max(20).pattern(/^[A-Z]{0,2}\d+$/).allow("", null),
+    CVR: Joi.string().max(20).pattern(/^[A-Z0-9]+$/).allow("", null),
     virksomhed: Joi.string().max(100).allow("", null),
     harStige: Joi.boolean().required(),
     recaptchaToken: Joi.string().required(),

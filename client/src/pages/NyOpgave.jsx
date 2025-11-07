@@ -535,7 +535,7 @@ const NyOpgave = () => {
                                     </div>
                                     <div className={NyOpgaveCSS.kolonneTo}>
                                         <label className={NyOpgaveCSS.label}>Evt. CVR</label>
-                                        <input type="text" name="CVR" placeholder="CVR (fx. DK12345678)" className={NyOpgaveCSS.input} onChange={(e) => setCVR(e.target.value.toUpperCase().replace(/\s+/g, ''))} value={CVR} onBlur={(e) => setCVR(e.target.value.toUpperCase().replace(/\s+/g, ''))}/>
+                                        <input type="text" name="CVR" placeholder="CVR-nummer" className={NyOpgaveCSS.input} onChange={(e) => setCVR(e.target.value.toUpperCase().replace(/\s+/g, ''))} value={CVR} onBlur={(e) => setCVR(e.target.value.toUpperCase().replace(/\s+/g, ''))}/>
                                         <label className={NyOpgaveCSS.label}>Evt. virksomhed</label>
                                         <input type="text" name="virksomhed" className={NyOpgaveCSS.input} onChange={(e) => setVirksomhed(e.target.value)} value={virksomhed} onBlur={(e) => setVirksomhed(e.target.value.trim())}/>
                                         <label className={NyOpgaveCSS.label}>Telefon</label>
