@@ -8,7 +8,9 @@ const reminderSchema = new Schema({
   titel: { type: String, required: true, maxlength: 60 },
   beskrivelse: { type: String, required: false, maxlength: 200 },
   sendesKl: { type: Date, required: true },
-  status: { type: String, enum: ['pending', 'sent', 'cancelled'], default: 'pending' }
+  status: { type: String, enum: ['pending', 'sent', 'cancelled'], default: 'pending' },
+  linkType: { type: String, enum: ['opgave', 'kunde'], default: 'opgave' },
+  kundeID: { type: Schema.Types.ObjectId, ref: 'Kunde', required: false }
 }, { timestamps: true });
 
 reminderSchema.index({ status: 1, sendesKl: 1 });

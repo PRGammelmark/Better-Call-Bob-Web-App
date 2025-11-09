@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.8.1",
+    date: "9. november 2025",
+    changes: [
+        "Administratorers indikator for nye opgaver på overblikssiden er nu blevet mere synlig og opmærksomhedskrævende.",
+        "Påmindelser kan nu sættes med flere muligheder for tidsindstillinger.",
+        "Fremover vil man kunne vælge om en påmindelse skal være knyttet til en opgave eller til en kunde.",
+        "Påmindelser kan nu også af admins sættes til andre medarbejdere end en selv.",
+        "Designjusteringer og -forbedringer.",
+    ]
+},{
     version: "3.8.0",
     date: "9. november 2025",
     changes: [

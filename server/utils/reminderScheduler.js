@@ -10,13 +10,19 @@ export const startReminderScheduler = () => {
       for (const r of due) {
         try {
           console.log(`📅 Sender reminder notifikation for reminder ${r._id} til bruger ${r.brugerID}`);
+          
+          // Determine link based on linkType
+          const link = r.linkType === 'kunde' && r.kundeID 
+            ? `/kunde/${r.kundeID}` 
+            : `/opgave/${r.opgaveID}`;
+          
           await opretNotifikation({
             modtagerID: r.brugerID,
             udløserID: undefined, // Reminders are self-triggered, so no udløserID
             type: 'reminder',
             titel: r.titel,
             besked: r.beskrivelse || 'Reminder',
-            link: `/opgave/${r.opgaveID}`,
+            link: link,
             erVigtig: true
           });
           r.status = 'sent';

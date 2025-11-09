@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import axios from 'axios';
 import Modal from '../Modal.jsx';
 import ModalStyles from '../Modal.module.css';
@@ -7,24 +7,45 @@ import { useAuthContext } from '../../hooks/useAuthContext';
 import dayjs from 'dayjs';
 
 const presets = [
-  { label: 'Om 10 min (test)', ms: 10 * 60 * 1000 },
+  { label: 'Om 1 time', ms: 1 * 60 * 60 * 1000 },
   { label: 'Om 2 timer', ms: 2 * 60 * 60 * 1000 },
   { label: 'Om 4 timer', ms: 4 * 60 * 60 * 1000 },
+  { label: 'Om 10 timer', ms: 10 * 60 * 60 * 1000 },
   { label: 'I morgen (24 t)', ms: 24 * 60 * 60 * 1000 },
   { label: 'Om 3 dage', ms: 3 * 24 * 60 * 60 * 1000 },
   { label: 'Om 1 uge', ms: 7 * 24 * 60 * 60 * 1000 },
 ];
 
-const SaetReminderModal = ({ trigger, setTrigger, opgaveID, existingReminder, onSuccess }) => {
+const SaetReminderModal = ({ trigger, setTrigger, opgaveID, kundeID, existingReminder, onSuccess }) => {
   const { user } = useAuthContext();
   const [presetMs, setPresetMs] = useState(presets[0].ms);
   const [titel, setTitel] = useState('Følg op på opgaven');
   const [beskrivelse, setBeskrivelse] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [selectedBrugerID, setSelectedBrugerID] = useState(null);
+  const [linkType, setLinkType] = useState('opgave');
+  const [brugere, setBrugere] = useState([]);
 
   const sendesKl = useMemo(() => new Date(Date.now() + Number(presetMs)), [presetMs]);
   const formattedTime = useMemo(() => dayjs(sendesKl).format('DD. MMMM HH:mm'), [sendesKl]);
+
+  // Fetch employees if user is admin
+  useEffect(() => {
+    if (trigger && user?.isAdmin) {
+      axios.get(`${import.meta.env.VITE_API_URL}/brugere/`, {
+        headers: { Authorization: `Bearer ${user.token}` }
+      })
+      .then(res => {
+        setBrugere(res.data);
+        // Set default to current user if no existing reminder
+        if (!existingReminder) {
+          setSelectedBrugerID(user.id || user._id);
+        }
+      })
+      .catch(err => console.error('Kunne ikke hente brugere:', err));
+    }
+  }, [trigger, user, existingReminder]);
 
   const handleSubmit = async (e) => {
     e?.preventDefault?.();
@@ -32,24 +53,31 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, existingReminder, on
     if (!titel?.trim()) { setError('Titel er påkrævet'); return; }
     if (titel.length > 60) { setError('Titel må højest være 60 tegn'); return; }
     if (beskrivelse.length > 200) { setError('Beskrivelse må højest være 200 tegn'); return; }
+    if (linkType === 'kunde' && !kundeID) { 
+      setError('Kunde ID mangler. Vælg "Opgave" som link type.'); 
+      return; 
+    }
     setSaving(true);
     try {
+      const brugerIDToUse = user.isAdmin && selectedBrugerID ? selectedBrugerID : (user.id || user._id);
+      const reminderData = {
+        brugerID: brugerIDToUse,
+        opgaveID,
+        titel: titel.trim(),
+        beskrivelse: beskrivelse.trim(),
+        sendesKl: sendesKl.toISOString(),
+        linkType,
+        kundeID: linkType === 'kunde' && kundeID ? kundeID : undefined,
+      };
+
       if (existingReminder?._id) {
         await axios.patch(`${import.meta.env.VITE_API_URL}/reminders/${existingReminder._id}` , {
-          titel: titel.trim(),
-          beskrivelse: beskrivelse.trim(),
-          sendesKl: sendesKl.toISOString(),
+          ...reminderData,
         }, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
       } else {
-        await axios.post(`${import.meta.env.VITE_API_URL}/reminders`, {
-          brugerID: user.id || user._id,
-          opgaveID,
-          titel: titel.trim(),
-          beskrivelse: beskrivelse.trim(),
-          sendesKl: sendesKl.toISOString(),
-        }, {
+        await axios.post(`${import.meta.env.VITE_API_URL}/reminders`, reminderData, {
           headers: { Authorization: `Bearer ${user.token}` }
         });
       }
@@ -83,6 +111,10 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, existingReminder, on
     if (trigger && existingReminder) {
       setTitel(existingReminder.titel || 'Følg op på opgaven');
       setBeskrivelse(existingReminder.beskrivelse || '');
+      setLinkType(existingReminder.linkType || 'opgave');
+      if (user.isAdmin) {
+        setSelectedBrugerID(existingReminder.brugerID || (user.id || user._id));
+      }
       const diff = new Date(existingReminder.sendesKl).getTime() - Date.now();
       if (diff > 0) {
         // choose nearest preset
@@ -94,8 +126,12 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, existingReminder, on
       setTitel('Følg op på opgaven');
       setBeskrivelse('');
       setPresetMs(presets[0].ms);
+      setLinkType('opgave');
+      if (user.isAdmin) {
+        setSelectedBrugerID(user.id || user._id);
+      }
     }
-  }, [trigger, existingReminder]);
+  }, [trigger, existingReminder, user]);
 
   return (
     <Modal trigger={trigger} setTrigger={setTrigger}>
@@ -109,13 +145,59 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, existingReminder, on
             <h3>Påmind mig ...</h3>
           </div>
           <div className={SBStyles.inputContainer}>
-            <select className={SBStyles.inputField} value={presetMs} onChange={(e) => setPresetMs(e.target.value)}>
+            <select 
+              className={SBStyles.inputField} 
+              value={presetMs} 
+              onChange={(e) => setPresetMs(e.target.value)}
+              style={{ direction: 'rtl' }}
+            >
               {presets.map(p => (
-                <option key={p.ms} value={p.ms}>{p.label}</option>
+                <option key={p.ms} value={p.ms} style={{ direction: 'ltr' }}>{p.label}</option>
               ))}
             </select>
           </div>
         </div>
+
+        {user?.isAdmin && (
+          <div className={`${SBStyles.row} ${SBStyles.inputLine}`}>
+            <div className={SBStyles.iconAndTitleDiv}>
+              <h3>Notificer bruger</h3>
+            </div>
+            <div className={SBStyles.inputContainer}>
+              <select 
+                className={SBStyles.inputField} 
+                value={selectedBrugerID || ''} 
+                onChange={(e) => setSelectedBrugerID(e.target.value)}
+                style={{ direction: 'rtl' }}
+              >
+                {brugere.map(bruger => (
+                  <option key={bruger._id || bruger.id} value={bruger._id || bruger.id} style={{ direction: 'ltr' }}>
+                    {bruger.navn}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
+        {kundeID && (
+          <div className={`${SBStyles.row} ${SBStyles.inputLine}`}>
+            <div className={SBStyles.iconAndTitleDiv}>
+              <h3>Link til</h3>
+            </div>
+            <div className={SBStyles.inputContainer}>
+              <select 
+                className={SBStyles.inputField} 
+                value={linkType} 
+                onChange={(e) => setLinkType(e.target.value)}
+                style={{ direction: 'rtl' }}
+              >
+                <option value="opgave" style={{ direction: 'ltr' }}>Opgave</option>
+                <option value="kunde" style={{ direction: 'ltr' }}>Kunde</option>
+              </select>
+            </div>
+          </div>
+        )}
 
         <div className={`${SBStyles.row} ${SBStyles.inputLine}`}>
           <div className={SBStyles.iconAndTitleDiv}>

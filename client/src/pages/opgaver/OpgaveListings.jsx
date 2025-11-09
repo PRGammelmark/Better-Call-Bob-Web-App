@@ -892,6 +892,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                   trigger={openReminderForId === opgave._id}
                   setTrigger={(v) => { if(!v) setOpenReminderForId(null); }}
                   opgaveID={opgave._id}
+                  kundeID={opgave.kunde?._id || opgave.kundeID}
                   existingReminder={existingReminder}
                   onSuccess={async () => {
                     try {
@@ -962,6 +963,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                   trigger={openReminderForId === opgave._id}
                   setTrigger={(v) => { if(!v) setOpenReminderForId(null); }}
                   opgaveID={opgave._id}
+                  kundeID={opgave.kunde?._id || opgave.kundeID}
                   existingReminder={existingReminder}
                   onSuccess={async () => {
                     try {

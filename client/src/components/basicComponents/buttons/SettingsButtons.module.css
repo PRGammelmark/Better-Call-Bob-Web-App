@@ -109,15 +109,23 @@
     -moz-appearance: none;
     background: transparent;
     color: #222222;
-    /* RTL trick to right-align selected value across browsers */
+    width: 100%;
+    /* RTL direction trick - this makes the selected value appear on the right */
     direction: rtl;
-    text-align: left;
+    text-align: right;
+    text-align-last: right;
   }
 
-  /* Options should display normally (LTR) */
+  /* Options should display normally (LTR) when dropdown opens */
   select.inputField option {
     direction: ltr;
+    text-align: left;
     color: #222222;
+  }
+  
+  /* Hide default dropdown arrow in IE/Edge */
+  select.inputField::-ms-expand {
+    display: none;
   }
 
   /* Compact single-line textarea variant to match row height */

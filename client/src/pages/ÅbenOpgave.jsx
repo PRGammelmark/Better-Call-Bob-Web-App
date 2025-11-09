@@ -1169,6 +1169,7 @@ const ÅbenOpgave = () => {
                             trigger={openReminderModal}
                             setTrigger={setOpenReminderModal}
                             opgaveID={opgaveID}
+                            kundeID={opgave?.kunde?._id || opgave?.kundeID}
                             existingReminder={existingReminder}
                             onSuccess={async () => {
                                 try {
