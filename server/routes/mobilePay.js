@@ -117,7 +117,7 @@ router.post('/send-payment-request', async (req, res) => {
                 "type":"WALLET"
             },
             "reference": `bcb-${uuidv4()}`,
-            "paymentDescription": `Opgave: ${opgave.opgaveBeskrivelse.slice(0, 80)}`,
+            "paymentDescription": `Opgave hos ${kunde?.fornavn + " " + kunde?.efternavn || kunde?.navn}`,
             "userFlow": "PUSH_MESSAGE"
         }, {
             headers: {
@@ -136,12 +136,14 @@ router.post('/send-payment-request', async (req, res) => {
             console.log('Payment initiated successfully:', response.data);
             // Registrer opkrævning på posteringer
             const posteringer = paymentInformationObject.posteringer;
+            const opkrævningsbeløb = paymentInformationObject.totalFaktura * 1.25;
 
             for (const postering of posteringer) {
                 const dbPostering = await Postering.findById(postering._id);
                 if (dbPostering) {
                     dbPostering.opkrævninger.push({
                         reference: response.data.reference,
+                        opkrævningsbeløb: opkrævningsbeløb,
                         metode: "mobilepay",
                         dato: new Date()
                     });
@@ -192,7 +194,7 @@ router.post('/create-qr-code', async (req, res) => {
                 "type":"WALLET"
             },
             "reference": `bcb-${uuidv4()}`,
-            "paymentDescription": `Opgave: ${opgave.opgaveBeskrivelse.slice(0, 80)}`,
+            "paymentDescription": `Opgave hos ${kunde?.fornavn + " " + kunde?.efternavn || kunde?.navn}`,
             "userFlow": "QR"
         }, {
             headers: {
@@ -212,12 +214,14 @@ router.post('/create-qr-code', async (req, res) => {
             console.log(response)
             // Registrer opkrævning på posteringer
             const posteringer = paymentInformationObject.posteringer;
+            const opkrævningsbeløb = paymentInformationObject.totalFaktura * 1.25;
 
             for (const postering of posteringer) {
                 const dbPostering = await Postering.findById(postering._id);
                 if (dbPostering) {
                     dbPostering.opkrævninger.push({
                         reference: response.data.reference,
+                        opkrævningsbeløb: opkrævningsbeløb,
                         metode: "mobilepay",
                         dato: new Date()
                     });

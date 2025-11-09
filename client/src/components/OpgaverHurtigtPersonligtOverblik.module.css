@@ -1,0 +1,256 @@
+.container {
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.header {
+  margin-bottom: 16px;
+}
+
+.heading {
+  font-family: 'OmnesBold', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #222222;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.countBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 10px;
+  background: #59bf1a;
+  color: #ffffff;
+  border-radius: 14px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 4px rgba(89, 191, 26, 0.2);
+}
+
+.cardsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+/* Card styling for tasks */
+.opgaveCard {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 0;
+  width: 100%!important;
+}
+
+.opgaveCard:hover {
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-bottom-color: #e5e7eb;
+  transform: translateY(-2px);
+}
+
+.opgaveCard:active {
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+}
+
+.emptyState {
+  padding: 32px 20px;
+  text-align: center;
+  color: #6b7280;
+  font-size: 0.95rem;
+  background: #f9fafb;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.seAlleButton {
+  width: 100%;
+  padding: 8px 14px;
+  background: #f5f5f5;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #222222;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  -webkit-text-fill-color: #222222;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.seAlleButton:hover {
+  background: #59bf1a;
+  border-color: #59bf1a;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(89, 191, 26, 0.25);
+  transform: translateY(-1px);
+}
+
+.seAlleButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.topButtonsRow {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.topButtonsRow > * {
+  flex: 0 1 auto;
+}
+
+/* When space is limited, stack the buttons */
+@media screen and (max-width: 400px) {
+  .topButtonsRow {
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .topButtonsRow > * {
+    width: auto;
+  }
+}
+
+/* Override besøgButtonHeading to align with button */
+.besøgButtonHeadingOverride {
+  width: auto !important;
+  text-align: left;
+}
+
+/* Emphasize the Besøg i dag button */
+.besøgButtonEmphasized {
+  background: #59bf1a !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  border-color: #59bf1a !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 6px rgba(89, 191, 26, 0.3) !important;
+  padding: 10px 16px !important;
+  font-size: 0.9rem !important;
+}
+
+.besøgButtonEmphasized:hover {
+  background: #4cae4c !important;
+  border-color: #4cae4c !important;
+  box-shadow: 0 3px 8px rgba(89, 191, 26, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.besøgButtonEmphasized:active {
+  transform: translateY(0) !important;
+  box-shadow: 0 2px 4px rgba(89, 191, 26, 0.3) !important;
+}
+
+.skeletonCard {
+  height: 120px;
+  background: linear-gradient(
+    90deg,
+    #f0f0f0 25%,
+    #e0e0e0 50%,
+    #f0f0f0 75%
+  );
+  background-size: 200% 100%;
+  animation: pulse 1.5s ease-in-out infinite;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Responsive design */
+@media screen and (max-width: 750px) {
+  .heading {
+    font-size: 1.1rem;
+  }
+
+  .countBadge {
+    min-width: 24px;
+    height: 24px;
+    font-size: 0.8rem;
+    padding: 0 8px;
+  }
+
+  .seAlleButton {
+    padding: 10px 16px;
+    font-size: 0.9rem;
+  }
+
+  /* Sticky heading on mobile only */
+  .header {
+    position: sticky;
+    top: 0;
+    /* background: #ff000050; */
+    background: #ffffff;
+    z-index: 100;
+    padding-top: 16px;
+    padding-bottom: 16px;
+    margin-top: -16px;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 0px;
+    padding-left: 20px;
+    padding-right: 20px;
+    border-bottom: 1px solid #d1d5db;
+  }
+
+  /* Mobile card styling */
+  .cardsContainer {
+    gap: 0;
+    margin-left: -20px;
+    margin-right: -20px;
+    width: calc(100% + 40px);
+  }
+
+  .opgaveCard {
+    border-radius: 0 !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-top: 1px solid #d1d5db !important;
+    border-bottom: 1px solid #d1d5db !important;
+    width: 100% !important;
+  }
+
+  .opgaveCard:hover {
+    transform: none !important;
+  }
+
+  .opgaveCard:first-child {
+    border-top: 1px solid #d1d5db !important;
+  }
+
+  .opgaveCard:last-child {
+    border-bottom: 1px solid #d1d5db !important;
+  }
+}
+

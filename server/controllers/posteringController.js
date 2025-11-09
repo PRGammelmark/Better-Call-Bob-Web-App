@@ -43,6 +43,38 @@ const getPosteringerForOpgave = async (req,res) => {
     res.status(200).json(posteringer)
 }
 
+// GET alle posteringer betalt med MobilePay
+const getPosteringerBetaltMedMobilePay = async (req, res) => {
+  try {
+    const posteringer = await Postering.find({ "betalinger.betalingsmetode": "mobilepay" }).sort({createdAt: -1}).populate('kunde');
+    res.status(200).json(posteringer);
+  } catch (error) {
+    console.error("Fejl ved hentning af posteringer:", error);
+    res.status(500).json({ message: "Der opstod en serverfejl" });
+  }
+};
+
+// GET unpaid posteringer (betalt missing or null, populated opgave)
+const getUnpaidPosteringer = async (req, res) => {
+    try {
+        const posteringer = await Postering.find({
+            $or: [
+                { betalt: { $exists: false } },
+                { betalt: null }
+            ]
+        }).populate({
+            path: 'opgave',
+            populate: {
+                path: 'kunde'
+            }
+        }).sort({ createdAt: -1 });
+        res.status(200).json(posteringer)
+    } catch (err) {
+        res.status(500).json({ error: err.message })
+    }
+};
+
+
 // GET selected posteringers udlæg som zip
 const downloadSelectedUdlaeg = async (req, res) => {
     try {
@@ -158,10 +190,12 @@ const updatePostering = async (req,res) => {
 export {
     getPosteringer,
     getPosteringerForOpgave,
+    getPosteringerBetaltMedMobilePay,
     createPostering,
     getPostering,
     deletePostering,
     updatePostering,
     getPosteringerForBruger,
-    downloadSelectedUdlaeg
+    downloadSelectedUdlaeg,
+    getUnpaidPosteringer
 }

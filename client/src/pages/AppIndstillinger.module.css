@@ -1,5 +1,6 @@
 .pageContent {
     max-width: 600px;
+    padding-top: 20px;
 }
 
 .pageContent h1 {
@@ -112,6 +113,6 @@ h2 {
 
 @media (max-width: 750px) {
     .pageContent {
-        margin-top: 40px;
+        padding-top: 20px;
     }
 }

@@ -51,6 +51,11 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
         .then(res => {
             setUpdateOpgave(!updateOpgave)
 
+            // Hvis den manglende betaling er meget lille (< 0.5 kr.), vis ikke betalingsmuligheder
+            if (iAltAtBetale(posteringer) < 0.5) {
+                return
+            }
+
             if(kunde?.virksomhed || kunde?.CVR) {
                 setOpenBetalViaFakturaModal(true)
             } else {
@@ -96,7 +101,7 @@ const OpgaveStatus = ({ opgave, posteringer, user, kunde, færdiggjort, opgaveAf
                             
                             <button className={ÅbenOpgaveCSS.genåbnButtonFullWidth} style={{ fontSize: '16px' }} onClick={() => handleAfslutOpgave()}>
                                 Afslut opgave <br />
-                                <span style={{ color: '#ffffff', fontSize: '13px' }}>Manglende betaling: {iAltAtBetale(posteringer)} kr.</span>
+                                <span style={{ color: '#ffffff', fontSize: '13px' }}>{iAltAtBetale(posteringer) < 0.5 ? 'Ingen manglende betaling' : `Manglende betaling: ${iAltAtBetale(posteringer)} kr.`}</span>
                             </button>
                             
                         </div>

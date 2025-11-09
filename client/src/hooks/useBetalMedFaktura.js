@@ -23,10 +23,11 @@ const useBetalMedFaktura = async (user, opgave, setOpgave, opgaveID, kunde, post
     const cvrNummer = kunde?.CVR ? ("corporateIdentificationNumber: kunde?.CVR") : "";
     const erErhvervskunde = kunde?.CVR || kunde?.virksomhed;
 
+    const faktureringsAdresse = kunde?.fakturerbarAdresse || kunde?.adresse;
     const nyKundeObject = {
         ...(erErhvervskunde && { name: kunde?.virksomhed ? kunde?.virksomhed : "Virksomhedsnavn ikke oplyst" }),
         ...(!erErhvervskunde && { name: kunde?.navn ? kunde?.navn : "Intet navn oplyst" }),
-        address: kunde?.adresse ? kunde?.adresse : "Ingen adresse oplyst",
+        address: faktureringsAdresse ? faktureringsAdresse : "Ingen adresse oplyst",
         email: alternativEmail ? alternativEmail : kunde?.email ? kunde?.email : null,
         vatZone: {
             vatZoneNumber: 1
@@ -63,7 +64,7 @@ const useBetalMedFaktura = async (user, opgave, setOpgave, opgaveID, kunde, post
             recipient: {
                 ...(erErhvervskunde && { name: kunde?.virksomhed ? kunde?.virksomhed : "Virksomhedsnavn ikke oplyst" }),
                 ...(!erErhvervskunde && { name: kunde?.navn ? kunde?.navn : "Intet navn oplyst" }),
-                address: `${kunde?.adresse}`,
+                address: `${faktureringsAdresse}`,
                 city: `${kunde?.postnummerOgBy ? kunde?.postnummerOgBy : "1000 København"}`,
                 country: "Danmark",
                 vatZone: {

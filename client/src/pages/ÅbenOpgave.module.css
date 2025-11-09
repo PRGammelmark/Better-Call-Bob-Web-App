@@ -1,3 +1,7 @@
+.primærContainer {
+    padding-top: 20px;
+}
+
 .inputLinesContainer {
     display: flex;
     flex-direction: column;
@@ -1267,9 +1271,9 @@
     width: 100%;
 }
 
-/* .opgavestatusContainerMobile {
+.opgavestatusContainerMobile {
     display: none;
-} */
+}
 
 .uddelegeringMobile {
     display: none;
@@ -1341,6 +1345,67 @@
     justify-content: flex-end;
     width: 100%;
     height: 60px;
+}
+
+.topActionsContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.statusSelectWrapperDesktop {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.opgaveStatusSelect {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 32px 8px 12px;
+    border-radius: 8px;
+    border: 1.5px solid #e0e0e0;
+    background: #ffffff;
+    color: #222222;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.opgaveStatusSelect:hover {
+    background: #59bf1a;
+    color: #fff;
+    border-color: #59bf1a;
+    box-shadow: 0 2px 6px rgba(89, 191, 26, 0.25);
+    transform: translateY(-1px);
+}
+
+.opgaveStatusSelect:focus {
+    outline: none;
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+}
+
+.chevronDownIcon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #666;
+    width: 1rem;
+    height: 1rem;
+    transition: all 0.2s ease;
+}
+
+.opgaveStatusSelect:hover + .chevronDownIcon {
+    color: #fff !important;
+    transform: translateY(-50%) scale(1.1);
 }
 
 .sletOpgave:hover {
@@ -1930,6 +1995,9 @@
 }
 
 @media screen and (max-width: 750px) {
+    .statusSelectWrapperDesktop {
+        display: none;
+    }
 
     .privatKundeKontaktDesktop {
         display: none;
@@ -2086,7 +2154,7 @@
     }
 
     .primærContainer {
-        padding-top: 40px;
+        padding-top: 20px;
         padding-left: 10px;
         padding-right: 10px;
     }
@@ -2168,46 +2236,59 @@
         margin-top: 0px;
     }
 
-    .opgavestatus {
-        height: 40px;
-        padding-left: 32px;
-        font-size: 0.85rem;
-        font-weight: 800;
-        border-radius: 10px 0px 0px 10px;
-        margin-top: 0px;
-        background: #3c5a3f;
-        color: #fff;
-        border: none;
-        box-shadow: none;
-        font-family: "OmnesBold";
+    .statusSelectWrapperMobile {
+        position: relative;
+        display: flex;
+        align-items: center;
         width: 100%;
     }
 
-    .mobileOpgaveStatusContainer {
-        display: flex;
-        gap: 0;
-        align-items: center;
-        height: 40px;
+    .opgaveStatusSelectMobile {
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 8px 32px 8px 12px;
+        border-radius: 8px;
+        border: 1.5px solid #e0e0e0;
+        background: #ffffff;
+        color: #222222;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        width: 100%;
     }
 
-    .hiddenSelect {
+    .opgaveStatusSelectMobile:hover {
+        background: #59bf1a;
+        color: #fff;
+        border-color: #59bf1a;
+        box-shadow: 0 2px 6px rgba(89, 191, 26, 0.25);
+        transform: translateY(-1px);
+    }
+
+    .opgaveStatusSelectMobile:focus {
+        outline: none;
+        border-color: #59bf1a;
+        box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+    }
+
+    .chevronDownIconMobile {
         position: absolute;
-        opacity: 0;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
         pointer-events: none;
-        width: 0;
-        height: 0;
+        color: #666;
+        width: 1rem;
+        height: 1rem;
+        transition: all 0.2s ease;
     }
 
-    .mobileOpgaveStatusIcon {
-        height: 100%;
-        padding-left: 0px;
-        padding-right: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        background: #3c5a3f;
-        border-radius: 0px 10px 10px 0px;
+    .opgaveStatusSelectMobile:hover + .chevronDownIconMobile {
+        color: #fff !important;
+        transform: translateY(-50%) scale(1.1);
     }
 
     .customSelectAnsvarligKnap {

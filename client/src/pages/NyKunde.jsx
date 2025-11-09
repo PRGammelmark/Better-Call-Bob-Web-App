@@ -25,6 +25,7 @@ const NyKunde = () => {
     const [måKontaktesMedReklame, setMåKontaktesMedReklame] = useState(false);
     const [cvr, setCvr] = useState("");
     const [virksomhed, setVirksomhed] = useState("");
+    const [fakturerbarAdresse, setFakturerbarAdresse] = useState("");
     const [engelskKunde, setEngelskKunde] = useState(false);
     const [noter, setNoter] = useState("");
     const [loading, setLoading] = useState(false);
@@ -81,6 +82,7 @@ const NyKunde = () => {
             efternavn,
             virksomhed,
             CVR: cvr,
+            fakturerbarAdresse,
             adresse,
             postnummerOgBy,
             telefon,
@@ -133,13 +135,14 @@ const NyKunde = () => {
         setMåKontaktesMedReklame(false);
         setCvr("");
         setVirksomhed("");
+        setFakturerbarAdresse("");
         setEngelskKunde(false);
         setNoter("");
         setSucces(false);
     }
 
     return (
-            <div>
+            <div className={styles.nyKundePage}>
                 <span className={styles.headingSpan}><h1 className={styles.overskrift}>💁‍♀️ Opret ny kunde</h1></span>
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <h2 className={styles.subHeading}>Kundeoplysninger & præferencer</h2>
@@ -159,11 +162,13 @@ const NyKunde = () => {
                             <input tabIndex={4} type="text" name="postnummerOgBy" placeholder="Postnummer og by" className={styles.input} onChange={(e) => setPostnummerOgBy(e.target.value)} value={postnummerOgBy} required onBlur={(e) => setPostnummerOgBy(e.target.value.trim())}/>
                             <label className={styles.label}>Evt. CVR</label>
                             <input tabIndex={6} type="text" name="cvr" placeholder="CVR-nummer" className={styles.input} onChange={(e) => setCvr(e.target.value.toUpperCase().replace(/\s+/g, ''))} value={cvr} onBlur={(e) => setCvr(e.target.value.toUpperCase().replace(/\s+/g, ''))}/>
+                            <label className={styles.label}>Fakturerbar adresse</label>
+                            <input tabIndex={7} type="text" name="fakturerbarAdresse" placeholder="Fakturerbar adresse" className={styles.input} onChange={(e) => setFakturerbarAdresse(e.target.value)} value={fakturerbarAdresse} onBlur={(e) => setFakturerbarAdresse(e.target.value.trim())}/>
                         </div>
                     </div>
                     <div className={styles.noterWrapper}>
                         <label className={styles.label}>Noter</label>
-                        <textarea tabIndex={7} className={styles.noter} type="textarea" name="noter" placeholder="Evt. noter til kunden ..." onChange={(e) => setNoter(e.target.value)} value={noter} />
+                        <textarea tabIndex={8} className={styles.noter} type="textarea" name="noter" placeholder="Evt. noter til kunden ..." onChange={(e) => setNoter(e.target.value)} value={noter} />
                     </div>
                     <div style={{marginTop: 30, display: "flex", flexDirection: "column", gap: 8}}>
                         <div className={SwitcherStyles.checkboxContainer}>
@@ -178,11 +183,11 @@ const NyKunde = () => {
                     <div className={styles.kolonner}>
                         <div className={styles.kolonneEt}>
                             <label className={styles.label}>Email</label>
-                            <input tabIndex={8} type="text" name="email" placeholder="Email" className={styles.input} onChange={(e) => setEmail(e.target.value)} value={email} required onBlur={(e) => setEmail(e.target.value.replace(/\s+/g, ''))}/>
+                            <input tabIndex={9} type="text" name="email" placeholder="Email" className={styles.input} onChange={(e) => setEmail(e.target.value)} value={email} required onBlur={(e) => setEmail(e.target.value.replace(/\s+/g, ''))}/>
                         </div>
                         <div className={styles.kolonneTo}>
                             <label className={styles.label}>Telefon</label>
-                            <input tabIndex={9} type="text" name="telefon" placeholder="Telefon" className={styles.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} onBlur={(e) => setTelefon(e.target.value.replace(/\s+/g, ''))}/>
+                            <input tabIndex={10} type="text" name="telefon" placeholder="Telefon" className={styles.input} onChange={(e) => setTelefon(e.target.value)} value={telefon} onBlur={(e) => setTelefon(e.target.value.replace(/\s+/g, ''))}/>
                         </div>
                     </div>
                     <div style={{marginTop: 30, display: "flex", flexDirection: "column", gap: 8}}>

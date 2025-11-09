@@ -9,9 +9,10 @@ interface OpretNotifikationProps {
   titel: string;
   besked: string;
   link?: string;
+  erVigtig?: boolean;
 }
 
-export const opretNotifikation = async ({ modtagerID, udløserID, type, titel, besked, link }: OpretNotifikationProps): Promise<void> => {
+export const opretNotifikation = async ({ modtagerID, udløserID, type, titel, besked, link, erVigtig = false }: OpretNotifikationProps): Promise<void> => {
   
   try {
     if(modtagerID === "admin") {
@@ -20,7 +21,7 @@ export const opretNotifikation = async ({ modtagerID, udløserID, type, titel, b
       if(admins.some((admin) => admin._id.toString() === udløserID?.toString())) return;
 
       for (const admin of admins) {
-        const n = new Notifikation({ modtagerID: admin._id, udløserID,type, titel, besked, link });
+        const n = new Notifikation({ modtagerID: admin._id, udløserID,type, titel, besked, link, erVigtig });
         await n.save();
       }
   
@@ -29,7 +30,7 @@ export const opretNotifikation = async ({ modtagerID, udløserID, type, titel, b
   
     if (modtagerID?.toString() === udløserID?.toString()) return;
     
-    const n = new Notifikation({ modtagerID, udløserID, type, titel, besked, link });
+    const n = new Notifikation({ modtagerID, udløserID, type, titel, besked, link, erVigtig });
     await n.save();
   } catch (error) {
     console.error("Fejl ved oprettelse af notifikation:", error);

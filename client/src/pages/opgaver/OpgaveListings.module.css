@@ -1,0 +1,568 @@
+.opgaveCard {
+    padding: 16px 20px;
+    width: 100%;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.opgaveCard:hover {
+    background: #fafafa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    border-bottom-color: #d0d0d0;
+}
+
+.opgaveCard:hover .kontaktKnapper a {
+    background: #e9e9e9;
+}
+
+.opgaveCard:active {
+    background: #f0f0f0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.opgaveCard:active .kontaktKnapper a {
+    background: #dadada;
+}
+
+.cardLeftSide {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    /* gap: 8px; */
+}
+
+.cardRightSide {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 10px;
+    padding-left: 12px;
+    /* border-left: 1px solid #f0f0f0; */
+}
+
+.opgaveBeskrivelseHeading {
+    font-family: "OmnesBold";
+    color: #222222;
+    font-size: 0.9rem;
+}
+
+.opgaveDatomærke {
+    color: #555;
+    font-size: 0.75rem;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 0px;
+    width: fit-content;
+}
+
+.nyOpgaveTidsindikatorPill {
+    background: transparent;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+    font-size: 0.7rem;
+    letter-spacing: 0.01em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.opgaveDatomærke.nyOpgaveTidsindikatorPill {
+    color: rgba(255, 255, 255, 0.95);
+}
+
+.opgaveCard:hover .nyOpgaveTidsindikatorPill {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-0.5px);
+}
+
+.modtagetIcon {
+    color: rgba(255, 255, 255, 0.85);
+    height: 0.8rem;
+    width: 0.8rem;
+    flex-shrink: 0;
+}
+
+.opgaveHeading {
+    font-family: "OmnesBold";
+    font-size: 1.1rem;
+    color: #222222;
+    margin: 4px 0;
+    line-height: 1.4;
+}
+
+.opgaveErhvervskundeAtt {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.kontaktKnapper {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.kontaktKnapperBottomRight {
+    align-self: flex-end;
+    margin-top: 0;
+}
+
+.kontaktKnapper a {
+    text-decoration: none;
+    background: #f1f1f1;
+    font-size: 0.9rem;
+    padding: 4px 10px;
+    border-radius: 5px;
+    transition: 0.2s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #3c5a3f00;
+}
+
+.sekundaerKnap {
+    text-decoration: none;
+    background: #f5f5f5;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 14px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #e5e5e5;
+    cursor: pointer;
+    color: #222222;
+    -webkit-text-fill-color: #222222; /* iOS/Safari */
+    appearance: none;
+    -webkit-appearance: none;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.sekundaerKnap:hover {
+    background: #e8e8e8;
+    border-color: #d0d0d0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+}
+
+.kontaktKnapper a:hover {
+    background: #59bf1a!important;
+    color: #fff;
+}
+
+.kontaktKnapper a span {
+    transition: 0.2s ease;
+}
+
+.kontaktKnapper a:hover span {
+    color: #fff;
+}
+
+.kontaktKnapper a .contactButtonIcon {
+    height: 0.9rem;
+    width: 0.9rem;
+}
+
+/* Generic icon size to match contact button icons */
+.contactButtonIcon {
+    height: 0.9rem;
+    width: 0.9rem;
+    color: inherit; /* ensure it follows button text color */
+}
+
+.rightAlignRow {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.actionButtonsColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-self: flex-end;
+    align-items: flex-end;
+    margin-top: auto;
+}
+
+.opgaveDetaljerContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-top: 4px;
+    margin-bottom: 8px;
+}
+
+.opgaveDetaljerLinje {
+  color: #666;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.opgaveDetaljerIcon {
+  color: #888;
+  height: 0.9rem;
+  width: 0.9rem;
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.desktopContactButtonText {
+    display: inline
+}
+
+.mobileContactButtonText {
+    display: none;
+}
+
+.opgaveBeskrivelseDiv {
+    margin-top: 4px;
+}
+
+.opgaveBeskrivelse {
+    font-size: 0.85rem;
+    color: #666;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.5;
+}
+
+
+
+.statusSelectWrapper {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 4px;
+}
+
+.opgaveStatusSelect {
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 32px 8px 12px;
+  border-radius: 8px;
+  border: 1.5px solid #e0e0e0;
+  background: #ffffff;
+  color: #222222;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.opgaveStatusSelect:hover {
+    background: #59bf1a;
+    color: #fff;
+    border-color: #59bf1a;
+    box-shadow: 0 2px 6px rgba(89, 191, 26, 0.25);
+    transform: translateY(-1px);
+}
+
+.opgaveStatusSelect:focus {
+    outline: none;
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+}
+
+.chevronDownIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+  width: 1rem;
+  height: 1rem;
+  transition: all 0.2s ease;
+}
+
+.opgaveStatusSelect:hover + .chevronDownIcon {
+    color: #fff !important;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.highlightPåmindelseKnap {
+    background: rgba(89, 191, 26, 0.15) !important;
+    border-color: rgba(89, 191, 26, 0.3) !important;
+    color: #3c5a3f !important;
+}
+
+.highlightPåmindelseKnap:hover {
+    background: rgba(89, 191, 26, 0.25) !important;
+    border-color: rgba(89, 191, 26, 0.5) !important;
+}
+
+.tidsindikatorPillContainer {
+    display: flex;
+    gap: 10px;
+}
+
+.advarselsCirkel {
+    aspect-ratio: 1/1;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "OmnesBold";
+    font-size: 0.85rem;
+}
+
+.ansvarligSpan {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ansvarligIcon {
+    height: 14px;
+    width: 14px;
+}
+  
+
+/* Planned tab - Ansvarlige UI */
+.ansvarligSectionCard {
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    background: #f8f8f8;
+    overflow: visible; /* allow tooltips to escape */
+}
+
+.ansvarligHeadingRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #222222;
+    background: #f7f8f7;
+    padding: 8px 12px;
+}
+
+.ansvarligHeadingIcon {
+    height: 14px;
+    width: 14px;
+    color: #666;
+}
+
+.ansvarligHeadingText {
+    font-family: "OmnesBold";
+    font-size: 0.9rem;
+}
+
+.ansvarligList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0px;
+    padding: 10px 12px;
+    background: #ffffff;
+}
+
+.ansvarligChip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+.ansvarligAvatar {
+    height: 22px;
+    width: 22px;
+    border-radius: 50%;
+    background: #ebf5de;
+    border: 1px solid #c7e9b9;
+    color: #3c5a3f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "OmnesBold";
+    font-size: 0.75rem;
+    transition: 0.2s ease;
+}
+
+.ansvarligAvatar:hover {
+    background: #ddf0d2;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    transform: translateY(-1px);
+}
+
+.ansvarligName {
+    color: #333;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+/* Inline ansvarlige row with grey icon pill + white badges strip */
+.ansvarligInlineRow {
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+
+.ansvarligIconPill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background: #f7f8f7; */
+    border-right: none;
+    padding: 6px 10px;
+}
+
+.ansvarligInlineIcon {
+    height: 18px;
+    width: 18px;
+    color: #666;
+}
+
+.ansvarligBadgesStrip {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    /* border: 1px solid #e8e8e8; */
+    border-left: none;
+    padding: 6px 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.ansvarligChip {
+    margin-left: -6px;
+}
+
+.ansvarligChip:first-child {
+    margin-left: 0;
+}
+
+/* Align ansvarlige section to the right in planned tab */
+.ansvarligAlignRight {
+    align-self: flex-end;
+}
+
+.besøgButtonHeading {
+    font-family: "OmnesBold";
+    font-size: 0.9rem;
+    color: #222222;
+    text-align: left;
+    width: 100%;
+}
+
+.besøgIgangKnap {
+    background: #ebf5de;
+    color: #3c5a3f;
+    border-color: #59bf1a;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.besøgIgangKnap:hover {
+    background: #d9f0d5;
+    border-color: #4cae4c;
+}
+
+.afsluttetTekst {
+    font-size: 0.75rem;
+    color: #666;
+    text-align: right;
+}
+
+.ikkeAfsluttetTekst {
+    color: #e67700;
+    background: #fff3bf;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    text-align: right;
+    width: fit-content;
+    margin-right: 10px;
+}
+
+/* Skeleton loading styles */
+.skeletonCard {
+    cursor: default;
+    pointer-events: none;
+}
+
+.skeletonCard:hover {
+    background: transparent;
+    box-shadow: none;
+    border-bottom-color: #e0e0e0;
+}
+
+.skeletonLine,
+.skeletonPill {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 50%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    border-radius: 4px;
+}
+
+.skeletonPill {
+    border-radius: 20px;
+}
+
+.empty {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 200px;
+    width: 100%;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: #888;
+    text-align: center;
+}
+
+@keyframes skeletonPulse {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .desktopContactButtonText {
+        display: none
+    }
+
+    .mobileContactButtonText {
+        display: inline;
+    }
+
+    .opgaveHeading {
+        font-size: 1rem;
+    }
+
+    .opgaveCard {
+        width: 100vw;
+        margin-left: 0px;
+    }
+}

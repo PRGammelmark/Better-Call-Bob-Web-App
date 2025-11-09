@@ -31,7 +31,7 @@ const Kunder = () => {
     }, [])
 
   return (
-        <div>
+        <div className={styles.kunderPage}>
             <div className={styles.headingAndSearchContainer}>
                 <h1 className={`bold ${styles.heading}`}>Kunder</h1>
                 <input type="text" placeholder="Søg – fx postnumre: ''1000-1800'' ..." value={search} onChange={(e) => setSearch(e.target.value)} className={styles.searchInput} />

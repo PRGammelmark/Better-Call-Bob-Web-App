@@ -1,5 +1,5 @@
 import { useState, useContext, useRef, useEffect, useActionState } from "react";
-import { Bell, Trash2, Plus, BellDot, CalendarPlus, CalendarMinus, CalendarSearch, ClipboardPlus, MessageCirclePlus, MessageCircleMore, ClockPlus, ClockFading, ClockAlert, UserPlus, UserMinus, CircleFadingPlus, ClipboardCheck, ClipboardCopy, ImagePlus, ClipboardX, Settings, Check } from "lucide-react";
+import { Bell, Trash2, Plus, BellDot, CalendarPlus, CalendarMinus, CalendarSearch, ClipboardPlus, MessageCirclePlus, MessageCircleMore, ClockPlus, ClockFading, ClockAlert, UserPlus, UserMinus, CircleFadingPlus, ClipboardCheck, ClipboardCopy, ImagePlus, ClipboardX, Settings, Check, Star, Folder } from "lucide-react";
 import { NotifikationContext } from "../context/NotifikationContext";
 import Styles from './NotifikationKlokke.module.css'
 import dayjs from "dayjs";
@@ -16,8 +16,11 @@ export default function NotifikationKlokke({ background, color }) {
   const [henterFlereNotifikationer, setHenterFlereNotifikationer] = useState(false);
   const [ikkeFlereNotifikationer, setIkkeFlereNotifikationer] = useState(false);
   const [åbenNotifikationer, setÅbenNotifikationer] = useState(false);
+  const [activeTab, setActiveTab] = useState("vigtige");
   const wrapperRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const tabRefs = useRef([]);
+  const [underlineStyle, setUnderlineStyle] = useState({ width: 0, left: 0 });
 
   const { user } = useAuthContext();
   const navigate = useNavigate();
@@ -90,7 +93,24 @@ useEffect(() => {
   }
   
   const første10Notifikationer = notifikationer.slice(0, 10);
-  const usete = første10Notifikationer.filter(n => !n.set);
+  const usete = første10Notifikationer.filter(n => !n.set && n.erVigtig);
+
+  // Update underline style when tab changes
+  useEffect(() => {
+    const activeIndex = activeTab === "vigtige" ? 0 : 1;
+    const activeTabElement = tabRefs.current[activeIndex];
+    if (activeTabElement) {
+      setUnderlineStyle({
+        width: activeTabElement.offsetWidth,
+        left: activeTabElement.offsetLeft,
+      });
+    }
+  }, [activeTab]);
+
+  // Filter notifications based on active tab
+  const filteredNotifikationer = activeTab === "vigtige" 
+    ? notifikationer.filter(n => n.erVigtig)
+    : notifikationer;
 
   // Luk dropdown hvis klik udenfor
   useEffect(() => {
@@ -239,9 +259,34 @@ useEffect(() => {
               <button onClick={() => handleÅbnSettings()}><Settings size={20} color="#222222" /></button>
             </div>
           </div>
+          <div className={Styles.notifikationerTabsContainer}>
+            <button
+              ref={(el) => (tabRefs.current[0] = el)}
+              onClick={() => setActiveTab("vigtige")}
+              className={`${Styles.tabButton} ${activeTab === "vigtige" ? Styles.active : ""}`}
+            >
+              <Star size={18} />
+              Vigtige
+            </button>
+            <button
+              ref={(el) => (tabRefs.current[1] = el)}
+              onClick={() => setActiveTab("alle")}
+              className={`${Styles.tabButton} ${activeTab === "alle" ? Styles.active : ""}`}
+            >
+              <Folder size={18} />
+              Alle
+            </button>
+            <div
+              className={Styles.underline}
+              style={{
+                width: underlineStyle.width,
+                transform: `translateX(${underlineStyle.left}px)`,
+              }}
+            />
+          </div>
           <div className={Styles.notifikationerContainer}>
-          {notifikationer.length > 0 ? (
-            notifikationer.map((n) => (
+          {filteredNotifikationer.length > 0 ? (
+            filteredNotifikationer.map((n) => (
               <div key={n._id} className={`${Styles.notifikationRow} ${n.læst ? "" : Styles.ikkeLæstRow}`} onClick={() => handleClick(n)}>
                   <div className={Styles.notifikationIcon}>{iconMap(n.type)}</div>
                   <div>

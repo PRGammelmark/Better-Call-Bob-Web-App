@@ -9,7 +9,7 @@ import { useAuthContext } from './hooks/useAuthContext'
 import FastClick from 'fastclick'
 import ÅbnIAppen from './components/modals/ÅbnIAppen.jsx'
 // pages
-import Overblik from './pages/Overblik'
+import Overblik from './pages/overblik/Overblik'
 import AlleOpgaver from './pages/AlleOpgaver'
 import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
@@ -36,6 +36,8 @@ import { AnimatePresence, motion } from 'framer-motion'
 import PageWrapper from './pages/PageWrapper';
 import Kalender from './pages/kalender/Kalender'
 import KalenderV2 from './pages/kalender/KalenderV2'
+import MobilePayOversigt from './pages/MobilePayOversigt'
+import MineOpgaver2 from './pages/MineOpgaver2'
 
 
 function App() {
@@ -85,7 +87,7 @@ function App() {
           <Route path="alle-opgaver" element={<AlleOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="afsluttede-opgaver" element={<AfsluttedeOpgaver />} errorElement={<ErrorPage />}/>
           <Route path="slettede-opgaver" element={<SlettedeOpgaver />} errorElement={<ErrorPage />}/>
-          <Route path="mine-opgaver" element={<MineOpgaver />} errorElement={<ErrorPage />}/>
+          <Route path="mine-opgaver" element={<MineOpgaver2 />} errorElement={<ErrorPage />}/>
           <Route path="kalender" element={<KalenderV2 />} errorElement={<ErrorPage />}/>
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
           <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
@@ -102,6 +104,7 @@ function App() {
           <Route path="kunde/:kundeID" element={<Kunde />} errorElement={<ErrorPage />}/>
           <Route path="login" element={!user ? <Login /> : <Navigate to="/" />}/>
           <Route path="alle-posteringer" element={<AllePosteringer />} errorElement={<ErrorPage />}/>
+          <Route path="posteringer-betalt-med-mobile-pay" element={<MobilePayOversigt/>} errorElement={<ErrorPage />} />
         </Route>
         <Route path="gendan-kodeord" element={<GendanKodeord />}/>
       </>

@@ -23,6 +23,10 @@ const kundeSchema = new Schema({
         type: String,
         required: false
     },
+    fakturerbarAdresse: {
+        type: String,
+        required: false
+    },
     adresse: {
         type: String,
         required: true

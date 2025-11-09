@@ -446,7 +446,7 @@ const NyOpgave = () => {
 
   return (
         <>
-        <div style={{position: "static!important"}}>
+        <div className={NyOpgaveCSS.nyOpgavePage} style={{position: "static!important"}}>
             <span className={NyOpgaveCSS.headingSpan}><h1 className={NyOpgaveCSS.overskrift}>📋 Opret ny opgave</h1></span>
             {!succes && <div className={NyOpgaveCSS.trinDiv}>
                 {/* OPGAVE- OG KUNDE-TRIN */}

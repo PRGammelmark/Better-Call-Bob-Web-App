@@ -1,5 +1,5 @@
 import express from "express"
-import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder, tilfoejAnsvarlig, fjernAnsvarlig, opdaterOpgavebeskrivelse, afslutOpgave, genåbnOpgave, tilføjBilleder } from "../controllers/opgaveController.js"
+import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder, tilfoejAnsvarlig, fjernAnsvarlig, opdaterOpgavebeskrivelse, afslutOpgave, genåbnOpgave, tilføjBilleder, getOpgaverNew, getOpgaverOpen, getOpgaverPlanned, getOpgaverDone, getOpgaverArchived, getOpgaverDeleted, getOpgaverPersonalCurrent, getOpgaverPersonalClosed } from "../controllers/opgaveController.js"
 import requireAuth from "../middleware/requireAuth.js";
 import { shortTermLimiter, dailyLimiter } from "../middleware/rateLimit.js"
 
@@ -12,6 +12,18 @@ router.get("/", requireAuth, getOpgaver)
 
 // GET alle opgaver med kunder
 router.get("/populateKunder", requireAuth, getOpgaverPopulateKunder)
+
+// New tab endpoints
+router.get("/new", requireAuth, getOpgaverNew)
+router.get("/open", requireAuth, getOpgaverOpen)
+router.get("/planned", requireAuth, getOpgaverPlanned)
+router.get("/done", requireAuth, getOpgaverDone)
+router.get("/archived", requireAuth, getOpgaverArchived)
+router.get("/deleted", requireAuth, getOpgaverDeleted)
+
+// Personal view endpoints
+router.get("/personal/current", requireAuth, getOpgaverPersonalCurrent)
+router.get("/personal/closed", requireAuth, getOpgaverPersonalClosed)
 
 // GET en enkelt opgave
 router.get('/:id', requireAuth, getOpgave)

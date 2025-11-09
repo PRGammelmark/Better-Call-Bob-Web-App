@@ -1,0 +1,230 @@
+.overblikContainer {
+  margin-left: -30px;
+  margin-right: -30px;
+  overflow: hidden!important;
+  height: var(--content-height);
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: flex-start;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.opgaveListingsContainer {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: calc(var(--content-height) - 40px); /* 40px is the height of the opgave tabs container */
+}
+
+.contentColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* Allows flex item to shrink below content size */
+    overflow: hidden;
+}
+
+  .opgaveTabsContainer {
+    display: flex;
+    position: relative;
+    overflow-x: auto;
+    overflow-y: visible;
+    gap: 20px;
+    padding: 6px 10px 6px 10px;
+    border-bottom: 1px solid #ddd;
+    scrollbar-width: none;
+    width: 100%;
+  }
+  
+  .opgaveTabsContainer::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tabButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    font-size: 14px;
+    line-height: 10px;
+    color: #888;
+    font-weight: 500;
+    background: none;
+    border: none;
+    padding: 4px 4px;
+    cursor: pointer;
+    position: relative;
+    transition: 0.2s ease;
+  }
+  
+  .tabButton:hover {
+    color: #555;
+  }
+  
+  .tabButton svg {
+    stroke-width: 1;
+    color: #888;
+    transition: 0.2s ease;
+  }
+  
+  .active {
+    color: #3c5a3f!important;
+  }
+  
+  .active svg {
+    stroke-width: 1.5;
+    color: #3c5a3f;
+  }
+  
+  .badgesContainer {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: 4px;
+    position: relative;
+  }
+  
+  .countBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 4px;
+    background-color: #e9ecef;
+    color: #495057;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    z-index: 3;
+    position: relative;
+  }
+  
+  .tabButton.active .countBadge {
+    background-color: #3c5a3f;
+    color: #ffffff;
+  }
+  
+  .warningBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 15px;
+    height: 15px;
+    padding: 0 2px;
+    border-radius: 8px;
+    font-size: 8.5px;
+    font-weight: 600;
+    transition: 0.2s ease;
+    flex-shrink: 0;
+  }
+  
+  .countBadge + .warningBadge,
+  .warningBadge + .warningBadge {
+    margin-left: -4px;
+  }
+  
+  .warningBadge[data-warning-type="red"] {
+    background-color: #ffc9c9;
+    color: #c92a2a;
+    z-index: 2;
+    position: relative;
+    border: 1px solid #c92a2a00;
+  }
+  
+  .warningBadge[data-warning-type="yellow"] {
+    background-color: #fff3bf;
+    color: #e67700;
+    z-index: 1;
+    position: relative;
+    border: 1px solid #e6770000;
+  }
+  
+  .tabButton.active .warningBadge[data-warning-type="yellow"] {
+    border: 1px solid #e67700;
+  }
+  
+  .tabButton.active .warningBadge[data-warning-type="red"] {
+    border: 1px solid #c92a2a;
+  }
+  
+  .underline {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    height: 2px;
+    background: #3c5a3f;
+    border-radius: 0px;
+    transition: 0.25s ease;
+  }
+  
+@media screen and (max-width: 750px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .contentColumn {
+    width: 100%;
+  }
+
+  .opgaveTabsContainer {
+    margin-left: 0px;
+    margin-top: 0px;
+    padding: 6px 10px 6px 10px;
+    width: 100vw;
+  }
+
+  .opgaveListingsContainer {
+    height: calc(100vh - 70px - 60px - 40px - 19px - env(safe-area-inset-bottom));
+    overscroll-behavior: contain;
+  }
+}
+
+.filterFab {
+  position: fixed;
+  bottom: calc(60px + env(safe-area-inset-bottom));
+  left: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #59bf1a;
+  color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(89, 191, 26, 0.4);
+  z-index: 998;
+  transition: all 0.2s ease;
+}
+
+.filterFab:hover {
+  background: #4cae4c;
+  box-shadow: 0 6px 16px rgba(89, 191, 26, 0.5);
+  transform: scale(1.05);
+}
+
+.filterFab:active {
+  transform: scale(0.95);
+}
+
+@media screen and (min-width: 751px) {
+  .filterFab {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 750px) {
+  .overblikContainer {
+    margin-top: 0px;
+    margin-left: -10px;
+    margin-right: -10px;
+  }
+}

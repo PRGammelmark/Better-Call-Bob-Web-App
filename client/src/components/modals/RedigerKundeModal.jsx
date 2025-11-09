@@ -19,9 +19,10 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
         postnummerOgBy: kunde?.postnummerOgBy,
         telefon: kunde?.telefon,
         email: kunde?.email,
-        virksomhed: kunde?.virksomhed,
-        CVR: kunde?.CVR,
-        engelskKunde: kunde?.engelskKunde,
+                virksomhed: kunde?.virksomhed,
+                CVR: kunde?.CVR,
+                fakturerbarAdresse: kunde?.fakturerbarAdresse,
+                engelskKunde: kunde?.engelskKunde,
         harStige: kunde?.harStige,
         måKontaktesMedReklame: kunde?.måKontaktesMedReklame
     })
@@ -40,6 +41,7 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
                 email: kunde.email || "",
                 virksomhed: kunde.virksomhed || "",
                 CVR: kunde.CVR || "",
+                fakturerbarAdresse: kunde.fakturerbarAdresse || "",
                 engelskKunde: kunde.engelskKunde || false,
                 harStige: kunde.harStige || false,
                 måKontaktesMedReklame: kunde.måKontaktesMedReklame || false
@@ -94,6 +96,8 @@ const RedigerKundeModal = ({redigerKundeModal, setRedigerKundeModal, kunde, opda
                 <input type="text" name="virksomhed" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.virksomhed} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, virksomhed: e.target.value.trim()})}/>
                 <label className={ÅbenOpgaveCSS.label} htmlFor="cvr">CVR-nummer</label>
                 <input type="text" name="cvr" placeholder="CVR-nummer" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.CVR} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value.toUpperCase().replace(/\s+/g, '')})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, CVR: e.target.value.toUpperCase().replace(/\s+/g, '')})}/>
+                <label className={ÅbenOpgaveCSS.label} htmlFor="fakturerbarAdresse">Fakturerbar adresse</label>
+                <input type="text" name="fakturerbarAdresse" placeholder="Fakturerbar adresse" className={ÅbenOpgaveCSS.modalInput} value={nyeKundeinformationer.fakturerbarAdresse} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, fakturerbarAdresse: e.target.value})} onBlur={(e) => setNyeKundeinformationer({...nyeKundeinformationer, fakturerbarAdresse: e.target.value.trim()})}/>
                 <div className={SwitcherStyles.checkboxContainer}>
                     <label className={SwitcherStyles.switch} htmlFor="måKontaktesMedReklame">
                         <input type="checkbox" id="måKontaktesMedReklame" name="måKontaktesMedReklame" className={SwitcherStyles.checkboxInput} checked={nyeKundeinformationer.måKontaktesMedReklame} onChange={(e) => setNyeKundeinformationer({...nyeKundeinformationer, måKontaktesMedReklame: e.target.checked})} />

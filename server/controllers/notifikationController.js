@@ -77,8 +77,8 @@ export const sseNotifikationer = async (req, res) => {
 // Opret ny notifikation
 export const opretNotifikation = async (req, res) => {
   try {
-    const { modtagerID, udløserID, type, titel, besked, link } = req.body;
-    const ny = new Notifikation({ modtagerID, udløserID, type, titel, besked, link });
+    const { modtagerID, udløserID, type, titel, besked, link, erVigtig } = req.body;
+    const ny = new Notifikation({ modtagerID, udløserID, type, titel, besked, link, erVigtig });
     await ny.save();
     res.status(201).json(ny);
   } catch (err) {

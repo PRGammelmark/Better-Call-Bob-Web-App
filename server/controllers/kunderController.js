@@ -62,9 +62,9 @@ const getKunde = async (req, res) => {
 // CREATE en kunde
 const createKunde = async (req, res) => {
 
-    const { fornavn, efternavn, virksomhed, CVR, adresse, postnummerOgBy, telefon, email, harStige, måKontaktesMedReklame, engelskKunde, noter } = req.body;
+    const { fornavn, efternavn, virksomhed, CVR, fakturerbarAdresse, adresse, postnummerOgBy, telefon, email, harStige, måKontaktesMedReklame, engelskKunde, noter } = req.body;
     try {
-        const kunde = await Kunde.create({fornavn, efternavn, virksomhed, CVR, adresse, postnummerOgBy, telefon, email, harStige, måKontaktesMedReklame, engelskKunde, noter, navn: fornavn + " " + efternavn})
+        const kunde = await Kunde.create({fornavn, efternavn, virksomhed, CVR, fakturerbarAdresse, adresse, postnummerOgBy, telefon, email, harStige, måKontaktesMedReklame, engelskKunde, noter, navn: fornavn + " " + efternavn})
         res.status(200).json(kunde)
     } catch (error) {
         res.status(400).json({error: error.message})

@@ -101,6 +101,31 @@
     outline: none;
     cursor: inherit;
   }
+
+  /* Ensure selects align right and use correct color on iOS/Safari */
+  select.inputField {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background: transparent;
+    color: #222222;
+    /* RTL trick to right-align selected value across browsers */
+    direction: rtl;
+    text-align: left;
+  }
+
+  /* Options should display normally (LTR) */
+  select.inputField option {
+    direction: ltr;
+    color: #222222;
+  }
+
+  /* Compact single-line textarea variant to match row height */
+  .textareaCompact {
+    height: 32px;
+    min-height: 32px;
+    resize: vertical;
+  }
   
   .inputField::-webkit-inner-spin-button,
   .inputField::-webkit-outer-spin-button {

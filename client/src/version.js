@@ -14,6 +14,21 @@
 // 
 
 const changes = [{
+    version: "3.8.0",
+    date: "9. november 2025",
+    changes: [
+        "Administratorers overbliksside er blevet opdateret. Øverst på overblikssiden får man et overblik over alle ikke-afsluttede opgaver, opdelt i kategorier efter hvor langt de er i deres respektive pipelines. Kategorierne viser også advarsler, hvis der er opgaver i de pågældende kategorier der kræver akut opmærksomhed. Derudover kan administratorer nu også hurtigt se hvordan hver enkelt kategoris indhold har ændret sig over de sidste 24 timer.",
+        "Umiddelbart under kategori-overblikket får administratoren nu også et overblik over de opgaver hvortil er der tilknyttet besøg i dag. Opgaverne listes kronologisk efter hvornår besøgene ligger, og på hver opgave ligger der både kundeinformationer, kontaktinfo, navigationsvejledning samt opgavebeskrivelsen og den nyeste kommentar.",
+        "Medarbejdernes overbliksside er ligeledes blevet opdateret. Nu får medarbejderen et overblik over opgaver, hvor de har besøg på den indeværende dag. Opgaverne listes kronologisk efter hvornår besøgene ligger, og på hver opgave ligger der både kundeinformationer, kontaktinfo, navigationsvejledning samt opgavebeskrivelsen og den nyeste kommentar.",
+        "'Alle opgaver'-siden er blevet opdateret. Den gamle tabelvisning er erstattet med en ny filtrerbar og sorterbar listevisning, der både tilføjer mere funktionalitet og et bedre, interaktivt overblik.",
+        "Popup-vinduer animeres nu hurtigere ind og ud. Derudover vil app'en nu ikke længere reagere uhensigtsmæssigt på klik uden for popup-vinduet, hvis dette klik sker på et interaktivt område i baggrunden.",
+        "Man kan nu sætte reminders på opgaver fra hhv. listeoverblikssidens 'Nye'- og 'Åbne'-faner, samt direkte fra opgavesiden øverst på '...'-knappen. En reminder vil sende dig en notifikation på et selvvalgt tidspunkt, hvis du fx gerne vil mindes om at følge op på en opgave.",
+        "Notifikationer er nu blevet opdelt i to faner: 'Vigtige' og 'Alle'. Vigtige notifikationer vises som udgangspunkt først, og disse inkluderer bl.a. nye kommentarer, ændringer i opgavebeskrivelser, osv.",
+        "Man kan nu registre fakturerbar adresse på kunder. Hvis en fakturerbar adresse er registreret vil denne nu fremover blive brugt i stedet for den almindelige adresse når man fakturerer kunden.",
+        "Opkrævninger registreres nu også med beløb. Det gjorde de ikke før.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.7.1",
     date: "7. november 2025",
     changes: [

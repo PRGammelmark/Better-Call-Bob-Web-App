@@ -38,6 +38,10 @@ const notifikationSchema = new Schema({
     arkiveret: {
         type: Boolean,
         default: false
+    },
+    erVigtig: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 

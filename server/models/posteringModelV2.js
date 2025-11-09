@@ -147,6 +147,7 @@ const posteringSchema2 = new Schema({
                 required: true
             },
             dato: Date,
+            betalingsdato: Date,
             manueltRegistreret: {
                 type: Boolean,
                 default: false

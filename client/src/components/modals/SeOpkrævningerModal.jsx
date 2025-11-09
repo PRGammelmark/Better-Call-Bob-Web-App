@@ -130,6 +130,16 @@ const SeOpkrævningerModal = (props) => {
             await axios.patch(`${import.meta.env.VITE_API_URL}/posteringer/${props.postering._id}`, { opkrævninger: props.postering.opkrævninger.filter(o => o._id !== opkrævning._id) }, { headers: { 'Authorization': `Bearer ${user.token}` } });
             await props.refetchPostering();
         }
+    }
+
+    const formatBeløb = (beløb) => {
+        if (beløb == null) return null;
+        return new Intl.NumberFormat('da-DK', {
+            style: 'currency',
+            currency: 'DKK',
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(beløb);
     } 
 
   return (
@@ -150,6 +160,11 @@ const SeOpkrævningerModal = (props) => {
                 </div>
             </div>
             <div className={Styles.betalingerFooter}>
+                {senesteOpkrævning?.opkrævningsbeløb != null && (
+                    <p className={Styles.beløb} style={{fontSize: 18, marginBottom: 10}}>
+                        Opkrævet: {formatBeløb(senesteOpkrævning.opkrævningsbeløb)}
+                    </p>
+                )}
                 {senesteOpkrævning?.reference && <>
                     <p style={{fontSize: 12, color: '#808080'}}>Reference: {senesteOpkrævning?.reference}</p>
                 </>}
@@ -179,6 +194,11 @@ const SeOpkrævningerModal = (props) => {
                             </div>
                         </div>
                         <div className={Styles.betalingerFooter} style={{marginTop: 40}}>
+                            {opkrævning?.opkrævningsbeløb != null && (
+                                <p className={Styles.beløb} style={{fontSize: 16, marginBottom: 10}}>
+                                    Opkrævet: {formatBeløb(opkrævning.opkrævningsbeløb)}
+                                </p>
+                            )}
                             {opkrævning?.reference && <>
                                 <p style={{fontSize: 12, color: '#808080'}}>Reference: {opkrævning.reference}</p>
                             </>}

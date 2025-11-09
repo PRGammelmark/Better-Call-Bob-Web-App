@@ -79,7 +79,7 @@ function autoKode(){
 }
 
 return (
-    <div>
+    <div className={styles.nyBrugerPage}>
         <span className={styles.headingSpan}><h1 className={styles.overskrift}>👷🏼‍♂️ Opret ny bruger</h1></span>
         <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.kolonner}>

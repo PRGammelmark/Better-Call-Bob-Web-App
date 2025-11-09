@@ -52,7 +52,8 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
       {trigger && (
         <motion.div
           className={ModalStyles.overlay}
-          onClick={() => {
+          onClick={(e) => {
+            e.stopPropagation();
             setTrigger(false)
             onClose && onClose()
           }}
@@ -67,7 +68,7 @@ const Modal = forwardRef(({ children, trigger, setTrigger, onClose, closeIsBackB
             ref={ref}
             onClick={(e) => e.stopPropagation()}
             variants={isMobile ? mobileAnimation : desktopAnimation}
-            transition={{duration: 0.8, ease: "easeOut"}}
+            transition={{duration: 0.35, ease: "easeOut"}}
           >
             <button
               onClick={() => {

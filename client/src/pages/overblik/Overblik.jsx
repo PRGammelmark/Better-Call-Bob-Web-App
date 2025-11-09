@@ -1,21 +1,25 @@
 import { useState, useEffect, useCallback } from 'react'
-import PageAnimation from '../components/PageAnimation'
-import MyTasks from '../components/tables/MyTasks.jsx'
+import PageAnimation from '../../components/PageAnimation'
+import MyTasks from '../../components/tables/MyTasks.jsx'
 import Styles from './Overblik.module.css'
 import axios from 'axios'
-import { useAuthContext } from '../hooks/useAuthContext'
+import { useAuthContext } from '../../hooks/useAuthContext'
 import dayjs from 'dayjs'
 import { useNavigate } from 'react-router-dom'
-import { useBesøg } from '../context/BesøgContext.jsx'
-import ÅbenOpgaveCalendar from '../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
-import ManagerCalendar from '../components/traditionalCalendars/ManagerCalendar.jsx'
-import OpenTasks from '../components/tables/OpenTasks'
-import PersonligtØkonomiskOverblik from '../components/okonomi/PersonligtØkonomiskOverblik'
-import AdminØkonomiskOverblik from '../components/okonomi/AdminØkonomiskOverblik'
-import { useOverblikView } from '../context/OverblikViewContext.jsx'
-import { getHilsen } from '../utils/hilsener.js'
-import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
+import { useBesøg } from '../../context/BesøgContext.jsx'
+import ÅbenOpgaveCalendar from '../../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
+import ManagerCalendar from '../../components/traditionalCalendars/ManagerCalendar.jsx'
+import OpenTasks from '../../components/tables/OpenTasks'
+import PersonligtØkonomiskOverblik from '../../components/okonomi/PersonligtØkonomiskOverblik'
+import AdminØkonomiskOverblik from '../../components/okonomi/AdminØkonomiskOverblik'
+import { useOverblikView } from '../../context/OverblikViewContext.jsx'
+import { getHilsen } from '../../utils/hilsener.js'
+import PopUpMenu from '../../components/basicComponents/PopUpMenu.jsx'
 import { ArrowLeftRight } from 'lucide-react'
+import OpgaverHurtigtAdminOverblik from '../../components/OpgaverHurtigtAdminOverblik'
+import OpgaverHurtigtPersonligtOverblik from '../../components/OpgaverHurtigtPersonligtOverblik'
+import OpgaverIDagAdminOverblik from '../../components/OpgaverIDagAdminOverblik'
+// import ManagerOverblik from '../opgaver/ManagerOpgaver'
 
 const Overblik = () => {
   const {user} = useAuthContext();
@@ -103,18 +107,22 @@ const Overblik = () => {
 
   // <button onClick={() => setManagerOverblik(false)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>← Skift til personligt overblik</button>
   return (
-    <>
+    <div className={Styles.overblikPageContainer}>
       <div className={Styles.overblikHeader}>
-          <b className={Styles.hilsenTekst}>{getHilsen(user.navn.split(" ")[0])}</b>
+          {/* <b className={Styles.hilsenTekst}>{getHilsen(user.navn.split(" ")[0])}</b> */}
+          <b className={Styles.hilsenTekst}></b>
 
           {user.isAdmin && <PopUpMenu actions={[{ icon: <ArrowLeftRight />, label: managerOverblik ? 'Skift til personligt overblik' : 'Skift til manager-overblik', onClick: () => setManagerOverblik(!managerOverblik) }]} />}
-        </div>
-      {managerOverblik && <div className={Styles.overblikContainer}>
+      </div>
+      
+      {managerOverblik && <div>
         
-        <OpenTasks />
-        <p className={Styles.alleOpgaverButton} onClick={() => {
+        {/* <OpenTasks /> */}
+        <OpgaverHurtigtAdminOverblik />
+        <OpgaverIDagAdminOverblik />
+        {/* <p className={Styles.alleOpgaverButton} onClick={() => {
           navigate(`/alle-opgaver`)
-        }}>Gå til alle opgaver</p>
+        }}>Gå til alle opgaver</p> */}
         <ManagerCalendar 
                         user={user} 
                         opgaveTilknyttetBesøg={opgaveTilknyttetBesøg}
@@ -148,7 +156,8 @@ const Overblik = () => {
           <h1 className={`bold ${Styles.heading}`}>Dit personlige overblik 👨‍🔧</h1>
           {user.isAdmin && <button onClick={() => setManagerOverblik(true)} className={`${Styles.transparentButton} ${Styles.switchButton}`}>Skift til manager-overblik →</button>}
         </div> */}
-        <MyTasks openTableEvent={openTableEvent} />
+        {/* <MyTasks openTableEvent={openTableEvent} /> */}
+        <OpgaverHurtigtPersonligtOverblik />
         <ÅbenOpgaveCalendar 
                         user={user} 
                         opgaveTilknyttetBesøg={opgaveTilknyttetBesøg}
@@ -176,7 +185,7 @@ const Overblik = () => {
                         />
         <PersonligtØkonomiskOverblik user={user}/>
       </div>}
-      </>
+      </div>
   )
 }
 

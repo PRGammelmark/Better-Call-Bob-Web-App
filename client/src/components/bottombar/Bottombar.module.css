@@ -13,10 +13,9 @@
     width: 100%;
     background: #fff;
     box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 9px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    z-index: 10;
-    min-height: calc(env(safe-area-inset-bottom) + 40px);
-    max-height: calc(env(safe-area-inset-bottom) + 40px);
-    /* max-height: 80px; */
+    z-index: 101;
+    min-height: var(--footer-height);
+    max-height: var(--footer-height);
     display: flex;
     align-items: flex-start;
     justify-content: space-between;

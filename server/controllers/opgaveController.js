@@ -1,5 +1,6 @@
 import Opgave from '../models/opgaveModel.js'
 import Bruger from '../models/brugerModel.js'
+import Postering from '../models/posteringModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
 import Joi from "joi"
@@ -417,10 +418,23 @@ const getOpgaverOpen = async (req, res) => {
 const getOpgaverPlanned = async (req, res) => {
     try {
         const opgaver = await Opgave.find({
-            isDeleted: { $exists: false },
-            isArchived: { $exists: false },
-            opgaveAfsluttet: { $exists: false },
-            ansvarlig: { $not: { $size: 0 } }
+            $and: [
+                {
+                    $or: [
+                        { isDeleted: { $exists: false } },
+                        { isDeleted: null }
+                    ]
+                },
+                { isArchived: { $exists: false } },
+                {
+                    $or: [
+                        { opgaveAfsluttet: { $exists: false } },
+                        { opgaveAfsluttet: null }
+                    ]
+                },
+                { markeretSomFærdig: { $ne: true } },
+                { ansvarlig: { $not: { $size: 0 } } }
+            ]
         }).sort({ createdAt: -1 }).populate("kunde");
         res.status(200).json(opgaver);
     } catch (error) {
@@ -472,6 +486,147 @@ const getOpgaverDeleted = async (req, res) => {
     }
 };
 
+// Fetch opgaver for personal view: Current (planned tasks where user is ansvarlig)
+const getOpgaverPersonalCurrent = async (req, res) => {
+    try {
+        const userId = String(req.user._id);
+        console.log("Fetching personal current tasks for user:", userId);
+        
+        // Fetch all matching opgaver and filter in memory to handle both ObjectId and string formats
+        const allOpgaver = await Opgave.find({
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            opgaveAfsluttet: { $exists: false },
+            ansvarlig: { $exists: true, $ne: [] }
+        }).sort({ createdAt: -1 }).populate("kunde");
+        
+        // Filter to only include opgaver where user is ansvarlig
+        const opgaver = allOpgaver.filter(opgave => {
+            return opgave.ansvarlig && opgave.ansvarlig.some(ansvarlig => 
+                String(ansvarlig._id) === userId
+            );
+        });
+        
+        console.log(`Found ${opgaver.length} current tasks for user ${userId} out of ${allOpgaver.length} total`);
+        res.status(200).json(opgaver);
+    } catch (error) {
+        console.error("Error in getOpgaverPersonalCurrent:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+// Fetch opgaver for personal view: Closed (done + unpaid tasks where user is ansvarlig)
+const getOpgaverPersonalClosed = async (req, res) => {
+    try {
+        const userId = String(req.user._id);
+        console.log("Fetching personal closed tasks for user:", userId);
+        
+        // Get all done tasks and filter in memory
+        const allDoneOpgaver = await Opgave.find({
+            opgaveAfsluttet: { $exists: true, $ne: null },
+            isDeleted: { $exists: false },
+            isArchived: { $exists: false },
+            ansvarlig: { $exists: true, $ne: [] }
+        }).populate("kunde");
+        
+        // Filter to only include opgaver where user is ansvarlig
+        const doneOpgaver = allDoneOpgaver.filter(opgave => {
+            return opgave.ansvarlig && opgave.ansvarlig.some(ansvarlig => 
+                String(ansvarlig._id) === userId
+            );
+        });
+        
+        // Get unpaid posteringer and extract unique opgaver where user is ansvarlig
+        const unpaidPosteringer = await Postering.find({
+            $or: [
+                { betalt: { $exists: false } },
+                { betalt: null }
+            ]
+        }).populate({
+            path: 'opgave',
+            populate: {
+                path: 'kunde'
+            }
+        });
+        
+        // Filter posteringer where opgave exists and user is ansvarlig
+        const unpaidOpgaverMap = new Map();
+        unpaidPosteringer.forEach(postering => {
+            if (postering.opgave && postering.opgave.ansvarlig) {
+                const isUserAnsvarlig = postering.opgave.ansvarlig.some(
+                    ansvarlig => String(ansvarlig._id) === String(userId)
+                );
+                if (isUserAnsvarlig) {
+                    const opgaveId = String(postering.opgave._id || postering.opgave.id);
+                    if (!unpaidOpgaverMap.has(opgaveId)) {
+                        unpaidOpgaverMap.set(opgaveId, postering.opgave);
+                    }
+                }
+            }
+        });
+        
+        // Group unpaid posteringer by opgaveID for easy lookup
+        const posteringerByOpgaveId = new Map();
+        unpaidPosteringer.forEach(postering => {
+          if (postering.opgave && postering.opgave.ansvarlig) {
+            const isUserAnsvarlig = postering.opgave.ansvarlig.some(
+              ansvarlig => String(ansvarlig._id) === String(userId)
+            );
+            if (isUserAnsvarlig) {
+              const opgaveId = String(postering.opgave._id || postering.opgave.id);
+              if (!posteringerByOpgaveId.has(opgaveId)) {
+                posteringerByOpgaveId.set(opgaveId, []);
+              }
+              posteringerByOpgaveId.get(opgaveId).push(postering);
+            }
+          }
+        });
+        
+        // Combine done and unpaid opgaver, avoiding duplicates
+        const allOpgaverMap = new Map();
+        doneOpgaver.forEach(opgave => {
+          const opgaveId = String(opgave._id);
+          // Attach posteringer if they exist
+          const posteringer = posteringerByOpgaveId.get(opgaveId);
+          if (posteringer) {
+            allOpgaverMap.set(opgaveId, {
+              ...opgave.toObject ? opgave.toObject() : opgave,
+              _posteringer: posteringer
+            });
+          } else {
+            allOpgaverMap.set(opgaveId, opgave.toObject ? opgave.toObject() : opgave);
+          }
+        });
+        unpaidOpgaverMap.forEach((opgave, opgaveId) => {
+          if (!allOpgaverMap.has(opgaveId)) {
+            // Attach posteringer if they exist
+            const posteringer = posteringerByOpgaveId.get(opgaveId);
+            if (posteringer) {
+              allOpgaverMap.set(opgaveId, {
+                ...(opgave.toObject ? opgave.toObject() : opgave),
+                _posteringer: posteringer
+              });
+            } else {
+              allOpgaverMap.set(opgaveId, opgave.toObject ? opgave.toObject() : opgave);
+            }
+          }
+        });
+        
+        const allOpgaver = Array.from(allOpgaverMap.values());
+        allOpgaver.sort((a, b) => {
+          const aDate = a.opgaveAfsluttet || a.createdAt;
+          const bDate = b.opgaveAfsluttet || b.createdAt;
+          return new Date(bDate) - new Date(aDate);
+        });
+        
+        console.log(`Found ${allOpgaver.length} closed tasks for user ${userId}`);
+        res.status(200).json(allOpgaver);
+    } catch (error) {
+        console.error("Error in getOpgaverPersonalClosed:", error);
+        res.status(500).json({ error: error.message });
+    }
+};
+
 export {
     getOpgaver,
     getOpgaverPopulateKunder,
@@ -493,5 +648,7 @@ export {
     getOpgaverPlanned,
     getOpgaverDone,
     getOpgaverArchived,
-    getOpgaverDeleted
+    getOpgaverDeleted,
+    getOpgaverPersonalCurrent,
+    getOpgaverPersonalClosed
 }

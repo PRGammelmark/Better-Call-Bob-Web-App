@@ -191,14 +191,6 @@
     }   
 }
 
-@media screen and (display-mode: standalone) {
-    /* .header {
-        min-height: 100px;
-        max-height: 100px;
-        padding-top: 57px;
-    } */
-}
-
 /* === Dynamisk safe area til PWA === */
 @supports (padding-top: env(safe-area-inset-top)) {
     .header {

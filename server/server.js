@@ -33,6 +33,8 @@ import path from 'path';
 import { fileURLToPath } from "url";
 import elementorWebhookRouter from "./routes/elementorWebhook.js";
 import notifikationerRouter from "./routes/notifikationer.js";
+import remindersRouter from "./routes/reminders.js";
+import { startReminderScheduler } from './utils/reminderScheduler.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -57,7 +59,10 @@ const allowedOrigins = [
     'https://handymanfrederiksberg.dk',  // Website
     'http://localhost:3000',             // Development
     'http://localhost:5173',             // Development
-    'http://localhost:5174'              // Development
+    'http://localhost:5174',             // Development
+    'http://192.168.1.11:3000',          // Development
+    'http://192.168.1.11:5173',          // Development
+    'http://192.168.1.11:5174'           // Development
 ];
 
 const corsOptions = {
@@ -152,6 +157,7 @@ app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 app.use("/api/webhook", elementorWebhookRouter);
 app.use("/api/notifikationer", notifikationerRouter);
+app.use("/api/reminders", remindersRouter);
 app.use('/api/cleanup', (req, res) => {
     requestedCleanup();
     res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });
@@ -166,7 +172,9 @@ app.use('/api/ai', aiRoutes);
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
     .then(async () => {     
-        app.listen(port, () => {
+        // Start reminder scheduler after DB connection
+        startReminderScheduler();
+        app.listen(port, "0.0.0.0", () => {
             console.log(`App running, connected to database, and listening on port ${port}.`)
         });
     })

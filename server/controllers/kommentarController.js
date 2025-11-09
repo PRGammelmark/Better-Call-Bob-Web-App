@@ -36,8 +36,8 @@ const createKommentar = async (req, res) => {
         const bruger = await Bruger.findById(req.user._id);
         const opgave = await Opgave.findById(opgaveID);
         const kunde = await Kunde.findById(opgave.kundeID);
-        await opretNotifikation({ modtagerID: opgave.ansvarlige, udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
-        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
+        await opretNotifikation({ modtagerID: opgave.ansvarlige, udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}`, erVigtig: true })
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOprettet", titel: `${bruger.navn} har tilføjet en ny kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}`, erVigtig: true })
 
         res.status(200).json(kommentar)
     } catch (error) {
@@ -83,9 +83,9 @@ const updateKommentar = async (req,res) => {
     const ansvarlige = opgave.ansvarlig;
     const kunde = await Kunde.findById(opgave.kundeID);
     for (const ansvarlig of ansvarlige) {
-        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se flere detaljer.`, link: `/opgave/${opgave._id}` })
+        await opretNotifikation({ modtagerID: ansvarlig._id, udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se flere detaljer.`, link: `/opgave/${opgave._id}`, erVigtig: true })
     }
-    await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}` })
+    await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "kommentarOpdateret", titel: `${bruger.navn} har opdateret en kommentar på opgaven på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, besked: `Gå til opgavesiden for at se eller redigere i kommentaren.`, link: `/opgave/${opgave._id}`, erVigtig: true })
 
     res.status(200).json(kommentar)
 }

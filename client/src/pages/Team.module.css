@@ -1,6 +1,7 @@
 .teamContainer {
     overflow-x: hidden;
-    padding-bottom: 200px;
+    padding-bottom: 100px;
+    padding-top: 20px;
 }
 
 .adminDiv, .medarbejdereDiv {
@@ -164,6 +165,10 @@
 }
 
 @media screen and (display-mode: standalone) {
+    .teamContainer {
+        padding-top: 0px;
+    }
+    
     .heading {
         display: none;
     }

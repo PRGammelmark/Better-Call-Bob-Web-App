@@ -1,3 +1,7 @@
+.content {
+    padding-top: 20px;
+}
+
 .heading {
     font-family: "OmnesBold";
     margin-bottom: 50px;
@@ -95,10 +99,6 @@
 @media screen and (max-width: 750px) {
     .heading {
         display: none;
-    }
-
-    .content {
-        padding-top: 40px;
     }
 
 }

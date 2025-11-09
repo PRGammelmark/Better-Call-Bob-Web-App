@@ -24,7 +24,7 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
-import { ImagePlus, RotateCcw, Trash2, Edit, ArrowRightToLine, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, ArrowLeftRight, Clock5, UserRoundPlus, Send, CircleAlert } from 'lucide-react';
+import { ImagePlus, RotateCcw, Trash2, Edit, ArrowRightToLine, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, ArrowLeftRight, Clock5, UserRoundPlus, Send, CircleAlert, Archive, CalendarClock, ChevronDown } from 'lucide-react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../firebase.js'
 import imageCompression from 'browser-image-compression';
@@ -37,6 +37,7 @@ import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
 import * as beregn from '../utils/beregninger.js'
 import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
 import { useOpgave } from '../context/OpgaveContext.jsx'
+import SaetReminderModal from '../components/modals/SaetReminderModal.jsx'
 
 const ÅbenOpgave = () => {
     
@@ -104,6 +105,8 @@ const ÅbenOpgave = () => {
     const [opgaveBilleder, setOpgaveBilleder] = useState([])
     const [uploadingImages, setUploadingImages] = useState([])
     const [åbnBillede, setÅbnBillede] = useState("")
+    const [openReminderModal, setOpenReminderModal] = useState(false)
+    const [existingReminder, setExistingReminder] = useState(null)
     const [imageIndex, setImageIndex] = useState(null)
     const [isCompressingVideo, setIsCompressingVideo] = useState(false)
     const [openBetalViaMobilePayAnmodningModal, setOpenBetalViaMobilePayAnmodningModal] = useState(false)
@@ -208,6 +211,23 @@ const ÅbenOpgave = () => {
           setSelectedDate(dayjs(opgave.onsketDato));
         }
       }, [opgave]);
+
+    // Fetch reminders for this opgave
+    useEffect(() => {
+        const fetchReminder = async () => {
+            try {
+                const brugerID = user.id || user._id;
+                const res = await axios.get(`${import.meta.env.VITE_API_URL}/reminders/bruger/${brugerID}`, {
+                    headers: { Authorization: `Bearer ${user.token}` }
+                });
+                const reminder = res.data.find(r => r.opgaveID === opgaveID && r.status === 'pending');
+                setExistingReminder(reminder || null);
+            } catch (e) {
+                // ignore
+            }
+        };
+        if (user?.token && opgaveID) fetchReminder();
+    }, [user, opgaveID]);
 
     // useEffect(() => {
     //     if(opgave?.kundeID){
@@ -596,6 +616,27 @@ const ÅbenOpgave = () => {
         })
         .catch(error => {
             console.error('Error deleting opgave:', error);
+        });
+    }
+
+    function arkiverOpgave() {
+        const confirmed = window.confirm("Er du sikker på, at du vil arkivere denne opgave?");
+        if (!confirmed) return;
+
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            isArchived: new Date().toISOString()
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Opgave arkiveret:', response.data);
+            navigate(-1);
+        })
+        .catch(error => {
+            console.error('Error archiving opgave:', error);
+            alert("Kunne ikke arkivere opgave.");
         });
     }
 
@@ -1050,31 +1091,57 @@ const ÅbenOpgave = () => {
                 {user.isAdmin && (
                     <>
                         <div className={ÅbenOpgaveCSS.sletOpgaveKnap}>
-                        {user.isAdmin && (
-                            <PopUpMenu
-                                actions={[
-                                // Kun vis "Slet" hvis opgaven ikke er slettet og ikke markeret færdig
-                                !opgave.isDeleted && !opgave.markeretSomFærdig && !opgave.opgaveAfsluttet && {
-                                    icon: <Trash2 />,
-                                    label: "Slet opgave",
-                                    onClick: () => setSletOpgaveModal(true),
-                                },
-                                // Kun vis "Genåbn" hvis opgaven er slettet
-                                opgave.isDeleted && {
-                                    icon: <RotateCcw />,
-                                    label: "Genåbn opgave",
-                                    onClick: () => setGenåbnOpgaveModal(true),
-                                },
-                                opgave.opgaveAfsluttet && {
-                                    icon: <RotateCcw />,
-                                    label: "Genåbn opgave",
-                                    onClick: () => setGenåbnOpgaveModal(true),
-                                },
-                                ].filter(Boolean)} // fjerner "false" entries
-                            />
-                        )}
-                            {/* {!opgave.isDeleted && !opgave.markeretSomFærdig && <button className={ÅbenOpgaveCSS.sletOpgave} onClick={() => setSletOpgaveModal(true)}>Slet</button>}
-                            {opgave.isDeleted && <button className={ÅbenOpgaveCSS.genåbnOpgave} onClick={() => setGenåbnOpgaveModal(true)}>Genåbn opgave</button>} */}
+                            <div className={ÅbenOpgaveCSS.topActionsContainer}>
+                                {!færdiggjort && (
+                                    <div className={ÅbenOpgaveCSS.statusSelectWrapperDesktop}>
+                                        <select
+                                            value={status}
+                                            onChange={opdaterOpgavestatus}
+                                            className={ÅbenOpgaveCSS.opgaveStatusSelect}
+                                        >
+                                            <option value="Modtaget">Opgave modtaget</option>
+                                            <option value="Afventer svar">Afventer svar</option>
+                                            <option value="Dato aftalt">Dato aftalt</option>
+                                        </select>
+                                        <ChevronDown className={ÅbenOpgaveCSS.chevronDownIcon} />
+                                    </div>
+                                )}
+                                {user.isAdmin && (
+                                    <PopUpMenu
+                                        actions={[
+                                        // Sæt påmindelse - vis hvis opgaven ikke er slettet og ikke arkiveret
+                                        !opgave.isDeleted && !opgave.isArchived && {
+                                            icon: <CalendarClock />,
+                                            label: existingReminder ? "Rediger påmindelse" : "Opret påmindelse",
+                                            onClick: () => setOpenReminderModal(true),
+                                        },
+                                        // Arkivér opgave - vis hvis ikke slettet, ikke markeret færdig og ikke arkiveret
+                                        !opgave.isDeleted && !opgave.markeretSomFærdig && !opgave.opgaveAfsluttet && !opgave.isArchived && {
+                                            icon: <Archive />,
+                                            label: "Arkivér opgave",
+                                            onClick: arkiverOpgave,
+                                        },
+                                        // Kun vis "Slet" hvis opgaven ikke er slettet og ikke markeret færdig
+                                        !opgave.isDeleted && !opgave.markeretSomFærdig && !opgave.opgaveAfsluttet && {
+                                            icon: <Trash2 />,
+                                            label: "Slet opgave",
+                                            onClick: () => setSletOpgaveModal(true),
+                                        },
+                                        // Kun vis "Genåbn" hvis opgaven er slettet
+                                        opgave.isDeleted && {
+                                            icon: <RotateCcw />,
+                                            label: "Genåbn opgave",
+                                            onClick: () => setGenåbnOpgaveModal(true),
+                                        },
+                                        opgave.opgaveAfsluttet && {
+                                            icon: <RotateCcw />,
+                                            label: "Genåbn opgave",
+                                            onClick: () => setGenåbnOpgaveModal(true),
+                                        },
+                                        ].filter(Boolean)} // fjerner "false" entries
+                                    />
+                                )}
+                            </div>
                         </div>
                         <Modal trigger={sletOpgaveModal} setTrigger={setSletOpgaveModal}>
                             <h2 className={ÅbenOpgaveCSS.modalHeading}>ADVARSEL!</h2>
@@ -1098,6 +1165,24 @@ const ÅbenOpgave = () => {
                             </p>
                             <button className={ModalCSS.buttonFullWidth} onClick={genåbnOpgave}>Genåbn opgave</button>
                         </Modal>
+                        <SaetReminderModal
+                            trigger={openReminderModal}
+                            setTrigger={setOpenReminderModal}
+                            opgaveID={opgaveID}
+                            existingReminder={existingReminder}
+                            onSuccess={async () => {
+                                try {
+                                    const brugerID = user.id || user._id;
+                                    const res = await axios.get(`${import.meta.env.VITE_API_URL}/reminders/bruger/${brugerID}`, {
+                                        headers: { Authorization: `Bearer ${user.token}` }
+                                    });
+                                    const reminder = res.data.find(r => r.opgaveID === opgaveID && r.status === 'pending');
+                                    setExistingReminder(reminder || null);
+                                } catch (e) {
+                                    // ignore
+                                }
+                            }}
+                        />
                     </>
                 )}
 
@@ -1177,21 +1262,16 @@ const ÅbenOpgave = () => {
                     <VisBilledeModal trigger={åbnBillede} setTrigger={setÅbnBillede} handleDeleteFile={handleDeleteFile} index={imageIndex} />
                 </form>}            
                 <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
-                    {færdiggjort ? null : <form className={`${ÅbenOpgaveCSS.opgavestatusForm} ${ÅbenOpgaveCSS.marginTop10}`}>
-                        <div className={ÅbenOpgaveCSS.mobileOpgaveStatusContainer}>
-                            <select name="opgavestatus" className={ÅbenOpgaveCSS.opgavestatus} onChange={opdaterOpgavestatus} value={status}>
+                    {færdiggjort ? null : (
+                        <div className={ÅbenOpgaveCSS.statusSelectWrapperMobile}>
+                            <select name="opgavestatus" className={ÅbenOpgaveCSS.opgaveStatusSelectMobile} onChange={opdaterOpgavestatus} value={status}>
                                 <option value="Modtaget">Opgave modtaget</option>
-                                <option value="Afventer svar">Status: Kunde kontaktet – afventer</option>
-                                <option value="Dato aftalt">Status: Dato aftalt</option>
+                                <option value="Afventer svar">Afventer svar</option>
+                                <option value="Dato aftalt">Dato aftalt</option>
                             </select>
-                            <div className={ÅbenOpgaveCSS.mobileOpgaveStatusIcon}>
-                                {status === "Modtaget" && <CircleCheck size="20px" />}
-                                {status === "Afventer svar" && <Clock5 size="20px" />}
-                                {status === "Dato aftalt" && <Handshake size="20px" />}
-                            </div>
-                            
+                            <ChevronDown className={ÅbenOpgaveCSS.chevronDownIconMobile} />
                         </div>
-                    </form>}  
+                    )}  
                 </div>
                 <div className={ÅbenOpgaveCSS.kundeinformationer}>
                     <div className={ÅbenOpgaveCSS.kolonner}>

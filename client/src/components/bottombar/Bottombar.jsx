@@ -28,6 +28,14 @@ const Bottombar = () => {
         }
     }
 
+    const handlePlusButtonClick = () => {
+        // Haptic feedback
+        if (navigator.vibrate) {
+            navigator.vibrate(10); // 10ms vibration
+        }
+        setShowPlusOptions(true);
+    }
+
   return (
     <>
     <div className={BottombarCSS.bottomBar}>
@@ -48,7 +56,7 @@ const Bottombar = () => {
             <p>Alle opgaver</p>
         </NavLink>}
         <div className={BottombarCSS.bottomBarCenterPlus}>
-            <div className={BottombarCSS.bottomBarCenterPlusButton} onClick={() => setShowPlusOptions(true)}>
+            <div className={BottombarCSS.bottomBarCenterPlusButton} onClick={handlePlusButtonClick}>
                 <Plus className={BottombarCSS.bottomBarCenterItemIcon} />
             </div>
         </div>

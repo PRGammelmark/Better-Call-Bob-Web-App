@@ -27,11 +27,16 @@ const RegistrerOpkrævningModal = ({trigger, setTrigger, postering, refetchPoste
         e.preventDefault();
 
         const economicWrapperReference = `https://restapi.e-conomic.com/invoices/booked/${fakturaNummer}`    
+        
+        const opkrævningsDato = new Date(dato);
+        // Set betalingsdato to 8 days from opkrævningsdato
+        const betalingsdato = new Date(opkrævningsDato.getTime() + 8 * 24 * 60 * 60 * 1000);
     
         const opkrævning = {
             reference: economicWrapperReference,
             metode: "faktura",
             dato: dato,
+            betalingsdato: betalingsdato,
             manueltRegistreret: true
         }
 

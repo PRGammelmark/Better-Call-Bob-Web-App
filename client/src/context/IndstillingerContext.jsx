@@ -15,7 +15,6 @@ export const IndstillingerProvider = ({ children }) => {
       try {
         const data = JSON.parse(e.data);
         setIndstillinger(data);
-        console.log("Nye indstillinger sat.")
       } catch (err) {
         console.error("Kunne ikke parse indstillinger event:", err);
       }
