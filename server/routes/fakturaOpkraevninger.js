@@ -12,6 +12,11 @@ router.post('/registrer-opkraevninger', async (req, res) => {
     
     const { posteringer, reference, metode, opkrævningsbeløb } = req.body;
 
+    // Valider at opkrævningsbeløb er med og er et gyldigt tal
+    if (opkrævningsbeløb === undefined || opkrævningsbeløb === null || isNaN(Number(opkrævningsbeløb))) {
+        return res.status(400).json({ error: 'Opkrævningsbeløb skal altid være med og være et gyldigt tal.' });
+    }
+
             const opkrævningsDato = new Date();
             // Set betalingsdato to 8 days from opkrævningsdato if metode is 'faktura'
             const betalingsdato = metode === 'faktura' 
@@ -23,7 +28,7 @@ router.post('/registrer-opkraevninger', async (req, res) => {
                 if (dbPostering) {
                     const opkrævning = {
                         reference: reference,
-                        opkrævningsbeløb: opkrævningsbeløb,
+                        opkrævningsbeløb: Number(opkrævningsbeløb),
                         metode: metode,
                         dato: opkrævningsDato
                     };

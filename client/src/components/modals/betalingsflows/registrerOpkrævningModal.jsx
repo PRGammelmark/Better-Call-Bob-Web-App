@@ -31,9 +31,15 @@ const RegistrerOpkrævningModal = ({trigger, setTrigger, postering, refetchPoste
         const opkrævningsDato = new Date(dato);
         // Set betalingsdato to 8 days from opkrævningsdato
         const betalingsdato = new Date(opkrævningsDato.getTime() + 8 * 24 * 60 * 60 * 1000);
+        
+        // Beregn opkrævningsbeløb: totalPris inkl. moms minus allerede betalte beløb
+        const totalPrisInklMoms = (postering.totalPris || 0) * 1.25;
+        const alleredeBetaltBeløb = postering.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
+        const opkrævningsbeløb = totalPrisInklMoms - alleredeBetaltBeløb;
     
         const opkrævning = {
             reference: economicWrapperReference,
+            opkrævningsbeløb: opkrævningsbeløb,
             metode: "faktura",
             dato: dato,
             betalingsdato: betalingsdato,

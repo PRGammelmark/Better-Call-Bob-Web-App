@@ -173,6 +173,15 @@ const updatePostering = async (req,res) => {
         return res.status(400).json({error: 'Ingen posteringer fundet med et matchende ID.'})
     }
 
+    // Valider at alle opkrævninger har et opkrævningsbeløb
+    if (req.body.opkrævninger && Array.isArray(req.body.opkrævninger)) {
+        for (const opkrævning of req.body.opkrævninger) {
+            if (opkrævning.opkrævningsbeløb === undefined || opkrævning.opkrævningsbeløb === null || isNaN(Number(opkrævning.opkrævningsbeløb))) {
+                return res.status(400).json({error: 'Alle opkrævninger skal have et gyldigt opkrævningsbeløb.'})
+            }
+        }
+    }
+
     const bruger = await Bruger.findById(req.user._id);
     const gammelPostering = await Postering.findById(id);
     const postering = await Postering.findOneAndUpdate({_id: id}, req.body, { new: true })

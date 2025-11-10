@@ -92,18 +92,19 @@ const OpgaverHurtigtAdminOverblik = () => {
     // Set filters based on tab and warning type
     if (tabId === "new" || tabId === "open") {
       // For new/open tabs, use timeWarning filter
-      // Note: "warning" shows both yellow and red, but it's the best we can do with current filters
-      filters = { timeWarning: "warning" }
+      // Red warning = over 24 timer, Yellow warning = over 12 timer
+      if (warningType === "red") {
+        filters = { timeWarning: "over24timer" }
+      } else if (warningType === "yellow") {
+        filters = { timeWarning: "over12timer" }
+      }
     } else if (tabId === "planned") {
       if (warningType === "red") {
         // Red warning: no visits at all
         filters = { besøg: "noVisits" }
       } else if (warningType === "yellow") {
-        // Yellow warning: has visits but no future visits
-        // This is tricky - we'll use "hasVisits" and let user see all, or we could add a custom filter
-        // For now, let's use "hasVisits" which will show tasks with visits (but not filter out future ones)
-        // Actually, there's no direct filter for "has visits but no future", so we'll just show all with visits
-        filters = { besøg: "hasVisits" }
+        // Yellow warning: has visits but no future visits (mangler opfølgning)
+        filters = { besøg: "missingFollowup" }
       }
     } else if (tabId === "unpaid") {
       if (warningType === "red") {
@@ -277,12 +278,26 @@ const OpgaverHurtigtAdminOverblik = () => {
               })
               
               const hasAnyVisits = opgaveBesøg.length > 0
-              const hasFutureVisits = opgaveBesøg.some(besøg => dayjs(besøg.datoTidFra).isAfter(now))
+              
+              // Check for future/ongoing visits (visits that end after now)
+              const futureBesøg = opgaveBesøg.filter(besøg => {
+                const besøgSlutter = dayjs(besøg.datoTidTil)
+                return besøgSlutter.isAfter(now)
+              })
+              
+              // Check for visits today
+              const startOfDay = now.startOf('day')
+              const endOfDay = now.endOf('day')
+              const visitsToday = opgaveBesøg.filter(besøg => 
+                dayjs(besøg.datoTidFra).isBetween(startOfDay, endOfDay, null, '[]')
+              )
+              const hasVisitsToday = visitsToday.length > 0
               
               // Red warning: no visits at all
               const hardWarning = !hasAnyVisits
-              // Yellow warning: has past visits but no future
-              const softWarning = hasAnyVisits && !hasFutureVisits
+              // Yellow warning: has visits but no future/ongoing visits (and no visits today)
+              // This matches the logic in OpgaveListings.jsx
+              const softWarning = hasAnyVisits && futureBesøg.length === 0 && !hasVisitsToday
               
               if (hardWarning) {
                 redWarnings++

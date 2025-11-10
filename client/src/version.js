@@ -14,6 +14,17 @@
 // 
 
 const changes = [{
+    version: "3.8.2",
+    date: "10. november 2025",
+    changes: [
+        "Rettede fejl i opgavefiltreringen under 'Planlagte opgaver', der gjorde, at den ikke optalte antallet korrekt.",
+        "Nu kan man filtrere nye og åbne opgaver efter deres specifikke advarselsmærkater. Det kunne man ikke før.",
+        "Fjernede 'sidste besøg'-filter fra 'Planlagte opgaver', og tilføjede i stedet 'Besøg (først - sidst)' og 'Besøg (sidst - først)'. Tilføjede desuden også et filter for 'Mangler opfølgning'.",
+        "Tryk på advarselsmærkaterne på forsidens overblikskort leder nu til de rigtige filtre på 'Alle opgaver'-siden.",
+        "Manuel registrering af opkrævninger understøttede ikke beløbsregistrering, hvilket førte til forkerte kategoriseringer af de pårørte opgaver. Dette er nu rettet.",
+        "Smårettelser og -justeringer."
+    ]
+},{
     version: "3.8.1",
     date: "9. november 2025",
     changes: [

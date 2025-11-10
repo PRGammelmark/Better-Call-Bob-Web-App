@@ -279,12 +279,26 @@ const OpgaveTabs = ({ view = "admin" }) => {
               
               const hasAnyVisits = opgaveBesøg.length > 0;
               const now = dayjs();
-              const hasFutureVisits = opgaveBesøg.some(besøg => dayjs(besøg.datoTidFra).isAfter(now));
+              
+              // Check for future/ongoing visits (visits that end after now)
+              const futureBesøg = opgaveBesøg.filter(besøg => {
+                const besøgSlutter = dayjs(besøg.datoTidTil);
+                return besøgSlutter.isAfter(now);
+              });
+              
+              // Check for visits today
+              const startOfDay = now.startOf('day');
+              const endOfDay = now.endOf('day');
+              const visitsToday = opgaveBesøg.filter(besøg => 
+                dayjs(besøg.datoTidFra).isBetween(startOfDay, endOfDay, null, '[]')
+              );
+              const hasVisitsToday = visitsToday.length > 0;
               
               // Red warning: no visits at all
               const hardWarning = !hasAnyVisits;
-              // Yellow warning: has past visits but no future
-              const softWarning = hasAnyVisits && !hasFutureVisits;
+              // Yellow warning: has visits but no future/ongoing visits (and no visits today)
+              // This matches the logic in OpgaveListings.jsx
+              const softWarning = hasAnyVisits && futureBesøg.length === 0 && !hasVisitsToday;
               
               if (hardWarning) redWarnings++;
               else if (softWarning) yellowWarnings++;

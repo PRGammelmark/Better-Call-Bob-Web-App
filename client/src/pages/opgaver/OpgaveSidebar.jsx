@@ -22,7 +22,8 @@ const OpgaveSidebar = ({ activeTab, onFilterChange, onSortChange, filters, sortO
           ],
           timeWarning: [
             { value: "all", label: "Alle" },
-            { value: "warning", label: "Med advarsler" },
+            { value: "over12timer", label: "Over 12 timer" },
+            { value: "over24timer", label: "Over 24 timer" },
             { value: "noWarning", label: "Uden advarsler" },
           ],
         };
@@ -35,6 +36,7 @@ const OpgaveSidebar = ({ activeTab, onFilterChange, onSortChange, filters, sortO
             { value: "noVisits", label: "Uden besøg" },
             { value: "visitsToday", label: "Besøg i dag" },
             { value: "visitsFuture", label: "Fremtidige besøg" },
+            { value: "missingFollowup", label: "Mangler opfølgning" },
           ],
           kundeType: [
             { value: "all", label: "Alle kunder" },
@@ -86,7 +88,8 @@ const OpgaveSidebar = ({ activeTab, onFilterChange, onSortChange, filters, sortO
       case "current":
         return [
           { value: "nextVisit", label: "Næste besøg" },
-          { value: "lastVisit", label: "Sidste besøg" },
+          { value: "visitsFirst", label: "Besøg (først - sidst)" },
+          { value: "visitsLast", label: "Besøg (sidst - først)" },
           { value: "name", label: "Navn (A-Z)" },
           { value: "nameDesc", label: "Navn (Z-A)" },
         ];

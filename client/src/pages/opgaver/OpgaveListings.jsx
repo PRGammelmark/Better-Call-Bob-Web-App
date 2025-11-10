@@ -207,9 +207,12 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
     // Check if there are any visits at all
     const hasAnyVisits = opgaveBesøg.length > 0;
     
-    // Get future visits
+    // Get future visits and ongoing visits (visits that end after now)
     const futureBesøg = opgaveBesøg
-      .filter(besøg => dayjs(besøg.datoTidFra).isAfter(now))
+      .filter(besøg => {
+        const besøgSlutter = dayjs(besøg.datoTidTil);
+        return besøgSlutter.isAfter(now);
+      })
       .sort((a, b) => dayjs(a.datoTidFra).diff(dayjs(b.datoTidFra)));
 
     const visitsToday = opgaveBesøg
@@ -240,13 +243,29 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
       ? { date: pastBesøg[0].datoTidFra, id: pastBesøg[0]._id }
       : null;
     
+    // Get first and last visit (by date, not filtered by time)
+    const sortedByDate = [...opgaveBesøg].sort((a, b) => dayjs(a.datoTidFra).diff(dayjs(b.datoTidFra)));
+    const firstVisit = sortedByDate.length > 0 
+      ? { date: sortedByDate[0].datoTidFra, id: sortedByDate[0]._id }
+      : null;
+    const lastVisitByDate = sortedByDate.length > 0 
+      ? { date: sortedByDate[sortedByDate.length - 1].datoTidFra, id: sortedByDate[sortedByDate.length - 1]._id }
+      : null;
+    
+    // Check if missing followup: has visits but no future/ongoing visits (and no visits today)
+    // futureBesøg includes both future visits and ongoing visits (visits that end after now)
+    const missingFollowup = hasAnyVisits && futureBesøg.length === 0 && !hasVisitsToday;
+    
     return {
       nextVisit,
       lastVisit,
+      firstVisit,
+      lastVisitByDate,
       hasAnyVisits,
       hasVisitsToday,
       hasVisitsNow,
-      hasFutureVisits: visitsAfterToday.length > 0
+      hasFutureVisits: visitsAfterToday.length > 0,
+      missingFollowup
     };
   };
 
@@ -284,13 +303,13 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
       if (filters.timeWarning) {
         filtered = filtered.filter(opgave => {
           const hoursSinceReceived = dayjs().diff(dayjs(opgave.createdAt), 'hour');
-          const softWarning = hoursSinceReceived > 12;
-          const hardWarning = hoursSinceReceived > 24;
           
-          if (filters.timeWarning === "warning") {
-            return softWarning || hardWarning;
+          if (filters.timeWarning === "over12timer") {
+            return hoursSinceReceived > 12 && hoursSinceReceived < 24;
+          } else if (filters.timeWarning === "over24timer") {
+            return hoursSinceReceived > 24;
           } else if (filters.timeWarning === "noWarning") {
-            return !softWarning && !hardWarning;
+            return hoursSinceReceived < 12;
           }
           return true;
         });
@@ -311,6 +330,8 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             return visitInfo.hasVisitsToday;
           } else if (filters.besøg === "visitsFuture") {
             return visitInfo.hasFutureVisits;
+          } else if (filters.besøg === "missingFollowup") {
+            return visitInfo.missingFollowup;
           }
           return true;
         });
@@ -420,45 +441,58 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
       }
 
       if (selectedTab.id === "planned" || selectedTab.id === "current") {
-        if (sortOption === "nextVisit" || sortOption === "lastVisit") {
+        if (sortOption === "nextVisit") {
           const aVisitInfo = findNextVisit(a._id);
           const bVisitInfo = findNextVisit(b._id);
           
-          if (sortOption === "nextVisit") {
-            // For "nextVisit" sorting:
-            // - Opgaver with future visits come first, sorted by next visit date
-            // - Opgaver with only past visits come last, sorted by last visit date (most recent first)
-            const aHasFuture = aVisitInfo.nextVisit !== null;
-            const bHasFuture = bVisitInfo.nextVisit !== null;
-            
-            // If one has future visits and the other doesn't, the one with future visits comes first
-            if (aHasFuture && !bHasFuture) return -1;
-            if (!aHasFuture && bHasFuture) return 1;
-            
-            // Both have future visits: sort by next visit date (earliest first)
-            if (aHasFuture && bHasFuture) {
-              return dayjs(aVisitInfo.nextVisit.date).diff(dayjs(bVisitInfo.nextVisit.date));
-            }
-            
-            // Both have only past visits: sort by last visit date (most recent first, so they appear at the end)
-            const aLastDate = aVisitInfo.lastVisit?.date || null;
-            const bLastDate = bVisitInfo.lastVisit?.date || null;
-            
-            if (!aLastDate && !bLastDate) return 0;
-            if (!aLastDate) return 1;
-            if (!bLastDate) return -1;
-            // Sort descending (most recent last visit first) so they appear at the end
-            return dayjs(bLastDate).diff(dayjs(aLastDate));
-          } else {
-            // For "lastVisit" sorting: use last visit, fallback to next visit
-            const aDate = aVisitInfo.lastVisit?.date || aVisitInfo.nextVisit?.date || null;
-            const bDate = bVisitInfo.lastVisit?.date || bVisitInfo.nextVisit?.date || null;
-            
-            if (!aDate && !bDate) return 0;
-            if (!aDate) return 1;
-            if (!bDate) return -1;
-            return dayjs(aDate).diff(dayjs(bDate));
+          // For "nextVisit" sorting:
+          // - Opgaver with future/ongoing visits come first, sorted by next visit date
+          // - Opgaver with only past visits come last, sorted by last visit date (most recent first)
+          const aHasFuture = aVisitInfo.nextVisit !== null;
+          const bHasFuture = bVisitInfo.nextVisit !== null;
+          
+          // If one has future visits and the other doesn't, the one with future visits comes first
+          if (aHasFuture && !bHasFuture) return -1;
+          if (!aHasFuture && bHasFuture) return 1;
+          
+          // Both have future visits: sort by next visit date (earliest first)
+          if (aHasFuture && bHasFuture) {
+            return dayjs(aVisitInfo.nextVisit.date).diff(dayjs(bVisitInfo.nextVisit.date));
           }
+          
+          // Both have only past visits: sort by last visit date (most recent first, so they appear at the end)
+          const aLastDate = aVisitInfo.lastVisit?.date || null;
+          const bLastDate = bVisitInfo.lastVisit?.date || null;
+          
+          if (!aLastDate && !bLastDate) return 0;
+          if (!aLastDate) return 1;
+          if (!bLastDate) return -1;
+          // Sort descending (most recent last visit first) so they appear at the end
+          return dayjs(bLastDate).diff(dayjs(aLastDate));
+        } else if (sortOption === "visitsFirst") {
+          // Sort by last visit date (earliest last visit first, ascending)
+          const aVisitInfo = findNextVisit(a._id);
+          const bVisitInfo = findNextVisit(b._id);
+          
+          const aDate = aVisitInfo.lastVisitByDate?.date || null;
+          const bDate = bVisitInfo.lastVisitByDate?.date || null;
+          
+          if (!aDate && !bDate) return 0;
+          if (!aDate) return 1;
+          if (!bDate) return -1;
+          return dayjs(aDate).diff(dayjs(bDate));
+        } else if (sortOption === "visitsLast") {
+          // Sort by last visit date (latest last visit first, descending)
+          const aVisitInfo = findNextVisit(a._id);
+          const bVisitInfo = findNextVisit(b._id);
+          
+          const aDate = aVisitInfo.lastVisitByDate?.date || null;
+          const bDate = bVisitInfo.lastVisitByDate?.date || null;
+          
+          if (!aDate && !bDate) return 0;
+          if (!aDate) return 1;
+          if (!bDate) return -1;
+          return dayjs(bDate).diff(dayjs(aDate));
         } else if (sortOption === "name" || sortOption === "nameDesc") {
           const aName = (a?.kunde?.CVR || a?.kunde?.virksomhed) ? (a?.kunde?.virksomhed || "") : (a?.kunde?.navn || (a?.kunde?.fornavn + " " + a?.kunde?.efternavn) || "");
           const bName = (b?.kunde?.CVR || b?.kunde?.virksomhed) ? (b?.kunde?.virksomhed || "") : (b?.kunde?.navn || (b?.kunde?.fornavn + " " + b?.kunde?.efternavn) || "");
