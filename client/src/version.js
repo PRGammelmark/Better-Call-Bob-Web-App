@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.8.4",
+    date: "10. november 2025",
+    changes: [
+        "Postering-menuen vil nu altid åbne op i sin grundmenu, i stedet for i en undermenu hvis den før i samme sessionhar været åbnet og navigeret i.",
+    ]
+},{
     version: "3.8.3",
     date: "10. november 2025",
     changes: [

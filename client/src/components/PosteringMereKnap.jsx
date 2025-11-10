@@ -37,6 +37,7 @@ const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering
         setOpenMenuForPosteringID(null);
         handleClose();
     } else {
+        setUndermenuValg(null);
         setOpen(true);
         setOpenMenuForPosteringID(postering._id);
     }
