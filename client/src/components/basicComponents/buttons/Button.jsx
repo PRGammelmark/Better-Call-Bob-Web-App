@@ -9,7 +9,8 @@ const Button = ({
   variant = "",
   disabled = false,
   marginTop = 0,
-  marginBottom = 0
+  marginBottom = 0,
+  style = {}
 }) => {
     const variantClass = variant ? ButtonStyles[variant] : "";
 
@@ -19,7 +20,7 @@ const Button = ({
       onClick={onClick} 
       className={`${ButtonStyles.button} ${variantClass}`} 
       disabled={disabled}
-      style={{marginTop: marginTop, marginBottom: marginBottom}}
+      style={{marginTop: marginTop, marginBottom: marginBottom, ...style}}
     >
       {children}
     </button>

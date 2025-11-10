@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.8.3",
+    date: "10. november 2025",
+    changes: [
+        "Implementerede et automatisk fakturabetalingstjek på alle posteringer, der har opkrævninger via faktura. Tjekket kører kl. 03:00 hver nat, og vil underrette administratorer om nye betalinger via en notifikation.",
+    ]
+},{
     version: "3.8.2",
     date: "10. november 2025",
     changes: [

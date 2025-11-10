@@ -35,6 +35,8 @@ import elementorWebhookRouter from "./routes/elementorWebhook.js";
 import notifikationerRouter from "./routes/notifikationer.js";
 import remindersRouter from "./routes/reminders.js";
 import { startReminderScheduler } from './utils/reminderScheduler.js';
+import { natligFakturaBetalingTjek } from './utils/natligFakturaBetalingTjek.js';
+import fakturaBetalingstjekRoutes from "./routes/fakturaBetalingstjek.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -158,6 +160,7 @@ app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 app.use("/api/webhook", elementorWebhookRouter);
 app.use("/api/notifikationer", notifikationerRouter);
 app.use("/api/reminders", remindersRouter);
+app.use("/api/faktura-betalingstjek", fakturaBetalingstjekRoutes);
 app.use('/api/cleanup', (req, res) => {
     requestedCleanup();
     res.status(200).json({ message: 'Papirkurv er blevet ryddet.' });
@@ -174,6 +177,21 @@ mongoose.connect(process.env.MONGO_URI)
     .then(async () => {     
         // Start reminder scheduler after DB connection
         startReminderScheduler();
+        
+        // ===== Tjekket herunder kører på Render fra cron.js filen =====
+        // // Start natligt fakturabetalingstjek kl. 03.00 hver nat
+        // // Cron format: minutter timer dag måned ugedag
+        // // '0 3 * * *' = kl. 03:00 hver dag
+        // cron.schedule('0 3 * * *', async () => {
+        //     console.log('⏰ Kører natligt fakturabetalingstjek (kl. 03:00)...');
+        //     await natligFakturaBetalingTjek();
+        // }, {
+        //     scheduled: true,
+        //     timezone: "Europe/Copenhagen"
+        // });
+
+        // console.log('✅ Fakturabetalingstjek planlagt til kl. 03:00 hver nat');
+        
         app.listen(port, "0.0.0.0", () => {
             console.log(`App running, connected to database, and listening on port ${port}.`)
         });

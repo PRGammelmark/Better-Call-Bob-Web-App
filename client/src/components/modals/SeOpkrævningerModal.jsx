@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Modal from '../Modal.jsx'
 import Styles from './SeOpkrævningerModal.module.css'
 import { useAuthContext } from '../../hooks/useAuthContext.js'
@@ -10,6 +10,31 @@ const SeOpkrævningerModal = (props) => {
     const [opkrævninger, setOpkrævninger] = useState(props.postering.opkrævninger);
     const [senesteOpkrævning, setSenesteOpkrævning] = useState(props.postering.opkrævninger.sort((a, b) => new Date(b.dato) - new Date(a.dato))[0]);
     const { user } = useAuthContext();
+
+    // Beregn om posteringen er fuldt betalt
+    // 0 = postering ikke betalt
+    // 1 = postering delvist betalt
+    // 2 = postering helt betalt
+    // 3 = faktura sendt
+    const posteringBetalt = useMemo(() => {
+        let status = 0;
+        const posteringTotalPris = props.postering.totalPris * 1.25;
+        const betalingerSum = props.postering?.betalinger?.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0) || 0;
+        if(betalingerSum > 0) {
+            if(betalingerSum < posteringTotalPris) {
+                status = 1;
+            } else {
+                status = 2;
+            }
+        } else {
+            if(props.postering?.opkrævninger?.length > 0 && props.postering.opkrævninger.some(opkrævning => opkrævning.metode === 'faktura')) {
+                status = 3;
+            } else {
+                status = 0;
+            }
+        }
+        return status;
+    }, [props.postering.totalPris, props.postering.betalinger, props.postering.opkrævninger]);
 
     const economicHeaders = {
         'Accept': 'application/json',
@@ -170,7 +195,7 @@ const SeOpkrævningerModal = (props) => {
                 </>}
             </div>
             {senesteOpkrævning?.metode === 'faktura' && <>
-                {!senesteOpkrævning?.betalt && (senesteOpkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080'}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} onClick={() => tjekBetaling(senesteOpkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15}}/></button>)}
+                {!senesteOpkrævning?.betalt && posteringBetalt !== 2 && (senesteOpkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080'}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} onClick={() => tjekBetaling(senesteOpkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15}}/></button>)}
                 <div className={Styles.fakturaKnapperWrapper}>
                     <button className={Styles.fakturaKnap} onClick={() => seFaktura(senesteOpkrævning)}>Se faktura <Search style={{width: 15, height: 15}}/></button>
                     {!senesteOpkrævning?.fakturaSendtIgen ? <button className={Styles.fakturaKnap} onClick={() => sendFakturaIgen(senesteOpkrævning)}>Send igen <Send style={{width: 15, height: 15}}/></button> : <button className={Styles.fakturaKnap} disabled style={{cursor: 'default'}}>Sendt <Check style={{width: 15, height: 15}}/></button>}
@@ -204,7 +229,7 @@ const SeOpkrævningerModal = (props) => {
                             </>}
                         </div>
                         {opkrævning?.metode === 'faktura' && <>
-                            {!opkrævning?.betalt && (opkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080', marginTop: 20}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} style={{marginTop: 20}} onClick={() => tjekBetaling(opkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15 }}/></button>)}
+                            {!opkrævning?.betalt && posteringBetalt !== 2 && (opkrævning?.tjekket ? <button className={Styles.tjekBetalingKnap} disabled style={{backgroundColor: '#c0c0c0', color: '#808080', marginTop: 20}}>Faktura ikke betalt</button> : <button className={Styles.tjekBetalingKnap} style={{marginTop: 20}} onClick={() => tjekBetaling(opkrævning)}>Tjek betaling <Coins style={{width: 15, height: 15 }}/></button>)}
                             <div className={Styles.fakturaKnapperWrapper} style={{marginTop: 10, display: 'flex', flexDirection: 'column', gap: 10}}>
                                 <button className={Styles.fakturaKnap} onClick={() => seFaktura(opkrævning)}>Se faktura <Search style={{width: 15, height: 15}}/></button>
                                 <button className={Styles.fakturaKnap} onClick={() => sendFakturaIgen(opkrævning)}>Send igen <Send style={{width: 15, height: 15}}/></button>

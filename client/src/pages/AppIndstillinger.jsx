@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
@@ -20,6 +20,7 @@ const AppIndstillinger = () => {
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
     const [maxArbejdsradius, setMaxArbejdsradius] = useState( indstillinger?.arbejdsområdeKilometerRadius )
+    const [kørerFakturaBetalingstjek, setKørerFakturaBetalingstjek] = useState(false)
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -63,6 +64,29 @@ const AppIndstillinger = () => {
         }
     }
 
+    const handleKørFakturaBetalingstjek = async () => {
+        if (window.confirm("Er du sikker på, at du vil køre fakturabetalingstjek nu? Du vil modtage en notifikation med resultatet.")) {
+            setKørerFakturaBetalingstjek(true);
+            try {
+                await axios.post(
+                    `${import.meta.env.VITE_API_URL}/faktura-betalingstjek`,
+                    {},
+                    {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    }
+                );
+                alert("Fakturabetalingstjek er startet. Du vil modtage en notifikation med resultatet når det er færdigt.");
+            } catch (error) {
+                console.error("Fejl ved kørsel af fakturabetalingstjek:", error);
+                alert(error.response?.data?.error || "Kunne ikke køre fakturabetalingstjek. Prøv igen.");
+            } finally {
+                setKørerFakturaBetalingstjek(false);
+            }
+        }
+    }
+
   return (
     <div className={Styles.pageContent}>
         <h1>App-indstillinger</h1>
@@ -95,7 +119,17 @@ const AppIndstillinger = () => {
 
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
     
-        <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>
+        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+            <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>
+            <Button 
+                onClick={handleKørFakturaBetalingstjek} 
+                disabled={kørerFakturaBetalingstjek}
+                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+                <Coins style={{ width: 16, height: 16 }} />
+                {kørerFakturaBetalingstjek ? 'Kører...' : 'Kør fakturabetalingstjek'}
+            </Button>
+        </div>
     </div>
   )
 }
