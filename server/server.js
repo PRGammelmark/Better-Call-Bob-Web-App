@@ -37,6 +37,7 @@ import remindersRouter from "./routes/reminders.js";
 import { startReminderScheduler } from './utils/reminderScheduler.js';
 import { natligFakturaBetalingTjek } from './utils/natligFakturaBetalingTjek.js';
 import fakturaBetalingstjekRoutes from "./routes/fakturaBetalingstjek.js";
+import { lazyFakturaBetalingstjek } from './middleware/lazyFakturaBetalingstjek.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -86,6 +87,9 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json({ limit: '5mb' })); // Adjust the limit as needed
 app.use(express.urlencoded({ limit: '5mb', extended: true }));
+
+// Lazy cron: Kør fakturabetalingstjek én gang om morgenen ved første request efter kl. 03:00
+app.use(lazyFakturaBetalingstjek);
 
 // Serve static files from the uploads directory
 app.use('/api/uploads', express.static('uploads'));

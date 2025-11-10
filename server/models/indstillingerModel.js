@@ -14,6 +14,10 @@ const indstillingerSchema = new mongoose.Schema({
   arbejdsområdeKilometerRadius: {
     type: Number,
     default: 20
+  },
+  sidsteFakturaBetalingstjek: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true });
 
