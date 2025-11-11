@@ -484,6 +484,25 @@ try {
   return;
 }
 
+// Registrer opkrævninger
+try {
+  const posteringerTotalPris = posteringer.reduce((acc, postering) => acc + postering.totalPris, 0);
+  const posteringerTotalPrisInklMoms = posteringerTotalPris * 1.25; // totalPris is without VAT, need to add 25% VAT
+  const alleredeBetaltBeløb = posteringer.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
+  const administrationsGebyrInklMoms = inklAdministrationsGebyr ? 49 * 1.25 : 0; // Administration fee: 49 DKK excl. VAT = 61.25 DKK incl. VAT
+  const restbeløbTilOpkrævning = posteringerTotalPrisInklMoms + administrationsGebyrInklMoms - alleredeBetaltBeløb;
+
+  await axios.post(`${import.meta.env.VITE_API_URL}/faktura-opkraevninger/registrer-opkraevninger`, {
+    posteringer: posteringer,
+    opkrævningsbeløb: restbeløbTilOpkrævning,
+    reference: bookingResponse.data.self,
+    metode: "faktura"
+  }, { headers: authHeaders });
+  console.log("✅ Opkrævninger registreret på posteringer");
+} catch (err) {
+  console.error("❌ Kunne ikke registrere opkrævning på posteringer:", err);
+}
+
 try {
   nyNotifikation(user, "admin", "Ny faktura oprettet", `Privatkunde har fået oprettet faktura.`, `/opgave/${opgaveID}`);
 
