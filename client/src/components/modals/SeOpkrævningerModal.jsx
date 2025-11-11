@@ -185,10 +185,15 @@ const SeOpkrævningerModal = (props) => {
                 </div>
             </div>
             <div className={Styles.betalingerFooter}>
-                {senesteOpkrævning?.opkrævningsbeløb != null && (
+                {user.isAdmin && senesteOpkrævning?.opkrævningsbeløb != null && (
                     <p className={Styles.beløb} style={{fontSize: 18, marginBottom: 10}}>
                         Opkrævet: {formatBeløb(senesteOpkrævning.opkrævningsbeløb)}
                     </p>
+                )}
+                {user.isAdmin && !senesteOpkrævning?.opkrævningsbeløb && (
+                    <p className={Styles.beløb} style={{fontSize: 18, marginBottom: 10}}>
+                    Opkrævningsbeløb ikke registreret.
+                </p>
                 )}
                 {senesteOpkrævning?.reference && <>
                     <p style={{fontSize: 12, color: '#808080'}}>Reference: {senesteOpkrævning?.reference}</p>

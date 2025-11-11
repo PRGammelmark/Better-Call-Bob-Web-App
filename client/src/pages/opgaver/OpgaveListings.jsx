@@ -387,8 +387,8 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                   return postering?.opkrævninger?.some(opkrævning => {
                     if (opkrævning.metode !== 'faktura') return false;
                     const opkrævningsDato = dayjs(opkrævning.dato);
-                    const dueDate = opkrævning.betalingsdato 
-                      ? dayjs(opkrævning.betalingsdato)
+                    const dueDate = (opkrævning.betalingsfrist || opkrævning.betalingsdato)
+                      ? dayjs(opkrævning.betalingsfrist || opkrævning.betalingsdato)
                       : opkrævningsDato.add(8, 'day');
                     return now.isAfter(dueDate);
                   });
@@ -534,8 +534,8 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             return postering?.opkrævninger?.some(opkrævning => {
               if (opkrævning.metode !== 'faktura') return false;
               const opkrævningsDato = dayjs(opkrævning.dato);
-              const dueDate = opkrævning.betalingsdato 
-                ? dayjs(opkrævning.betalingsdato)
+              const dueDate = (opkrævning.betalingsfrist || opkrævning.betalingsdato)
+                ? dayjs(opkrævning.betalingsfrist || opkrævning.betalingsdato)
                 : opkrævningsDato.add(8, 'day');
               return dayjs().isAfter(dueDate);
             });
@@ -545,8 +545,8 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             return postering?.opkrævninger?.some(opkrævning => {
               if (opkrævning.metode !== 'faktura') return false;
               const opkrævningsDato = dayjs(opkrævning.dato);
-              const dueDate = opkrævning.betalingsdato 
-                ? dayjs(opkrævning.betalingsdato)
+              const dueDate = (opkrævning.betalingsfrist || opkrævning.betalingsdato)
+                ? dayjs(opkrævning.betalingsfrist || opkrævning.betalingsdato)
                 : opkrævningsDato.add(8, 'day');
               return dayjs().isAfter(dueDate);
             });
@@ -1162,10 +1162,10 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                   return postering?.opkrævninger?.some(opkrævning => {
                     if (opkrævning.metode !== 'faktura') return false;
                     
-                    // Calculate due date: betalingsdato if exists, otherwise dato + 8 days
+                    // Calculate due date: betalingsfrist if exists, otherwise dato + 8 days (bagudkompatibel med betalingsdato)
                     const opkrævningsDato = dayjs(opkrævning.dato);
-                    const dueDate = opkrævning.betalingsdato 
-                      ? dayjs(opkrævning.betalingsdato)
+                    const dueDate = (opkrævning.betalingsfrist || opkrævning.betalingsdato)
+                      ? dayjs(opkrævning.betalingsfrist || opkrævning.betalingsdato)
                       : opkrævningsDato.add(8, 'day');
                     
                     // Check if due date has passed

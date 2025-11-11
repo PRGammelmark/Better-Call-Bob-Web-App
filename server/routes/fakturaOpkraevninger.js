@@ -18,8 +18,8 @@ router.post('/registrer-opkraevninger', async (req, res) => {
     }
 
             const opkrævningsDato = new Date();
-            // Set betalingsdato to 8 days from opkrævningsdato if metode is 'faktura'
-            const betalingsdato = metode === 'faktura' 
+            // Set betalingsfrist to 8 days from opkrævningsdato if metode is 'faktura'
+            const betalingsfrist = metode === 'faktura' 
                 ? new Date(opkrævningsDato.getTime() + 8 * 24 * 60 * 60 * 1000)
                 : undefined;
 
@@ -33,8 +33,8 @@ router.post('/registrer-opkraevninger', async (req, res) => {
                         dato: opkrævningsDato
                     };
                     
-                    if (betalingsdato) {
-                        opkrævning.betalingsdato = betalingsdato;
+                    if (betalingsfrist) {
+                        opkrævning.betalingsfrist = betalingsfrist;
                     }
                     
                     dbPostering.opkrævninger.push(opkrævning);

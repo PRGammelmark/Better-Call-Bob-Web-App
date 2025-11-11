@@ -1,5 +1,5 @@
 import express from "express"
-import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder, tilfoejAnsvarlig, fjernAnsvarlig, opdaterOpgavebeskrivelse, afslutOpgave, genåbnOpgave, tilføjBilleder, getOpgaverNew, getOpgaverOpen, getOpgaverPlanned, getOpgaverDone, getOpgaverArchived, getOpgaverDeleted, getOpgaverPersonalCurrent, getOpgaverPersonalClosed } from "../controllers/opgaveController.js"
+import { getOpgaver, getOpgaverPopulateKunder, openCreateOpgave, createOpgave, createBooking, getOpgave, deleteOpgave, updateOpgave, getOpgaverForKunde, getOpgaverForMedarbejder, tilfoejAnsvarlig, fjernAnsvarlig, opdaterOpgavebeskrivelse, afslutOpgave, genåbnOpgave, tilføjBilleder, getOpgaverNew, getOpgaverOpen, getOpgaverPlanned, getOpgaverDone, getOpgaverArchived, getOpgaverDeleted, getOpgaverPersonalCurrent, getOpgaverPersonalClosed } from "../controllers/opgaveController.js"
 import requireAuth from "../middleware/requireAuth.js";
 import { shortTermLimiter, dailyLimiter } from "../middleware/rateLimit.js"
 
@@ -39,6 +39,9 @@ router.post('/', requireAuth, createOpgave)
 
 // POST en ny opgave (åben route)
 router.post('/openRoute', shortTermLimiter, dailyLimiter, openCreateOpgave)
+
+// POST booking (åben route med kunde oprettelse og fil upload)
+router.post('/booking', shortTermLimiter, dailyLimiter, createBooking)
 
 // DELETE en opgave
 router.delete('/:id', requireAuth, deleteOpgave)

@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.8.5",
+    date: "11. november 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at man ikke manuelt kunne registrere fakturaopkrævninger på posteringer.",
+        "Når man vil registrere en fakturaopkrævning manuelt, så vil app'en nu automatisk hente fakturaens oplysninger (fx opkrævningsbeløb og betalingsfrist) fra regnskabssystemet ud fra fakturanummeret. Hvis regnskabssystemet ikke finder en faktura med det angivne fakturanummer vil modtageren få en fejlmeddelelse.",
+        "Mindre rettelser og justeringer."
+    ]
+},{
     version: "3.8.4",
     date: "10. november 2025",
     changes: [

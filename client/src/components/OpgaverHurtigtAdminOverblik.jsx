@@ -240,8 +240,8 @@ const OpgaverHurtigtAdminOverblik = () => {
                     return postering?.opkrævninger?.some(opkrævning => {
                       if (opkrævning.metode !== 'faktura') return false
                       const opkrævningsDato = dayjs(opkrævning.dato)
-                      const dueDate = opkrævning.betalingsdato 
-                        ? dayjs(opkrævning.betalingsdato)
+                      const dueDate = (opkrævning.betalingsfrist || opkrævning.betalingsdato)
+                        ? dayjs(opkrævning.betalingsfrist || opkrævning.betalingsdato)
                         : opkrævningsDato.add(8, 'day')
                       return now.isAfter(dueDate)
                     })
