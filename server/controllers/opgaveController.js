@@ -1,6 +1,7 @@
 import Opgave from '../models/opgaveModel.js'
 import Bruger from '../models/brugerModel.js'
 import Postering from '../models/posteringModel.js'
+import Kunde from '../models/kunderModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
 import Joi from "joi"
@@ -22,6 +23,24 @@ const opgaveSchema = Joi.object({
     harStige: Joi.boolean().required(),
     recaptchaToken: Joi.string().required(),
     kundeID: Joi.string().required()
+})
+
+const bookingSchema = Joi.object({
+    opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
+    opgaveBilleder: Joi.array().items(Joi.string().uri()).optional(),
+    fornavn: Joi.string().min(2).max(100).required(),
+    efternavn: Joi.string().min(2).max(100).required(),
+    adresse: Joi.string().min(5).max(200).required(),
+    postnummerOgBy: Joi.string().pattern(/^\d{4}\s[a-zA-ZæøåÆØÅ\s\-]+$/).required(),
+    onsketDato: Joi.date().iso().required(),
+    telefon: Joi.string().pattern(/^\d{8}$/).required(),
+    email: Joi.string().email().required(),
+    CVR: Joi.string().max(20).pattern(/^[A-Z0-9]+$/).allow("", null),
+    virksomhed: Joi.string().max(100).allow("", null),
+    harStige: Joi.boolean().required(),
+    recaptchaToken: Joi.string().required(),
+    engelskKunde: Joi.boolean().optional().default(false),
+    måKontaktesMedReklame: Joi.boolean().optional().default(false)
 })
 
 const debounceTimers = {};
@@ -627,11 +646,110 @@ const getOpgaverPersonalClosed = async (req, res) => {
     }
 };
 
+// CREATE booking (åben route med kunde oprettelse)
+const createBooking = async (req, res) => {
+    const { error } = bookingSchema.validate(req.body)
+
+    if (error) {
+        return res.status(400).json({ message: "Ugyldigt input", details: error.details })
+    }
+
+    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame } = req.body;
+    
+    // Verify captcha
+    const captchaRes = await verifyCaptcha(recaptchaToken)
+
+    if (!captchaRes.success || captchaRes.score < 0.5) {
+        return res.status(403).json({ message: "Captcha verificering fejlede. Din captcha-score: " + captchaRes.score + "!" })
+    }
+
+    try {
+        // Check if customer already exists by email
+        let kunde = await Kunde.findOne({ email: email });
+        
+        if (!kunde) {
+            // Create new customer
+            kunde = await Kunde.create({
+                fornavn,
+                efternavn,
+                virksomhed: virksomhed || "",
+                CVR: CVR || "",
+                adresse,
+                postnummerOgBy,
+                telefon,
+                email,
+                harStige: harStige || false,
+                måKontaktesMedReklame: måKontaktesMedReklame || false,
+                engelskKunde: engelskKunde || false,
+                navn: fornavn + " " + efternavn,
+                kilde: "booking"
+            });
+        } else {
+            // Update existing customer with new information if provided
+            if (adresse && adresse !== kunde.adresse) {
+                kunde.adresse = adresse;
+            }
+            if (postnummerOgBy && postnummerOgBy !== kunde.postnummerOgBy) {
+                kunde.postnummerOgBy = postnummerOgBy;
+            }
+            if (telefon && telefon !== kunde.telefon) {
+                kunde.telefon = telefon;
+            }
+            await kunde.save();
+        }
+
+        // Get incremental ID for opgave
+        const counter = await Counter.findOneAndUpdate(
+            { name: 'opgaveID' },
+            { $inc: { value: 1 } },
+            { new: true, upsert: true }
+        );
+
+        // Create opgave
+        const opgave = await Opgave.create({
+            opgaveBeskrivelse,
+            opgaveBilleder: opgaveBilleder || [],
+            onsketDato,
+            status: "Modtaget",
+            kundeID: kunde._id.toString(),
+            kunde: kunde._id,
+            incrementalID: counter.value,
+            kilde: "booking"
+        });
+
+        // Send notification to admin (without user ID since this is an open route)
+        try {
+            await opretNotifikation({ 
+                modtagerID: "admin", 
+                udløserID: "system", 
+                type: "opgaveOprettet", 
+                titel: "En ny opgave er blevet oprettet via booking.", 
+                besked: `Opgaven skal løses på ${adresse}, ${postnummerOgBy}.`, 
+                link: `/opgave/${opgave._id}`, 
+                erVigtig: true 
+            });
+        } catch (notifError) {
+            console.error("Error creating notification:", notifError);
+            // Don't fail the request if notification fails
+        }
+        
+        res.status(200).json({ 
+            success: true,
+            opgave: opgave,
+            kunde: kunde
+        });
+    } catch (error) {
+        console.error("Error creating booking:", error);
+        res.status(400).json({error: error.message});
+    }
+};
+
 export {
     getOpgaver,
     getOpgaverPopulateKunder,
     openCreateOpgave,
     createOpgave,
+    createBooking,
     getOpgave,
     deleteOpgave,
     updateOpgave,
