@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.8.6",
+    date: "12. november 2025",
+    changes: [
+        "Når en faktura-rykker sendes ud til en kunde vil kunden nu også modtage en påmindelse via SMS.",
+    ]
+},{
     version: "3.8.5",
     date: "11. november 2025",
     changes: [
