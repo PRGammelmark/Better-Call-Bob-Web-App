@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
 import { Trash2, ImagePlus } from 'lucide-react'
@@ -6,23 +6,43 @@ import MoonLoader from "react-spinners/MoonLoader";
 import imageCompression from 'browser-image-compression'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util';
-import axios from 'axios'
-import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
-import { v4 as uuidv4 } from 'uuid'
 
-
-const BeskrivOpgaven = () => {
+// File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
+const BeskrivOpgaven = forwardRef((props, ref) => {
     const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
-    const [opgaveBilleder, setOpgaveBilleder] = useState([])
+    const [opgaveBilleder, setOpgaveBilleder] = useState([]) // Array of { file, preview, type }
     const [dragging, setDragging] = useState(false)
-    const [uploadingImages, setUploadingImages] = useState([])
-    const [isCompressingVideo, setIsCompressingVideo] = useState(false)
+    const [isProcessing, setIsProcessing] = useState(false)
 
     // Dummy states
     const [åbnBillede, setÅbnBillede] = useState(null)
     const [imageIndex, setImageIndex] = useState(0)
 
-    const handleDeleteFile = (medie, index) => {
+    // Expose data to parent component
+    useImperativeHandle(ref, () => ({
+        getOpgaveBeskrivelse: () => opgaveBeskrivelse,
+        getOpgaveBilleder: () => opgaveBilleder.map(item => item.file), // Return only the file objects
+        setOpgaveBeskrivelse: (value) => setOpgaveBeskrivelse(value),
+        setOpgaveBilleder: (value) => setOpgaveBilleder(value)
+    }));
+
+    // Cleanup object URLs when component unmounts or files change
+    useEffect(() => {
+        return () => {
+            opgaveBilleder.forEach(item => {
+                if (item.preview && item.preview.startsWith('blob:')) {
+                    URL.revokeObjectURL(item.preview);
+                }
+            });
+        };
+    }, [opgaveBilleder]);
+
+    const handleDeleteFile = (index) => {
+        const item = opgaveBilleder[index];
+        // Revoke object URL to free memory
+        if (item.preview && item.preview.startsWith('blob:')) {
+            URL.revokeObjectURL(item.preview);
+        }
         setOpgaveBilleder(opgaveBilleder.filter((_, i) => i !== index))
     }
 
@@ -48,52 +68,55 @@ const BeskrivOpgaven = () => {
         }
         
         if (validFiles.length > 0) {
-            setUploadingImages(prevUploadingImages => [...prevUploadingImages, ...validFiles]);
-            let filesToUpload = [];
-        
+            setIsProcessing(true);
+            
             // Separate image and video files
             const imageFiles = validFiles.filter(file => allowedImageTypes.includes(file.type));
             const videoFiles = validFiles.filter(file => allowedVideoTypes.includes(file.type));
             
-            // Compress image files (if any)
-            let compressedFiles = [];
+            const processedFiles = [];
+            
+            // Compress and process image files
             if(imageFiles.length > 0) {
                 for (let file of imageFiles) {
                     try {
-                      const compressedFile = await imageCompression(file, {
-                        maxSizeMB: 1, // Adjust as needed (1MB is a good starting point)
-                        maxWidthOrHeight: 1000, // You can change this to a specific size you want
-                        useWebWorker: true,
-                      });
-                      compressedFiles.push(compressedFile);
+                        const compressedFile = await imageCompression(file, {
+                            maxSizeMB: 1,
+                            maxWidthOrHeight: 1000,
+                            useWebWorker: true,
+                        });
+                        const preview = URL.createObjectURL(compressedFile);
+                        processedFiles.push({
+                            file: compressedFile,
+                            preview: preview,
+                            type: 'image'
+                        });
                     } catch (error) {
-                      console.error("Image compression failed", error);
+                        console.error("Image compression failed", error);
+                        // Fallback to original file if compression fails
+                        const preview = URL.createObjectURL(file);
+                        processedFiles.push({
+                            file: file,
+                            preview: preview,
+                            type: 'image'
+                        });
                     }
-                  }
+                }
             }
 
-            // Compress video files (if any)
-            let compressedVideos = [];
+            // Compress and process video files
             if (videoFiles.length > 0) {
-                setIsCompressingVideo(true)
-                console.log("Video file detected.")
-                const ffmpeg = new FFmpeg({ log: true }); // Create an FFmpeg instance
-                console.log("Created FFMPEG.")
-                await ffmpeg.load(); // Load FFmpeg (this may take a moment)
-                console.log("FFMPEG loaded.")
+                const ffmpeg = new FFmpeg({ log: false });
+                await ffmpeg.load();
 
                 for (let file of videoFiles) {
                     try {
                         const fileName = file.name;
-                        console.log(fileName)
-                        const videoData = await fetchFile(file); // Fetch the video data
-                        // Write the video file to the FFmpeg virtual file system
+                        const videoData = await fetchFile(file);
                         await ffmpeg.writeFile(fileName, videoData);
-                        console.log("Compressing file ...")
 
                         const outputFileName = fileName.replace(/\.[^/.]+$/, '') + '_compressed_video.mp4';
                         
-                        // Compress the video (e.g., reducing the resolution and bitrate)
                         await ffmpeg.exec([
                             '-i', fileName,
                             '-vcodec', 'libx264', 
@@ -105,78 +128,32 @@ const BeskrivOpgaven = () => {
                         ]);
 
                         const compressedVideo = await ffmpeg.readFile(outputFileName);
-                        const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4', name: outputFileName });
-                        compressedVideos.push(compressedFile);
+                        const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4' });
+                        const preview = URL.createObjectURL(compressedFile);
+                        
+                        processedFiles.push({
+                            file: compressedFile,
+                            preview: preview,
+                            type: 'video'
+                        });
                     } catch (error) {
                         console.error("Video compression failed", error);
                         window.alert(`Noget gik galt under behandling af "${file.name}". 
                             Prøv igen – du kan evt. også prøve at gemme videoen i et andet filformat.`);
-                    } finally {
-                        setIsCompressingVideo(false)
+                        // Fallback to original file if compression fails
+                        const preview = URL.createObjectURL(file);
+                        processedFiles.push({
+                            file: file,
+                            preview: preview,
+                            type: 'video'
+                        });
                     }
                 }
             }
 
-            // Combine compressed images and videos for upload
-            filesToUpload = [...compressedFiles, ...compressedVideos];
-            console.log(filesToUpload)
-            
-            try {
-                // Prepare to upload all files
-                const uploadedFilesPromises = filesToUpload.map((file) => {
-                    const storageRef = ref(storage, `opgaver/${file.type + v4()}`);
-                    const uploadTask = uploadBytesResumable(storageRef, file);
-            
-                    return new Promise((resolve, reject) => {
-                        uploadTask.on(
-                            "state_changed",
-                            (snapshot) => {
-                                const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                            },
-                            (error) => {
-                                reject(error); // Reject if there's an error uploading
-                            },
-                            () => {
-                                getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-                                    resolve(downloadURL); // Resolve with the download URL
-                                });
-                            }
-                        );
-                    });
-                });
-            
-                // Wait for all files to upload and get their download URLs
-                const downloadURLs = await Promise.all(uploadedFilesPromises);
-                
-                // Update database with most recent information
-                axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                    headers: {
-                        'Authorization': `Bearer ${user.token}`
-                    }
-                })
-                .then(res => {
-                    let nuværendeOpgaveMedier = res.data.opgaveBilleder;
-                    let nyeOpgaveMedier = [...nuværendeOpgaveMedier, ...downloadURLs];
-
-                    axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveID}`, {
-                        opgaveBilleder: nyeOpgaveMedier
-                    }, {
-                        headers: {
-                            'Authorization': `Bearer ${user.token}`
-                        }
-                    })
-                    .then(res => {
-                        setUploadingImages(prevUploadingImages => 
-                            prevUploadingImages.slice(0, prevUploadingImages.length - validFiles.length)
-                        );
-                        setOpgaveBilleder(nyeOpgaveMedier)
-                    })
-                    .catch(error => console.log(error))
-                })
-                .catch(error => console.log(error))
-            } catch (err) {
-                console.log(err);
-            }
+            // Add processed files to state
+            setOpgaveBilleder(prev => [...prev, ...processedFiles]);
+            setIsProcessing(false);
         }
     }
 
@@ -188,31 +165,31 @@ const BeskrivOpgaven = () => {
             <textarea name="opgavebeskrivelse" className={Styles.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={(e) => setOpgaveBeskrivelse(e.target.value)}></textarea>
             <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Vedhæft evt. billeder eller videoklip</h3>
             <div className={Styles.billederDiv}>
-                {opgaveBilleder?.length > 0 && opgaveBilleder.map((medie, index) => {
+                {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
                     return (
                         <div key={index} className={Styles.uploadetBillede} >
-                            {medie.includes("video%") 
+                            {medieItem.type === 'video'
                             ?
                                 <video 
                                     className={Styles.playVideoPlaceholder} 
-                                    src={medie}
+                                    src={medieItem.preview}
                                     autoPlay
                                     muted
                                     playsInline
                                     loop
-                                    onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                    onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
                                 />
                             :
                                 <img 
-                                    src={medie} 
+                                    src={medieItem.preview} 
                                     alt={`Preview ${index + 1}`} 
                                     className={Styles.imagePreview}
-                                    onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                    onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
                                 />
                             }
                             <button
                                 type="button"
-                                onClick={() => handleDeleteFile(medie, index)}
+                                onClick={() => handleDeleteFile(index)}
                                 className={Styles.deleteButton}
                             >
                                 <Trash2 />
@@ -221,13 +198,13 @@ const BeskrivOpgaven = () => {
                     )
                 })}
 
-                {uploadingImages?.length > 0 && uploadingImages.map(image => (
+                {isProcessing && (
                     <div className={Styles.spinnerDiv}>
                         <MoonLoader size="20px"/>
-                        {isCompressingVideo && <p style={{fontSize: 8, textAlign: "center"}}>Behandler video <br />– vent venligst ...</p>}
+                        <p style={{fontSize: 8, textAlign: "center"}}>Behandler filer <br />– vent venligst ...</p>
                     </div>
-                ))}
-                {!((uploadingImages?.length + opgaveBilleder?.length) > 4) && <div 
+                )}
+                {!((isProcessing ? 1 : 0) + opgaveBilleder?.length > 4) && <div 
                     className={`${Styles.fileInput} ${dragging ? Styles.dragover : ''}`} 
                     onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
                     onDragLeave={() => setDragging(false)} 
@@ -246,6 +223,8 @@ const BeskrivOpgaven = () => {
             </div>
         </div>
     )
-}
+})
+
+BeskrivOpgaven.displayName = 'BeskrivOpgaven'
 
 export default BeskrivOpgaven

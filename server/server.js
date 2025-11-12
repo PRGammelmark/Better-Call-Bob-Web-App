@@ -57,6 +57,8 @@ const emailLimiter = rateLimit({
 const allowedOrigins = [
     'https://bcb-pwa-app.onrender.com',  // Production
     'https://app.bettercallbob.dk',      // Production
+    'https://bcb-book.onrender.com',     // Production
+    'https://book.bettercallbob.dk',     // Production
     'https://bettercallbob.dk',          // Website
     'https://handymankbh.dk',            // Website  
     'https://handymanfrederiksberg.dk',  // Website
