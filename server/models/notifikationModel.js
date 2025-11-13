@@ -9,7 +9,8 @@ const notifikationSchema = new Schema({
     },
     udløserID:{
         type: Schema.Types.ObjectId,
-        ref: 'Bruger'
+        ref: 'Bruger',
+        default: null
     },
     type: {
         type: String,

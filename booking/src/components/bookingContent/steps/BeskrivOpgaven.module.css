@@ -1,5 +1,24 @@
 .opgavebeskrivelseContainer {
     width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+}
+
+.opgaveBeskrivelseTopContainer {
+
+}
+
+.opgaveBeskrivelseBottomContainer {
+    margin: 10px;
+}
+
+.opgaveBeskrivelseBottomContainer p {
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
 }
 
 .opgavebeskrivelse {
@@ -15,6 +34,11 @@
     transition: 0.2s ease;
     box-shadow: rgba(0, 0, 0, 0.02) 0px 6px 24px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
 }
+
+.opgavebeskrivelse::placeholder {
+    font-style: italic;
+    color: #22222270;
+  }
 
 .opgavebeskrivelse:focus {
     box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 24px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 2px;

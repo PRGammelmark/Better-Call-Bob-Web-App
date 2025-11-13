@@ -2,9 +2,11 @@ import React from 'react'
 import Styles from './BookingContent.module.css'
 
 const BookingContent = ({ currentStep, steps }) => {
+  const step = steps[currentStep - 1]
+
   return (
     <div className={Styles.bookingContent}>
-        {steps[currentStep - 1].content}
+        {step?.render && step.render()}
     </div>
   )
 }

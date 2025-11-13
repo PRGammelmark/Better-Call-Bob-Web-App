@@ -45,15 +45,74 @@ const bookingSchema = Joi.object({
 
 const debounceTimers = {};
 
-const verifyCaptcha = async (token) => {
-    const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
-    const response = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-      params: {
-        secret,
-        response: token
-      }
-    })
-    return response.data
+const verifyCaptcha = async (token, expectedAction = 'submit') => {
+    const apiKey = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
+    const siteKey = process.env.GOOGLE_RECAPTCHA_SITE_KEY
+
+    if (!apiKey) {
+        throw new Error('reCAPTCHA API key mangler i miljøvariablerne')
+    }
+
+    if (!siteKey) {
+        throw new Error('reCAPTCHA site key mangler i miljøvariablerne')
+    }
+
+    const projectId = process.env.GOOGLE_RECAPTCHA_PROJECT_ID || 'better-call-bob-app'
+    const url = `https://recaptchaenterprise.googleapis.com/v1/projects/${projectId}/assessments?key=${apiKey}`
+
+    const requestBody = {
+        event: {
+            token: token,
+            expectedAction: expectedAction,
+            siteKey: siteKey
+        }
+    }
+
+    try {
+        console.log("Recaptcha main branch")
+        const response = await axios.post(url, requestBody, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+
+        const assessment = response.data
+        if (assessment.tokenProperties) {
+            return {
+                success: assessment.tokenProperties.valid === true,
+                score: assessment.riskAnalysis?.score || 0,
+                action: assessment.tokenProperties.action,
+                hostname: assessment.tokenProperties.hostname,
+                // Include full assessment for debugging if needed
+                assessment: assessment
+            }
+        } else {
+            return {
+                success: false,
+                score: 0,
+                error: 'Uventet svarformat fra reCAPTCHA Enterprise API'
+            }
+        }
+    } catch (error) {
+        console.log("Recaptcha fallback branch")
+        console.error('Error verifying reCAPTCHA with Enterprise API:', error.response?.data || error.message)
+        // Fallback to standard API if Enterprise fails
+        const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
+        if (secret) {
+            try {
+                const fallbackResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
+                    params: {
+                        secret,
+                        response: token
+                    }
+                })
+                return fallbackResponse.data
+            } catch (fallbackError) {
+                throw new Error('Fejl ved verificering af reCAPTCHA: ' + (fallbackError.response?.data?.error || fallbackError.message))
+            }
+        }
+        throw new Error('Fejl ved verificering af reCAPTCHA: ' + (error.response?.data?.error || error.message))
+    }
 }
 
 const getOpgaver = async (req, res) => {
@@ -214,7 +273,14 @@ const openCreateOpgave = async (req, res) => {
     }
 
     const { opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, harStige, recaptchaToken, opgaveBilleder, kundeID } = req.body;
-    const captchaRes = await verifyCaptcha(recaptchaToken)
+    let captchaRes
+
+    try {
+        captchaRes = await verifyCaptcha(recaptchaToken)
+    } catch (captchaError) {
+        console.error('Fejl ved captcha-verifikation (openCreateOpgave):', captchaError)
+        return res.status(500).json({ message: 'Fejl ved verificering af captcha', details: captchaError.message })
+    }
 
     if (!captchaRes.success || captchaRes.score < 0.5) {
         return res.status(403).json({ message: "Captcha verificering fejlede. Din captcha-score: " + captchaRes.score + "!" })
@@ -236,6 +302,109 @@ const openCreateOpgave = async (req, res) => {
         res.status(400).json({error: error.message})
     }
 }
+
+// CREATE booking (åben route med kunde oprettelse)
+const createBooking = async (req, res) => {
+    const { error } = bookingSchema.validate(req.body)
+
+    if (error) {
+        return res.status(400).json({ message: "Ugyldigt input", details: error.details })
+    }
+
+    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame } = req.body;
+    let captchaRes
+
+    try {
+        captchaRes = await verifyCaptcha(recaptchaToken)
+    } catch (captchaError) {
+        console.error('Fejl ved captcha-verifikation (createBooking):', captchaError)
+        return res.status(500).json({ message: 'Fejl ved verificering af captcha', details: captchaError.message })
+    }
+
+    if (!captchaRes.success || captchaRes.score < 0.5) {
+        return res.status(403).json({ message: "Captcha verificering fejlede. Din captcha-score: " + captchaRes.score + "!" })
+    }
+
+    try {
+        // Check if customer already exists by email
+        let kunde = await Kunde.findOne({ email: email });
+        
+        if (!kunde) {
+            // Create new customer
+            kunde = await Kunde.create({
+                fornavn,
+                efternavn,
+                virksomhed: virksomhed || "",
+                CVR: CVR || "",
+                adresse,
+                postnummerOgBy,
+                telefon,
+                email,
+                harStige: harStige || false,
+                måKontaktesMedReklame: måKontaktesMedReklame || false,
+                engelskKunde: engelskKunde || false,
+                navn: fornavn + " " + efternavn,
+                kilde: "booking"
+            });
+        } else {
+            // Update existing customer with new information if provided
+            if (adresse && adresse !== kunde.adresse) {
+                kunde.adresse = adresse;
+            }
+            if (postnummerOgBy && postnummerOgBy !== kunde.postnummerOgBy) {
+                kunde.postnummerOgBy = postnummerOgBy;
+            }
+            if (telefon && telefon !== kunde.telefon) {
+                kunde.telefon = telefon;
+            }
+            await kunde.save();
+        }
+
+        // Get incremental ID for opgave
+        const counter = await Counter.findOneAndUpdate(
+            { name: 'opgaveID' },
+            { $inc: { value: 1 } },
+            { new: true, upsert: true }
+        );
+
+        // Create opgave
+        const opgave = await Opgave.create({
+            opgaveBeskrivelse,
+            opgaveBilleder: opgaveBilleder || [],
+            onsketDato,
+            status: "Modtaget",
+            kundeID: kunde._id.toString(),
+            kunde: kunde._id,
+            incrementalID: counter.value,
+            kilde: "booking"
+        });
+
+        // Send notification to admin (without user ID since this is an open route)
+        try {
+            await opretNotifikation({ 
+                modtagerID: "admin", 
+                udløserID: "system", 
+                type: "opgaveOprettet", 
+                titel: "En ny opgave er blevet oprettet via booking.", 
+                besked: `Opgaven skal løses på ${adresse}, ${postnummerOgBy}.`, 
+                link: `/opgave/${opgave._id}`, 
+                erVigtig: true 
+            });
+        } catch (notifError) {
+            console.error("Error creating notification:", notifError);
+            // Don't fail the request if notification fails
+        }
+        
+        res.status(200).json({ 
+            success: true,
+            opgave: opgave,
+            kunde: kunde
+        });
+    } catch (error) {
+        console.error("Error creating booking:", error);
+        res.status(400).json({error: error.message});
+    }
+};
 
 // DELETE en opgave
 const deleteOpgave = async (req, res) => {
@@ -643,104 +812,6 @@ const getOpgaverPersonalClosed = async (req, res) => {
     } catch (error) {
         console.error("Error in getOpgaverPersonalClosed:", error);
         res.status(500).json({ error: error.message });
-    }
-};
-
-// CREATE booking (åben route med kunde oprettelse)
-const createBooking = async (req, res) => {
-    const { error } = bookingSchema.validate(req.body)
-
-    if (error) {
-        return res.status(400).json({ message: "Ugyldigt input", details: error.details })
-    }
-
-    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame } = req.body;
-    
-    // Verify captcha
-    const captchaRes = await verifyCaptcha(recaptchaToken)
-
-    if (!captchaRes.success || captchaRes.score < 0.5) {
-        return res.status(403).json({ message: "Captcha verificering fejlede. Din captcha-score: " + captchaRes.score + "!" })
-    }
-
-    try {
-        // Check if customer already exists by email
-        let kunde = await Kunde.findOne({ email: email });
-        
-        if (!kunde) {
-            // Create new customer
-            kunde = await Kunde.create({
-                fornavn,
-                efternavn,
-                virksomhed: virksomhed || "",
-                CVR: CVR || "",
-                adresse,
-                postnummerOgBy,
-                telefon,
-                email,
-                harStige: harStige || false,
-                måKontaktesMedReklame: måKontaktesMedReklame || false,
-                engelskKunde: engelskKunde || false,
-                navn: fornavn + " " + efternavn,
-                kilde: "booking"
-            });
-        } else {
-            // Update existing customer with new information if provided
-            if (adresse && adresse !== kunde.adresse) {
-                kunde.adresse = adresse;
-            }
-            if (postnummerOgBy && postnummerOgBy !== kunde.postnummerOgBy) {
-                kunde.postnummerOgBy = postnummerOgBy;
-            }
-            if (telefon && telefon !== kunde.telefon) {
-                kunde.telefon = telefon;
-            }
-            await kunde.save();
-        }
-
-        // Get incremental ID for opgave
-        const counter = await Counter.findOneAndUpdate(
-            { name: 'opgaveID' },
-            { $inc: { value: 1 } },
-            { new: true, upsert: true }
-        );
-
-        // Create opgave
-        const opgave = await Opgave.create({
-            opgaveBeskrivelse,
-            opgaveBilleder: opgaveBilleder || [],
-            onsketDato,
-            status: "Modtaget",
-            kundeID: kunde._id.toString(),
-            kunde: kunde._id,
-            incrementalID: counter.value,
-            kilde: "booking"
-        });
-
-        // Send notification to admin (without user ID since this is an open route)
-        try {
-            await opretNotifikation({ 
-                modtagerID: "admin", 
-                udløserID: "system", 
-                type: "opgaveOprettet", 
-                titel: "En ny opgave er blevet oprettet via booking.", 
-                besked: `Opgaven skal løses på ${adresse}, ${postnummerOgBy}.`, 
-                link: `/opgave/${opgave._id}`, 
-                erVigtig: true 
-            });
-        } catch (notifError) {
-            console.error("Error creating notification:", notifError);
-            // Don't fail the request if notification fails
-        }
-        
-        res.status(200).json({ 
-            success: true,
-            opgave: opgave,
-            kunde: kunde
-        });
-    } catch (error) {
-        console.error("Error creating booking:", error);
-        res.status(400).json({error: error.message});
     }
 };
 

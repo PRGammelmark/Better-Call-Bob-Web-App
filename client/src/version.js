@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.8.7",
+    date: "12. november 2025",
+    changes: [
+        "Implementerede første version af automatiseret bookingsystem på 'https://book.bettercallbob.dk'.",
+        "Rettede en fejl, der gjorde, at system-notifikationer udløst uden menneskelig indblanding ikke blev sendt afsted.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.8.6",
     date: "12. november 2025",
     changes: [

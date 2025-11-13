@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import Styles from './PrimaryBookingComponent.module.css'
 import BookingNavigationFooter from './bookingNavigationFooter/BookingNavigationFooter'
 import BookingContent from './bookingContent/BookingContent'
@@ -13,57 +13,99 @@ import axios from 'axios'
 const PrimaryBookingComponent = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const beskrivOpgavenRef = useRef(null)
+  const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
+  const [opgaveBilleder, setOpgaveBilleder] = useState([]) // Array of { file, preview, type }
+  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
+  const recaptchaLoaderRef = useRef(null)
 
-  // Load reCAPTCHA script
+  const loadRecaptcha = useCallback(() => {
+    if (!recaptchaSiteKey) {
+      return Promise.reject(new Error('reCAPTCHA site key mangler i miljøvariablerne'))
+    }
+
+    // Check if Enterprise API is available
+    if (window.grecaptcha && window.grecaptcha.enterprise) {
+      return new Promise((resolve) => {
+        window.grecaptcha.enterprise.ready(() => resolve(window.grecaptcha.enterprise))
+      })
+    }
+
+    if (!recaptchaLoaderRef.current) {
+      recaptchaLoaderRef.current = new Promise((resolve, reject) => {
+        const existingScript = document.querySelector('script[src^="https://www.google.com/recaptcha/enterprise.js"]')
+
+        const handleReady = () => {
+          if (window.grecaptcha && window.grecaptcha.enterprise) {
+            window.grecaptcha.enterprise.ready(() => resolve(window.grecaptcha.enterprise))
+          } else {
+            recaptchaLoaderRef.current = null
+            reject(new Error('reCAPTCHA Enterprise script indlæst men grecaptcha.enterprise er ikke tilgængelig'))
+          }
+        }
+
+        const handleError = () => {
+          recaptchaLoaderRef.current = null
+          reject(new Error('Kunne ikke indlæse reCAPTCHA Enterprise scriptet'))
+        }
+
+        if (existingScript) {
+          existingScript.addEventListener('load', handleReady, { once: true })
+          existingScript.addEventListener('error', handleError, { once: true })
+          return
+        }
+
+        // Load Enterprise script
+        const script = document.createElement('script')
+        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`
+        script.async = true
+        script.defer = true
+        script.addEventListener('load', handleReady, { once: true })
+        script.addEventListener('error', handleError, { once: true })
+        document.body.appendChild(script)
+      })
+    }
+
+    return recaptchaLoaderRef.current
+  }, [recaptchaSiteKey])
+
   useEffect(() => {
-    const script = document.createElement('script')
-    script.src = `https://www.google.com/recaptcha/api.js?render=${import.meta.env.VITE_RECAPTCHA_SITE_KEY}`
-    script.async = true
-    script.defer = true
-    document.body.appendChild(script)
+    let cancelled = false
+
+    loadRecaptcha().catch((error) => {
+      if (!cancelled) {
+        console.error('Fejl ved indlæsning af reCAPTCHA:', error)
+      }
+    })
 
     return () => {
-      // Cleanup script on unmount
-      const existingScript = document.querySelector(`script[src*="recaptcha"]`)
-      if (existingScript) {
-        document.body.removeChild(existingScript)
-      }
+      cancelled = true
     }
-  }, [])
+  }, [loadRecaptcha])
 
   const steps = [
-    { label: 'Din opgave', content: <BeskrivOpgaven ref={beskrivOpgavenRef} /> },
+    { 
+      label: 'Din opgave', 
+      render: () => (
+        <BeskrivOpgaven 
+          opgaveBeskrivelse={opgaveBeskrivelse}
+          setOpgaveBeskrivelse={setOpgaveBeskrivelse}
+          opgaveBilleder={opgaveBilleder}
+          setOpgaveBilleder={setOpgaveBilleder}
+        />
+      )
+    },
     { label: 'Ekstra' },
     { label: 'Tid & sted' },
     { label: 'Kontaktinfo' },
   ]
 
-  const handleConfirmBooking = async () => {
-    if (!beskrivOpgavenRef.current) {
-      console.error('BeskrivOpgaven ref not available')
-      return
-    }
-
+  const handleConfirmBookingWithToken = useCallback(async (recaptchaToken) => {
     setIsSubmitting(true)
 
     try {
-      // Get reCAPTCHA token
-      const recaptchaToken = await new Promise((resolve, reject) => {
-        if (window.grecaptcha && window.grecaptcha.ready) {
-          window.grecaptcha.ready(() => {
-            window.grecaptcha.execute(import.meta.env.VITE_RECAPTCHA_SITE_KEY, { action: 'submit' })
-              .then(resolve)
-              .catch(reject)
-          })
-        } else {
-          reject(new Error('reCAPTCHA not loaded'))
-        }
-      })
 
-      // Get data from BeskrivOpgaven
-      const opgaveBeskrivelse = beskrivOpgavenRef.current.getOpgaveBeskrivelse()
-      const files = beskrivOpgavenRef.current.getOpgaveBilleder()
+      // Get files from opgaveBilleder state
+      const files = opgaveBilleder.map(item => item.file)
 
       // Upload files to Firebase
       const uploadedFileURLs = []
@@ -130,6 +172,54 @@ const PrimaryBookingComponent = () => {
     } finally {
       setIsSubmitting(false)
     }
+  }, [opgaveBeskrivelse, opgaveBilleder])
+
+  // Callback function for reCAPTCHA as per Google's guide
+  const onSubmit = useCallback(async (token) => {
+    if (!token) {
+      throw new Error('reCAPTCHA token mangler')
+    }
+    // Mark that callback was triggered to prevent double submission
+    if (typeof window !== 'undefined') {
+      window.recaptchaCallbackTriggered = true
+    }
+    await handleConfirmBookingWithToken(token)
+    // Reset flag after submission
+    setTimeout(() => {
+      if (typeof window !== 'undefined') {
+        window.recaptchaCallbackTriggered = false
+      }
+    }, 1000)
+  }, [handleConfirmBookingWithToken])
+
+  // Expose callback to window for reCAPTCHA button callback
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.onRecaptchaSubmit = onSubmit
+    }
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete window.onRecaptchaSubmit
+        delete window.recaptchaCallbackTriggered
+      }
+    }
+  }, [onSubmit])
+
+  const handleConfirmBooking = async () => {
+    try {
+      if (!recaptchaSiteKey) {
+        throw new Error('reCAPTCHA site key mangler. Kontakt venligst support.')
+      }
+
+      const grecaptcha = await loadRecaptcha()
+      // Use Enterprise API execute method
+      const recaptchaToken = await grecaptcha.execute(recaptchaSiteKey, { action: 'submit' })
+      await handleConfirmBookingWithToken(recaptchaToken)
+    } catch (error) {
+      console.error('Error getting reCAPTCHA token:', error)
+      alert('Fejl ved reCAPTCHA verificering. Prøv venligst igen.')
+      setIsSubmitting(false)
+    }
   }
 
   const isLastStep = currentStep === steps.length
@@ -147,6 +237,7 @@ const PrimaryBookingComponent = () => {
           isLastStep={isLastStep}
           onConfirm={handleConfirmBooking}
           isSubmitting={isSubmitting}
+          recaptchaSiteKey={recaptchaSiteKey}
         />
       </div>
       <div className={Styles.summaryContainer}>

@@ -1,4 +1,5 @@
 import Notifikation from "../models/notifikationModel.js";
+import { Types } from "mongoose";
 
 // Hent notifikationer pr. bruger
 export const hentNotifikationer = async (req, res) => {
@@ -74,11 +75,38 @@ export const sseNotifikationer = async (req, res) => {
     });
 };
 
+// Helper function to validate and convert udløserID to a valid ObjectId or null
+const validateUdløserID = (udløserID) => {
+  if (!udløserID) return null;
+  
+  // If it's already an ObjectId, return it
+  if (udløserID instanceof Types.ObjectId) return udløserID;
+  
+  // If it's a string, check if it's a valid ObjectId
+  if (typeof udløserID === 'string') {
+    // Check if it's a special string like "system" or "admin" that shouldn't be an ObjectId
+    if (udløserID === "system" || udløserID === "admin") {
+      return null;
+    }
+    
+    // Check if it's a valid ObjectId string
+    if (Types.ObjectId.isValid(udløserID)) {
+      return new Types.ObjectId(udløserID);
+    }
+    
+    // If it's not a valid ObjectId, return null
+    return null;
+  }
+  
+  return null;
+};
+
 // Opret ny notifikation
 export const opretNotifikation = async (req, res) => {
   try {
     const { modtagerID, udløserID, type, titel, besked, link, erVigtig } = req.body;
-    const ny = new Notifikation({ modtagerID, udløserID, type, titel, besked, link, erVigtig });
+    const validatedUdløserID = validateUdløserID(udløserID);
+    const ny = new Notifikation({ modtagerID, udløserID: validatedUdløserID, type, titel, besked, link, erVigtig });
     await ny.save();
     res.status(201).json(ny);
   } catch (err) {

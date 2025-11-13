@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
 import { Trash2, ImagePlus } from 'lucide-react'
@@ -8,23 +8,13 @@ import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util';
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
-const BeskrivOpgaven = forwardRef((props, ref) => {
-    const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
-    const [opgaveBilleder, setOpgaveBilleder] = useState([]) // Array of { file, preview, type }
+const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder }) => {
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
 
     // Dummy states
     const [åbnBillede, setÅbnBillede] = useState(null)
     const [imageIndex, setImageIndex] = useState(0)
-
-    // Expose data to parent component
-    useImperativeHandle(ref, () => ({
-        getOpgaveBeskrivelse: () => opgaveBeskrivelse,
-        getOpgaveBilleder: () => opgaveBilleder.map(item => item.file), // Return only the file objects
-        setOpgaveBeskrivelse: (value) => setOpgaveBeskrivelse(value),
-        setOpgaveBilleder: (value) => setOpgaveBilleder(value)
-    }));
 
     // Cleanup object URLs when component unmounts or files change
     useEffect(() => {
@@ -161,70 +151,73 @@ const BeskrivOpgaven = forwardRef((props, ref) => {
   
     return (
         <div className={Styles.opgavebeskrivelseContainer}>
-            <h2 className={StepsStyles.headingH2}>Fortæl os hvad du skal have lavet</h2>
-            <textarea name="opgavebeskrivelse" className={Styles.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={(e) => setOpgaveBeskrivelse(e.target.value)}></textarea>
-            <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Vedhæft evt. billeder eller videoklip</h3>
-            <div className={Styles.billederDiv}>
-                {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
-                    return (
-                        <div key={index} className={Styles.uploadetBillede} >
-                            {medieItem.type === 'video'
-                            ?
-                                <video 
-                                    className={Styles.playVideoPlaceholder} 
-                                    src={medieItem.preview}
-                                    autoPlay
-                                    muted
-                                    playsInline
-                                    loop
-                                    onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
-                                />
-                            :
-                                <img 
-                                    src={medieItem.preview} 
-                                    alt={`Preview ${index + 1}`} 
-                                    className={Styles.imagePreview}
-                                    onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
-                                />
-                            }
-                            <button
-                                type="button"
-                                onClick={() => handleDeleteFile(index)}
-                                className={Styles.deleteButton}
-                            >
-                                <Trash2 />
-                            </button>
-                        </div>
-                    )
-                })}
+            <div className={Styles.opgaveBeskrivelseTopContainer}>
+                <h2 className={StepsStyles.headingH2}>Fortæl os hvad du skal have lavet</h2>
+                <textarea name="opgavebeskrivelse" placeholder="Eksempel: &#10;&#10;'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'" className={Styles.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={(e) => setOpgaveBeskrivelse(e.target.value)}></textarea>
+                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Vedhæft evt. billeder, dokumenter eller video</h3>
+                <div className={Styles.billederDiv}>
+                    {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
+                        return (
+                            <div key={index} className={Styles.uploadetBillede} >
+                                {medieItem.type === 'video'
+                                ?
+                                    <video 
+                                        className={Styles.playVideoPlaceholder} 
+                                        src={medieItem.preview}
+                                        autoPlay
+                                        muted
+                                        playsInline
+                                        loop
+                                        onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
+                                    />
+                                :
+                                    <img 
+                                        src={medieItem.preview} 
+                                        alt={`Preview ${index + 1}`} 
+                                        className={Styles.imagePreview}
+                                        onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
+                                    />
+                                }
+                                <button
+                                    type="button"
+                                    onClick={() => handleDeleteFile(index)}
+                                    className={Styles.deleteButton}
+                                >
+                                    <Trash2 />
+                                </button>
+                            </div>
+                        )
+                    })}
 
-                {isProcessing && (
-                    <div className={Styles.spinnerDiv}>
-                        <MoonLoader size="20px"/>
-                        <p style={{fontSize: 8, textAlign: "center"}}>Behandler filer <br />– vent venligst ...</p>
-                    </div>
-                )}
-                {!((isProcessing ? 1 : 0) + opgaveBilleder?.length > 4) && <div 
-                    className={`${Styles.fileInput} ${dragging ? Styles.dragover : ''}`} 
-                    onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
-                    onDragLeave={() => setDragging(false)} 
-                    onDrop={handleFileDrop}
-                >
-                    <ImagePlus />
-                    <input 
-                        type="file" 
-                        name="file" 
-                        accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc" 
-                        onChange={handleFileChange} 
-                        multiple 
-                        style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
-                    />
-                </div>}
+                    {isProcessing && (
+                        <div className={Styles.spinnerDiv}>
+                            <MoonLoader size="20px"/>
+                            <p style={{fontSize: 8, textAlign: "center"}}>Behandler filer <br />– vent venligst ...</p>
+                        </div>
+                    )}
+                    {!((isProcessing ? 1 : 0) + opgaveBilleder?.length > 4) && <div 
+                        className={`${Styles.fileInput} ${dragging ? Styles.dragover : ''}`} 
+                        onDragOver={(e) => { e.preventDefault(); setDragging(true); }} 
+                        onDragLeave={() => setDragging(false)} 
+                        onDrop={handleFileDrop}
+                    >
+                        <ImagePlus />
+                        <input 
+                            type="file" 
+                            name="file" 
+                            accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc" 
+                            onChange={handleFileChange} 
+                            multiple 
+                            style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
+                        />
+                    </div>}
+                </div>
+            </div>
+            <div className={Styles.opgaveBeskrivelseBottomContainer}>
+                <p>Vi kører automatiske analyser af din opgavebeskrivelse for at kunne betjene dig bedre og hurtigere. Når du trykker 'Næste' antager vi din implicitte accept. Vi gemmer aldrig persondata uden din eksplicitte accept.</p>
             </div>
         </div>
     )
-})
-
-BeskrivOpgaven.displayName = 'BeskrivOpgaven'
+}
 
 export default BeskrivOpgaven
