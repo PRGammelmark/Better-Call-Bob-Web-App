@@ -1,86 +1,29 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import Styles from './PrimaryBookingComponent.module.css'
 import BookingNavigationFooter from './bookingNavigationFooter/BookingNavigationFooter'
 import BookingContent from './bookingContent/BookingContent'
 import BookingSummary from './bookingSummary/BookingSummary'
 import BookingHeader from './bookingHeader/BookingHeader'
 import BeskrivOpgaven from './bookingContent/steps/BeskrivOpgaven'
+import Ekstra from './bookingContent/steps/Ekstra'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { storage } from '../firebase.js'
 import { v4 as uuidv4 } from 'uuid'
 import axios from 'axios'
+import useRecaptcha from '../hooks/useRecaptcha'
 
 const PrimaryBookingComponent = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
-  const [opgaveBilleder, setOpgaveBilleder] = useState([]) // Array of { file, preview, type }
-  const recaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY
-  const recaptchaLoaderRef = useRef(null)
-
-  const loadRecaptcha = useCallback(() => {
-    if (!recaptchaSiteKey) {
-      return Promise.reject(new Error('reCAPTCHA site key mangler i miljøvariablerne'))
-    }
-
-    // Check if Enterprise API is available
-    if (window.grecaptcha && window.grecaptcha.enterprise) {
-      return new Promise((resolve) => {
-        window.grecaptcha.enterprise.ready(() => resolve(window.grecaptcha.enterprise))
-      })
-    }
-
-    if (!recaptchaLoaderRef.current) {
-      recaptchaLoaderRef.current = new Promise((resolve, reject) => {
-        const existingScript = document.querySelector('script[src^="https://www.google.com/recaptcha/enterprise.js"]')
-
-        const handleReady = () => {
-          if (window.grecaptcha && window.grecaptcha.enterprise) {
-            window.grecaptcha.enterprise.ready(() => resolve(window.grecaptcha.enterprise))
-          } else {
-            recaptchaLoaderRef.current = null
-            reject(new Error('reCAPTCHA Enterprise script indlæst men grecaptcha.enterprise er ikke tilgængelig'))
-          }
-        }
-
-        const handleError = () => {
-          recaptchaLoaderRef.current = null
-          reject(new Error('Kunne ikke indlæse reCAPTCHA Enterprise scriptet'))
-        }
-
-        if (existingScript) {
-          existingScript.addEventListener('load', handleReady, { once: true })
-          existingScript.addEventListener('error', handleError, { once: true })
-          return
-        }
-
-        // Load Enterprise script
-        const script = document.createElement('script')
-        script.src = `https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`
-        script.async = true
-        script.defer = true
-        script.addEventListener('load', handleReady, { once: true })
-        script.addEventListener('error', handleError, { once: true })
-        document.body.appendChild(script)
-      })
-    }
-
-    return recaptchaLoaderRef.current
-  }, [recaptchaSiteKey])
-
-  useEffect(() => {
-    let cancelled = false
-
-    loadRecaptcha().catch((error) => {
-      if (!cancelled) {
-        console.error('Fejl ved indlæsning af reCAPTCHA:', error)
-      }
-    })
-
-    return () => {
-      cancelled = true
-    }
-  }, [loadRecaptcha])
+  const [kortOpgavebeskrivelse, setKortOpgavebeskrivelse] = useState("")
+  const [opgaveBilleder, setOpgaveBilleder] = useState([])
+  const [kategorier, setKategorier] = useState([])
+  const [isLoadingKategorier, setIsLoadingKategorier] = useState(false)
+  const [isLoadingKortBeskrivelse, setIsLoadingKortBeskrivelse] = useState(false)
+  const [opfølgendeSpørgsmålSvar, setOpfølgendeSpørgsmålSvar] = useState({})
+  const prevStepRef = useRef(1)
+  const { recaptchaSiteKey, executeRecaptcha, registerRecaptchaCallback } = useRecaptcha()
 
   const steps = [
     { 
@@ -91,13 +34,87 @@ const PrimaryBookingComponent = () => {
           setOpgaveBeskrivelse={setOpgaveBeskrivelse}
           opgaveBilleder={opgaveBilleder}
           setOpgaveBilleder={setOpgaveBilleder}
+          wordCount={countWords(opgaveBeskrivelse)}
         />
       )
     },
-    { label: 'Ekstra' },
+    { 
+      label: 'Ekstra',
+      render: () => (
+        <Ekstra 
+          kategorier={kategorier}
+          isLoading={isLoadingKategorier}
+          onAnswersChange={setOpfølgendeSpørgsmålSvar}
+        />
+      )
+    },
     { label: 'Tid & sted' },
     { label: 'Kontaktinfo' },
   ]
+
+  // Helper function to count words
+  const countWords = (text) => {
+    return text.trim().split(/\s+/).filter(word => word.length > 0).length
+  }
+
+  // Update kortOpgavebeskrivelse only when leaving step 1
+  useEffect(() => {
+    // Check if we just left step 1 (previous step was 1, current step is not 1)
+    const justLeftStep1 = prevStepRef.current === 1 && currentStep !== 1
+    
+    if (justLeftStep1 && opgaveBeskrivelse.trim()) {
+      const wordCount = countWords(opgaveBeskrivelse)
+      
+      if (wordCount <= 10) {
+        // If 10 words or less, use it directly
+        setKortOpgavebeskrivelse(opgaveBeskrivelse)
+      } else {
+        // If more than 10 words, summarize with AI
+        setIsLoadingKortBeskrivelse(true)
+        axios.post(
+          `${import.meta.env.VITE_API_URL}/ai/summarizeOpgavebeskrivelse`,
+          { opgaveBeskrivelse }
+        )
+        .then(response => {
+          setKortOpgavebeskrivelse(response.data || opgaveBeskrivelse)
+        })
+        .catch(error => {
+          console.error('Error summarizing opgavebeskrivelse:', error)
+          // Fallback to original if summarization fails
+          setKortOpgavebeskrivelse(opgaveBeskrivelse)
+        })
+        .finally(() => {
+          setIsLoadingKortBeskrivelse(false)
+        })
+      }
+    }
+    
+    // Update previous step ref
+    prevStepRef.current = currentStep
+  }, [currentStep, opgaveBeskrivelse])
+
+  // Fetch kategorier when moving to step 2
+  useEffect(() => {
+    const fetchKategorier = async () => {
+      if (currentStep === 2 && opgaveBeskrivelse.trim()) {
+        setIsLoadingKategorier(true)
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_API_URL}/ai/parseKategorierFromText`,
+            { opgaveBeskrivelse }
+          )
+          setKategorier(response.data || [])
+        } catch (error) {
+          console.error('Error fetching kategorier:', error)
+          setKategorier([])
+        } finally {
+          setIsLoadingKategorier(false)
+        }
+      }
+    }
+
+    fetchKategorier()
+  }, [currentStep, opgaveBeskrivelse])
 
   const handleConfirmBookingWithToken = useCallback(async (recaptchaToken) => {
     setIsSubmitting(true)
@@ -152,6 +169,7 @@ const PrimaryBookingComponent = () => {
         virksomhed: "",
         engelskKunde: false,
         måKontaktesMedReklame: false,
+        opfølgendeSpørgsmålSvar, // Svar fra opfølgende spørgsmål
         recaptchaToken
       }
 
@@ -172,7 +190,7 @@ const PrimaryBookingComponent = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [opgaveBeskrivelse, opgaveBilleder])
+  }, [opgaveBeskrivelse, opgaveBilleder, opfølgendeSpørgsmålSvar])
 
   // Callback function for reCAPTCHA as per Google's guide
   const onSubmit = useCallback(async (token) => {
@@ -194,16 +212,8 @@ const PrimaryBookingComponent = () => {
 
   // Expose callback to window for reCAPTCHA button callback
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.onRecaptchaSubmit = onSubmit
-    }
-    return () => {
-      if (typeof window !== 'undefined') {
-        delete window.onRecaptchaSubmit
-        delete window.recaptchaCallbackTriggered
-      }
-    }
-  }, [onSubmit])
+    return registerRecaptchaCallback(onSubmit)
+  }, [onSubmit, registerRecaptchaCallback])
 
   const handleConfirmBooking = async () => {
     try {
@@ -211,9 +221,7 @@ const PrimaryBookingComponent = () => {
         throw new Error('reCAPTCHA site key mangler. Kontakt venligst support.')
       }
 
-      const grecaptcha = await loadRecaptcha()
-      // Use Enterprise API execute method
-      const recaptchaToken = await grecaptcha.execute(recaptchaSiteKey, { action: 'submit' })
+      const recaptchaToken = await executeRecaptcha('submit')
       await handleConfirmBookingWithToken(recaptchaToken)
     } catch (error) {
       console.error('Error getting reCAPTCHA token:', error)
@@ -223,6 +231,11 @@ const PrimaryBookingComponent = () => {
   }
 
   const isLastStep = currentStep === steps.length
+  
+  // Check if step 1 has minimum 5 words
+  const wordCount = countWords(opgaveBeskrivelse)
+  const isStep1Valid = currentStep !== 1 || wordCount >= 5
+  const shouldPulseButton = currentStep === 1 && wordCount >= 5 && !isSubmitting
 
   return (
     <div className={Styles.primaryBookingComponent}>
@@ -238,10 +251,18 @@ const PrimaryBookingComponent = () => {
           onConfirm={handleConfirmBooking}
           isSubmitting={isSubmitting}
           recaptchaSiteKey={recaptchaSiteKey}
+          isStepValid={isStep1Valid}
+          shouldPulse={shouldPulseButton}
         />
       </div>
       <div className={Styles.summaryContainer}>
-        <BookingSummary currentStep={currentStep} setCurrentStep={setCurrentStep}/>
+        <BookingSummary 
+          currentStep={currentStep} 
+          setCurrentStep={setCurrentStep}
+          kortOpgavebeskrivelse={kortOpgavebeskrivelse}
+          kategorier={kategorier}
+          isLoadingKortBeskrivelse={isLoadingKortBeskrivelse}
+        />
       </div>
     </div>
   );

@@ -1,0 +1,255 @@
+.ekstraContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px 0;
+}
+
+.headerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  gap: 20px;
+}
+
+.loadingSpinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #59bf1a;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loadingText {
+  color: #333;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.loadingSubtext {
+  color: #888;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Spørgsmål Container */
+.spørgsmålContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.spørgsmålListe {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* Spørgsmål Item - No boxes, borders or backgrounds */
+.spørgsmålItem {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.spørgsmålHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.questionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  background: #59bf1a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.spørgsmålLabel {
+  color: #1a1a1a;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+  flex: 1;
+  margin: 0;
+  padding-top: 2px;
+}
+
+/* Ja/Nej Buttons */
+.jaNejContainer {
+  display: flex;
+  gap: 12px;
+  margin-left: 40px;
+}
+
+.jaNejButton {
+  flex: 1;
+  padding: 14px 24px;
+  border: 2px solid #e8e9ea;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #333;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.jaNejButton:hover {
+  border-color: #59bf1a;
+  background: #f8fff4;
+}
+
+.jaNejButton.active {
+  border-color: #59bf1a;
+  background: #59bf1a;
+  color: #ffffff;
+}
+
+/* Select Input */
+.selectWrapper {
+  position: relative;
+  margin-left: 40px;
+}
+
+.selectInput {
+  width: 100%;
+  padding: 14px 48px 14px 16px;
+  border: 2px solid #e8e9ea;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.selectInput:hover {
+  border-color: #59bf1a;
+  background: #f8fff4;
+}
+
+.selectInput:focus {
+  outline: none;
+  border-color: #59bf1a;
+  box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+}
+
+.selectArrow {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid #666;
+  pointer-events: none;
+  transition: border-top-color 0.2s ease, transform 0.2s ease;
+}
+
+.selectWrapper:hover .selectArrow {
+  border-top-color: #59bf1a;
+}
+
+.selectInput:focus + .selectArrow {
+  transform: translateY(-50%) rotate(180deg);
+  border-top-color: #59bf1a;
+}
+
+/* Empty States */
+.ingenKategorierContainer,
+.ingenSpørgsmålContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.emptyStateTitle {
+  color: #333;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.emptyStateText {
+  color: #666;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0;
+  max-width: 400px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .ekstraContainer {
+    padding: 16px 0;
+    gap: 20px;
+  }
+
+  .spørgsmålListe {
+    gap: 28px;
+  }
+
+  .jaNejContainer,
+  .selectWrapper {
+    margin-left: 0;
+  }
+
+  .jaNejContainer {
+    flex-direction: column;
+  }
+
+  .jaNejButton {
+    width: 100%;
+  }
+}

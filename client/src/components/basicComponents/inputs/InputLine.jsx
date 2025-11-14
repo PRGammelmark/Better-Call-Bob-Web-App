@@ -12,9 +12,11 @@ import styles from "./inputStyles.module.css";
  * @param {(e: React.ChangeEvent<HTMLInputElement>) => void} props.onChange
  * @param {string} props.name
  * @param {boolean} props.required
+ * @param {number} [props.min]
+ * @param {number} [props.max]
  */
 
-const InputLine = ({ label, description, type = "text", value, placeholder, onChange, required, name }) => {
+const InputLine = ({ label, description, type = "text", value, placeholder, onChange, required, name, min, max }) => {
   return (
     <div className={styles.inputLine}>
       <label htmlFor={name}>
@@ -29,6 +31,8 @@ const InputLine = ({ label, description, type = "text", value, placeholder, onCh
         placeholder={placeholder}
         onChange={(e) => onChange(e.target.value)}
         required={required}
+        min={min}
+        max={max}
       />
     </div>
   );

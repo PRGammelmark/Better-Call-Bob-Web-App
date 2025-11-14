@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.8.8",
+    date: "14. november 2025",
+    changes: [
+        "Administratorer kan nu fra 'App-indstillinger'-siden oprette og redigere i opfølgende spørgsmål, som bookingsystemet kan stille til nye kunder baseret på en AI-kategorisering af opgaven, som den pågældende kunde er ved at udfylde.",
+        "Flere design- og funktionsjusteringer til bookingsystemet."
+    ]
+},{
     version: "3.8.7",
     date: "12. november 2025",
     changes: [

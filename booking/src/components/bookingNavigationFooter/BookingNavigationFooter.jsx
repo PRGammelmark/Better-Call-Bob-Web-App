@@ -1,7 +1,7 @@
 import React from 'react'
 import Styles from './BookingNavigationFooter.module.css'
 
-const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey }) => {
+const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey, isStepValid = true, shouldPulse = false }) => {
 
   return (
     <div className={Styles.bookingNavigationFooter}>
@@ -33,7 +33,13 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
           </button>
         )
       ) : (
-        <button className={Styles.nextButton} onClick={() => setCurrentStep(currentStep + 1)} disabled={isSubmitting}>Næste</button>
+        <button 
+          className={`${Styles.nextButton} ${shouldPulse ? Styles.pulsating : ''}`}
+          onClick={() => setCurrentStep(currentStep + 1)} 
+          disabled={isSubmitting || !isStepValid}
+        >
+          Næste
+        </button>
       )}
     </div>
   )

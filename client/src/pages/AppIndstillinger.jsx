@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins, Calendar } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
+import OpfølgendeSpørgsmålModal from '../components/modals/OpfølgendeSpørgsmålModal.jsx'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
 import Button from '../components/basicComponents/buttons/Button.jsx'
 import { useNavigate } from 'react-router-dom'
@@ -17,10 +18,12 @@ const AppIndstillinger = () => {
 
     const [visOpgavetyperInfo, setVisOpgavetyperInfo] = useState(false);
     const [visOpgavetyperModal, setVisOpgavetyperModal] = useState(false)
+    const [visOpfølgendeSpørgsmålModal, setVisOpfølgendeSpørgsmålModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
     const [maxArbejdsradius, setMaxArbejdsradius] = useState( indstillinger?.arbejdsområdeKilometerRadius )
     const [kørerFakturaBetalingstjek, setKørerFakturaBetalingstjek] = useState(false)
+    const [antalSpørgsmål, setAntalSpørgsmål] = useState(0)
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -45,6 +48,23 @@ const AppIndstillinger = () => {
             setMaxArbejdsradius(indstillinger.arbejdsområdeKilometerRadius);
         }
     }, [indstillinger])
+
+    useEffect(() => {
+        if (user?.token) {
+            axios.get(`${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/`, {
+                headers: {
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            .then(res => {
+                setAntalSpørgsmål(res.data?.length || 0)
+            })
+            .catch(error => {
+                console.log(error)
+                setAntalSpørgsmål(0)
+            })
+        }
+    }, [user, visOpfølgendeSpørgsmålModal])
 
     const handleRadiusBlur = async () => {
         try {
@@ -117,7 +137,23 @@ const AppIndstillinger = () => {
         />
         </div>
 
+        <div className={Styles.indstillingerContainer}>
+            <h2>Booking <Info className={`${Styles.infoIcon}`} /></h2>
+            <p className={Styles.infoText}>Administrer opfølgende spørgsmål til bookingsystemet. Disse spørgsmål vises baseret på de kategorier, som AI'en tildeler opgaverne.</p>
+            <SettingsButtons
+                items={[
+                    {
+                        title: "Opfølgende spørgsmål",
+                        icon: <Calendar />,
+                        onClick: () => setVisOpfølgendeSpørgsmålModal(true),
+                        value: `${antalSpørgsmål} spørgsmål`,
+                    }
+                ]}
+            />
+        </div>
+
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
+        <OpfølgendeSpørgsmålModal trigger={visOpfølgendeSpørgsmålModal} setTrigger={setVisOpfølgendeSpørgsmålModal} user={user} opgavetyper={opgavetyper} />
     
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>

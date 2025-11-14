@@ -1,5 +1,65 @@
+.bookingSummaryContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%;
+    justify-content: space-between;
+}
+
+.summaryBottomContainer p {
+    font-size: 0.8rem;
+    color: #888888;
+    margin-top: 10px;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    justify-content: flex-end;
+}
+
+.summaryBottomContainer p svg {
+    width: 16px;
+    height: 16px;
+}
+
 .summaryConfirmationText {
     font-size: 0.8rem;
     color: #888888;
     margin-top: 10px;
+}
+
+.opgaveBeskrivelseContainer {
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.kortBeskrivelse {
+    font-weight: 900;
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    color: #222222;
+    margin: 0;
+    line-height: 1rem;
+}
+
+.kategorierContainer {
+    margin-top: 0px;
+    margin-bottom: 15px;
+}
+
+.kategorierListe {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.kategoriPill {
+    display: inline-block;
+    /* background-color: #f0f0f0; */
+    border: 1px solid #22222220;
+    border-radius: 20px;
+    padding: 2px 8px;
+    font-size: 0.75rem;
+    color: #22222270;
+    font-weight: 400;
 }

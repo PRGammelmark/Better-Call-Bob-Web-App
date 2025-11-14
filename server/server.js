@@ -38,6 +38,7 @@ import { startReminderScheduler } from './utils/reminderScheduler.js';
 import { natligFakturaBetalingTjek } from './utils/natligFakturaBetalingTjek.js';
 import fakturaBetalingstjekRoutes from "./routes/fakturaBetalingstjek.js";
 import { lazyFakturaBetalingstjek } from './middleware/lazyFakturaBetalingstjek.js';
+import opfølgendeSpørgsmålRoutes from "./routes/opfølgendeSpørgsmål.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -177,6 +178,9 @@ app.get("/api/version", (req, res) => {
 
 // AI-parsing af opgaver
 app.use('/api/ai', aiRoutes);
+
+// Opfølgende spørgsmål til booking systemet
+app.use('/api/opfolgendeSporgsmaal', opfølgendeSpørgsmålRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

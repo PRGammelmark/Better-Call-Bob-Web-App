@@ -8,7 +8,8 @@ import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util';
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
-const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder }) => {
+const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0 }) => {
+    const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
 
@@ -153,7 +154,13 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
         <div className={Styles.opgavebeskrivelseContainer}>
             <div className={Styles.opgaveBeskrivelseTopContainer}>
                 <h2 className={StepsStyles.headingH2}>Fortæl os hvad du skal have lavet</h2>
-                <textarea name="opgavebeskrivelse" placeholder="Eksempel: &#10;&#10;'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'" className={Styles.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={(e) => setOpgaveBeskrivelse(e.target.value)}></textarea>
+                <textarea 
+                    name="opgavebeskrivelse" 
+                    placeholder="Eksempel: &#10;&#10;'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'" 
+                    className={`${Styles.opgavebeskrivelse} ${shouldPulse ? Styles.pulsating : ''}`} 
+                    value={opgaveBeskrivelse} 
+                    onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
+                ></textarea>
                 <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Vedhæft evt. billeder, dokumenter eller video</h3>
                 <div className={Styles.billederDiv}>
                     {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {

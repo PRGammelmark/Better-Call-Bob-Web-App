@@ -1,0 +1,279 @@
+.modalHeader {
+    margin-bottom: 20px;
+}
+
+.modalDescription {
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+}
+
+.buttons {
+    margin-top: -10px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
+.opretSpørgsmålButton {
+    padding: 10px 20px;
+    color: #222222;
+    background: #e0e0e0;
+    border: 1px solid #22222200;
+    border-radius: 10px;
+    font-family: "OmnesBold";
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-bottom: 0px;
+}
+
+.opretSpørgsmålButton .buttonIcon {
+    height: 18px;
+}
+
+.errorMessage {
+    color: red;
+    font-size: 0.8rem;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.opretSpørgsmålButton:hover {
+    border: 1px solid #222222;
+}
+
+.tilbageKnap {
+    height: 30px;
+    width: 30px;
+    cursor: pointer;
+}
+
+.subpageHeader {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.spørgsmålKategori {
+    border: 1px solid #d0d0d0;
+    padding: 26px 20px 10px 10px;
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.spørgsmålKategori h3 {
+    position: absolute;
+    top: calc(-0.5rem);
+    left: 10px;
+    font-size: 1rem;
+    line-height: 1rem;
+    margin: 0;
+    padding: 4px 10px;
+    background: #fff;
+    border: 1px solid #d0d0d0;
+    border-radius: 5px;
+    font-family: "OmnesBold";
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-direction: row;
+}
+
+.spørgsmålKategori h3 * {
+    height: 16px;
+    width: 16px;
+}
+
+.spørgsmålListe {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.spørgsmålItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    background: #f5f5f5;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.spørgsmålItem:hover {
+    background: #e8e8e8;
+    border: 1px solid #d0d0d0;
+}
+
+.spørgsmålInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.spørgsmålTekst {
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.spørgsmålType {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.editIcon {
+    height: 18px;
+    width: 18px;
+    color: #666;
+}
+
+.ingenSpørgsmål {
+    text-align: center;
+    color: #999;
+    padding: 40px 20px;
+    font-style: italic;
+}
+
+.selectOptionsContainer {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.selectOptionsContainer label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.selectOptionsList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.selectOptionItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    border: 1px solid #d0d0d0;
+}
+
+.removeIcon {
+    height: 16px;
+    width: 16px;
+    cursor: pointer;
+    color: #999;
+    transition: 0.2s ease;
+}
+
+.removeIcon:hover {
+    color: #d32f2f;
+}
+
+.addOptionContainer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.addOptionInput {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.addOptionButton {
+    padding: 8px 16px;
+    background: #59bf1a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.addOptionButton:hover {
+    background: #4da815;
+}
+
+.addOptionButton * {
+    height: 16px;
+    width: 16px;
+}
+
+.switchLabel {
+    font-size: 0.9rem;
+    color: #222;
+}
+
+.opgavetyperContainer {
+    margin-top: 10px;
+}
+
+.opgavetyperContainer label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.opgavetypePillContainer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.opgavetypePill {
+    font-size: 0.8rem;
+    background: #e0e0e0;
+    border-radius: 5px;
+    padding: 6px 12px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: 0.2s ease;
+}
+
+.opgavetypePill:hover {
+    border: 1px solid #222222;
+}
+
+.opgavetypePill.selected {
+    background: #59bf1a;
+    color: white;
+    border: 1px solid #59bf1a;
+}
+
+.flexButtonsDiv {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+

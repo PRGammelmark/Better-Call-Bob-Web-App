@@ -149,7 +149,7 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
     }
     
   return (
-      <div className={Styles.posteringDiv} key={postering._id}>
+      <div className={Styles.posteringDiv} key={postering._id} onClick={() => console.log(postering)}>
         <div className={Styles.posteringFlipContainer}>
             <div className={`${Styles.posteringFlipper} ${honorarVisning ? '' : Styles.flipped}`}>
                 <div className={Styles.posteringFront}>

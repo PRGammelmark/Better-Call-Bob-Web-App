@@ -43,6 +43,30 @@
     pointer-events: none;
 }
 
+.nextButton.pulsating {
+    background: #59bf1a !important;
+    color: #fff !important;
+    animation: pulseButton 2.5s ease-in-out infinite;
+    border: 2px solid #59bf1a !important;
+}
+
+.nextButton.pulsating:disabled {
+    background: #59bf1a !important;
+    color: #fff !important;
+    border: 2px solid #59bf1a !important;
+}
+
+@keyframes pulseButton {
+    0%, 100% {
+        border-color: #59bf1a;
+        box-shadow: 0 2px 10px rgba(89, 191, 26, 0.35), 0 0 0 0 rgba(89, 191, 26, 0.4);
+    }
+    50% {
+        border-color: #4da816;
+        box-shadow: 0 2px 16px rgba(77, 168, 22, 0.5), 0 0 0 4px rgba(89, 191, 26, 0.2);
+    }
+}
+
 .backButton {
     background: #e8e8e8;
     border-radius: 5px;

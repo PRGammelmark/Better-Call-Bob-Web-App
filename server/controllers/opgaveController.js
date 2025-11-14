@@ -46,84 +46,34 @@ const bookingSchema = Joi.object({
 const debounceTimers = {};
 
 const verifyCaptcha = async (token, expectedAction = 'submit') => {
-    const apiKey = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
-    const siteKey = process.env.GOOGLE_RECAPTCHA_SITE_KEY
-
-    if (!apiKey) {
-        throw new Error('reCAPTCHA API key mangler i miljøvariablerne')
-    }
-
-    if (!siteKey) {
-        throw new Error('reCAPTCHA site key mangler i miljøvariablerne')
-    }
-
-    const projectId = process.env.GOOGLE_RECAPTCHA_PROJECT_ID || 'better-call-bob-app'
-    const url = `https://recaptchaenterprise.googleapis.com/v1/projects/${projectId}/assessments?key=${apiKey}`
-
-    const requestBody = {
-        event: {
-            token: token,
-            expectedAction: expectedAction,
-            siteKey: siteKey
-        }
-    }
-
+    const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
+  
+    if (!secret) { throw new Error('reCAPTCHA secret mangler i miljøvariablerne') }
+    if (!token) { throw new Error('reCAPTCHA token mangler') }
+  
     try {
-        console.log("Recaptcha main branch")
-        const response = await axios.post(url, requestBody, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-
-        const assessment = response.data
-        if (assessment.tokenProperties) {
-            return {
-                success: assessment.tokenProperties.valid === true,
-                score: assessment.riskAnalysis?.score || 0,
-                action: assessment.tokenProperties.action,
-                hostname: assessment.tokenProperties.hostname,
-                // Include full assessment for debugging if needed
-                assessment: assessment
-            }
-        } else {
-            return {
-                success: false,
-                score: 0,
-                error: 'Uventet svarformat fra reCAPTCHA Enterprise API'
-            }
-        }
+      const response = await axios.post('https://www.google.com/recaptcha/api/siteverify', null,
+        { params: { secret, response: token } }
+      )
+  
+      const data = response.data
+  
+      return {
+        success: data.success === true,
+        score: data.score || 0,
+        action: data.action || expectedAction,
+        hostname: data.hostname || null,
+        challenge_ts: data.challenge_ts || null
+      }
     } catch (error) {
-        console.log("Recaptcha fallback branch")
-        console.error('Error verifying reCAPTCHA with Enterprise API:', error.response?.data || error.message)
-        // Fallback to standard API if Enterprise fails
-        const secret = process.env.GOOGLE_CAPTCHA_V3_SECRET_KEY
-        if (secret) {
-            try {
-                const fallbackResponse = await axios.post(`https://www.google.com/recaptcha/api/siteverify`, null, {
-                    params: {
-                        secret,
-                        response: token
-                    }
-                })
-                return fallbackResponse.data
-            } catch (fallbackError) {
-                throw new Error('Fejl ved verificering af reCAPTCHA: ' + (fallbackError.response?.data?.error || fallbackError.message))
-            }
-        }
-        throw new Error('Fejl ved verificering af reCAPTCHA: ' + (error.response?.data?.error || error.message))
+      console.error('Fejl ved verificering af reCAPTCHA:', error.response?.data || error.message)
+      throw new Error('Kunne ikke verificere reCAPTCHA')
     }
-}
+  }
 
 const getOpgaver = async (req, res) => {
     try {
         const opgaver = await Opgave.find({}).sort({ createdAt: -1 });
-
-        // // Convert fakturaPDF buffer to base64 for each opgave
-        // const opgaverWithBase64PDF = opgaver.map(opgave => ({
-        //     ...opgave.toObject(),
-        //     fakturaPDF: opgave.fakturaPDF ? opgave.fakturaPDF.toString('base64') : null
-        // }));
 
         res.status(200).json(opgaver);
     } catch (error) {
