@@ -1,5 +1,5 @@
 import express from "express"
-import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword, subscribeToPush, unSubscribeToPush } from '../controllers/brugerController.js'
+import { loginBruger, signupBruger, getBrugere, getBruger, updateBruger, updateBrugerPassword, subscribeToPush, unSubscribeToPush, getAvailableWorkers } from '../controllers/brugerController.js'
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
@@ -12,6 +12,9 @@ router.post('/signup', signupBruger)
 
 // GET alle brugere
 router.get("/", getBrugere)
+
+// POST getAvailableWorkers - public endpoint for booking system
+router.post('/getAvailableWorkers', getAvailableWorkers)
 
 router.use(requireAuth) 
 

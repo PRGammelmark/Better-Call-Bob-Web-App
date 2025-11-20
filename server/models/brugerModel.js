@@ -72,6 +72,10 @@ const brugerSchema = new Schema({
     opgavetyper: {
         type: [String],
         default: []
+    },
+    rating: {
+        type: Number,
+        default: 4
     }
 })
 

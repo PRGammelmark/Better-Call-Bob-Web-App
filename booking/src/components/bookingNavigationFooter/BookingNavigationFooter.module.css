@@ -13,7 +13,8 @@
 }
 
 /* Tvinger næste-knappen til højre når der kun er én knap */
-.bookingNavigationFooter button:only-child {
+.bookingNavigationFooter button:only-child,
+.bookingNavigationFooter > span:only-child {
   margin-left: auto;
 }
 
@@ -40,7 +41,7 @@
 .nextButton:disabled {
     background: #e0e0e0;
     color: #bbbbbb;
-    pointer-events: none;
+    cursor: not-allowed;
 }
 
 .nextButton.pulsating {

@@ -28,7 +28,7 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, kundeID, existingRem
   const [brugere, setBrugere] = useState([]);
 
   const sendesKl = useMemo(() => new Date(Date.now() + Number(presetMs)), [presetMs]);
-  const formattedTime = useMemo(() => dayjs(sendesKl).format('DD. MMMM HH:mm'), [sendesKl]);
+  const formattedTime = useMemo(() => dayjs(sendesKl).format('DD. MMMM [kl.] HH:mm'), [sendesKl]);
 
   // Fetch employees if user is admin
   useEffect(() => {
@@ -142,7 +142,7 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, kundeID, existingRem
       <div className={SBStyles.container}>
         <div className={`${SBStyles.row} ${SBStyles.inputLine}`}>
           <div className={SBStyles.iconAndTitleDiv}>
-            <h3>Påmind mig ...</h3>
+            <h3>Hvornår</h3>
           </div>
           <div className={SBStyles.inputContainer}>
             <select 
@@ -161,7 +161,7 @@ const SaetReminderModal = ({ trigger, setTrigger, opgaveID, kundeID, existingRem
         {user?.isAdmin && (
           <div className={`${SBStyles.row} ${SBStyles.inputLine}`}>
             <div className={SBStyles.iconAndTitleDiv}>
-              <h3>Notificer bruger</h3>
+              <h3>Modtager</h3>
             </div>
             <div className={SBStyles.inputContainer}>
               <select 

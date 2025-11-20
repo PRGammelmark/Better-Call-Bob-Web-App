@@ -2,6 +2,7 @@ import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import Opgavetyper from "../models/opgavetyperModel.js";
+
 dotenv.config({ path: "../.env" });
 
 const router = express.Router();
@@ -74,7 +75,7 @@ router.post("/parseKategorierFromText", async (req, res) => {
 
     // Send til AI for at analysere opgavebeskrivelsen og matche opgavetyper
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: "gpt-4.1-mini",
       temperature: 0.2,
       messages: [
         {
@@ -85,7 +86,9 @@ router.post("/parseKategorierFromText", async (req, res) => {
           Tilgængelige kategorier: ${opgavetyperListe.join(", ")}
           
           Returnér kun et array af kategorier som JSON, f.eks.: ["kategori1", "kategori2"].
-          Er du usikker på om en kategori passer til opgaven skal du ikke inkludere den. Hvis der ikke er nogen relevante kategorier at give til opgaven, så skal du returnere et tomt array: [].
+          Vælg kun en kategori hvis den tydeligt matcher opgavens kerne. 
+          Hvis teksten ikke specifikt nævner noget, der passer til en kategori, må du IKKE gætte.
+          Er du usikker på om en kategori passer til opgaven skal du IKKE inkludere den. Hvis der ikke er nogen relevante kategorier at give til opgaven, så skal du returnere et tomt array: [].
           Returnér kun gyldig JSON som output, uden markdown eller forklaringer.`
         },
         {
@@ -149,29 +152,64 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
       messages: [
         {
           role: "system",
-          content: `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre. 
+          content: `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
           Opsummeringen skal være præcis og informativ, og fange essensen af opgaven.
-          Returnér kun opsummeringen som ren tekst, uden markdown eller forklaringer.`
+          Returnér kun gyldig JSON som output med følgende struktur:
+          {
+            "opsummering": "opsummeringen her",
+            "estimeretTidsforbrugTimer": <helt tal>
+          }
+          Estimeret tidsforbrug skal være et helt tal (antal timer). Vurder realistisk hvor lang tid opgaven tager for en professionel håndværker at udføre.
+          Returnér kun gyldig JSON, uden markdown eller forklaringer.`
         },
         {
           role: "user",
-          content: `Opsumer følgende opgavebeskrivelse til 10 ord eller mindre:\n\n${opgaveBeskrivelse}`,
+          content: `Opsumer følgende opgavebeskrivelse til 10 ord eller mindre, og vurder tidsforbruget:\n\n${opgaveBeskrivelse}`,
         }
       ],
     });
 
     const content = completion.choices[0].message.content.trim();
 
-    // Valider at opsummeringen er 10 ord eller mindre
-    const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
-    
-    if (wordCount > 10) {
-      // Hvis AI'en returnerer mere end 10 ord, tag de første 10 ord
-      const words = content.split(/\s+/).filter(word => word.length > 0);
-      const truncated = words.slice(0, 10).join(' ');
-      res.json(truncated);
-    } else {
-      res.json(content);
+    // Parse JSON fra AI-svar
+    let parsed;
+    try {
+      // Fjern eventuel markdown formatting
+      const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      parsed = JSON.parse(cleanedContent);
+      
+      // Valider at opsummeringen er 10 ord eller mindre
+      const opsummering = parsed.opsummering || parsed.summary || "";
+      const wordCount = opsummering.split(/\s+/).filter(word => word.length > 0).length;
+      
+      let finalOpsummering = opsummering;
+      if (wordCount > 10) {
+        // Hvis AI'en returnerer mere end 10 ord, tag de første 10 ord
+        const words = opsummering.split(/\s+/).filter(word => word.length > 0);
+        finalOpsummering = words.slice(0, 10).join(' ');
+      }
+      
+      // Valider og sikre at estimeret tidsforbrug er et helt tal
+      let estimeretTidsforbrugTimer = parsed.estimeretTidsforbrugTimer || parsed.estimatedHours || 1;
+      estimeretTidsforbrugTimer = Math.max(1, Math.round(Number(estimeretTidsforbrugTimer))); // Minimum 1 time, runder til nærmeste heltal
+      
+      res.json({
+        opsummering: finalOpsummering,
+        estimeretTidsforbrugTimer
+      });
+    } catch (e) {
+      console.error("Kunne ikke parse AI's JSON output:", content);
+      // Fallback: returner kun opsummeringen hvis JSON parsing fejler
+      const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
+      let finalContent = content;
+      if (wordCount > 10) {
+        const words = content.split(/\s+/).filter(word => word.length > 0);
+        finalContent = words.slice(0, 10).join(' ');
+      }
+      res.json({
+        opsummering: finalContent,
+        estimeretTidsforbrugTimer: 1 // Default fallback
+      });
     }
   } catch (error) {
     console.error("AI opsummering fejl:", error);

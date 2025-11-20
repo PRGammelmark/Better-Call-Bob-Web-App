@@ -393,19 +393,19 @@ const OpgaverHurtigtAdminOverblik = () => {
   const getWarningLabels = (tabId) => {
     const labels = {
       new: {
-        red: 'Over 24 timer',
-        yellow: 'Over 12 timer'
+        red: '> 24 timer',
+        yellow: '> 12 timer'
       },
       open: {
-        red: 'Over 24 timer',
-        yellow: 'Over 12 timer'
+        red: '> 24 timer',
+        yellow: '> 12 timer'
       },
       planned: {
-        red: 'Opg. uden besøg',
-        yellow: 'Mangler opfølgning'
+        red: 'Uden besøg',
+        yellow: 'Følg op'
       },
       unpaid: {
-        red: 'Mangler opkrævning',
+        red: 'Opkræv',
         yellow: 'Forfalden'
       },
       done: {

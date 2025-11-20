@@ -1,12 +1,29 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import { Check } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './Ekstra.module.css'
 import axios from 'axios'
 
-const Ekstra = ({ kategorier, isLoading, onAnswersChange }) => {
+const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} }) => {
   const [spørgsmål, setSpørgsmål] = useState([])
   const [isLoadingSpørgsmål, setIsLoadingSpørgsmål] = useState(false)
-  const [answers, setAnswers] = useState({})
+  const [answers, setAnswers] = useState(initialAnswers)
+  const lastKategorierRef = useRef([])
+
+  // Initialize answers from initialAnswers when component mounts or when kategorier change
+  useEffect(() => {
+    // Check if kategorier have changed (new analysis)
+    const kategorierChanged = JSON.stringify(lastKategorierRef.current) !== JSON.stringify(kategorier)
+    
+    if (kategorierChanged && !isLoading) {
+      // Kategorier have changed, so this is a new analysis - use initialAnswers
+      setAnswers(initialAnswers || {})
+      lastKategorierRef.current = kategorier || []
+    } else if (!kategorierChanged && Object.keys(initialAnswers).length > 0) {
+      // Kategorier haven't changed - restore answers from initialAnswers to preserve user input
+      setAnswers(initialAnswers)
+    }
+  }, [kategorier, isLoading, initialAnswers])
 
   // Fetch spørgsmål when kategorier are available
   useEffect(() => {
@@ -90,7 +107,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange }) => {
           <div className={Styles.selectWrapper}>
             <select
               id={feltNavn}
-              className={Styles.selectInput}
+              className={`${Styles.selectInput} ${currentValue ? Styles.selectInputSelected : ''}`}
               value={currentValue || ''}
               onChange={(e) => handleAnswerChange(feltNavn, e.target.value)}
             >
@@ -102,6 +119,11 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange }) => {
               ))}
             </select>
             <span className={Styles.selectArrow}></span>
+            {currentValue && (
+              <div className={Styles.selectCheckIcon}>
+                <Check size={16} />
+              </div>
+            )}
           </div>
         </div>
       )

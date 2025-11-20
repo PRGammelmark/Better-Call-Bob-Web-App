@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 24px 0;
+  padding: 0px 0px 24px 0px;
 }
 
 .headerSection {
@@ -175,6 +175,17 @@
   box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
 }
 
+.selectInputSelected {
+  border-color: #59bf1a !important;
+  background: #f8fff4 !important;
+  padding-right: 50px;
+}
+
+.selectInputSelected:hover {
+  border-color: #4aa015 !important;
+  background: #f0fce8 !important;
+}
+
 .selectArrow {
   position: absolute;
   right: 16px;
@@ -186,7 +197,8 @@
   border-right: 5px solid transparent;
   border-top: 6px solid #666;
   pointer-events: none;
-  transition: border-top-color 0.2s ease, transform 0.2s ease;
+  transition: border-top-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+  z-index: 1;
 }
 
 .selectWrapper:hover .selectArrow {
@@ -196,6 +208,27 @@
 .selectInput:focus + .selectArrow {
   transform: translateY(-50%) rotate(180deg);
   border-top-color: #59bf1a;
+}
+
+.selectInputSelected + .selectArrow {
+  opacity: 0;
+}
+
+.selectCheckIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #59bf1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* Empty States */

@@ -10,11 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
     "@ffmpeg/ffmpeg": "^0.12.15",
     "@ffmpeg/util": "^0.12.2",
+    "@mui/material": "^7.3.5",
+    "@mui/x-date-pickers": "^8.18.0",
     "axios": "^1.12.2",
     "browser-image-compression": "^2.0.2",
+    "dayjs": "^1.11.19",
     "firebase": "^12.4.0",
+    "framer-motion": "^12.23.24",
     "lucide-react": "^0.546.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -22,6 +28,7 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
+    "@emotion/babel-plugin": "^11.13.5",
     "@eslint/js": "^9.36.0",
     "@types/react": "^19.1.16",
     "@types/react-dom": "^19.1.9",

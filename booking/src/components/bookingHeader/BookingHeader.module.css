@@ -37,6 +37,7 @@
   
   .circleWrapper {
     position: absolute;
+    /* top: 20px; */
     /* top: 50%; */
     transform: translateX(-50%);
     text-align: center;
@@ -58,6 +59,7 @@
     color: #222;
     white-space: nowrap;
     cursor: pointer;
+    transition: 0.2s ease;
   }
   
   .circle.active {
@@ -66,11 +68,36 @@
     color: #fff;
   }
   
+  .circle.disabled {
+    background: #e0e0e0;
+    border-color: #e0e0e0;
+    cursor: not-allowed;
+    color: #7c7c7c;
+    transition: 0.2s ease;
+  }
+  
   .circleLabel {
     margin-top: 6px;
     font-size: 12px;
     font-weight: 500;
     color: #222;
     white-space: nowrap;
+    transition: 0.2s ease;
   }
+  
+  .circleLabel.disabled {
+    color: #b0b0b0;
+  }
+  
+  .tooltipContainer {
+    position: absolute;
+    transform: translateX(-50%);
+    top: 6px;
+  }
+  
+  /* Override tooltip wrapper to not affect layout */
+  /* .tooltipContainer :global(.tooltipWrapper) {
+    position: static;
+    display: block;
+  } */
   

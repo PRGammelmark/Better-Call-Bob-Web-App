@@ -1,8 +1,17 @@
 import express from "express"
-import { getLedigeTider, createLedigTid, getLedigTid, deleteLedigTid, updateLedigTid, getLedigeTiderForMedarbejder } from "../controllers/ledigeTiderController.js"
+import { getLedigeTider, createLedigTid, getLedigTid, deleteLedigTid, updateLedigTid, getLedigeTiderForMedarbejder, getLedighed, getLedighedForMultipleUsers, getLedigeBookingTider } from "../controllers/ledigeTiderController.js"
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
+
+// GET ledighed (ledige tider minus besøg) - ingen auth påkrævet
+router.get("/ledighed", getLedighed)
+
+// POST ledighed for multiple users (for booking system) - ingen auth påkrævet
+router.post("/ledighed-for-brugere", getLedighedForMultipleUsers)
+
+// POST ledige booking tider (konverteret til slots baseret på tidsforbrug) - ingen auth påkrævet
+router.post("/get-ledige-booking-tider", getLedigeBookingTider)
 
 router.use(requireAuth) 
 

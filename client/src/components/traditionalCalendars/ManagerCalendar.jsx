@@ -15,6 +15,7 @@ import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
 import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
 import { justerForDST } from '../../utils/justerForDST.js'
+import { getLedighed } from '../../utils/getLedighed.js'
 import utc from "dayjs/plugin/utc";
 
 dayjs.extend(utc);
@@ -193,39 +194,8 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
     };
   });
 
-    const ledigeTiderMinusBesøg = alleLedigeTider.flatMap(tid => {
-      let updatedTider = [tid];
-      alleBesøgFormateret.forEach(besøg => {
-        if (besøg.brugerID === tid.brugerID) {
-          const besøgStart = dayjs(besøg.datoTidFra);
-          const besøgEnd = dayjs(besøg.datoTidTil);
-          updatedTider = updatedTider.flatMap(t => {
-            const tidStart = dayjs(t.datoTidFra);
-            const tidEnd = dayjs(t.datoTidTil);
-            if (besøgStart.isBefore(tidEnd) && besøgEnd.isAfter(tidStart)) {
-              if (besøgStart.isAfter(tidStart) && besøgEnd.isBefore(tidEnd)) {
-                // Split the tid into two parts
-                return [
-                  { ...t, datoTidTil: besøgStart.toDate(), end: besøgStart.toDate() },
-                  { ...t, datoTidFra: besøgEnd.toDate(), start: besøgEnd.toDate() }
-                ];
-              } else if (besøgStart.isAfter(tidStart)) {
-                // Adjust the end of the tid
-                return [{ ...t, datoTidTil: besøgStart.toDate(), end: besøgStart.toDate() }];
-              } else if (besøgEnd.isBefore(tidEnd)) {
-                // Adjust the start of the tid
-                return [{ ...t, datoTidFra: besøgEnd.toDate(), start: besøgEnd.toDate() }];
-              } else {
-                // The besøg completely overlaps the tid
-                return [];
-              }
-            }
-            return [t];
-          });
-        }
-      });
-      return updatedTider;
-    });
+    // Beregn ledige tider minus besøg for alle brugere
+    const ledigeTiderMinusBesøg = getLedighed(null, alleLedigeTider, alleBesøg);
 
     const ledigeTiderFormateret = ledigeTiderMinusBesøg.map((ledigTid) => {
       // const { start, end } = justerForDST(ledigTid.datoTidFra, ledigTid.datoTidTil);
