@@ -72,6 +72,11 @@ const PrimaryBookingComponent = () => {
           opgaveBilleder={opgaveBilleder}
           setOpgaveBilleder={setOpgaveBilleder}
           wordCount={countWords(opgaveBeskrivelse)}
+          onNavigateNext={() => {
+            if (countWords(opgaveBeskrivelse) >= 5) {
+              handleStepChange(2)
+            }
+          }}
         />
       )
     },

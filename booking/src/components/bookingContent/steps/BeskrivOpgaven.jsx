@@ -8,7 +8,7 @@ import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util';
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
-const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0 }) => {
+const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0, onNavigateNext }) => {
     const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -160,6 +160,13 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                     className={`${Styles.opgavebeskrivelse} ${shouldPulse ? Styles.pulsating : ''}`} 
                     value={opgaveBeskrivelse} 
                     onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
+                    enterKeyHint="done"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey && wordCount >= 5 && onNavigateNext) {
+                        e.preventDefault()
+                        onNavigateNext()
+                      }
+                    }}
                 ></textarea>
                 <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Tilføj evt. billeder, dokumenter eller video</h3>
                 <div className={Styles.billederDiv}>

@@ -100,6 +100,13 @@ const Kontaktinfo = ({
             placeholder="Fx Jens Hansen"
             value={fuldeNavn || ''}
             onChange={(e) => setFuldeNavn(e.target.value)}
+            enterKeyHint="next"
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault()
+                document.getElementById('email')?.focus()
+              }
+            }}
           />
         </div>
 
@@ -120,6 +127,13 @@ const Kontaktinfo = ({
               placeholder="Fx jens@example.dk"
               value={email || ''}
               onChange={(e) => setEmail(e.target.value)}
+              enterKeyHint="next"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  document.getElementById('telefonnummer')?.focus()
+                }
+              }}
             />
             {errors.email && errors.email === 'Ugyldig e-mailadresse' && (
               <span className={Styles.errorText}>{errors.email}</span>
@@ -138,6 +152,13 @@ const Kontaktinfo = ({
               placeholder="Fx 12345678"
               value={telefonnummer || ''}
               onChange={(e) => setTelefonnummer(e.target.value)}
+              enterKeyHint="next"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  document.getElementById('kommentarer')?.focus()
+                }
+              }}
             />
             {/* {!telefonnummer && (
               <p className={Styles.hintText}>
