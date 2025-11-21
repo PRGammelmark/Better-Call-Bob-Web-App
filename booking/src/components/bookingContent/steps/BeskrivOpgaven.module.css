@@ -26,24 +26,30 @@
     font-size: 0.9rem;
     height: 180px!important;
     resize: none;
-    border: none;
-    transition: 0.2s ease;
-    box-shadow: rgba(0, 0, 0, 0.02) 0px 6px 24px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
+    border: 2px solid #e8e9ea;
+    background: #ffffff;
+    transition: all 0.2s ease;
+    box-shadow: none;
 }
 
 .opgavebeskrivelse::placeholder {
     font-style: italic;
     color: #22222270;
-  }
+}
+
+.opgavebeskrivelse:hover {
+    border-color: #59bf1a;
+    background: #f8fff4;
+}
 
 .opgavebeskrivelse:focus {
-    box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 24px 0px, rgba(89, 191, 26, 0.46) 0px 0px 0px 2px;
     outline: none;
-    transform: translateY(-2px);
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
 }
 
 .opgavebeskrivelse.pulsating {
-    border: 2px solid #59bf1a;
+    border-color: #59bf1a;
     animation: pulseInput 2.5s ease-in-out infinite;
 }
 
@@ -54,11 +60,11 @@
 @keyframes pulseInput {
     0%, 100% {
         border-color: #59bf1a;
-        box-shadow: rgba(89, 191, 26, 0.16) 0px 10px 24px 0px, rgba(89, 191, 26, 0.35) 0px 0px 0px 2px, 0 0 0 0 rgba(89, 191, 26, 0.4);
+        box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
     }
     50% {
         border-color: #4da816;
-        box-shadow: rgba(77, 168, 22, 0.2) 0px 12px 28px 0px, rgba(77, 168, 22, 0.5) 0px 0px 0px 2px, 0 0 0 4px rgba(89, 191, 26, 0.2);
+        box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.2);
     }
 }
 
@@ -188,5 +194,9 @@
 @media (max-width: 750px) {
     .opgavebeskrivelseContainer {
         padding: 10px 0px;
+    }
+    
+    .opgavebeskrivelse {
+        font-size: 16px; /* Prevent iOS Safari zoom on focus */
     }
 }
