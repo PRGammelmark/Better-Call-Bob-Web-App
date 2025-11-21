@@ -206,6 +206,7 @@
 .timeSlotsContainer {
   flex: 1;
   min-width: 200px;
+  overflow: visible;
 }
 
 .timeSlotsContainer h3 {
@@ -216,11 +217,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 12px;
-  margin-top: 16px;
+  margin-top: -4px;
   max-height: 372px;
   overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 4px;
+  overflow-x: visible;
+  padding: 4px 4px 4px 4px;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
@@ -258,7 +259,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .timeSlotButton:hover {
@@ -550,16 +551,18 @@
   .timeSlotsContainer {
     width: 100%;
     min-width: 0;
+    overflow: visible;
   }
 
   .timeSlotsGrid {
     grid-template-columns: calc(50% - 4px) calc(50% - 4px);
     gap: 8px;
-    padding-right: 0;
+    padding: 4px 8px 4px 4px;
     width: 100%;
     box-sizing: border-box;
     margin-left: 0;
     margin-right: 0;
+    overflow-x: visible;
   }
 
   .timeSlotButton {
@@ -574,8 +577,8 @@
   }
 }
 
-/* Mobile-specific calendar collapse (max-width: 750px) */
-@media (max-width: 750px) {
+/* Mobile-specific calendar collapse (max-width: 750px eller max-height: 800px) */
+@media (max-width: 750px), (max-height: 800px) {
   .calendarSection {
     contain: layout style;
     will-change: contents;
@@ -665,6 +668,65 @@
     margin: 0;
     opacity: 0;
     pointer-events: none;
+  }
+
+  .tidOgStedTopContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    contain: layout;
+  }
+
+  .addressSection {
+    margin-top: 20px!important;
+  }
+}
+
+/* Pulsating animation for unanswered fields in step 3 */
+.addressInputWrapper.pulsating {
+  position: relative;
+}
+
+.addressInput.pulsating {
+  border-color: #59bf1a;
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.addressInput.pulsating:focus {
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.datePickerWrapper.pulsating {
+  border-color: #59bf1a;
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.timeSlotButton.pulsating {
+  border-color: #59bf1a;
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.timeSlotButton.pulsating:hover {
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.manualTimePreferenceInput.pulsating {
+  border-color: #59bf1a;
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.manualTimePreferenceInput.pulsating:focus {
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseInput {
+  0%, 100% {
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 0px rgba(89, 191, 26, 1);
+  }
+  50% {
+    border-color: #4da816;
+    box-shadow: 0 0 0 4px rgba(89, 191, 26, 0.05);
   }
 }
 

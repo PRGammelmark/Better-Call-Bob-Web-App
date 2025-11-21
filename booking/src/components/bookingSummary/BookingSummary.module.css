@@ -363,7 +363,7 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (max-height: 800px) {
     .summaryHeading {
         display: none;
     }

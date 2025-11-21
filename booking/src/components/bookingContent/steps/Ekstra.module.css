@@ -286,3 +286,52 @@
     width: 100%;
   }
 }
+
+/* Pulsating animation for unanswered questions */
+.jaNejButton.pulsating {
+  border-color: #59bf1a;
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.jaNejButton.pulsating:hover {
+  animation: pulseInput 2.5s ease-in-out infinite;
+}
+
+.selectWrapper.pulsating {
+  position: relative;
+}
+
+.selectInput.pulsating {
+  border-color: #59bf1a;
+  animation: pulseSelect 2.5s ease-in-out infinite;
+}
+
+.selectInput.pulsating:focus {
+  animation: pulseSelect 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseInput {
+  0%, 100% {
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+  }
+  50% {
+    border-color: #4da816;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.2);
+  }
+}
+
+@keyframes pulseSelect {
+  0% {
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 0 rgba(89, 191, 26, 0.7);
+  }
+  50% {
+    border-color: #4da816;
+    box-shadow: 0 0 0 4px rgba(89, 191, 26, 0.3);
+  }
+  100% {
+    border-color: #59bf1a;
+    box-shadow: 0 0 0 0 rgba(89, 191, 26, 0.7);
+  }
+}

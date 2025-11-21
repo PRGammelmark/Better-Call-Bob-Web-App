@@ -4,7 +4,7 @@ import StepsStyles from './Steps.module.css'
 import Styles from './Ekstra.module.css'
 import axios from 'axios'
 
-const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} }) => {
+const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, førsteUbesvaredeSpørgsmål }) => {
   const [spørgsmål, setSpørgsmål] = useState([])
   const [isLoadingSpørgsmål, setIsLoadingSpørgsmål] = useState(false)
   const [answers, setAnswers] = useState(initialAnswers)
@@ -67,6 +67,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} })
   const renderSpørgsmål = (spørgsmålItem, index) => {
     const { _id, spørgsmål: spørgsmålTekst, type, selectOptions, feltNavn } = spørgsmålItem
     const currentValue = answers[feltNavn]
+    const shouldPulse = førsteUbesvaredeSpørgsmål && førsteUbesvaredeSpørgsmål._id === _id
 
     if (type === 'Ja/nej') {
       return (
@@ -78,7 +79,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} })
           <div className={Styles.jaNejContainer}>
             <button
               type="button"
-              className={`${Styles.jaNejButton} ${currentValue === true ? Styles.active : ''}`}
+              className={`${Styles.jaNejButton} ${currentValue === true ? Styles.active : ''} ${shouldPulse ? Styles.pulsating : ''}`}
               onClick={() => handleAnswerChange(feltNavn, true)}
               aria-pressed={currentValue === true}
             >
@@ -86,7 +87,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} })
             </button>
             <button
               type="button"
-              className={`${Styles.jaNejButton} ${currentValue === false ? Styles.active : ''}`}
+              className={`${Styles.jaNejButton} ${currentValue === false ? Styles.active : ''} ${shouldPulse ? Styles.pulsating : ''}`}
               onClick={() => handleAnswerChange(feltNavn, false)}
               aria-pressed={currentValue === false}
             >
@@ -104,10 +105,10 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {} })
               {spørgsmålTekst}
             </label>
           </div>
-          <div className={Styles.selectWrapper}>
+          <div className={`${Styles.selectWrapper} ${shouldPulse ? Styles.pulsating : ''}`}>
             <select
               id={feltNavn}
-              className={`${Styles.selectInput} ${currentValue ? Styles.selectInputSelected : ''}`}
+              className={`${Styles.selectInput} ${currentValue ? Styles.selectInputSelected : ''} ${shouldPulse ? Styles.pulsating : ''}`}
               value={currentValue || ''}
               onChange={(e) => handleAnswerChange(feltNavn, e.target.value)}
             >

@@ -228,7 +228,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                 </div>
             </div>
             <div className={Styles.opgaveBeskrivelseBottomContainer}>
-                <p>Vi kører automatiske analyser af din opgavebeskrivelse for at kunne betjene dig bedre og hurtigere. Når du trykker 'Næste' antager vi din implicitte accept. Vi gemmer aldrig persondata uden din eksplicitte accept.</p>
+                <p>Vi AI-behandler din opgave for at hjælpe dig bedre. Tryk “Næste” for at fortsætte. Vi gemmer kun persondata med dit samtykke.</p>
             </div>
         </div>
     )

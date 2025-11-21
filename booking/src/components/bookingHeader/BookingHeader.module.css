@@ -9,7 +9,7 @@
 }
 
 /* Mobil styling */
-@media (max-width: 750px) {
+@media (max-width: 750px), (max-height: 800px) {
     .bookingHeader {
         width: 100%;
         max-width: 100%;

@@ -1,6 +1,6 @@
 .grecaptcha-badge { visibility: hidden; }
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (max-height: 800px) {
     html, body {
         overflow: hidden!important;
         overscroll-behavior: none!important;

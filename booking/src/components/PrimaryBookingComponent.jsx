@@ -16,7 +16,7 @@ import useRecaptcha from '../hooks/useRecaptcha'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, Tag, Clock, MapPin, CalendarCheck, User, Mail, Phone, Building2, FileText, Briefcase } from 'lucide-react'
+import { X, Tag, Clock, MapPin, CalendarCheck, User, Mail, Phone, Building2, FileText, Briefcase, Check } from 'lucide-react'
 import SummaryStyles from './bookingSummary/BookingSummary.module.css'
 
 const PrimaryBookingComponent = () => {
@@ -88,6 +88,7 @@ const PrimaryBookingComponent = () => {
           isLoading={isLoadingKategorier}
           onAnswersChange={setOpfølgendeSpørgsmålSvar}
           initialAnswers={opfølgendeSpørgsmålSvar}
+          førsteUbesvaredeSpørgsmål={førsteUbesvaredeSpørgsmål}
         />
       )
     },
@@ -119,6 +120,7 @@ const PrimaryBookingComponent = () => {
           error={tidOgStedError}
           onErrorChange={setTidOgStedError}
           estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
+          pulseField={step3PulseField}
         />
       )
     },
@@ -389,6 +391,26 @@ const PrimaryBookingComponent = () => {
 
   const totaltAntalSpørgsmål = opfølgendeSpørgsmål.length
 
+  // Find first unanswered question in step 2
+  const førsteUbesvaredeSpørgsmål = React.useMemo(() => {
+    if (currentStep !== 2 || !opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) {
+      return null
+    }
+    
+    return opfølgendeSpørgsmål.find(spørgsmål => {
+      const svar = opfølgendeSpørgsmålSvar[spørgsmål.feltNavn]
+      return svar === null || svar === undefined || svar === ''
+    })
+  }, [currentStep, opfølgendeSpørgsmål, opfølgendeSpørgsmålSvar])
+
+  // Check if all questions in step 2 are answered
+  const alleSpørgsmålBesvarede = React.useMemo(() => {
+    if (currentStep !== 2 || !opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) {
+      return false
+    }
+    return antalBesvaredeSpørgsmål === totaltAntalSpørgsmål
+  }, [currentStep, antalBesvaredeSpørgsmål, totaltAntalSpørgsmål, opfølgendeSpørgsmål])
+
   // Helper function to extract postnummerOgBy from address
   const extractPostnummerOgBy = (address) => {
     if (!address) return ""
@@ -620,6 +642,71 @@ const PrimaryBookingComponent = () => {
   
   const hasSlotsWithin4Months = slotsWithin4Months.length > 0
   
+  // Determine which field should pulse in step 3 (priority: adresse → dato → tidsunkt)
+  const step3PulseField = React.useMemo(() => {
+    if (currentStep !== 3) return null
+    
+    const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
+    const hasDate = valgtDato !== null && valgtDato !== undefined
+    const hasTime = valgtTidspunkt !== null && valgtTidspunkt !== undefined
+    
+    // Check if manual time preference is needed (when no workers or no slots)
+    const needsManualTime = availableWorkerIDs.length === 0 || (availableWorkerIDs.length > 0 && slotsWithin4Months.length === 0)
+    const hasManualTime = manualTimePreference && manualTimePreference.trim().length > 0
+    
+    if (!hasAddress) {
+      return 'adresse'
+    }
+    if (hasAddress && !hasDate) {
+      // Only check for date if we have workers and slots
+      if (availableWorkerIDs.length > 0 && slotsWithin4Months.length > 0) {
+        return 'dato'
+      }
+      // If no workers or no slots, skip to manual time preference
+      if (needsManualTime && !hasManualTime) {
+        return 'manualTime'
+      }
+    }
+    if (hasAddress && hasDate && !hasTime) {
+      // Only check for time if we have slots
+      if (slotsWithin4Months.length > 0) {
+        return 'tidsunkt'
+      }
+      // If no slots, check manual time preference
+      if (needsManualTime && !hasManualTime) {
+        return 'manualTime'
+      }
+    }
+    return null
+  }, [currentStep, formateretAdresse, adresse, valgtDato, valgtTidspunkt, manualTimePreference, availableWorkerIDs, slotsWithin4Months])
+
+  // Check if step 3 is complete
+  const isStep3Complete = React.useMemo(() => {
+    if (currentStep !== 3) return false
+    
+    const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
+    const hasDate = valgtDato !== null && valgtDato !== undefined
+    const hasTime = valgtTidspunkt !== null && valgtTidspunkt !== undefined
+    
+    // Check if manual time preference is needed
+    const needsManualTime = availableWorkerIDs.length === 0 || (availableWorkerIDs.length > 0 && slotsWithin4Months.length === 0)
+    const hasManualTime = manualTimePreference && manualTimePreference.trim().length > 0
+    
+    if (!hasAddress) return false
+    
+    // If we have workers and slots, we need both date and time
+    if (availableWorkerIDs.length > 0 && slotsWithin4Months.length > 0) {
+      return hasDate && hasTime
+    }
+    
+    // If no workers or no slots, we need manual time preference
+    if (needsManualTime) {
+      return hasManualTime
+    }
+    
+    return false
+  }, [currentStep, formateretAdresse, adresse, valgtDato, valgtTidspunkt, manualTimePreference, availableWorkerIDs, slotsWithin4Months])
+  
   // Check if step 3 is valid: either has date+time OR manual time preference (when no workers OR no slots within 4 months)
   // Also requires address to be filled
   const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
@@ -632,7 +719,9 @@ const PrimaryBookingComponent = () => {
   const isStep4ValidCheck = currentStep !== 4 || isStep4Valid
   
   const isStepValid = isStep1Valid && isStep3Valid && isStep4ValidCheck
-  const shouldPulseButton = currentStep === 1 && wordCount >= 5 && !isSubmitting
+  const shouldPulseButton = (currentStep === 1 && wordCount >= 5 && !isSubmitting) || 
+                            (currentStep === 2 && alleSpørgsmålBesvarede && !isSubmitting) ||
+                            (currentStep === 3 && isStep3Complete && !isSubmitting)
 
   // Navigation conditions: check actual conditions regardless of current step
   // Step 2 can be accessed if step 1 condition is met (wordCount >= 5)

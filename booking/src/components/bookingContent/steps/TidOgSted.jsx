@@ -69,7 +69,8 @@ const TidOgSted = ({
   onIsLoadingTimesChange,
   error,
   onErrorChange,
-  estimeretTidsforbrugTimer = null 
+  estimeretTidsforbrugTimer = null,
+  pulseField = null
 }) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
   const [availableTimes, setAvailableTimes] = useState([])
@@ -397,11 +398,11 @@ const TidOgSted = ({
           </h2>
         </div>
         <div className={Styles.addressSection}>
-          <div className={Styles.addressInputWrapper}>
+          <div className={`${Styles.addressInputWrapper} ${pulseField === 'adresse' ? Styles.pulsating : ''}`}>
             <input
               id="adresse"
               type="text"
-              className={`${Styles.addressInput} ${formateretAdresse ? Styles.addressInputFound : ''}`}
+              className={`${Styles.addressInput} ${formateretAdresse ? Styles.addressInputFound : ''} ${pulseField === 'adresse' ? Styles.pulsating : ''}`}
               placeholder="Fx Nørregade 1, 2000 Frederiksberg"
               value={formateretAdresse || adresse}
               onChange={(e) => {
@@ -475,7 +476,7 @@ const TidOgSted = ({
                     Fortæl os hvornår du ønsker vi skal komme
                   </h3>
                   <textarea
-                    className={Styles.manualTimePreferenceInput}
+                    className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
                     placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
                     value={manualTimePreference || ""}
                     onChange={(e) => {
@@ -500,7 +501,7 @@ const TidOgSted = ({
                     Fortæl os hvornår du ønsker vi skal komme
                   </h3>
                   <textarea
-                    className={Styles.manualTimePreferenceInput}
+                    className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
                     placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
                     value={manualTimePreference || ""}
                     onChange={(e) => {
@@ -544,7 +545,7 @@ const TidOgSted = ({
                     )}
                   </h3>
                   <div 
-                    className={`${Styles.datePickerWrapper} ${formateretAdresse ? Styles.datePickerWrapperFound : ''} ${valgtDato && availableTimes.length > 0 ? Styles.datePickerWrapperSelected : ''} ${!isCalendarOpen ? Styles.datePickerWrapperCollapsed : ''}`}
+                    className={`${Styles.datePickerWrapper} ${formateretAdresse ? Styles.datePickerWrapperFound : ''} ${valgtDato && availableTimes.length > 0 ? Styles.datePickerWrapperSelected : ''} ${!isCalendarOpen ? Styles.datePickerWrapperCollapsed : ''} ${pulseField === 'dato' ? Styles.pulsating : ''}`}
                   >
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
                       <StaticDatePicker
@@ -612,7 +613,7 @@ const TidOgSted = ({
                         {availableTimes.map((timeSlot, index) => (
                           <button
                             key={index}
-                            className={`${Styles.timeSlotButton} ${isTimeSlotSelected(timeSlot) ? Styles.timeSlotButtonSelected : ''}`}
+                            className={`${Styles.timeSlotButton} ${isTimeSlotSelected(timeSlot) ? Styles.timeSlotButtonSelected : ''} ${pulseField === 'tidsunkt' ? Styles.pulsating : ''}`}
                             onClick={() => handleTimeSelect(timeSlot)}
                           >
                             <div className={Styles.timeSlotButtonContent}>
@@ -645,7 +646,7 @@ const TidOgSted = ({
                     Fortæl os hvornår du ønsker vi skal komme
                   </h3>
                   <textarea
-                    className={Styles.manualTimePreferenceInput}
+                    className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
                     placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
                     value={manualTimePreference || ""}
                     onChange={(e) => {

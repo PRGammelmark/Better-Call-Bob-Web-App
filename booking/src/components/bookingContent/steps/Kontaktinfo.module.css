@@ -307,7 +307,7 @@
   }
 }
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (max-height: 800px) {
   .twoColumnRow {
     flex-direction: row;
     gap: 12px;

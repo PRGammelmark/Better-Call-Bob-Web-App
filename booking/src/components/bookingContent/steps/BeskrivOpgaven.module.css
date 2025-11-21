@@ -5,10 +5,11 @@
     flex-direction: column;
     gap: 10px;
     justify-content: space-between;
+    overflow-x: visible!important;
 }
 
 .opgaveBeskrivelseBottomContainer {
-    margin: 10px;
+    padding: 10px;
 }
 
 .opgaveBeskrivelseBottomContainer p {
@@ -191,12 +192,16 @@
     color: #59bf1a;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 750px), (max-height: 800px) {
     .opgavebeskrivelseContainer {
         padding: 10px 0px;
     }
     
     .opgavebeskrivelse {
         font-size: 16px; /* Prevent iOS Safari zoom on focus */
+    }
+
+    .opgaveBeskrivelseBottomContainer {
+        padding: 0px 10px;
     }
 }
