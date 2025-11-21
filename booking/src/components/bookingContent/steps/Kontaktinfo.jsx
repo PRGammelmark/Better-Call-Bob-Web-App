@@ -129,7 +129,7 @@ const Kontaktinfo = ({
           <div className={Styles.inputGroup}>
             <label htmlFor="telefonnummer" className={Styles.label}>
               <Phone size={18} className={Styles.labelIcon} />
-              Telefonnummer
+              Telefon
             </label>
             <input
               id="telefonnummer"

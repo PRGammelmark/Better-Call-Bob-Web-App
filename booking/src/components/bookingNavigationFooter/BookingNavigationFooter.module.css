@@ -88,3 +88,52 @@
 .backButton:active {
     transform: scale(0.92);
 }
+
+.summaryButton {
+    background: #f0f0f0;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #222222;
+    transition: 0.2s ease;
+    display: none; /* Skjult på desktop */
+}
+
+.summaryButton:hover {
+    background: #e0e0e0;
+}
+
+.summaryButton:active {
+    transform: scale(0.92);
+}
+
+.mobileSummaryButton {
+    display: none; /* Skjult på desktop */
+}
+
+.desktopConfirmButton {
+    display: block; /* Vises på desktop */
+}
+
+/* Vis kun på mobil */
+@media (max-width: 750px) {
+    .summaryButton {
+        display: block;
+    }
+
+    .mobileSummaryButton {
+        display: block; /* Vises på mobil */
+    }
+
+    .desktopConfirmButton {
+        display: none; /* Skjult på mobil */
+    }
+
+    .bookingNavigationFooter {
+        border-top: none;
+        padding-top: 0px;
+    }
+}

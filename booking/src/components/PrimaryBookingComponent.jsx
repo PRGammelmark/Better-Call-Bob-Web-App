@@ -55,6 +55,7 @@ const PrimaryBookingComponent = () => {
   const [accepterHandelsbetingelser, setAccepterHandelsbetingelser] = useState(false)
   const [isStep4Valid, setIsStep4Valid] = useState(false)
   const [showBookingPopup, setShowBookingPopup] = useState(false)
+  const [showSummaryModal, setShowSummaryModal] = useState(false)
   const prevStepRef = useRef(1)
   const lastAnalyzedBeskrivelseRef = useRef("")
   const lastSummarizedBeskrivelseRef = useRef("")
@@ -644,8 +645,8 @@ const PrimaryBookingComponent = () => {
 
   return (
     <div className={Styles.primaryBookingComponent}>
-      <div className={Styles.bookingContainer}>
-        <div className={Styles.bookingHeaderContentContainer}>
+      {/* Mobile: Fixed Header */}
+      <div className={Styles.headerWrapper}>
         <BookingHeader 
           currentStep={currentStep} 
           setCurrentStep={handleStepChange} 
@@ -660,8 +661,49 @@ const PrimaryBookingComponent = () => {
           availableWorkerIDs={availableWorkerIDs}
           isLoadingWorkers={isLoadingWorkers}
         />
-        <BookingContent currentStep={currentStep} steps={steps} direction={direction} />
+      </div>
+      
+      <div className={Styles.bookingContainer}>
+        {/* Desktop: Header inside container */}
+        <div className={Styles.desktopHeader}>
+          <BookingHeader 
+            currentStep={currentStep} 
+            setCurrentStep={handleStepChange} 
+            steps={steps}
+            canNavigateToStep2={canNavigateToStep2}
+            canNavigateToStep3={canNavigateToStep3}
+            canNavigateToStep4={canNavigateToStep4}
+            wordCount={wordCount}
+            valgtDato={valgtDato}
+            valgtTidspunkt={valgtTidspunkt}
+            manualTimePreference={manualTimePreference}
+            availableWorkerIDs={availableWorkerIDs}
+            isLoadingWorkers={isLoadingWorkers}
+          />
         </div>
+        <div className={Styles.bookingHeaderContentContainer}>
+          <BookingContent currentStep={currentStep} steps={steps} direction={direction} />
+        </div>
+        {/* Desktop: Footer inside container */}
+        <div className={Styles.desktopFooter}>
+          <BookingNavigationFooter 
+            currentStep={currentStep} 
+            setCurrentStep={handleStepChange}
+            isLastStep={isLastStep}
+            onConfirm={handleConfirmBooking}
+            isSubmitting={isSubmitting}
+            recaptchaSiteKey={recaptchaSiteKey}
+            isStepValid={isStepValid}
+            shouldPulse={shouldPulseButton}
+            wordCount={wordCount}
+            antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
+            onShowSummary={() => setShowSummaryModal(true)}
+          />
+        </div>
+      </div>
+      
+      {/* Mobile: Fixed Footer */}
+      <div className={Styles.footerWrapper}>
         <BookingNavigationFooter 
           currentStep={currentStep} 
           setCurrentStep={handleStepChange}
@@ -673,6 +715,7 @@ const PrimaryBookingComponent = () => {
           shouldPulse={shouldPulseButton}
           wordCount={wordCount}
           antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
+          onShowSummary={() => setShowSummaryModal(true)}
         />
       </div>
       <div className={Styles.summaryContainer}>
@@ -697,6 +740,87 @@ const PrimaryBookingComponent = () => {
           cvr={cvr}
         />
       </div>
+      
+      {/* Summary Modal - Bottom Sheet */}
+      <AnimatePresence>
+        {showSummaryModal && (
+          <>
+            <motion.div
+              className={SummaryStyles.modalOverlay}
+              onClick={() => setShowSummaryModal(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            />
+            <motion.div
+              className={SummaryStyles.bottomSheet}
+              initial={{ y: '110%' }}
+              animate={{ y: 1 }}
+              exit={{ y: '110%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className={SummaryStyles.bottomSheetHandle} onClick={() => setShowSummaryModal(false)} />
+              <div className={SummaryStyles.bottomSheetHeader}>
+                <h2 className={SummaryStyles.bottomSheetTitle}>Opsummering</h2>
+                <button className={SummaryStyles.bottomSheetCloseButton} onClick={() => setShowSummaryModal(false)}>
+                  <X size={20} />
+                </button>
+              </div>
+              <div className={SummaryStyles.bottomSheetContent}>
+                <BookingSummary 
+                  currentStep={currentStep} 
+                  setCurrentStep={setCurrentStep}
+                  kortOpgavebeskrivelse={kortOpgavebeskrivelse}
+                  estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
+                  kategorier={kategorier}
+                  isLoadingKortBeskrivelse={isLoadingKortBeskrivelse}
+                  antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
+                  totaltAntalSpørgsmål={totaltAntalSpørgsmål}
+                  adresse={adresse}
+                  valgtDato={valgtDato}
+                  valgtTidspunkt={valgtTidspunkt}
+                  manualTimePreference={manualTimePreference}
+                  fuldeNavn={fuldeNavn}
+                  email={email}
+                  telefonnummer={telefonnummer}
+                  erVirksomhed={erVirksomhed}
+                  virksomhed={virksomhed}
+                  cvr={cvr}
+                />
+              </div>
+              <div className={SummaryStyles.bottomSheetFooter}>
+                {recaptchaSiteKey ? (
+                  <button 
+                    className={`${SummaryStyles.confirmButton} g-recaptcha`}
+                    data-sitekey={recaptchaSiteKey}
+                    data-callback="onRecaptchaSubmit"
+                    data-action="submit"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (!window.recaptchaCallbackTriggered) {
+                        handleConfirmBooking()
+                      }
+                    }}
+                    disabled={isSubmitting || !isStepValid}
+                  >
+                    {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                  </button>
+                ) : (
+                  <button 
+                    className={SummaryStyles.confirmButton}
+                    onClick={handleConfirmBooking} 
+                    disabled={isSubmitting || !isStepValid}
+                  >
+                    {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       
       {/* Booking Confirmation Popup */}
       <AnimatePresence>

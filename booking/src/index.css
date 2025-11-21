@@ -1,1 +1,23 @@
 .grecaptcha-badge { visibility: hidden; }
+
+@media (max-width: 750px) {
+    html, body {
+        overflow: hidden!important;
+        overscroll-behavior: none!important;
+        position: fixed;
+        width: 100%;
+        height: 100%;
+    }
+
+    #root {
+        overflow-y: hidden!important;
+        overscroll-behavior: none!important;
+        height: 100vh;
+        width: 100vw;
+    }
+
+    .app {
+        overscroll-behavior: none!important;
+        overflow-y: hidden!important;
+    }
+}

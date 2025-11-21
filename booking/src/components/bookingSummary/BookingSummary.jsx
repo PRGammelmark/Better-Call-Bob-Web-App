@@ -10,7 +10,7 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
   return (
     <div className={Styles.bookingSummaryContainer}>
       <div className={Styles.summaryTopContainer}>
-      <b style={{ fontFamily: 'OmnesBold', fontSize: '1.1rem' }}>Opsummering</b>
+      <b className={Styles.summaryHeading} style={{ fontFamily: 'OmnesBold', fontSize: '1.1rem' }}>Opsummering</b>
       {/* <p className={Styles.summaryConfirmationText}>Aftalen er ikke bindende før vi sender dig en endelig bekræftelse.</p> */}
 
       {(kortOpgavebeskrivelse || isLoadingKortBeskrivelse) && (

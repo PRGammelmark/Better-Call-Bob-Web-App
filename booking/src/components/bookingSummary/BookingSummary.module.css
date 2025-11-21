@@ -165,7 +165,7 @@
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+    z-index: 999998;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -184,7 +184,7 @@
     max-height: 80vh;
     overflow-y: auto;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
+    z-index: 999999;
 }
 
 .popupCloseButton {
@@ -249,4 +249,122 @@
     display: block;
     margin-top: 15px;
     margin-bottom: 6px;
+}
+
+/* Bottom Sheet Modal Styles */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+}
+
+.bottomSheet {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-radius: 20px 20px 0 0;
+    max-height: 90vh;
+    z-index: 10001;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    display: flex;
+    flex-direction: column;
+}
+
+.bottomSheetHandle {
+    width: 40px;
+    height: 4px;
+    background-color: #d0d0d0;
+    border-radius: 2px;
+    margin: 12px auto 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bottomSheetHandle:hover {
+    background-color: #b0b0b0;
+}
+
+.bottomSheetHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px 12px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.bottomSheetTitle {
+    font-family: OmnesBold;
+    font-size: 1.1rem;
+    color: #222222;
+    margin: 0;
+}
+
+.bottomSheetCloseButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #666;
+    transition: color 0.2s;
+    border-radius: 4px;
+}
+
+.bottomSheetCloseButton:hover {
+    color: #222;
+    background-color: #f0f0f0;
+}
+
+.bottomSheetContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    -webkit-overflow-scrolling: touch;
+}
+
+.bottomSheetFooter {
+    padding: 16px 20px 20px;
+    border-top: 1px solid #e0e0e0;
+    background: white;
+}
+
+.confirmButton {
+    width: 100%;
+    background: #59bf1a;
+    border-radius: 5px;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transition: 0.2s ease;
+}
+
+.confirmButton:hover {
+    background: #3c5a3f;
+}
+
+.confirmButton:active {
+    transform: scale(0.98);
+}
+
+.confirmButton:disabled {
+    background: #e0e0e0;
+    color: #bbbbbb;
+    cursor: not-allowed;
+}
+
+@media (max-width: 750px) {
+    .summaryHeading {
+        display: none;
+    }
 }

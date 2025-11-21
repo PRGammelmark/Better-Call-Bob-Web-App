@@ -1,3 +1,4 @@
+/* Desktop Layout (default) */
 .primaryBookingComponent {
     display: flex;
     flex-direction: row;
@@ -27,4 +28,108 @@
     flex-direction: column;
     gap: 20px;
     height: 100%;
+}
+
+.desktopHeader {
+    /* Desktop header - vises kun på desktop */
+}
+
+.desktopFooter {
+    /* Desktop footer - vises kun på desktop */
+}
+
+.headerWrapper {
+    display: none; /* Skjult på desktop */
+}
+
+.footerWrapper {
+    display: none; /* Skjult på desktop */
+}
+
+/* Mobil Layout (max-width: 750px) */
+@media (max-width: 750px) {
+    .primaryBookingComponent {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden;
+        box-shadow: none;
+        border-radius: 0;
+        overscroll-behavior: none!important;
+        /* overscroll-behavior: contain!important; */
+    }
+
+    .bookingContainer {
+        width: 100vw;
+        height: calc(100% - 72px - 70px);
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 72px;
+        padding: 0;
+        /* background: #ff000050; */
+        z-index: 3000;
+        overscroll-behavior: contain!important;
+        overflow-y: hidden!important;
+    }
+
+    .summaryContainer {
+        display: none; /* Skjult fra normal layout - vises kun i modal */
+    }
+
+    .bookingHeaderContentContainer {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex: 1;
+        overflow-y: hidden!important;
+        overflow-x: visible;
+        padding: 0px 0px;
+        overscroll-behavior: contain!important;
+        /* padding-top: 120px; /* Plads til fixed header */
+        /* padding-bottom: 95px; Plads til fixed footer  */
+    }
+
+    .desktopHeader {
+        display: none; /* Skjul desktop header på mobil */
+    }
+
+    .desktopFooter {
+        display: none; /* Skjul desktop footer på mobil */
+    }
+
+    .headerWrapper {
+        display: flex; /* Vis mobil header */
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 100;
+        padding: 0px 20px;
+        height: 72px;
+        min-height: 72px;
+        max-height: 72px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .footerWrapper {
+        display: flex; /* Vis mobil footer */
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: white;
+        z-index: 100;
+        padding: 0px 20px;
+        height: 70px;
+        min-height: 70px;
+        max-height: 70px;
+        border-top: 1px solid #e0e0e0;
+    }
 }

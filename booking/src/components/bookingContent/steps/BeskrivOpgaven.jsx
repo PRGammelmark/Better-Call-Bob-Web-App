@@ -153,7 +153,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
     return (
         <div className={Styles.opgavebeskrivelseContainer}>
             <div className={Styles.opgaveBeskrivelseTopContainer}>
-                <h2 className={StepsStyles.headingH2}>Fortæl os hvad du skal have lavet</h2>
+                <h2 className={StepsStyles.headingH2}>Hvad vil du have lavet?</h2>
                 <textarea 
                     name="opgavebeskrivelse" 
                     placeholder="Eksempel: &#10;&#10;'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'" 
@@ -161,7 +161,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                     value={opgaveBeskrivelse} 
                     onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
                 ></textarea>
-                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Vedhæft evt. billeder, dokumenter eller video</h3>
+                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Tilføj evt. billeder, dokumenter eller video</h3>
                 <div className={Styles.billederDiv}>
                     {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
                         return (

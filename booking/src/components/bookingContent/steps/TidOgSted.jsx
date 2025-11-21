@@ -5,7 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
-import { Check, MapPin, Calendar, Clock } from 'lucide-react'
+import { Check, MapPin, Calendar, Clock, ChevronDown } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './TidOgSted.module.css'
 import axios from 'axios'
@@ -73,6 +73,7 @@ const TidOgSted = ({
 }) => {
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
   const [availableTimes, setAvailableTimes] = useState([])
+  const [isCalendarOpen, setIsCalendarOpen] = useState(true)
   const prevKategorierRef = useRef(kategorier)
   
   // Filtrer slots til kun at inkludere dem inden for de næste 4 måneder
@@ -337,7 +338,18 @@ const TidOgSted = ({
     if (onTimeChange) {
       onTimeChange(null) // Reset time selection when date changes
     }
+    // On mobile, collapse calendar when date is selected, open when cleared
+    if (window.innerWidth <= 750) {
+      setIsCalendarOpen(!newDate)
+    }
   }
+
+  // Open calendar when date is cleared
+  useEffect(() => {
+    if (!valgtDato && window.innerWidth <= 750) {
+      setIsCalendarOpen(true)
+    }
+  }, [valgtDato])
 
   const handleTimeSelect = (timeSlot) => {
     setSelectedTimeSlot(timeSlot)
@@ -503,14 +515,37 @@ const TidOgSted = ({
             ) : availableWorkerIDs.length > 0 && hasSlotsWithin4Months ? (
               <div className={Styles.calendarWrapper}>
                 <div className={Styles.calendarContainer}>
-                  <h3 className={StepsStyles.headingH3}>
+                  <h3 
+                    className={`${StepsStyles.headingH3} ${Styles.dateHeader} ${valgtDato ? Styles.dateHeaderWithDate : ''} ${valgtDato && !isCalendarOpen ? Styles.dateHeaderCollapsed : ''}`}
+                    onClick={() => {
+                      if (window.innerWidth <= 750 && valgtDato) {
+                        setIsCalendarOpen(!isCalendarOpen)
+                      }
+                    }}
+                  >
                     <Calendar size={18} className={Styles.headingIcon} />
                     {valgtDato 
                       ? dayjs(valgtDato).format('D. MMMM YYYY')
                       : 'Vælg dato'
                     }
+                    {valgtDato && (
+                      <>
+                        {isCalendarOpen ? (
+                          <ChevronDown 
+                            size={18} 
+                            className={`${Styles.chevronIcon} ${Styles.chevronIconOpen}`}
+                          />
+                        ) : (
+                          <div className={Styles.dateCheckIcon}>
+                            <Check size={16} />
+                          </div>
+                        )}
+                      </>
+                    )}
                   </h3>
-                  <div className={`${Styles.datePickerWrapper} ${formateretAdresse ? Styles.datePickerWrapperFound : ''} ${valgtDato && availableTimes.length > 0 ? Styles.datePickerWrapperSelected : ''}`}>
+                  <div 
+                    className={`${Styles.datePickerWrapper} ${formateretAdresse ? Styles.datePickerWrapperFound : ''} ${valgtDato && availableTimes.length > 0 ? Styles.datePickerWrapperSelected : ''} ${!isCalendarOpen ? Styles.datePickerWrapperCollapsed : ''}`}
+                  >
                     <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
                       <StaticDatePicker
                         value={valgtDato}

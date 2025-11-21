@@ -44,3 +44,17 @@
     scrollbar-width: thin;
     scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
+
+@media (max-width: 750px) {
+    .stepContent {
+        overflow-y: auto!important;
+        width: 100%;
+        left: 0;
+        padding: 10px;
+    }
+
+    .bookingContent {
+        overflow-y: hidden!important;
+        padding: 0px;
+    }
+}

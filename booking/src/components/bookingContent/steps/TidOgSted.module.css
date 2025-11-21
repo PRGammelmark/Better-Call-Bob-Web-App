@@ -12,6 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  contain: layout;
 }
 
 .headerSection {
@@ -149,6 +150,7 @@
 
 .calendarSection {
   margin-top: 8px;
+  contain: layout style;
 }
 
 .calendarWrapper {
@@ -507,6 +509,23 @@
   background: #ffffff;
 }
 
+/* Mobile calendar collapse functionality */
+.dateHeader {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.dateHeaderWithDate {
+  cursor: pointer;
+}
+
+.chevronIcon {
+  display: none;
+  margin-left: auto;
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .tidOgStedContainer {
@@ -517,14 +536,135 @@
   .calendarWrapper {
     flex-direction: column;
     gap: 24px;
+    width: 100%;
+  }
+
+  .calendarSection {
+    width: 100%;
+  }
+
+  /* .calendarWrapper * {
+    transition: all 0.3s ease!important;
+  } */
+
+  .timeSlotsContainer {
+    width: 100%;
+    min-width: 0;
   }
 
   .timeSlotsGrid {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    grid-template-columns: calc(50% - 4px) calc(50% - 4px);
+    gap: 8px;
+    padding-right: 0;
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .timeSlotButton {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
+    margin: 0;
   }
 
   .workersGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Mobile-specific calendar collapse (max-width: 750px) */
+@media (max-width: 750px) {
+  .calendarSection {
+    contain: layout style;
+    will-change: contents;
+  }
+
+  .calendarContainer {
+    width: 100%;
+    gap: 0;
+    contain: layout;
+    display: grid;
+    grid-template-rows: auto 1fr;
+  }
+
+  .dateHeaderWithDate {
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .calendarContainer h3 {
+    margin-bottom: 16px;
+    /* background: #ff000050; */
+    transition: 0.3s ease;
+  }
+
+  .dateHeaderCollapsed {
+    border: 2px solid #59bf1a;
+    border-radius: 10px;
+    background: #f8fff4;
+    padding: 12px 16px;
+    padding-right: 50px;
+    transition: all 0.3s ease, margin-bottom 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px!important;
+    font-weight: 500;
+    color: #333;
+    font-family: inherit;
+    margin-bottom: 0 !important;
+  }
+
+  .dateHeaderCollapsed .headingIcon {
+    color: #333;
+    stroke-width: 1.4px;
+    height: 16px;
+    width: 16px;
+  }
+
+  .chevronIcon {
+    display: block;
+  }
+
+  .chevronIconOpen {
+    transform: rotate(180deg);
+  }
+
+  .dateCheckIcon {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #59bf1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    pointer-events: none;
+    flex-shrink: 0;
+  }
+
+  .datePickerWrapper {
+    grid-row: 2;
+    max-height: 1000px;
+    transform-origin: top;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s cubic-bezier(0.4, 0, 0.2, 1), border 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+    overflow: hidden;
+  }
+
+  .datePickerWrapperCollapsed {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0;
+    border: none;
+    margin: 0;
+    opacity: 0;
+    pointer-events: none;
   }
 }
 

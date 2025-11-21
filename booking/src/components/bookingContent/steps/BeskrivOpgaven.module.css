@@ -7,10 +7,6 @@
     justify-content: space-between;
 }
 
-.opgaveBeskrivelseTopContainer {
-
-}
-
 .opgaveBeskrivelseBottomContainer {
     margin: 10px;
 }
@@ -187,4 +183,10 @@
 
 .playVideoPlaceholder:hover {
     color: #59bf1a;
+}
+
+@media (max-width: 750px) {
+    .opgavebeskrivelseContainer {
+        padding: 10px 0px;
+    }
 }
