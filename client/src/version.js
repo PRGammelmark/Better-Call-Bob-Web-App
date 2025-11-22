@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.8.10",
+    date: "22. november 2025",
+    changes: [
+        "App'en initialiserer nu automatisk standard-opgavetyper ved første opstart, hvis der ikke findes nogen opgavetyper i databasen.",
+        "Administratorer kan nu søge i opfølgende spørgsmål efter spørgsmålstekst, feltnavn og opgavetyper.",
+        "Vinduet til visning af opfølgende spørgsmål indeholder nu flere visningsmuligheder for bedre overblik.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.8.9",
     date: "22. november 2025",
     changes: [

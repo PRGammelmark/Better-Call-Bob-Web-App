@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Modal from '../Modal.jsx'
 import Styles from './OpfølgendeSpørgsmålModal.module.css'
-import { CirclePlus, ChevronLeft, MessageSquare, Trash2, Edit2 } from 'lucide-react'
+import { CirclePlus, ChevronLeft, MessageSquare, Trash2, Edit2, List, Grid, Search } from 'lucide-react'
 import PageAnimation from '../PageAnimation.jsx'
 import InputsContainer from '../basicComponents/inputs/InputsContainer.jsx'
 import InputLine from '../basicComponents/inputs/InputLine.jsx'
@@ -18,6 +18,8 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
     const [opretNytSpørgsmål, setOpretNytSpørgsmål] = useState(false)
     const [redigerSpørgsmål, setRedigerSpørgsmål] = useState(null)
     const [errorMessage, setErrorMessage] = useState("")
+    const [viewMode, setViewMode] = useState('opgavetyper') // 'opgavetyper' or 'spørgsmål'
+    const [søgetekst, setSøgetekst] = useState("")
 
     // State for nyt/redigeret spørgsmål
     const [spørgsmålTekst, setSpørgsmålTekst] = useState("")
@@ -35,6 +37,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
     useEffect(() => {
         if (trigger) {
             fetchSpørgsmål()
+            setSøgetekst("") // Nulstil søgetekst når modalen åbnes
         }
     }, [trigger])
 
@@ -233,11 +236,20 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
         setFeltNavn(spørgsmål.feltNavn || "")
     }
 
+    // Filtrer spørgsmål baseret på søgetekst
+    const filtreretSpørgsmål = søgetekst.trim() === "" 
+        ? spørgsmål 
+        : spørgsmål.filter(sp => 
+            sp.spørgsmål.toLowerCase().includes(søgetekst.toLowerCase()) ||
+            sp.feltNavn?.toLowerCase().includes(søgetekst.toLowerCase()) ||
+            (sp.opgavetyper && sp.opgavetyper.some(op => op.toLowerCase().includes(søgetekst.toLowerCase())))
+        );
+
     // Gruppér spørgsmål efter opgavetyper
     const spørgsmålByOpgavetype = {};
     const standardSpørgsmål = [];
 
-    spørgsmål.forEach(sp => {
+    filtreretSpørgsmål.forEach(sp => {
         if (sp.erStandard) {
             standardSpørgsmål.push(sp);
         } else {
@@ -250,6 +262,26 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
         }
     });
 
+    // Filtrer opgavetyper baseret på søgetekst (kun vis kategorier der matcher)
+    const filtreredeOpgavetyper = søgetekst.trim() === ""
+        ? Object.keys(spørgsmålByOpgavetype)
+        : Object.keys(spørgsmålByOpgavetype).filter(opgavetype => 
+            opgavetype.toLowerCase().includes(søgetekst.toLowerCase())
+        );
+
+    // For spørgsmål-view: vis alle spørgsmål med deres opgavetyper
+    const alleSpørgsmålMedOpgavetyper = filtreretSpørgsmål.map(sp => ({
+        ...sp,
+        visesI: sp.erStandard 
+            ? ['Alle kategorier'] 
+            : (sp.opgavetyper && sp.opgavetyper.length > 0 ? sp.opgavetyper : ['Ingen kategorier'])
+    })).sort((a, b) => {
+        // Sorter standard først, derefter efter rækkefølge
+        if (a.erStandard && !b.erStandard) return -1;
+        if (!a.erStandard && b.erStandard) return 1;
+        return (a.rækkefølge || 0) - (b.rækkefølge || 0);
+    });
+
     return (
         <Modal trigger={trigger} setTrigger={setTrigger}>
             {(!opretNytSpørgsmål && !redigerSpørgsmål) && (
@@ -260,47 +292,106 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                         Standard spørgsmål vises for alle kategorier, mens specifikke spørgsmål kun vises for valgte opgavetyper.
                     </p>
                     <div className={Styles.buttons}>
+                        <button 
+                            className={`${Styles.viewToggleButton} ${viewMode === 'spørgsmål' ? Styles.viewToggleButtonActive : ''}`}
+                            onClick={() => setViewMode(viewMode === 'opgavetyper' ? 'spørgsmål' : 'opgavetyper')}
+                            title={viewMode === 'opgavetyper' ? 'Vis efter spørgsmål' : 'Vis efter opgavetyper'}
+                        >
+                            {viewMode === 'opgavetyper' ? (
+                                <>
+                                    <List className={Styles.buttonIcon} />Vis efter spørgsmål
+                                </>
+                            ) : (
+                                <>
+                                    <Grid className={Styles.buttonIcon} />Vis efter opgavetyper
+                                </>
+                            )}
+                        </button>
                         <button className={Styles.opretSpørgsmålButton} onClick={() => setOpretNytSpørgsmål(true)}>
                             <CirclePlus className={Styles.buttonIcon} />Opret spørgsmål
                         </button>
                     </div>
 
-                    {standardSpørgsmål.length > 0 && (
-                        <div className={Styles.spørgsmålKategori}>
-                            <h3><MessageSquare />Standard spørgsmål</h3>
+                    <div className={Styles.searchContainer}>
+                        <Search className={Styles.searchIcon} />
+                        <input
+                            type="text"
+                            className={Styles.searchInput}
+                            placeholder={viewMode === 'opgavetyper' ? 'Søg efter opgavetyper eller spørgsmål...' : 'Søg efter spørgsmål...'}
+                            value={søgetekst}
+                            onChange={(e) => setSøgetekst(e.target.value)}
+                        />
+                    </div>
+
+                    {viewMode === 'opgavetyper' ? (
+                        <>
+                            {standardSpørgsmål.length > 0 && (
+                                <div className={Styles.spørgsmålKategori}>
+                                    <h3><MessageSquare />Standard spørgsmål</h3>
+                                    <div className={Styles.spørgsmålListe}>
+                                        {standardSpørgsmål.map(sp => (
+                                            <div key={sp._id} className={Styles.spørgsmålItem} onClick={() => openRedigerSpørgsmål(sp)}>
+                                                <div className={Styles.spørgsmålInfo}>
+                                                    <span className={Styles.spørgsmålTekst}>{sp.spørgsmål}</span>
+                                                    <span className={Styles.spørgsmålType}>{sp.type === 'Ja/nej' ? 'Ja/Nej' : 'Valgmuligheder'}</span>
+                                                </div>
+                                                <Edit2 className={Styles.editIcon} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+
+                            {filtreredeOpgavetyper.map(opgavetype => (
+                                <div key={opgavetype} className={Styles.spørgsmålKategori}>
+                                    <h3><MessageSquare />{opgavetype}</h3>
+                                    <div className={Styles.spørgsmålListe}>
+                                        {spørgsmålByOpgavetype[opgavetype].map(sp => (
+                                            <div key={sp._id} className={Styles.spørgsmålItem} onClick={() => openRedigerSpørgsmål(sp)}>
+                                                <div className={Styles.spørgsmålInfo}>
+                                                    <span className={Styles.spørgsmålTekst}>{sp.spørgsmål}</span>
+                                                    <span className={Styles.spørgsmålType}>{sp.type === 'Ja/nej' ? 'Ja/Nej' : 'Valgmuligheder'}</span>
+                                                </div>
+                                                <Edit2 className={Styles.editIcon} />
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+
+                            {filtreretSpørgsmål.length === 0 && søgetekst.trim() !== "" && (
+                                <p className={Styles.ingenSpørgsmål}>Ingen resultater fundet for "{søgetekst}".</p>
+                            )}
+                            {spørgsmål.length === 0 && søgetekst.trim() === "" && (
+                                <p className={Styles.ingenSpørgsmål}>Ingen spørgsmål oprettet endnu.</p>
+                            )}
+                        </>
+                    ) : (
+                        <>
                             <div className={Styles.spørgsmålListe}>
-                                {standardSpørgsmål.map(sp => (
+                                {alleSpørgsmålMedOpgavetyper.map(sp => (
                                     <div key={sp._id} className={Styles.spørgsmålItem} onClick={() => openRedigerSpørgsmål(sp)}>
                                         <div className={Styles.spørgsmålInfo}>
                                             <span className={Styles.spørgsmålTekst}>{sp.spørgsmål}</span>
-                                            <span className={Styles.spørgsmålType}>{sp.type === 'Ja/nej' ? 'Ja/Nej' : 'Valgmuligheder'}</span>
+                                            <div className={Styles.spørgsmålMeta}>
+                                                <span className={Styles.spørgsmålType}>Spørgsmålets type: {sp.type === 'Ja/nej' ? 'Ja/Nej' : 'Valgmuligheder'}</span>
+                                                <span className={Styles.opgavetyperLabel}>
+                                                    Vises i: {sp.visesI.join(', ')}
+                                                </span>
+                                            </div>
                                         </div>
                                         <Edit2 className={Styles.editIcon} />
                                     </div>
                                 ))}
                             </div>
-                        </div>
-                    )}
 
-                    {Object.entries(spørgsmålByOpgavetype).map(([opgavetype, spørgsmålListe]) => (
-                        <div key={opgavetype} className={Styles.spørgsmålKategori}>
-                            <h3><MessageSquare />{opgavetype}</h3>
-                            <div className={Styles.spørgsmålListe}>
-                                {spørgsmålListe.map(sp => (
-                                    <div key={sp._id} className={Styles.spørgsmålItem} onClick={() => openRedigerSpørgsmål(sp)}>
-                                        <div className={Styles.spørgsmålInfo}>
-                                            <span className={Styles.spørgsmålTekst}>{sp.spørgsmål}</span>
-                                            <span className={Styles.spørgsmålType}>{sp.type === 'Ja/nej' ? 'Ja/Nej' : 'Valgmuligheder'}</span>
-                                        </div>
-                                        <Edit2 className={Styles.editIcon} />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
-
-                    {spørgsmål.length === 0 && (
-                        <p className={Styles.ingenSpørgsmål}>Ingen spørgsmål oprettet endnu.</p>
+                            {alleSpørgsmålMedOpgavetyper.length === 0 && søgetekst.trim() !== "" && (
+                                <p className={Styles.ingenSpørgsmål}>Ingen resultater fundet for "{søgetekst}".</p>
+                            )}
+                            {spørgsmål.length === 0 && søgetekst.trim() === "" && (
+                                <p className={Styles.ingenSpørgsmål}>Ingen spørgsmål oprettet endnu.</p>
+                            )}
+                        </>
                     )}
                 </PageAnimation>
             )}

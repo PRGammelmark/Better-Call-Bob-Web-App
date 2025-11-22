@@ -9,7 +9,7 @@
 
 .buttons {
     margin-top: -10px;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
     display: flex;
     flex-direction: row;
     gap: 10px;
@@ -18,9 +18,9 @@
 
 .opretSpørgsmålButton {
     padding: 10px 20px;
-    color: #222222;
-    background: #e0e0e0;
-    border: 1px solid #22222200;
+    color: #1a5a0f;
+    background: #d4e8cc;
+    border: 1px solid #59bf1a;
     border-radius: 10px;
     font-family: "OmnesBold";
     display: flex;
@@ -35,6 +35,79 @@
     height: 18px;
 }
 
+.viewToggleButton {
+    padding: 10px 20px;
+    color: #222222;
+    background: #f5f5f5;
+    border: 1px solid #d0d0d0;
+    border-radius: 10px;
+    font-family: "OmnesBold";
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    margin-bottom: 0px;
+}
+
+.viewToggleButton .buttonIcon {
+    height: 18px;
+}
+
+.viewToggleButton:hover {
+    background: #e8e8e8;
+    border: 1px solid #222222;
+}
+
+.viewToggleButtonActive {
+    background: #59bf1a;
+    color: white;
+    border: 1px solid #59bf1a;
+}
+
+.viewToggleButtonActive:hover {
+    background: #4da815;
+    border: 1px solid #4da815;
+}
+
+.searchContainer {
+    position: relative;
+    margin-top: 0;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 12px;
+    height: 18px;
+    width: 18px;
+    color: #666;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 10px 12px 10px 40px;
+    border: 1px solid #d0d0d0;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    background: #fff;
+    transition: 0.2s ease;
+}
+
+.searchInput:focus {
+    outline: none;
+    border: 1px solid #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+}
+
+.searchInput::placeholder {
+    color: #999;
+}
+
 .errorMessage {
     color: red;
     font-size: 0.8rem;
@@ -43,7 +116,8 @@
 }
 
 .opretSpørgsmålButton:hover {
-    border: 1px solid #222222;
+    background: #c0dbb0;
+    border: 1px solid #4da815;
 }
 
 .tilbageKnap {
@@ -131,6 +205,19 @@
 .spørgsmålType {
     font-size: 0.8rem;
     color: #666;
+}
+
+.spørgsmålMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 6px;
+}
+
+.opgavetyperLabel {
+    font-size: 0.75rem;
+    color: #666;
+    font-style: italic;
 }
 
 .editIcon {
