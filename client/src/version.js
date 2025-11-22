@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.8.9",
+    date: "22. november 2025",
+    changes: [
+        "Åbnede op for administratorers mulighed for at redigere i og slette posteringer, der tilhører afsluttede lønperioder. Medarbejdere, hvis posteringer bliver redigeret, bliver underrettet via en notifikation om ændringerne.",
+    ]
+},{
     version: "3.8.8",
     date: "14. november 2025",
     changes: [

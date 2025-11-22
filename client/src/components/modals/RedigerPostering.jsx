@@ -41,6 +41,7 @@ const RedigerPostering = (props) => {
     const [previewDynamiskOutlays, setPreviewDynamiskOutlays] = useState(0);
     const [rabatProcent, setRabatProcent] = useState(postering.rabatProcent);
     const [kvitteringBillede, setKvitteringBillede] = useState(null)
+    const [allowEditAnyway, setAllowEditAnyway] = useState(false)
     const aftenTillægMultiplikator = aftenTillæg ? 1 + (satser.aftenTillægHonorar / 100) : 1;
     const natTillægMultiplikator = natTillæg ? 1 + (satser.natTillægHonorar / 100) : 1;
     
@@ -61,6 +62,7 @@ const RedigerPostering = (props) => {
         setPosteringFastHonorar(postering.fastHonorar || 0);
         setPosteringFastPris(postering.fastPris || 0);
         setRabatProcent(postering.rabatProcent || 0);
+        setAllowEditAnyway(false);
     }, [postering]);    
     
     useEffect(() => {
@@ -248,8 +250,8 @@ const RedigerPostering = (props) => {
     };
 
     return (
-        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}} onClose={() => setKvitteringBillede(null)} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
-            {postering && !posteringTilhørerAfsluttetLønperiode(postering) ? (
+        <Modal trigger={props.trigger} setTrigger={props.setTrigger} style={{backgroundColor: 'red'}} onClose={() => {setKvitteringBillede(null); setAllowEditAnyway(false);}} closeIsBackButton={kvitteringBillede} setBackFunction={setKvitteringBillede}>
+            {postering && (!posteringTilhørerAfsluttetLønperiode(postering) || allowEditAnyway) ? (
                 <>
                 {!kvitteringBillede ? <>
                     <h2 className={ÅbenOpgaveCSS.modalHeading}>Rediger postering 📄</h2>
@@ -455,9 +457,18 @@ const RedigerPostering = (props) => {
             (
                 <>
                     <h2 className={ÅbenOpgaveCSS.modalHeading}>Posteringen er låst 🔒</h2>
-                    <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(postering.createdAt).format("DD. MMMM YYYY")}, og tilhører en afsluttet lønperiode. Den er derfor låst. Du kan ikke redigere eller slette posteringen.</p>
-                    <p style={{marginBottom: 10}}>Lønperioden går fra d. 20.-19. i hver måned. Du kan redigere og slette posteringer for aktuelle lønperioder frem til og med d. 19.</p>
+                    <p style={{marginBottom: 10}}>Denne postering blev oprettet d. {dayjs(postering.createdAt).format("DD. MMMM YYYY")}, og tilhører en afsluttet lønperiode. Den er derfor låst. Du {user?.isAdmin ? 'bør' : 'kan'} ikke redigere eller slette posteringen.</p>
+                    <p style={{marginBottom: 10}}>Lønperioden går fra d. 20.-19. i hver måned. Du kan frit redigere og slette posteringer for aktuelle lønperioder frem til og med d. 19.</p>
                     <p style={{marginBottom: 10}}>Hvis du mangler at registrere posteringsdata for denne opgave kan du oprette en ny postering, og registrere hvad du mangler. Disse data vil i så fald komme med i den næste lønperiode.</p>
+                    {user?.isAdmin && (
+                        <button 
+                            className={ÅbenOpgaveCSS.registrerPosteringButtonDesktop} 
+                            style={{marginTop: 20, width: '100%'}}
+                            onClick={() => setAllowEditAnyway(true)}
+                        >
+                            Rediger alligevel
+                        </button>
+                    )}
                 </>
             )}
         </Modal>
