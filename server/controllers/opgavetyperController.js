@@ -1,6 +1,7 @@
 import Opgavetyper from '../models/opgavetyperModel.js'
 import Bruger from '../models/brugerModel.js'
 import mongoose from "mongoose"
+import { importOpgavetyper, getOpgavetyperForKategori } from '../utils/initializeOpgavetyper.js'
 
 // GET alle opgavetyper
 const getOpgavetyper = async (req,res) => {
@@ -126,7 +127,45 @@ const updateOpgavetype = async (req,res) => {
   
     res.status(200).json(opgavetype);
   };
-  
+
+// GET tilgængelige opgavetyper for en kategori
+const getAvailableOpgavetyper = async (req, res) => {
+    const { kategori } = req.params;
+    
+    if (!kategori) {
+        return res.status(400).json({ error: 'Kategori er påkrævet' });
+    }
+
+    try {
+        const opgavetyper = getOpgavetyperForKategori(kategori);
+        res.status(200).json(opgavetyper);
+    } catch (error) {
+        console.error('Fejl ved hentning af opgavetyper:', error);
+        res.status(500).json({ error: 'Fejl ved hentning af opgavetyper: ' + error.message });
+    }
+};
+
+// IMPORT specifikke opgavetyper
+const importOpgavetyperHandler = async (req, res) => {
+    const { opgavetyper } = req.body;
+    
+    if (!opgavetyper || !Array.isArray(opgavetyper) || opgavetyper.length === 0) {
+        return res.status(400).json({ error: 'Du skal vælge mindst én opgavetype at importere.' });
+    }
+
+    try {
+        const result = await importOpgavetyper(opgavetyper, Opgavetyper);
+        
+        if (result.success) {
+            res.status(200).json(result);
+        } else {
+            res.status(400).json({ error: result.message });
+        }
+    } catch (error) {
+        console.error('Fejl ved import af opgavetyper:', error);
+        res.status(500).json({ error: 'Fejl ved import af opgavetyper: ' + error.message });
+    }
+};
 
 
 export {
@@ -134,5 +173,7 @@ export {
     getOpgavetype,
     createOpgavetype,
     deleteOpgavetype,
-    updateOpgavetype
+    updateOpgavetype,
+    importOpgavetyperHandler,
+    getAvailableOpgavetyper
 }

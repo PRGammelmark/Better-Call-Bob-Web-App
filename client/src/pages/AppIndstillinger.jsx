@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins, Calendar } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins, Calendar, Download } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
 import OpfølgendeSpørgsmålModal from '../components/modals/OpfølgendeSpørgsmålModal.jsx'
+import ImportOpgavetyperModal from '../components/modals/ImportOpgavetyperModal.jsx'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
 import Button from '../components/basicComponents/buttons/Button.jsx'
 import { useNavigate } from 'react-router-dom'
@@ -19,6 +20,7 @@ const AppIndstillinger = () => {
     const [visOpgavetyperInfo, setVisOpgavetyperInfo] = useState(false);
     const [visOpgavetyperModal, setVisOpgavetyperModal] = useState(false)
     const [visOpfølgendeSpørgsmålModal, setVisOpfølgendeSpørgsmålModal] = useState(false)
+    const [visImportOpgavetyperModal, setVisImportOpgavetyperModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
     const [maxArbejdsradius, setMaxArbejdsradius] = useState( indstillinger?.arbejdsområdeKilometerRadius )
@@ -122,6 +124,12 @@ const AppIndstillinger = () => {
                     value: `${opgavetyper?.length || 0} typer, ${indstillinger?.opgavetyperKategorier?.length || 0} kategorier`,
                 },
                 {
+                    title: "Importer opgavetyper",
+                    icon: <Download />,
+                    onClick: () => setVisImportOpgavetyperModal(true),
+                    // value: "Standard-opgavetyper",
+                },
+                {
                     title: "Max. arbejdsradius",
                     icon: <Radius />,
                     input: true,
@@ -153,6 +161,7 @@ const AppIndstillinger = () => {
         </div>
 
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
+        <ImportOpgavetyperModal trigger={visImportOpgavetyperModal} setTrigger={setVisImportOpgavetyperModal} user={user} kategorier={indstillinger?.opgavetyperKategorier || []} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} />
         <OpfølgendeSpørgsmålModal trigger={visOpfølgendeSpørgsmålModal} setTrigger={setVisOpfølgendeSpørgsmålModal} user={user} opgavetyper={opgavetyper} />
     
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>

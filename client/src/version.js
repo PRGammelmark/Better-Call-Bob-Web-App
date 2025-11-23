@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.8.11",
+    date: "23. november 2025",
+    changes: [
+        "Nu har administratorer mulighed for at importere standard-opgavetyper fra App-indstillinger-siden.",
+        "Tilføjede ca. 150 opgavetyper fordelt på seks håndværker-kategorier."
+    ]
+},{
     version: "3.8.10",
     date: "22. november 2025",
     changes: [

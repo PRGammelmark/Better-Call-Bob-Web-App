@@ -39,7 +39,6 @@ import { natligFakturaBetalingTjek } from './utils/natligFakturaBetalingTjek.js'
 import fakturaBetalingstjekRoutes from "./routes/fakturaBetalingstjek.js";
 import { lazyFakturaBetalingstjek } from './middleware/lazyFakturaBetalingstjek.js';
 import opfølgendeSpørgsmålRoutes from "./routes/opfølgendeSpørgsmål.js";
-import { initializeOpgavetyper } from './utils/initializeOpgavetyper.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -186,9 +185,6 @@ app.use('/api/opfolgendeSporgsmaal', opfølgendeSpørgsmålRoutes);
 // connect to db
 mongoose.connect(process.env.MONGO_URI)
     .then(async () => {     
-        // Initialiser standard-opgavetyper hvis databasen er tom
-        await initializeOpgavetyper();
-        
         // Start reminder scheduler after DB connection
         startReminderScheduler();
         
