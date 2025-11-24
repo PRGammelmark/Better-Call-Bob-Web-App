@@ -1,7 +1,7 @@
 .kontaktinfoContainer {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 0px;
   padding: 0px 0px 24px 0px;
 }
 
@@ -290,7 +290,7 @@
 @media (max-width: 768px) {
   .kontaktinfoContainer {
     padding: 16px 0;
-    gap: 20px;
+    gap: 0px;
   }
 
   .formSection {

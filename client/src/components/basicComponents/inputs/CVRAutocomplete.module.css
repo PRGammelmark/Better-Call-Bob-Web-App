@@ -1,0 +1,127 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 10px 10px 20px;
+  overflow: visible;
+  transition: 0.2s ease;
+  border-bottom: 1px solid #22222220;
+  min-height: 50px;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.row:hover {
+  background: #f0f0f0;
+}
+
+.iconAndTitleDiv {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+.iconAndTitleDiv h3 {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.iconSpan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16px;
+  width: 16px;
+}
+
+.inputContainer {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  position: relative;
+}
+
+.inputField {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  text-align: right;
+  outline: none;
+  cursor: text;
+}
+
+.loader {
+  animation: spin 1s linear infinite;
+  color: #59bf1a;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.dropdown {
+  position: fixed;
+  background: white;
+  border-radius: 10px;
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 8px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  z-index: 10000;
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: 4px;
+  animation: dropdownFadeIn 0.2s ease-out;
+}
+
+@keyframes dropdownFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.dropdownItem {
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.15s ease;
+}
+
+.dropdownItem:last-child {
+  border-bottom: none;
+}
+
+.dropdownItem:hover,
+.dropdownItem.selected {
+  background-color: #f0f0f0;
+}
+
+.companyName {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #222;
+  margin-bottom: 4px;
+}
+
+.companyDetails {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 2px;
+}
+

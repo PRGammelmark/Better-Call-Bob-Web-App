@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
-import { User, Mail, Phone, Building2, FileText } from 'lucide-react'
+import { User, Mail, Phone, Building2, FileText, ExternalLink } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './Kontaktinfo.module.css'
+import axios from 'axios'
 
 const Kontaktinfo = ({
   fuldeNavn,
@@ -25,6 +26,24 @@ const Kontaktinfo = ({
   onValidationChange
 }) => {
   const [errors, setErrors] = useState({})
+  const [handelsbetingelserLink, setHandelsbetingelserLink] = useState('')
+  const [persondatapolitikLink, setPersondatapolitikLink] = useState('')
+
+  // Fetch indstillinger on mount
+  useEffect(() => {
+    const fetchIndstillinger = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/indstillinger`)
+        if (response.data) {
+          setHandelsbetingelserLink(response.data.handelsbetingelser || '')
+          setPersondatapolitikLink(response.data.persondatapolitik || '')
+        }
+      } catch (error) {
+        console.error('Error fetching indstillinger:', error)
+      }
+    }
+    fetchIndstillinger()
+  }, [])
 
   // Validate form whenever values change
   useEffect(() => {
@@ -271,7 +290,36 @@ const Kontaktinfo = ({
                 <div className={Styles.switchThumb}></div>
               </div>
               <span className={Styles.switchText}>
-                Jeg accepterer handelsbetingelserne og persondatapolitikken
+                Jeg accepterer{' '}
+                {handelsbetingelserLink ? (
+                  <a 
+                    href={handelsbetingelserLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ textDecoration: 'none', color: '#59bf1a', display: 'inline-flex', alignItems: 'flex-start', gap: '3px' }}
+                  >
+                    handelsbetingelserne
+                    <ExternalLink size={11} style={{ marginTop: '2px' }} />
+                  </a>
+                ) : (
+                  'handelsbetingelserne'
+                )}
+                {' og '}
+                {persondatapolitikLink ? (
+                  <a 
+                    href={persondatapolitikLink} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    onClick={(e) => e.stopPropagation()}
+                    style={{ textDecoration: 'none', color: '#59bf1a', display: 'inline-flex', alignItems: 'flex-start', gap: '3px' }}
+                  >
+                    persondatapolitikken
+                    <ExternalLink size={11} style={{ marginTop: '2px' }} />
+                  </a>
+                ) : (
+                  'persondatapolitikken'
+                )}
                 {!accepterHandelsbetingelser && (
                   <span className={Styles.requiredBadge}>Påkrævet</span>
                 )}

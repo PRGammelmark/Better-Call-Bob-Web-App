@@ -18,6 +18,26 @@ const indstillingerSchema = new mongoose.Schema({
   sidsteFakturaBetalingstjek: {
     type: Date,
     default: null
+  },
+  virksomhedsnavn: {
+    type: String,
+    default: ""
+  },
+  cvrNummer: {
+    type: String,
+    default: ""
+  },
+  adresse: {
+    type: String,
+    default: ""
+  },
+  handelsbetingelser: {
+    type: String,
+    default: ""
+  },
+  persondatapolitik: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

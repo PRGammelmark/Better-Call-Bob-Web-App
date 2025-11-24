@@ -3,7 +3,7 @@
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
-    overflow-x: visible!important;
+    overflow-x: hidden;
     padding: 0px 4px;
     height: 100%;
     position: relative;
@@ -17,8 +17,8 @@
     left: 4px;
     box-sizing: border-box;
     overflow-y: auto;
-    overflow-x: visible;
-    padding: 0px 4px;
+    overflow-x: hidden;
+    padding: 20px 4px 10px 4px;
 }
 
 /* Custom minimalist scrollbar for step-content */

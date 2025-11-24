@@ -444,7 +444,7 @@ const TidOgSted = ({
                 : error && !isLoadingWorkers && !isLoadingTimes
                 ? error
                 : !adresse.trim() 
-                ? 'Indtast en adresse for at vise ledige tidspunkter ...'
+                ? 'Indtast adresse for at vise tidspunkter ...'
                 : 'Vis ledige tidspunkter'}
             </button>
           )}
@@ -465,12 +465,12 @@ const TidOgSted = ({
               </div>
             ) : hasNoCategories ? (
               <div className={Styles.noWorkersManualContainer}>
-                <div className={Styles.obsContainer}>
+                {/* <div className={Styles.obsContainer}>
                   <span className={Styles.obsLabel}>OBS!</span>
                   <span className={Styles.obsText}>
                     Vores system fandt desværre ingen medarbejdere til din opgave. Fortsæt bookingen, så ser vi på det manuelt når vi modtager den.
                   </span>
-                </div>
+                </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
                     Fortæl os hvornår du ønsker vi skal komme
@@ -490,12 +490,12 @@ const TidOgSted = ({
               </div>
             ) : availableWorkerIDs.length === 0 && !isLoadingWorkers ? (
               <div className={Styles.noWorkersManualContainer}>
-                <div className={Styles.obsContainer}>
+                {/* <div className={Styles.obsContainer}>
                   <span className={Styles.obsLabel}>OBS!</span>
                   <span className={Styles.obsText}>
                     Vores system fandt desværre ingen medarbejdere til din opgave. Fortsæt bookingen, så ser vi på det manuelt når vi modtager den.
                   </span>
-                </div>
+                </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
                     Fortæl os hvornår du ønsker vi skal komme
@@ -635,12 +635,12 @@ const TidOgSted = ({
               </div>
             ) : availableWorkerIDs.length > 0 && !hasSlotsWithin4Months ? (
               <div className={Styles.noWorkersManualContainer}>
-                <div className={Styles.obsContainer}>
+                {/* <div className={Styles.obsContainer}>
                   <span className={Styles.obsLabel}>OBS!</span>
                   <span className={Styles.obsText}>
                   Vores system fandt desværre ingen medarbejdere til din opgave. Fortsæt bookingen, så ser vi på det manuelt når vi modtager den.
                   </span>
-                </div>
+                </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
                     Fortæl os hvornår du ønsker vi skal komme

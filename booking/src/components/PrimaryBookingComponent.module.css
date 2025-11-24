@@ -2,11 +2,12 @@
 .primaryBookingComponent {
     display: flex;
     flex-direction: row;
-    height: clamp(800px, 70vh, 1200px);
+    height: clamp(500px, 80vh, 1200px);
     width: clamp(1030px, 80vw, 1400px);
-    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.28); */
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;    border-radius: 10px;
     overflow: hidden;
+    background: #fff;
 }
 
 .bookingContainer {
@@ -19,8 +20,8 @@
 
 .summaryContainer {
     width: 30%;
-    border-left: 1px solid #e0e0e0;
-    padding: 15px 20px;
+    border-left: 2px solid #e0e0e0;
+    /* padding: 15px 20px; */
 }
 
 .bookingHeaderContentContainer {
@@ -46,7 +47,6 @@
     display: none; /* Skjult på desktop */
 }
 
-/* Mobil Layout (max-width: 750px) */
 @media (max-width: 750px) {
     .primaryBookingComponent {
         display: flex;
@@ -84,7 +84,7 @@
         gap: 20px;
         flex: 1;
         overflow-y: hidden!important;
-        overflow-x: visible;
+        overflow-x: hidden;
         padding: 0px 0px;
         overscroll-behavior: contain!important;
         /* padding-top: 120px; /* Plads til fixed header */

@@ -11,6 +11,14 @@
   justify-content: center;
   width: 100vw;
   height: 100vh;
+  padding: 0px 10px;
+  background: linear-gradient(135deg, #a8e6cf20 0%, #7ed3b220 50%, #5fb89f20 100%);
+}
+
+@media (max-width: 750px) {
+  .app {
+    padding: 0px 0px;
+  }
 }
 
 /* ========================== Font imports ========================== */

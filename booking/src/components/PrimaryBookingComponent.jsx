@@ -379,37 +379,43 @@ const PrimaryBookingComponent = () => {
     fetchAvailableTimes()
   }, [currentStep, adresse, valgtDato, kategorier, allAvailableSlots.length, isLoadingWorkers, isLoadingTimes, estimeretTidsforbrugTimer])
 
-  // Calculate answered questions count
+  // Get first 3 questions (highest priority) - maks 3 spørgsmål
+  const førsteTreSpørgsmål = React.useMemo(() => {
+    if (!opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) return []
+    return opfølgendeSpørgsmål.slice(0, 3)
+  }, [opfølgendeSpørgsmål])
+
+  // Calculate answered questions count (only for first 3)
   const antalBesvaredeSpørgsmål = React.useMemo(() => {
-    if (!opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) return 0
+    if (!førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) return 0
     
-    return opfølgendeSpørgsmål.filter(spørgsmål => {
+    return førsteTreSpørgsmål.filter(spørgsmål => {
       const svar = opfølgendeSpørgsmålSvar[spørgsmål.feltNavn]
       return svar !== null && svar !== undefined && svar !== ''
     }).length
-  }, [opfølgendeSpørgsmål, opfølgendeSpørgsmålSvar])
+  }, [førsteTreSpørgsmål, opfølgendeSpørgsmålSvar])
 
-  const totaltAntalSpørgsmål = opfølgendeSpørgsmål.length
+  const totaltAntalSpørgsmål = førsteTreSpørgsmål.length
 
-  // Find first unanswered question in step 2
+  // Find first unanswered question in step 2 (only from first 3)
   const førsteUbesvaredeSpørgsmål = React.useMemo(() => {
-    if (currentStep !== 2 || !opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) {
+    if (currentStep !== 2 || !førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) {
       return null
     }
     
-    return opfølgendeSpørgsmål.find(spørgsmål => {
+    return førsteTreSpørgsmål.find(spørgsmål => {
       const svar = opfølgendeSpørgsmålSvar[spørgsmål.feltNavn]
       return svar === null || svar === undefined || svar === ''
     })
-  }, [currentStep, opfølgendeSpørgsmål, opfølgendeSpørgsmålSvar])
+  }, [currentStep, førsteTreSpørgsmål, opfølgendeSpørgsmålSvar])
 
-  // Check if all questions in step 2 are answered
+  // Check if all questions in step 2 are answered (only first 3)
   const alleSpørgsmålBesvarede = React.useMemo(() => {
-    if (currentStep !== 2 || !opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) {
+    if (currentStep !== 2 || !førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) {
       return false
     }
     return antalBesvaredeSpørgsmål === totaltAntalSpørgsmål
-  }, [currentStep, antalBesvaredeSpørgsmål, totaltAntalSpørgsmål, opfølgendeSpørgsmål])
+  }, [currentStep, antalBesvaredeSpørgsmål, totaltAntalSpørgsmål, førsteTreSpørgsmål])
 
   // Helper function to extract postnummerOgBy from address
   const extractPostnummerOgBy = (address) => {
@@ -854,8 +860,22 @@ const PrimaryBookingComponent = () => {
               exit={{ y: '110%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
+              drag="y"
+              dragConstraints={{ top: 0, bottom: 0 }}
+              dragElastic={{ top: 0, bottom: 0.2 }}
+              onDragEnd={(event, info) => {
+                // If dragged down more than 100px or with velocity > 500, close the modal
+                if (info.offset.y > 100 || info.velocity.y > 500) {
+                  setShowSummaryModal(false)
+                }
+                // Otherwise, the spring animation will return it to y: 1
+              }}
             >
-              <div className={SummaryStyles.bottomSheetHandle} onClick={() => setShowSummaryModal(false)} />
+              <div 
+                className={SummaryStyles.bottomSheetHandle} 
+                onClick={() => setShowSummaryModal(false)}
+                style={{ touchAction: 'none' }}
+              />
               <div className={SummaryStyles.bottomSheetHeader}>
                 <h2 className={SummaryStyles.bottomSheetTitle}>Opsummering</h2>
                 <button className={SummaryStyles.bottomSheetCloseButton} onClick={() => setShowSummaryModal(false)}>
@@ -882,6 +902,7 @@ const PrimaryBookingComponent = () => {
                   erVirksomhed={erVirksomhed}
                   virksomhed={virksomhed}
                   cvr={cvr}
+                  onClose={() => setShowSummaryModal(false)}
                 />
               </div>
               <div className={SummaryStyles.bottomSheetFooter}>

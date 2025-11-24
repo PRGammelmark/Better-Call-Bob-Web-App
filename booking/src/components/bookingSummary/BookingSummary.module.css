@@ -1,9 +1,81 @@
 .bookingSummaryContainer {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    /* gap: 10px; */
     height: 100%;
+}
+
+.bookingSummaryHeadingContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: #3c5a3f;
+    color: #fff;
+    padding: 15px 20px;
+    position: relative;
+}
+
+.summaryHandle {
+    width: 40px;
+    height: 4px;
+    background-color: #fff;
+    border-radius: 2px;
+    margin: 0 auto 12px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    flex-shrink: 0;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+}
+
+.summaryHandle:hover {
+    opacity: 0.8;
+}
+
+.summaryHeadingRow {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     justify-content: space-between;
+    gap: 4px;
+    width: 100%;
+}
+
+.summaryHeadingContent {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.summaryCloseButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transition: opacity 0.2s;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: -2px;
+}
+
+.summaryCloseButton:hover {
+    opacity: 0.8;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bookingSummaryContentContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: space-between;
+    height: 100%;
+    padding: 15px 20px;
 }
 
 .summaryBottomContainer p {
@@ -24,12 +96,12 @@
 
 .summaryConfirmationText {
     font-size: 0.8rem;
-    color: #888888;
-    margin-top: 10px;
+    color: #fff;
+    margin-top: 0px;
 }
 
 .opgaveBeskrivelseContainer {
-    margin-top: 15px;
+    /* margin-top: 15px; */
     margin-bottom: 5px;
 }
 
@@ -274,6 +346,12 @@
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
     display: flex;
     flex-direction: column;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.bottomSheet:active {
+    cursor: grabbing;
 }
 
 .bottomSheetHandle {
@@ -328,6 +406,43 @@
     overflow-y: auto;
     padding: 20px;
     -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+
+/* Make the green header extend to full width in mobile bottom sheet */
+.bottomSheetContent .bookingSummaryHeadingContainer {
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-top: -20px;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Hide the "Opsummering" header on mobile and adjust content padding */
+@media (max-width: 750px), (max-height: 800px) {
+    .bottomSheetHeader {
+        display: none;
+    }
+    
+    /* Hide the original handle on mobile since it's now in the green header */
+    .bottomSheetHandle {
+        display: none;
+    }
+    
+    /* Remove top padding from content when header is hidden */
+    .bottomSheetContent {
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    
+    /* Adjust green header margin to go all the way to top */
+    .bottomSheetContent .bookingSummaryHeadingContainer {
+        margin-top: 0;
+        padding-top: 12px;
+        border-radius: 20px 20px 0 0;
+    }
 }
 
 .bottomSheetFooter {
@@ -363,8 +478,13 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 750px), (max-height: 800px) {
-    .summaryHeading {
+@media (max-width: 750px) {
+    /* Hide heading only in sidebar, not in bottom sheet modal */
+    .summaryContainer .summaryHeading {
         display: none;
+    }
+
+    .bookingSummaryContentContainer {
+        padding: 15px 0px;
     }
 }

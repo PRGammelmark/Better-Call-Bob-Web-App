@@ -1,6 +1,7 @@
 import express from "express";
 import Joi from "joi";
 import Indstillinger from "../models/indstillingerModel.js";
+import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
@@ -14,6 +15,31 @@ const indstillingerSchema = Joi.object({
     arbejdsområdeKilometerRadius: Joi.number()
       .min(1)
       .max(200)
+      .optional(),
+    
+    virksomhedsnavn: Joi.string()
+      .max(200)
+      .allow("")
+      .optional(),
+    
+    cvrNummer: Joi.string()
+      .max(20)
+      .allow("")
+      .optional(),
+    
+    adresse: Joi.string()
+      .max(500)
+      .allow("")
+      .optional(),
+    
+    handelsbetingelser: Joi.string()
+      .max(1000)
+      .allow("")
+      .optional(),
+    
+    persondatapolitik: Joi.string()
+      .max(1000)
+      .allow("")
       .optional()
 });
 
@@ -67,22 +93,41 @@ router.get("/", async (req, res) => {
 });
 
 // Opdater indstillinger (PATCH)
-router.patch("/", async (req, res) => {
+router.patch("/", requireAuth, async (req, res) => {
   try {
+    console.log("PATCH /indstillinger - Modtaget data:", req.body);
+    
     const { error, value } = indstillingerSchema.validate(req.body, { abortEarly: false });
 
     if (error) {
+      console.error("Valideringsfejl:", error.details);
       return res.status(400).json({ 
         error: "Valideringsfejl", 
         details: error.details.map(d => d.message) 
       });
     }
 
+    console.log("Valideret data:", value);
+
+    // Brug $set for at sikre at alle felter bliver opdateret korrekt
+    const updateData = {};
+    if (value.virksomhedsnavn !== undefined) updateData.virksomhedsnavn = value.virksomhedsnavn;
+    if (value.cvrNummer !== undefined) updateData.cvrNummer = value.cvrNummer;
+    if (value.adresse !== undefined) updateData.adresse = value.adresse;
+    if (value.arbejdsområdeKilometerRadius !== undefined) updateData.arbejdsområdeKilometerRadius = value.arbejdsområdeKilometerRadius;
+    if (value.opgavetyperKategorier !== undefined) updateData.opgavetyperKategorier = value.opgavetyperKategorier;
+    if (value.handelsbetingelser !== undefined) updateData.handelsbetingelser = value.handelsbetingelser;
+    if (value.persondatapolitik !== undefined) updateData.persondatapolitik = value.persondatapolitik;
+
+    console.log("Update data:", updateData);
+
     const indstillinger = await Indstillinger.findOneAndUpdate(
       { singleton: "ONLY_ONE" },
-      value,
+      { $set: updateData },
       { new: true, upsert: true }
     );
+
+    console.log("Opdateret indstillinger:", indstillinger);
 
     notifyClients(indstillinger);
 

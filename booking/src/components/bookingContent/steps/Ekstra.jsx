@@ -68,10 +68,11 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
     const { _id, spørgsmål: spørgsmålTekst, type, selectOptions, feltNavn } = spørgsmålItem
     const currentValue = answers[feltNavn]
     const shouldPulse = førsteUbesvaredeSpørgsmål && førsteUbesvaredeSpørgsmål._id === _id
+    const isAnswered = currentValue !== null && currentValue !== undefined && currentValue !== ''
 
     if (type === 'Ja/nej') {
       return (
-        <div key={_id} className={Styles.spørgsmålItem}>
+        <div key={_id} className={`${Styles.spørgsmålItem} ${isAnswered ? Styles.answered : ''} ${shouldPulse ? Styles.pulsatingCard : ''}`}>
           <div className={Styles.spørgsmålHeader}>
             <span className={Styles.questionNumber}>{index + 1}</span>
             <label className={Styles.spørgsmålLabel}>{spørgsmålTekst}</label>
@@ -79,26 +80,36 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
           <div className={Styles.jaNejContainer}>
             <button
               type="button"
-              className={`${Styles.jaNejButton} ${currentValue === true ? Styles.active : ''} ${shouldPulse ? Styles.pulsating : ''}`}
+              className={`${Styles.jaNejButton} ${currentValue === true ? Styles.active : ''} ${shouldPulse && currentValue !== true ? Styles.pulsating : ''}`}
               onClick={() => handleAnswerChange(feltNavn, true)}
               aria-pressed={currentValue === true}
             >
               <span>Ja</span>
+              {currentValue === true && (
+                <div className={Styles.buttonCheckIcon}>
+                  <Check size={16} />
+                </div>
+              )}
             </button>
             <button
               type="button"
-              className={`${Styles.jaNejButton} ${currentValue === false ? Styles.active : ''} ${shouldPulse ? Styles.pulsating : ''}`}
+              className={`${Styles.jaNejButton} ${currentValue === false ? Styles.active : ''} ${shouldPulse && currentValue !== false ? Styles.pulsating : ''}`}
               onClick={() => handleAnswerChange(feltNavn, false)}
               aria-pressed={currentValue === false}
             >
               <span>Nej</span>
+              {currentValue === false && (
+                <div className={Styles.buttonCheckIcon}>
+                  <Check size={16} />
+                </div>
+              )}
             </button>
           </div>
         </div>
       )
     } else if (type === 'Valgmuligheder' && selectOptions && selectOptions.length > 0) {
       return (
-        <div key={_id} className={Styles.spørgsmålItem}>
+        <div key={_id} className={`${Styles.spørgsmålItem} ${isAnswered ? Styles.answered : ''} ${shouldPulse ? Styles.pulsatingCard : ''}`}>
           <div className={Styles.spørgsmålHeader}>
             <span className={Styles.questionNumber}>{index + 1}</span>
             <label className={Styles.spørgsmålLabel} htmlFor={feltNavn}>
@@ -154,7 +165,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
         <div className={Styles.spørgsmålContainer}>
           {spørgsmål.length > 0 ? (
             <div className={Styles.spørgsmålListe}>
-              {spørgsmål.map((sp, index) => renderSpørgsmål(sp, index))}
+              {spørgsmål.slice(0, 3).map((sp, index) => renderSpørgsmål(sp, index))}
             </div>
           ) : (
             <div className={Styles.ingenSpørgsmålContainer}>

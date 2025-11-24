@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.8.12",
+    date: "24. november 2025",
+    changes: [
+        "Flere indstillingsmuligheder er blevet tilføjet til App-indstillinger-siden.",
+        "Diverse designforbedringer og funktionelle justeringer til bookingsystemet."
+    ]
+},{
     version: "3.8.11",
     date: "23. november 2025",
     changes: [

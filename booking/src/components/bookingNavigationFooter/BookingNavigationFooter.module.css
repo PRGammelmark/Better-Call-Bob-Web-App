@@ -119,13 +119,24 @@
 }
 
 /* Vis kun på mobil */
-@media (max-width: 750px), (max-height: 800px) {
+@media (max-width: 750px) {
     .summaryButton {
         display: block;
     }
 
     .mobileSummaryButton {
         display: block; /* Vises på mobil */
+    }
+
+    /* Align tooltip wrapper (span) til højre når den kommer efter backButton */
+    /* Targeter den første span efter backButton (tooltip wrapper med mobileSummaryButton) */
+    .bookingNavigationFooter > .backButton + span {
+        margin-left: auto;
+    }
+
+    /* Fallback: Align knappen direkte hvis der ikke er tooltip wrapper */
+    .bookingNavigationFooter > .mobileSummaryButton {
+        margin-left: auto;
     }
 
     .desktopConfirmButton {

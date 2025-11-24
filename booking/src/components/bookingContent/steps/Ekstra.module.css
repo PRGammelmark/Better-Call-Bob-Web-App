@@ -62,20 +62,53 @@
 .spørgsmålContainer {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 .spørgsmålListe {
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
 }
 
-/* Spørgsmål Item - No boxes, borders or backgrounds */
+/* Spørgsmål Item - Sharp, modern card design */
 .spørgsmålItem {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 20px;
+  background: #f0f2f5;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.spørgsmålItem::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: transparent;
+  transition: background 0.3s ease;
+}
+
+.spørgsmålItem.answered {
+  background: #e8f5e0;
+}
+
+.spørgsmålItem.answered::before {
+  background: #59bf1a;
+}
+
+.spørgsmålItem:hover {
+  background: #e8eaed;
+}
+
+.spørgsmålItem.answered:hover {
+  background: #dff0d4;
 }
 
 .spørgsmålHeader {
@@ -90,12 +123,23 @@
   justify-content: center;
   min-width: 28px;
   height: 28px;
-  background: #59bf1a;
+  background: linear-gradient(135deg, #59bf1a 0%, #4aa015 100%);
   color: #ffffff;
   font-size: 14px;
   font-weight: 700;
-  border-radius: 6px;
+  border-radius: 8px;
   flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(89, 191, 26, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.spørgsmålItem.answered .questionNumber {
+  background: linear-gradient(135deg, #4aa015 0%, #3d8a12 100%);
+  box-shadow: 0 2px 6px rgba(89, 191, 26, 0.3);
+}
+
+.spørgsmålItem:hover .questionNumber {
+  transform: scale(1.05);
 }
 
 .spørgsmålLabel {
@@ -106,46 +150,93 @@
   flex: 1;
   margin: 0;
   padding-top: 2px;
+  letter-spacing: -0.01em;
 }
 
-/* Ja/Nej Buttons */
+/* Ja/Nej Buttons - Sharp, modern design */
 .jaNejContainer {
   display: flex;
-  gap: 12px;
-  margin-left: 40px;
+  gap: 10px;
+  margin-left: 0;
 }
 
 .jaNejButton {
   flex: 1;
-  padding: 14px 24px;
+  padding: 14px 48px 14px 20px;
   border: 2px solid #e8e9ea;
   border-radius: 10px;
   background: #ffffff;
   color: #333;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .jaNejButton:hover {
   border-color: #59bf1a;
   background: #f8fff4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(89, 191, 26, 0.15);
 }
 
 .jaNejButton.active {
   border-color: #59bf1a;
-  background: #59bf1a;
-  color: #ffffff;
+  background: #f8fff4;
+  color: #333;
+  padding-right: 50px;
+  box-shadow: 0 4px 12px rgba(89, 191, 26, 0.2);
 }
 
-/* Select Input */
+.jaNejButton.active:hover {
+  border-color: #4aa015;
+  background: #f0fce8;
+  box-shadow: 0 6px 16px rgba(89, 191, 26, 0.25);
+  transform: translateY(-2px);
+}
+
+.buttonCheckIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #59bf1a 0%, #4aa015 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  pointer-events: none;
+  z-index: 2;
+  box-shadow: 0 2px 6px rgba(89, 191, 26, 0.3);
+  animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes checkPop {
+  0% {
+    transform: translateY(-50%) scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(-50%) scale(1.2);
+  }
+  100% {
+    transform: translateY(-50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Select Input - Sharp, modern design */
 .selectWrapper {
   position: relative;
-  margin-left: 40px;
+  margin-left: 0;
 }
 
 .selectInput {
@@ -155,35 +246,42 @@
   border-radius: 10px;
   background: #ffffff;
   color: #333;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .selectInput:hover {
   border-color: #59bf1a;
   background: #f8fff4;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(89, 191, 26, 0.15);
 }
 
 .selectInput:focus {
   outline: none;
   border-color: #59bf1a;
-  box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+  box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1), 0 4px 8px rgba(89, 191, 26, 0.15);
+  transform: translateY(-1px);
 }
 
 .selectInputSelected {
   border-color: #59bf1a !important;
   background: #f8fff4 !important;
   padding-right: 50px;
+  box-shadow: 0 4px 12px rgba(89, 191, 26, 0.2) !important;
 }
 
 .selectInputSelected:hover {
   border-color: #4aa015 !important;
   background: #f0fce8 !important;
+  box-shadow: 0 6px 16px rgba(89, 191, 26, 0.25) !important;
+  transform: translateY(-2px);
 }
 
 .selectArrow {
@@ -222,13 +320,15 @@
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: #59bf1a;
+  background: linear-gradient(135deg, #59bf1a 0%, #4aa015 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #ffffff;
   pointer-events: none;
   z-index: 2;
+  box-shadow: 0 2px 6px rgba(89, 191, 26, 0.3);
+  animation: checkPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Empty States */
@@ -270,7 +370,16 @@
   }
 
   .spørgsmålListe {
-    gap: 28px;
+    gap: 20px;
+  }
+
+  .spørgsmålItem {
+    padding: 18px;
+    gap: 14px;
+  }
+
+  .spørgsmålLabel {
+    font-size: 16px;
   }
 
   .jaNejContainer,
@@ -278,23 +387,29 @@
     margin-left: 0;
   }
 
-  .jaNejContainer {
-    flex-direction: column;
-  }
-
   .jaNejButton {
-    width: 100%;
+    flex: 1;
+    padding: 12px 18px;
+    font-size: 14px;
   }
 }
 
 /* Pulsating animation for unanswered questions */
+.spørgsmålItem.pulsatingCard {
+  animation: pulseCard 2.5s ease-in-out infinite;
+}
+
+.spørgsmålItem.pulsatingCard::before {
+  animation: pulseAccent 2.5s ease-in-out infinite;
+}
+
 .jaNejButton.pulsating {
   border-color: #59bf1a;
-  animation: pulseInput 2.5s ease-in-out infinite;
+  animation: pulseButton 2.5s ease-in-out infinite;
 }
 
 .jaNejButton.pulsating:hover {
-  animation: pulseInput 2.5s ease-in-out infinite;
+  animation: pulseButton 2.5s ease-in-out infinite;
 }
 
 .selectWrapper.pulsating {
@@ -310,28 +425,46 @@
   animation: pulseSelect 2.5s ease-in-out infinite;
 }
 
-@keyframes pulseInput {
+@keyframes pulseCard {
+  0%, 100% {
+    background: #f0f2f5;
+  }
+  50% {
+    background: #e8f5e0;
+  }
+}
+
+@keyframes pulseAccent {
+  0%, 100% {
+    background: transparent;
+  }
+  50% {
+    background: #59bf1a;
+  }
+}
+
+@keyframes pulseButton {
   0%, 100% {
     border-color: #59bf1a;
-    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 0 rgba(89, 191, 26, 0.4);
   }
   50% {
     border-color: #4da816;
-    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.2);
+    box-shadow: 0 4px 8px rgba(89, 191, 26, 0.15), 0 0 0 4px rgba(89, 191, 26, 0.1);
   }
 }
 
 @keyframes pulseSelect {
   0% {
     border-color: #59bf1a;
-    box-shadow: 0 0 0 0 rgba(89, 191, 26, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 0 rgba(89, 191, 26, 0.4);
   }
   50% {
     border-color: #4da816;
-    box-shadow: 0 0 0 4px rgba(89, 191, 26, 0.3);
+    box-shadow: 0 4px 8px rgba(89, 191, 26, 0.15), 0 0 0 4px rgba(89, 191, 26, 0.1);
   }
   100% {
     border-color: #59bf1a;
-    box-shadow: 0 0 0 0 rgba(89, 191, 26, 0.7);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 0 rgba(89, 191, 26, 0.4);
   }
 }
