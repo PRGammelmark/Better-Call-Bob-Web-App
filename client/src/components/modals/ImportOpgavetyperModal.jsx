@@ -169,8 +169,7 @@ const ImportOpgavetyperModal = (props) => {
             <PageAnimation>
                 <h2 className={Styles.modalHeader}>Importer opgavetyper</h2>
                 <p className={Styles.modalDescription}>
-                    Vælg en kategori for at se tilgængelige opgavetyper, og vælg derefter de opgavetyper du vil importere. 
-                    Opgavetyper der allerede eksisterer vil blive sprunget over.
+                    Vælg opgavetyper herunder, som du vil importere. Importerede opgavetyper tilføjes til dem, du allerede bruger, og evt. duplikater springes over.
                 </p>
 
                 {importResult && importResult.success && (
