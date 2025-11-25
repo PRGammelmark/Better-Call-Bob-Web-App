@@ -14,6 +14,7 @@ import AlleOpgaver from './pages/AlleOpgaver'
 import MineOpgaver from './pages/MineOpgaver'
 import Dokumenter from './pages/Dokumenter'
 import DinKonto from './pages/DinKonto'
+import Profil from './pages/Profil'
 import Version from './pages/Version'
 import ÅbenOpgave from './pages/ÅbenOpgave'
 import NyOpgave from './pages/NyOpgave'
@@ -39,6 +40,13 @@ import KalenderV2 from './pages/kalender/KalenderV2'
 import MobilePayOversigt from './pages/MobilePayOversigt'
 import MineOpgaver2 from './pages/MineOpgaver2'
 
+
+// Redirect component for /din-konto -> /profil/:brugerID
+const RedirectToProfil = () => {
+  const { user } = useAuthContext();
+  const userID = user?.id || user?._id;
+  return <Navigate to={`/profil/${userID}`} replace />;
+};
 
 function App() {
 
@@ -92,7 +100,8 @@ function App() {
           <Route path="team" element={<Team />} errorElement={<ErrorPage />}/>
           <Route path="kunder" element={<Kunder />} errorElement={<ErrorPage />}/>
           <Route path="dokumenter" element={<Dokumenter />} errorElement={<ErrorPage />}/>
-          <Route path="din-konto" element={<DinKonto />} errorElement={<ErrorPage />}/>
+          <Route path="profil/:brugerID" element={<Profil />} errorElement={<ErrorPage />}/>
+          <Route path="din-konto" element={<RedirectToProfil />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
           <Route path="app-indstillinger" element={<AppIndstillinger />} errorElement={<ErrorPage />}/>
           <Route path="hjaelp" element={<Hjaelp />} errorElement={<ErrorPage />}/>

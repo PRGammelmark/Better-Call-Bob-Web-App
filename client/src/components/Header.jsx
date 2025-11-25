@@ -38,6 +38,7 @@ const Header = () => {
     '/kalender': (<div className={Styles.mobileTitle}> <Calendar height={20} />Kalender</div>),
     '/dokumenter': (<div className={Styles.mobileTitle}> <ScrollText height={20} />Dokumenter</div>),
     '/din-konto': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
+    '/profil/:brugerID': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
     '/app-indstillinger': (<div className={Styles.mobileTitle}> <Settings height={20} />App-indstillinger</div>),
     '/ny-kunde': (<div className={Styles.mobileTitle}> <UserRoundPlus height={20} />Opret ny kunde</div>),
     '/hjaelp': (<div className={Styles.mobileTitle}> <CircleQuestionMark height={20} />Hjælp</div>),

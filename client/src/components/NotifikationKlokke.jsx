@@ -24,6 +24,7 @@ export default function NotifikationKlokke({ background, color }) {
 
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  const userID = user?.id || user?._id;
   dayjs.extend(relativeTime);
   dayjs.locale('da');
 
@@ -204,7 +205,7 @@ useEffect(() => {
   }
   
   function handleÅbnSettings() {
-    navigate("/din-konto");
+    navigate(`/profil/${userID}`);
     setTimeout(() => {
       setÅbenNotifikationer(false);
     }, 1000);

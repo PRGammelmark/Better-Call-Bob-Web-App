@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.8.13",
+    date: "25. november 2025",
+    changes: [
+        "Nu kan andre medarbejderes sider tilgås via Team-siden. Administratorer har desuden mulighed for at redigere i arbejdspræferencer og kontaktinformationer for medarbejdere."
+    ]
+},{
     version: "3.8.12",
     date: "24. november 2025",
     changes: [

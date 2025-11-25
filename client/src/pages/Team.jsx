@@ -1,6 +1,7 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
+import { Link } from 'react-router-dom'
 import styles from "./Team.module.css"
 import axios from "axios"
 import PageAnimation from '../components/PageAnimation'
@@ -106,7 +107,9 @@ const Team = () => {
                             return (
                                 <div className={styles.card} key={bruger._id}>
                                     <div>
-                                        <p className={styles.name}>{bruger.navn}</p>
+                                        <Link to={`/profil/${bruger._id}`} style={{textDecoration: 'none', color: 'inherit'}}>
+                                            <p className={styles.name} style={{cursor: 'pointer'}}>{bruger.navn}</p>
+                                        </Link>
                                         <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
                                     </div>
                                     <div>

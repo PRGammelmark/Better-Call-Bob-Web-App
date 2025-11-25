@@ -20,6 +20,7 @@ const Content = () => {
   const contentRef = useRef(null)
   const { user } = useAuthContext();
   const location = useLocation()
+  const userID = user?.id || user?._id;
 
   return (
     <>
@@ -35,7 +36,7 @@ const Content = () => {
                 {user.isAdmin && <li><NavLink to="kunder" className={ContentCSS.sidebarItem}><Users height={16} className={ContentCSS.sidebarIcon} /><p>Kunder</p></NavLink></li>}
                 <li><NavLink to="team" className={ContentCSS.sidebarItem}><House height={16} className={ContentCSS.sidebarIcon} /><p>Team</p></NavLink></li>
                 <li><NavLink to="dokumenter" className={ContentCSS.sidebarItem}><ScrollText height={16} className={ContentCSS.sidebarIcon} /><p>Dokumenter</p></NavLink></li>
-                <li><NavLink to="din-konto" className={ContentCSS.sidebarItem}><User height={16} className={ContentCSS.sidebarIcon} /><p>Profil</p></NavLink></li>
+                <li><NavLink to={`profil/${userID}`} className={ContentCSS.sidebarItem}><User height={16} className={ContentCSS.sidebarIcon} /><p>Profil</p></NavLink></li>
                 <li><NavLink to="app-indstillinger" className={ContentCSS.sidebarItem}><Settings height={16} className={ContentCSS.sidebarIcon} /><p>Indstillinger</p></NavLink></li>
                 <li><NavLink to="hjaelp" className={ContentCSS.sidebarItem}><CircleQuestionMark height={16} className={ContentCSS.sidebarIcon} /><p>Hjælp</p></NavLink></li>
               </ul>

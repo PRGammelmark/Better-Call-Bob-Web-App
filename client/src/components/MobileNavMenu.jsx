@@ -12,6 +12,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
 
     const { user } = useAuthContext();
     const { logout } = useLogout();
+    const userID = user?.id || user?._id;
 
     const linkStyles = {
         textDecoration: 'none',
@@ -86,7 +87,7 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                             <h2>Dokumenter</h2>
                         </div>
                     </Link>
-                    <Link style={linkStyles} to={'din-konto'} onClick={() => setShowNavMenu(false)}>
+                    <Link style={linkStyles} to={`profil/${userID}`} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>
                                 <User className={Styles.newMobileNavItemIcon} />

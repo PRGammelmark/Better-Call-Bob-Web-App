@@ -14,6 +14,7 @@ import AddPostering from '../modals/AddPostering.jsx'
 const Bottombar = () => {
 
     const { user } = useAuthContext();
+    const userID = user?.id || user?._id;
     const [showNavMenu, setShowNavMenu] = useState(false);
     const [showPlusOptions, setShowPlusOptions] = useState(false);
     const [showTilføjLedighed, setShowTilføjLedighed] = useState(false);
@@ -60,7 +61,7 @@ const Bottombar = () => {
                 <Plus className={BottombarCSS.bottomBarCenterItemIcon} />
             </div>
         </div>
-        {!user.isAdmin && <NavLink to="/din-konto" className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`}>
+        {!user.isAdmin && <NavLink to={`/profil/${userID}`} className={`${BottombarCSS.bottomBarItemContainer} ${BottombarCSS.bottomBarItem}`}>
             <User className={BottombarCSS.bottomBarItemIcon} />
             <p>Profil</p>
         </NavLink>}
