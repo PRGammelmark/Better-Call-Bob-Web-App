@@ -56,11 +56,18 @@ router.post("/parseOpgaveFromText", async (req, res) => {
 router.post("/parseKategorierFromText", async (req, res) => {
   const { opgaveBeskrivelse } = req.body;
 
+  console.log("=== AI KATEGORI IDENTIFIKATION START ===");
+  console.log("Timestamp:", new Date().toISOString());
+  console.log("Request body opgaveBeskrivelse length:", opgaveBeskrivelse?.length || 0);
+  console.log("Request body opgaveBeskrivelse preview:", opgaveBeskrivelse?.substring(0, 200) || "Manglende");
+
   if (!opgaveBeskrivelse) {
+    console.error("❌ FEJL: Manglende opgaveBeskrivelse i request body");
     return res.status(400).json({ error: "Manglende opgaveBeskrivelse i request body" });
   }
 
   try {
+    console.log("📥 Henter opgavetyper fra database...");
     // Hent alle opgavetyper fra databasen
     const opgavetyper = await Opgavetyper.find({});
     
@@ -69,18 +76,16 @@ router.post("/parseKategorierFromText", async (req, res) => {
       .map(opgavetype => opgavetype.opgavetype)
       .filter(opgavetype => opgavetype && opgavetype.trim() !== "");
 
+    console.log("📋 Antal opgavetyper i database:", opgavetyper.length);
+    console.log("📋 Antal opgavetyper efter filtrering:", opgavetyperListe.length);
+    console.log("📋 Opgavetyper liste:", opgavetyperListe);
+
     if (opgavetyperListe.length === 0) {
+      console.error("❌ FEJL: Ingen opgavetyper fundet i databasen");
       return res.status(400).json({ error: "Ingen opgavetyper fundet i databasen" });
     }
 
-    // Send til AI for at analysere opgavebeskrivelsen og matche opgavetyper
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4.1-mini",
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content: `Du skal analysere en opgavebeskrivelse og give den en kategori. 
+    const systemPrompt = `Du skal analysere en opgavebeskrivelse og give den en kategori. 
           Du må gerne give den flere kategorier, hvis det giver mening.
           
           Tilgængelige kategorier: ${opgavetyperListe.join(", ")}
@@ -89,36 +94,70 @@ router.post("/parseKategorierFromText", async (req, res) => {
           Vælg kun en kategori hvis den tydeligt matcher opgavens kerne. 
           Hvis teksten ikke specifikt nævner noget, der passer til en kategori, må du IKKE gætte.
           Er du usikker på om en kategori passer til opgaven skal du IKKE inkludere den. Hvis der ikke er nogen relevante kategorier at give til opgaven, så skal du returnere et tomt array: [].
-          Returnér kun gyldig JSON som output, uden markdown eller forklaringer.`
+          Returnér kun gyldig JSON som output, uden markdown eller forklaringer.`;
+
+    const userPrompt = `Analysér følgende opgavebeskrivelse, og giv mig en liste over kategorier:\n\n${opgaveBeskrivelse}`;
+
+    console.log("🤖 Sender request til OpenAI...");
+    console.log("🤖 Model: gpt-4.1-mini");
+    console.log("🤖 System prompt length:", systemPrompt.length);
+    console.log("🤖 User prompt length:", userPrompt.length);
+    console.log("🤖 User prompt preview:", userPrompt.substring(0, 300));
+
+    // Send til AI for at analysere opgavebeskrivelsen og matche opgavetyper
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4.1-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
         },
         {
           role: "user",
-          content: `Analysér følgende opgavebeskrivelse, og giv mig en liste over kategorier:\n\n${opgaveBeskrivelse}`,
+          content: userPrompt,
         }
       ],
     });
 
     const content = completion.choices[0].message.content;
+    console.log("✅ OpenAI response modtaget");
+    console.log("📝 Raw AI content length:", content?.length || 0);
+    console.log("📝 Raw AI content:", content);
 
     // Parse JSON fra AI-svar
     let parsed;
     try {
       // Fjern eventuel markdown formatting
       const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      console.log("🧹 Cleaned content:", cleanedContent);
+      
       parsed = JSON.parse(cleanedContent);
+      console.log("✅ JSON parsing succesfuld");
+      console.log("📦 Parsed resultat:", parsed);
+      console.log("📦 Parsed resultat type:", typeof parsed);
+      console.log("📦 Er array?", Array.isArray(parsed));
       
       // Valider at det er et array
       if (!Array.isArray(parsed)) {
+        console.warn("⚠️ Parsed resultat er ikke et array, konverterer til tomt array");
         parsed = [];
       }
       
+      console.log("📦 Parsed array length:", parsed.length);
+      
       // Filtrer kun opgavetyper der faktisk eksisterer i databasen
       // Match case-insensitively, men returner de originale værdier fra databasen
+      console.log("🔍 Filtrerer opgavetyper mod database...");
       const validOpgavetyper = parsed
         .map(o => o.trim())
         .filter(o => {
           const oLower = o.toLowerCase();
-          return opgavetyperListe.some(x => x.trim().toLowerCase() === oLower);
+          const isValid = opgavetyperListe.some(x => x.trim().toLowerCase() === oLower);
+          if (!isValid) {
+            console.log(`  ⚠️ "${o}" matcher ikke nogen opgavetype i databasen`);
+          }
+          return isValid;
         })
         .map(o => {
           // Find den originale værdi fra databasen (med korrekt case)
@@ -127,13 +166,30 @@ router.post("/parseKategorierFromText", async (req, res) => {
           return match ? match.trim() : o;
         });
       
+      console.log("✅ Filtrering færdig");
+      console.log("📊 Valid opgavetyper count:", validOpgavetyper.length);
+      console.log("📊 Valid opgavetyper:", validOpgavetyper);
+      console.log("📊 Original parsed count:", parsed.length);
+      console.log("📊 Filtrerede væk:", parsed.length - validOpgavetyper.length);
+      
+      console.log("=== AI KATEGORI IDENTIFIKATION SLUT ===");
+      console.log("📤 Sender response tilbage:", validOpgavetyper);
+      
       res.json(validOpgavetyper);
     } catch (e) {
-      console.error("Kunne ikke parse AI's JSON output:", content);
+      console.error("❌ JSON parsing fejl:", e.message);
+      console.error("❌ Raw content der fejlede:", content);
+      console.error("❌ Stack trace:", e.stack);
       return res.status(500).json({ error: "Kunne ikke parse AI's JSON output", raw: content });
     }
   } catch (error) {
-    console.error("AI opgavetype kategorisering fejl:", error);
+    console.error("❌ AI opgavetype kategorisering fejl:", error.message);
+    console.error("❌ Error stack:", error.stack);
+    console.error("❌ Error details:", error);
+    if (error.response) {
+      console.error("❌ OpenAI API error response:", error.response.data);
+      console.error("❌ OpenAI API error status:", error.response.status);
+    }
     res.status(500).json({ error: "Fejl ved AI opgavetype kategorisering" });
   }
 });

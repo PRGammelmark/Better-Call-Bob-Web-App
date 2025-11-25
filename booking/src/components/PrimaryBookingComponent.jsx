@@ -227,26 +227,66 @@ const PrimaryBookingComponent = () => {
         // Only analyze if the description has changed since last analysis
         const hasBeskrivelseChanged = lastAnalyzedBeskrivelseRef.current !== opgaveBeskrivelse.trim()
         
+        console.log("=== CLIENT: KATEGORI FETCH START ===");
+        console.log("📍 Current step:", currentStep);
+        console.log("📝 Opgavebeskrivelse length:", opgaveBeskrivelse.trim().length);
+        console.log("📝 Opgavebeskrivelse preview:", opgaveBeskrivelse.trim().substring(0, 200));
+        console.log("🔄 Has beskrivelse changed?", hasBeskrivelseChanged);
+        console.log("📋 Last analyzed:", lastAnalyzedBeskrivelseRef.current);
+        
         if (hasBeskrivelseChanged) {
           setIsLoadingKategorier(true)
+          console.log("🚀 Sender request til API...");
+          console.log("🌐 API URL:", `${import.meta.env.VITE_API_URL}/ai/parseKategorierFromText`);
+          
           try {
             const response = await axios.post(
               `${import.meta.env.VITE_API_URL}/ai/parseKategorierFromText`,
               { opgaveBeskrivelse }
             )
-            setKategorier(response.data || [])
+            
+            console.log("✅ API response modtaget");
+            console.log("📦 Response status:", response.status);
+            console.log("📦 Response data:", response.data);
+            console.log("📦 Response data type:", typeof response.data);
+            console.log("📦 Response data is array?", Array.isArray(response.data));
+            console.log("📦 Response data length:", Array.isArray(response.data) ? response.data.length : "N/A");
+            
+            const kategorier = response.data || []
+            console.log("📊 Kategorier der sættes:", kategorier);
+            console.log("📊 Antal kategorier:", kategorier.length);
+            
+            setKategorier(kategorier)
             // Update the ref to track what we last analyzed
             lastAnalyzedBeskrivelseRef.current = opgaveBeskrivelse.trim()
             // Reset answers when description changes (new analysis = new questions)
             setOpfølgendeSpørgsmålSvar({})
+            
+            console.log("✅ Kategorier sat succesfuldt");
+            console.log("=== CLIENT: KATEGORI FETCH SLUT ===");
           } catch (error) {
-            console.error('Error fetching kategorier:', error)
+            console.error("❌ FEJL ved fetch af kategorier");
+            console.error("❌ Error message:", error.message);
+            console.error("❌ Error response:", error.response?.data);
+            console.error("❌ Error status:", error.response?.status);
+            console.error("❌ Error config:", error.config);
+            console.error("❌ Full error:", error);
             setKategorier([])
+            console.log("=== CLIENT: KATEGORI FETCH SLUT (FEJL) ===");
           } finally {
             setIsLoadingKategorier(false)
           }
+        } else {
+          console.log("⏭️ Beskrivelse ikke ændret, springer fetch over");
+          console.log("=== CLIENT: KATEGORI FETCH SLUT (SKIPPED) ===");
         }
         // If description hasn't changed, keep existing kategorier and answers
+      } else {
+        if (currentStep !== 2) {
+          console.log("⏭️ Ikke på step 2, springer fetch over (step:", currentStep, ")");
+        } else if (!opgaveBeskrivelse.trim()) {
+          console.log("⏭️ Ingen opgavebeskrivelse, springer fetch over");
+        }
       }
     }
 
