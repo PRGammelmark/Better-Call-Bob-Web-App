@@ -21,7 +21,7 @@ const changes = [{
         "Profil-siden er blevet opdateret med et nyt og mere overskueligt design. Bl.a. er der implementeret faner til forskellige emner. Ikke alle faner har indhold endnu.",
         "Medarbejdere kan nu uploade og beskære profilbilleder via en ny profilbillede-modal. Billederne komprimeres automatisk og vises på medarbejderens profilside samt på Team-siden.",
         "Team-siden har fået et nyt og mere overskueligt design.",
-        "Administratorer kan nu indstille prioritet for medarbejdere (1-5) via en ny prioritet-modal. Prioritet lægges bl.a. ind i algoritmen, der bestemmer hvilke medarbejdere der automatisk får tildelt nye opgaver via bookingsystemet.",
+        // "Administratorer kan nu indstille prioritet for medarbejdere (1-5) via en ny prioritet-modal. Prioritet lægges bl.a. ind i algoritmen, der bestemmer hvilke medarbejdere der automatisk får tildelt nye opgaver via bookingsystemet.",
         "Når administratorer opretter nye opgavetyper har man nu mulighed for at oprette en engelsk oversættelse af opgavetypens viste navn. Det samme gør sig gældende når administratorer opretter og redigerer opfølgende spørgsmål.",
         "Animationen ved navigation i app'en er gjort enklere og hurtigere.",
         "Diverse designjusteringer og funktionelle forbedringer til bookingsystemet."
