@@ -21,16 +21,20 @@ const DateLine = ({ label, description, value, onChange, required, name, min, ma
         {label}
         {description && <p>{description}</p>}
       </label>
-      <input
-        id={name}
-        name={name}
-        type="date"
-        value={value || ""}
-        onChange={(e) => onChange(e.target.value)}
-        required={required}
-        min={min}
-        max={max}
-      />
+      <div className={styles.dateInputWrapper}>
+        <input
+          id={name}
+          name={name}
+          type="date"
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          required={required}
+          min={min}
+          max={max}
+          className={styles.dateInput}
+          lang="da"
+        />
+      </div>
     </div>
   );
 };

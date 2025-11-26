@@ -76,10 +76,9 @@
         border: none;
         box-shadow: none;
         background: transparent;
-        /* Sikrer at teksten faktisk aligner til højre */
-        direction: rtl;
-        text-align: right;
-        padding-right: 0;
+        /* Fix for iOS Safari blue text color */
+        color: #222222;
+        -webkit-text-fill-color: #222222;
     }
     &[type='date']::-webkit-calendar-picker-indicator,
     &[type='time']::-webkit-calendar-picker-indicator,
@@ -368,6 +367,27 @@
         -ms-transform: translateX(20px);
         transform: translateX(20px);
     }
+
+    /* Fix for iOS date input alignment and format */
+    .inputLine input[type='date'],
+    .inputLine .dateInput {
+        text-align: right !important;
+        direction: ltr !important;
+        -webkit-text-align: right !important;
+        /* Force right alignment on iOS */
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        /* Ensure date format is consistent */
+        font-size: 1rem !important;
+        /* Prevent iOS from centering the text */
+        text-align-last: right !important;
+        -webkit-text-align-last: right !important;
+    }
+    
+    .dateInputWrapper {
+        justify-content: flex-end !important;
+        width: 100% !important;
+    }
 }
 
 /* Pills styles */
@@ -598,6 +618,9 @@
     padding-right: 0;
     width: auto;
     max-width: fit-content;
+    /* Fix for iOS Safari blue text color */
+    color: #222222;
+    -webkit-text-fill-color: #222222;
 }
 
 .timeInput::-webkit-calendar-picker-indicator {
@@ -612,5 +635,43 @@
     flex: 0 0 auto;
     color: #222222;
     transform: translateY(-1px);
+}
+
+/* Date input wrapper for better iOS control */
+.dateInputWrapper {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+    min-width: 0;
+}
+
+/* Date input specific styling */
+.dateInput {
+    flex: 0 1 auto;
+    border: none;
+    background: transparent;
+    font-family: Omnes;
+    font-size: 1rem;
+    outline: none;
+    text-align: right !important;
+    cursor: pointer;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    box-shadow: none;
+    padding-right: 0;
+    padding-left: 0;
+    width: auto;
+    min-width: 0;
+    max-width: 100%;
+    /* Fix for iOS Safari blue text color */
+    color: #222222 !important;
+    -webkit-text-fill-color: #222222 !important;
+    /* Force right alignment on iOS */
+    direction: ltr;
+    text-align: -webkit-right;
+    -webkit-text-align: right;
 }
 
