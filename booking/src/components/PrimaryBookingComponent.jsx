@@ -1013,7 +1013,7 @@ const PrimaryBookingComponent = () => {
               <button className={SummaryStyles.popupCloseButton} onClick={() => setShowBookingPopup(false)}>
                 <X size={18} />
               </button>
-              <h3 className={SummaryStyles.popupTitle}>Oplysninger om bookingHeaderContentContainer</h3>
+              <h3 className={SummaryStyles.popupTitle}>Oplysninger om bookingen</h3>
               
               {/* Opgave Information */}
               <div style={{ marginBottom: '20px' }}>

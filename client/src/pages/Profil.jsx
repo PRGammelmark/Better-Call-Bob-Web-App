@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState, useRef, useMemo } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import Styles from './DinKonto.module.css'
@@ -56,6 +56,16 @@ const tabConfig = [
     }
 ]
 
+// Icon map for tabs
+const iconMap = {
+    LayoutDashboard: <LayoutDashboard size={18} />,
+    ClipboardList: <ClipboardList size={18} />,
+    Wallet: <Wallet size={18} />,
+    User: <User size={18} />,
+    Hammer: <Hammer size={18} />,
+    Settings: <Settings size={18} />
+}
+
 const Profil = () => {
     const { brugerID } = useParams();
     const {user, updateUser} = useAuthContext();
@@ -110,20 +120,11 @@ const Profil = () => {
     
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-    // Create tabs with icons
-    const iconMap = {
-        LayoutDashboard: <LayoutDashboard size={18} />,
-        ClipboardList: <ClipboardList size={18} />,
-        Wallet: <Wallet size={18} />,
-        User: <User size={18} />,
-        Hammer: <Hammer size={18} />,
-        Settings: <Settings size={18} />
-    }
-
-    const tabs = tabConfig.map(tab => ({
+    // Create tabs with icons (memoized to prevent infinite loops)
+    const tabs = useMemo(() => tabConfig.map(tab => ({
         ...tab,
         icon: iconMap[tab.iconType]
-    }))
+    })), [])
 
     useEffect(() => {
       if (!brugerID) return;

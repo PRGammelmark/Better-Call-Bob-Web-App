@@ -85,7 +85,7 @@ export default function ArbejdsRadiusMap(props) {
   const user = props.user;
   const maxArbejdsRadius = indstillinger?.arbejdsområdeKilometerRadius * 1000
 
-  console.log(props.bruger)
+  // console.log(props.bruger)
   if (!center || !Array.isArray(center) || center.length !== 2) return null;
   
 
@@ -139,7 +139,7 @@ export default function ArbejdsRadiusMap(props) {
 
     const gemArbejdsOmråde = async () => {
       try {
-        const brugerId = user.id; // typisk fra auth context eller prop
+        const brugerId = props.bruger?.id || props.bruger?._id; // Brug den bruger der redigeres, ikke admin
         const payload = {
           arbejdsOmråde: {
             center,

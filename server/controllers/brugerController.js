@@ -40,13 +40,19 @@ const updateBruger = async (req,res) => {
         return res.status(400).json({error: 'Ingen brugere fundet med et matchende ID.'})
     }
 
-    const bruger = await Bruger.findOneAndUpdate({_id: id}, {
-        ...req.body
-    }, { new: true })
+    console.log('Update bruger request:', { id, body: req.body });
+
+    const bruger = await Bruger.findOneAndUpdate(
+        {_id: id}, 
+        { $set: req.body },
+        { new: true }
+    )
 
     if(!bruger) {
         return res.status(400).json({error: 'Ingen brugere fundet med et matchende ID.'})
     }
+
+    console.log('Updated bruger:', { id: bruger._id, opgavetyper: bruger.opgavetyper });
 
     res.status(200).json(bruger)
 }

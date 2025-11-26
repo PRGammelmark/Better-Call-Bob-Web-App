@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
 import Modal from '../Modal.jsx'
 import Styles from './VælgOpgavetyperModal.module.css'
@@ -8,10 +8,24 @@ import Button from '../basicComponents/buttons/Button.jsx'
 const VælgOpgavetyperModal = (props) => {
     const { trigger, setTrigger, user, bruger, opgavetyper, refetchBruger, setRefetchBruger } = props;
     const [valgteOpgavetyper, setValgteOpgavetyper] = useState(bruger?.opgavetyper || []);
+    const [isSaving, setIsSaving] = useState(false);
+    const saveTimeoutRef = useRef(null);
+    const hasChangesRef = useRef(false);
 
+    // Opdater state når modalen åbnes
     useEffect(() => {
-        setValgteOpgavetyper(bruger?.opgavetyper || []);
-    }, [bruger]);
+        if (trigger && bruger) {
+            setValgteOpgavetyper(bruger?.opgavetyper || []);
+            hasChangesRef.current = false;
+        }
+    }, [trigger, bruger?._id]);
+
+    // Gem når modalen lukkes (hvis der er ændringer)
+    useEffect(() => {
+        if (!trigger && hasChangesRef.current) {
+            gemValg(valgteOpgavetyper);
+        }
+    }, [trigger]);
 
     const opgavetyperByKategori = {};
     opgavetyper?.forEach(opgavetype => {
@@ -23,47 +37,106 @@ const VælgOpgavetyperModal = (props) => {
         });
     });
 
-    const toggleOpgavetype = (id) => {
-        if (valgteOpgavetyper.includes(id)) {
-            setValgteOpgavetyper(valgteOpgavetyper.filter(ot => ot !== id));
-        } else {
-            setValgteOpgavetyper([...valgteOpgavetyper, id]);
+    const gemValg = async (opgavetyperToSave) => {
+        if (!bruger?._id || isSaving) return;
+        
+        // Sammenlign med eksisterende værdier
+        const eksisterendeOpgavetyper = bruger?.opgavetyper || [];
+        const eksisterendeSorted = [...eksisterendeOpgavetyper].sort().join(',');
+        const toSaveSorted = [...opgavetyperToSave].sort().join(',');
+        
+        if (eksisterendeSorted === toSaveSorted) {
+            hasChangesRef.current = false;
+            return; // Ingen ændringer
         }
-    };
-
-    const toggleOpgavekategori = (kategori) => {
-        const typer = opgavetyperByKategori[kategori] || [];
-        const ids = typer.map(t => t._id);
-    
-        const alleValgte = ids.every(id => valgteOpgavetyper.includes(id));
-    
-        if (alleValgte) {
-            // Fjern alle fra kategorien
-            setValgteOpgavetyper(valgteOpgavetyper.filter(id => !ids.includes(id)));
-        } else {
-            // Tilføj alle fra kategorien (uden at duplikere)
-            setValgteOpgavetyper([
-                ...valgteOpgavetyper,
-                ...ids.filter(id => !valgteOpgavetyper.includes(id))
-            ]);
-        }
-    };
-    
-
-    const gemValg = async () => {
+        
+        setIsSaving(true);
         try {
-            await axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${bruger._id}`, {
-                opgavetyper: valgteOpgavetyper
+            const response = await axios.patch(`${import.meta.env.VITE_API_URL}/brugere/${bruger._id}`, {
+                opgavetyper: opgavetyperToSave
             }, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
-            setRefetchBruger(!refetchBruger);
-            setTrigger(false);
+            
+            // Opdater lokal state med den gemte værdi
+            setValgteOpgavetyper(response.data.opgavetyper || opgavetyperToSave);
+            hasChangesRef.current = false;
+            
+            // Trigger refetch i parent
+            setRefetchBruger(prev => !prev);
         } catch (err) {
-            console.error(err);
-            alert("Noget gik galt ved gem.");
+            console.error('Fejl ved gem af opgavetyper:', err);
+            alert(`Noget gik galt ved gem: ${err.response?.data?.error || err.message}`);
+        } finally {
+            setIsSaving(false);
         }
     };
+
+    const handleToggleOpgavetype = (id) => {
+        const newValgte = valgteOpgavetyper.includes(id)
+            ? valgteOpgavetyper.filter(ot => ot !== id)
+            : [...valgteOpgavetyper, id];
+        
+        setValgteOpgavetyper(newValgte);
+        hasChangesRef.current = true;
+        
+        // Clear tidligere timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+        
+        // Gem efter 300ms (simpel debounce)
+        saveTimeoutRef.current = setTimeout(() => {
+            gemValg(newValgte);
+        }, 300);
+    };
+
+    const handleToggleOpgavekategori = (kategori) => {
+        const typer = opgavetyperByKategori[kategori] || [];
+        const ids = typer.map(t => t._id);
+        const alleValgte = ids.every(id => valgteOpgavetyper.includes(id));
+        
+        const newValgte = alleValgte
+            ? valgteOpgavetyper.filter(id => !ids.includes(id))
+            : [...valgteOpgavetyper, ...ids.filter(id => !valgteOpgavetyper.includes(id))];
+        
+        setValgteOpgavetyper(newValgte);
+        hasChangesRef.current = true;
+        
+        // Clear tidligere timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+        }
+        
+        // Gem efter 300ms (simpel debounce)
+        saveTimeoutRef.current = setTimeout(() => {
+            gemValg(newValgte);
+        }, 300);
+    };
+
+    const handleLuk = async () => {
+        // Clear pending timeout
+        if (saveTimeoutRef.current) {
+            clearTimeout(saveTimeoutRef.current);
+            saveTimeoutRef.current = null;
+        }
+        
+        // Gem hvis der er ændringer
+        if (hasChangesRef.current && !isSaving) {
+            await gemValg(valgteOpgavetyper);
+        }
+        
+        setTrigger(false);
+    };
+
+    // Cleanup timeout ved unmount
+    useEffect(() => {
+        return () => {
+            if (saveTimeoutRef.current) {
+                clearTimeout(saveTimeoutRef.current);
+            }
+        };
+    }, []);
 
     return (
         <Modal trigger={trigger} setTrigger={setTrigger}>
@@ -74,7 +147,7 @@ const VælgOpgavetyperModal = (props) => {
                     <div className={Styles.opgavetypeKategorierContainer}>
                         {Object.entries(opgavetyperByKategori).map(([kategori, typer]) => (
                             <div key={kategori} className={Styles.opgavetypeKategori}>
-                                <h3 onClick={() => toggleOpgavekategori(kategori)}><Box />{kategori}</h3>
+                                <h3 onClick={() => handleToggleOpgavekategori(kategori)}><Box />{kategori}</h3>
                                 <div className={Styles.opgavetypePillContainer}>
                                     {typer.map(t => {
                                         const valgt = valgteOpgavetyper.includes(t._id);
@@ -82,7 +155,7 @@ const VælgOpgavetyperModal = (props) => {
                                             <div
                                                 className={`${Styles.opgavetypePill} ${valgt ? Styles.valgt : ""}`}
                                                 key={t._id}
-                                                onClick={() => toggleOpgavetype(t._id)}
+                                                onClick={() => handleToggleOpgavetype(t._id)}
                                             >
                                                 {valgteOpgavetyper.includes(t._id) && (
                                                     <Check className={Styles.checkIcon} />
@@ -99,8 +172,8 @@ const VælgOpgavetyperModal = (props) => {
             </div>
 
             <div className={Styles.buttonsDiv}>
-                <Button variant="primary" onClick={gemValg}>Gem</Button>
-                <Button variant="secondary" onClick={() => setTrigger(false)}>Annuller</Button>
+                {isSaving && <span style={{ marginRight: '10px', color: '#666' }}>Gemmer...</span>}
+                <Button variant="secondary" onClick={handleLuk}>Luk</Button>
             </div>
         </Modal>
     );

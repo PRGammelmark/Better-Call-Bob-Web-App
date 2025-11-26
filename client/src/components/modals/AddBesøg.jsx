@@ -143,15 +143,17 @@ const AddBesøg = (props) => {
     }, [window.location.pathname]);
 
     useEffect(() => {
-        let currentDate = dayjs() || regelmæssigLedighedDatoFra;
-        const endDate = chosenDate && dayjs(chosenDate).format("YYYY-MM-DD");
+        let currentDate = regelmæssigLedighedDatoFra ? dayjs(regelmæssigLedighedDatoFra) : dayjs();
+        const endDate = chosenDate ? dayjs(chosenDate) : null;
         const ugedage = [];
 
-        while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
-            if (currentDate.day() === Number(selectedWeekday)) {
-                ugedage.push(currentDate.format("YYYY-MM-DD"));
+        if (endDate && (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day'))) {
+            while (currentDate.isBefore(endDate) || currentDate.isSame(endDate, 'day')) {
+                if (currentDate.day() === Number(selectedWeekday)) {
+                    ugedage.push(currentDate.format("YYYY-MM-DD"));
+                }
+                currentDate = currentDate.add(1, 'day');
             }
-            currentDate = currentDate.add(1, 'day');
         }
         setWeekdays(ugedage);
     }, [regelmæssigLedighedDatoFra, chosenDate, selectedWeekday])

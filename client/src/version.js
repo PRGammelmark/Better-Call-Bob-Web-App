@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.9.1",
+    date: "26. november 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at administratorer ikke kunne redigere i medarbejderes arbejdspræferencer og arbejdsområder.",
+        "Rettede en anden fejl, der gjorde, at en medarbejders markerede opgavetyper ikke altid blev registreret korrekt.",
+        "'Opret ledighed'-popup'en har fået et simplere og mere intuitivt design."
+    ]
+},{
     version: "3.9.0",
     date: "26. november 2025",
     changes: [
