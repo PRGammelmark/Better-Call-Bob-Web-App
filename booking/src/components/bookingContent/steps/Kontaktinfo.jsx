@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { User, Mail, Phone, Building2, FileText, ExternalLink } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './Kontaktinfo.module.css'
@@ -25,6 +26,7 @@ const Kontaktinfo = ({
   setAccepterHandelsbetingelser,
   onValidationChange
 }) => {
+  const { t } = useTranslation()
   const [errors, setErrors] = useState({})
   const [handelsbetingelserLink, setHandelsbetingelserLink] = useState('')
   const [persondatapolitikLink, setPersondatapolitikLink] = useState('')
@@ -59,7 +61,7 @@ const Kontaktinfo = ({
       isValid = false
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       // Only show error for invalid email format, not for empty
-      newErrors.email = 'Ugyldig e-mailadresse'
+      newErrors.email = t('validation.ugyldigEmail')
       isValid = false
     }
     
@@ -99,7 +101,7 @@ const Kontaktinfo = ({
   return (
     <div className={Styles.kontaktinfoContainer}>
       <div className={Styles.headerSection}>
-        <h2 className={StepsStyles.headingH2}>Kontaktinfo</h2>
+        <h2 className={StepsStyles.headingH2}>{t('kontaktinfo.kontaktinfo')}</h2>
       </div>
 
       <div className={Styles.formSection}>
@@ -107,16 +109,16 @@ const Kontaktinfo = ({
         <div className={Styles.inputGroup}>
           <label htmlFor="fuldeNavn" className={Styles.label}>
             <User size={18} className={Styles.labelIcon} />
-            Fulde navn
+            {t('kontaktinfo.fuldeNavn')}
             {!errors.fuldeNavn && (!fuldeNavn || !fuldeNavn.trim()) && (
-              <span className={Styles.requiredBadge}>Påkrævet</span>
+              <span className={Styles.requiredBadge}>{t('kontaktinfo.paakraevet')}</span>
             )}
           </label>
           <input
             id="fuldeNavn"
             type="text"
             className={Styles.input}
-            placeholder="Fx Jens Hansen"
+            placeholder={t('kontaktinfo.placeholder.fuldeNavn')}
             value={fuldeNavn || ''}
             onChange={(e) => setFuldeNavn(e.target.value)}
             enterKeyHint="next"
@@ -134,16 +136,16 @@ const Kontaktinfo = ({
           <div className={Styles.inputGroup}>
             <label htmlFor="email" className={Styles.label}>
               <Mail size={18} className={Styles.labelIcon} />
-              Mail
+              {t('kontaktinfo.mail')}
               {!errors.email && (!email || !email.trim()) && (
-                <span className={Styles.requiredBadge}>Påkrævet</span>
+                <span className={Styles.requiredBadge}>{t('kontaktinfo.paakraevet')}</span>
               )}
             </label>
             <input
               id="email"
               type="email"
               className={Styles.input}
-              placeholder="Fx jens@example.dk"
+              placeholder={t('kontaktinfo.placeholder.email')}
               value={email || ''}
               onChange={(e) => setEmail(e.target.value)}
               enterKeyHint="next"
@@ -162,13 +164,13 @@ const Kontaktinfo = ({
           <div className={Styles.inputGroup}>
             <label htmlFor="telefonnummer" className={Styles.label}>
               <Phone size={18} className={Styles.labelIcon} />
-              Telefon
+              {t('kontaktinfo.telefon')}
             </label>
             <input
               id="telefonnummer"
               type="tel"
               className={Styles.input}
-              placeholder="Fx 12345678"
+              placeholder={t('kontaktinfo.placeholder.telefonnummer')}
               value={telefonnummer || ''}
               onChange={(e) => setTelefonnummer(e.target.value)}
               enterKeyHint="next"
@@ -195,7 +197,7 @@ const Kontaktinfo = ({
             onClick={() => setErVirksomhed(!erVirksomhed)}
           >
             <Building2 size={18} className={Styles.toggleIcon} />
-            <span>Jeg repræsenterer en virksomhed</span>
+            <span>{t('kontaktinfo.erVirksomhed')}</span>
             <div className={`${Styles.toggleSwitch} ${erVirksomhed ? Styles.toggleSwitchActive : ''}`}>
               <div className={Styles.toggleSwitchThumb}></div>
             </div>
@@ -207,16 +209,16 @@ const Kontaktinfo = ({
               <div className={Styles.inputGroup}>
                 <label htmlFor="virksomhed" className={Styles.label}>
                   <Building2 size={18} className={Styles.labelIcon} />
-                  Virksomhed
+                  {t('kontaktinfo.virksomhed')}
                   {erVirksomhed && (!virksomhed || !virksomhed.trim()) && (!cvr || !cvr.trim()) && (
-                    <span className={Styles.requiredBadge}>Påkrævet</span>
+                    <span className={Styles.requiredBadge}>{t('kontaktinfo.paakraevet')}</span>
                   )}
                 </label>
                 <input
                   id="virksomhed"
                   type="text"
                   className={Styles.input}
-                  placeholder="Fx Better Call Bob ApS"
+                  placeholder={t('kontaktinfo.placeholder.virksomhed')}
                   value={virksomhed || ''}
                   onChange={(e) => setVirksomhed(e.target.value)}
                 />
@@ -225,16 +227,16 @@ const Kontaktinfo = ({
               <div className={Styles.inputGroup}>
                 <label htmlFor="cvr" className={Styles.label}>
                   <Building2 size={18} className={Styles.labelIcon} />
-                  CVR
+                  {t('kontaktinfo.cvr')}
                   {erVirksomhed && (!virksomhed || !virksomhed.trim()) && (!cvr || !cvr.trim()) && (
-                    <span className={Styles.requiredBadge}>Påkrævet</span>
+                    <span className={Styles.requiredBadge}>{t('kontaktinfo.paakraevet')}</span>
                   )}
                 </label>
                 <input
                   id="cvr"
                   type="text"
                   className={Styles.input}
-                  placeholder="Fx 12345678"
+                  placeholder={t('kontaktinfo.placeholder.cvr')}
                   value={cvr || ''}
                   onChange={(e) => setCvr(e.target.value)}
                 />
@@ -247,12 +249,12 @@ const Kontaktinfo = ({
         <div className={Styles.inputGroup}>
           <label htmlFor="kommentarer" className={Styles.label}>
             <FileText size={18} className={Styles.labelIcon} />
-            Kommentarer
+            {t('kontaktinfo.kommentarer')}
           </label>
           <textarea
             id="kommentarer"
             className={Styles.textarea}
-            placeholder="Har du nogle ekstra kommentarer til os?"
+            placeholder={t('kontaktinfo.placeholder.kommentarer')}
             value={kommentarer || ''}
             onChange={(e) => setKommentarer(e.target.value)}
             rows={4}
@@ -273,7 +275,7 @@ const Kontaktinfo = ({
                 <div className={Styles.switchThumb}></div>
               </div>
               <span className={Styles.switchText}>
-                Jeg vil gerne modtage marketingmails med bl.a. sæsontilbud og rabatter
+                {t('kontaktinfo.modtagNyheder')}
               </span>
             </label>
           </div>
@@ -290,7 +292,7 @@ const Kontaktinfo = ({
                 <div className={Styles.switchThumb}></div>
               </div>
               <span className={Styles.switchText}>
-                Jeg accepterer{' '}
+                {t('kontaktinfo.accepterHandelsbetingelser')}{' '}
                 {handelsbetingelserLink ? (
                   <a 
                     href={handelsbetingelserLink} 
@@ -299,13 +301,13 @@ const Kontaktinfo = ({
                     onClick={(e) => e.stopPropagation()}
                     style={{ textDecoration: 'none', color: '#59bf1a', display: 'inline-flex', alignItems: 'flex-start', gap: '3px' }}
                   >
-                    handelsbetingelserne
+                    {t('kontaktinfo.handelsbetingelser')}
                     <ExternalLink size={11} style={{ marginTop: '2px' }} />
                   </a>
                 ) : (
-                  'handelsbetingelserne'
+                  t('kontaktinfo.handelsbetingelser')
                 )}
-                {' og '}
+                {' '}{t('kontaktinfo.og')}{' '}
                 {persondatapolitikLink ? (
                   <a 
                     href={persondatapolitikLink} 
@@ -314,14 +316,14 @@ const Kontaktinfo = ({
                     onClick={(e) => e.stopPropagation()}
                     style={{ textDecoration: 'none', color: '#59bf1a', display: 'inline-flex', alignItems: 'flex-start', gap: '3px' }}
                   >
-                    persondatapolitikken
+                    {t('kontaktinfo.persondatapolitik')}
                     <ExternalLink size={11} style={{ marginTop: '2px' }} />
                   </a>
                 ) : (
-                  'persondatapolitikken'
+                  t('kontaktinfo.persondatapolitik')
                 )}
                 {!accepterHandelsbetingelser && (
-                  <span className={Styles.requiredBadge}>Påkrævet</span>
+                  <span className={Styles.requiredBadge}>{t('kontaktinfo.paakraevet')}</span>
                 )}
               </span>
             </label>

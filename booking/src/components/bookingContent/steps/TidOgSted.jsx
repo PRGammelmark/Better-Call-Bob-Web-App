@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker'
 import { PickersDay } from '@mui/x-date-pickers/PickersDay'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
+import 'dayjs/locale/en'
 import { Check, MapPin, Calendar, Clock, ChevronDown } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './TidOgSted.module.css'
@@ -72,10 +74,16 @@ const TidOgSted = ({
   estimeretTidsforbrugTimer = null,
   pulseField = null
 }) => {
+  const { t, i18n } = useTranslation()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
   const [availableTimes, setAvailableTimes] = useState([])
   const [isCalendarOpen, setIsCalendarOpen] = useState(true)
   const prevKategorierRef = useRef(kategorier)
+  
+  // Opdater dayjs locale når sprog skifter
+  useEffect(() => {
+    dayjs.locale(i18n.language)
+  }, [i18n.language])
   
   // Filtrer slots til kun at inkludere dem inden for de næste 4 måneder
   const slotsWithin4Months = useMemo(() => {
@@ -135,7 +143,7 @@ const TidOgSted = ({
   const handleShowAvailableTimes = async () => {
     if (!adresse || !adresse.trim()) {
       if (onErrorChange) {
-        onErrorChange('Indtast venligst en adresse først.')
+        onErrorChange(t('tidOgSted.indtastAdresseFoerst'))
       }
       return
     }
@@ -148,11 +156,13 @@ const TidOgSted = ({
 
     try {
       // Fetch available workers (dette validerer også adressen)
+      // Extract Danish category names for API (handle both string and object formats)
+      const kategoriNavne = hasNoCategories ? [] : kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
       const workersResponse = await axios.post(
         `${import.meta.env.VITE_API_URL}/brugere/getAvailableWorkers`,
         {
           adresse,
-          kategorier: hasNoCategories ? [] : kategorier
+          kategorier: kategoriNavne
         }
       )
       const workerIDs = workersResponse.data?.workerIDs || workersResponse.data || []
@@ -234,7 +244,7 @@ const TidOgSted = ({
         if (hasNoCategories) {
           if (onErrorChange) onErrorChange('Kunne ikke validere adressen. Prøv venligst igen.')
         } else {
-          if (onErrorChange) onErrorChange('Kunne ikke hente ledige tidspunkter. Prøv venligst igen.')
+          if (onErrorChange) onErrorChange(t('tidOgSted.kunneIkkeHenteTidspunkter'))
         }
       }
       
@@ -394,7 +404,7 @@ const TidOgSted = ({
         <div className={Styles.headerSection}>
           <h2 className={StepsStyles.headingH2} style={{marginBottom: 0}}>
             <MapPin size={20} className={Styles.headingIcon} />
-            Hvor skal opgaven udføres?
+            {t('tidOgSted.hvorSkalOpgavenUdfores')}
           </h2>
         </div>
         <div className={Styles.addressSection}>
@@ -403,7 +413,7 @@ const TidOgSted = ({
               id="adresse"
               type="text"
               className={`${Styles.addressInput} ${formateretAdresse ? Styles.addressInputFound : ''} ${pulseField === 'adresse' ? Styles.pulsating : ''}`}
-              placeholder="Fx Nørregade 1, 2000 Frederiksberg"
+              placeholder={t('tidOgSted.placeholderAdresse')}
               value={formateretAdresse || adresse}
               onChange={(e) => {
                 if (onAddressChange) {
@@ -440,12 +450,12 @@ const TidOgSted = ({
               disabled={!adresse.trim() || isLoadingWorkers || isLoadingTimes}
             >
               {isLoadingWorkers || isLoadingTimes 
-                ? 'Henter...' 
+                ? t('tidOgSted.henter')
                 : error && !isLoadingWorkers && !isLoadingTimes
                 ? error
                 : !adresse.trim() 
-                ? 'Indtast adresse for at vise tidspunkter ...'
-                : 'Vis ledige tidspunkter'}
+                ? t('tidOgSted.indtastAdresseForAtVise')
+                : t('tidOgSted.visLedigeTidspunkter')}
             </button>
           )}
         </div>
@@ -456,7 +466,7 @@ const TidOgSted = ({
               <div className={Styles.loadingContainer}>
                 <div className={Styles.loadingSpinner}></div>
                 <p className={Styles.loadingText}>
-                  {isLoadingWorkers ? 'Søger efter tilgængelige medarbejdere ...' : 'Henter ledige tider ...'}
+                  {isLoadingWorkers ? t('tidOgSted.soegerEfterMedarbejdere') : t('tidOgSted.henterLedigeTider')}
                 </p>
               </div>
             ) : error ? (
@@ -473,11 +483,11 @@ const TidOgSted = ({
                 </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
-                    Fortæl os hvornår du ønsker vi skal komme
+                    {t('tidOgSted.fortaelOsHvornaar')}
                   </h3>
                   <textarea
                     className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
-                    placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
+                    placeholder={t('tidOgSted.placeholderManualTime')}
                     value={manualTimePreference || ""}
                     onChange={(e) => {
                       if (onManualTimePreferenceChange) {
@@ -498,11 +508,11 @@ const TidOgSted = ({
                 </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
-                    Fortæl os hvornår du ønsker vi skal komme
+                    {t('tidOgSted.fortaelOsHvornaar')}
                   </h3>
                   <textarea
                     className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
-                    placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
+                    placeholder={t('tidOgSted.placeholderManualTime')}
                     value={manualTimePreference || ""}
                     onChange={(e) => {
                       if (onManualTimePreferenceChange) {
@@ -526,8 +536,8 @@ const TidOgSted = ({
                   >
                     <Calendar size={18} className={Styles.headingIcon} />
                     {valgtDato 
-                      ? dayjs(valgtDato).format('D. MMMM YYYY')
-                      : 'Vælg dato'
+                      ? dayjs(valgtDato).locale(i18n.language).format('D. MMMM YYYY')
+                      : t('tidOgSted.vaelgDato')
                     }
                     {valgtDato && (
                       <>
@@ -547,7 +557,7 @@ const TidOgSted = ({
                   <div 
                     className={`${Styles.datePickerWrapper} ${formateretAdresse ? Styles.datePickerWrapperFound : ''} ${valgtDato && availableTimes.length > 0 ? Styles.datePickerWrapperSelected : ''} ${!isCalendarOpen ? Styles.datePickerWrapperCollapsed : ''} ${pulseField === 'dato' ? Styles.pulsating : ''}`}
                   >
-                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="da">
+                    <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={i18n.language}>
                       <StaticDatePicker
                         value={valgtDato}
                         onChange={handleDateChange}
@@ -605,7 +615,7 @@ const TidOgSted = ({
                       <Clock size={18} className={Styles.headingIcon} />
                       {selectedTimeSlot 
                         ? `Kl. ${selectedTimeSlot.start.format('HH:mm')} - ${selectedTimeSlot.end.format('HH:mm')}*`
-                        : 'Vælg tidspunkt'
+                        : t('tidOgSted.vaelgTidspunkt')
                       }
                     </h3>
                     {availableTimes.length > 0 ? (
@@ -628,7 +638,7 @@ const TidOgSted = ({
                         ))}
                       </div>
                     ) : (
-                      <p className={Styles.noTimesText}>Ingen ledige tider denne dag</p>
+                      <p className={Styles.noTimesText}>{t('tidOgSted.ingenLedigeTiderDenneDag')}</p>
                     )}
                   </div>
                 )}
@@ -643,11 +653,11 @@ const TidOgSted = ({
                 </div> */}
                 <div className={Styles.manualTimePreferenceSection}>
                   <h3 className={StepsStyles.headingH3}>
-                    Fortæl os hvornår du ønsker vi skal komme
+                    {t('tidOgSted.fortaelOsHvornaar')}
                   </h3>
                   <textarea
                     className={`${Styles.manualTimePreferenceInput} ${pulseField === 'manualTime' ? Styles.pulsating : ''}`}
-                    placeholder="Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
+                    placeholder={t('tidOgSted.placeholderManualTime')}
                     value={manualTimePreference || ""}
                     onChange={(e) => {
                       if (onManualTimePreferenceChange) {
@@ -661,9 +671,9 @@ const TidOgSted = ({
             ) : (
               <div className={Styles.noWorkersContainer}>
                 <div className={Styles.emptyStateIcon}>😔</div>
-                <p className={Styles.emptyStateTitle}>Ingen medarbejdere fundet</p>
+                <p className={Styles.emptyStateTitle}>{t('tidOgSted.ingenMedarbejdereFundet')}</p>
                 <p className={Styles.emptyStateText}>
-                  Vi kunne ikke finde medarbejdere der kan løse denne opgave på denne adresse. Prøv at ændre adressen eller kontakt os direkte.
+                  {t('tidOgSted.kunneIkkeFindeMedarbejdere')}
                 </p>
               </div>
             )}
@@ -671,7 +681,7 @@ const TidOgSted = ({
         )}
       </div>
       <div className={Styles.obsTekstContainer}>
-      {selectedTimeSlot && <p>* De faktiske til- og fra-tider kan afvige fra de viste tider herover. Vi bestræber os på at give ordentlig besked på dagen hvis vi må foretage ændringer.</p>}
+      {selectedTimeSlot && <p>{t('tidOgSted.faktiskeTiderKanAfvige')}</p>}
       </div>
     </div>
   )

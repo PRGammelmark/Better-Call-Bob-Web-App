@@ -76,6 +76,16 @@ const brugerSchema = new Schema({
     rating: {
         type: Number,
         default: 4
+    },
+    prioritet: {
+        type: Number,
+        default: 3,
+        min: 1,
+        max: 5
+    },
+    profilbillede: {
+        type: String,
+        required: false
     }
 })
 

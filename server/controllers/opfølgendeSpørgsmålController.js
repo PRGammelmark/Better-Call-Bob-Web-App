@@ -65,11 +65,12 @@ const getOpfølgendeSpørgsmålById = async (req, res) => {
 
 // CREATE et nyt spørgsmål
 const createOpfølgendeSpørgsmål = async (req, res) => {
-    const { spørgsmål, type, opgavetyper, selectOptions, erStandard, rækkefølge, feltNavn } = req.body;
+    const { spørgsmål, spørgsmålEn, type, opgavetyper, selectOptions, erStandard, rækkefølge, feltNavn } = req.body;
     
     try {
         const nytSpørgsmål = await OpfølgendeSpørgsmål.create({ 
             spørgsmål, 
+            spørgsmålEn,
             type, 
             opgavetyper: opgavetyper || [], 
             selectOptions: selectOptions || [], 

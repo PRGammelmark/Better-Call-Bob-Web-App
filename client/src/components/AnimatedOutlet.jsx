@@ -12,9 +12,9 @@ const AnimatedOutlet = ({ contentRef}) => {
       {outlet && (
         <motion.div
           key={location.pathname}
-          initial={{ opacity: 0, x: 25 }}
-          animate={{ opacity: 1, x: 0, transition: {duration: 0.15, delay: 0.6} }}
-          exit={{ opacity: 0, x: -150, transition: {duration: 0.3} }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, transition: {duration: 0.15, delay: 0.6} }}
+          exit={{ opacity: 0, transition: {duration: 0.25} }}
           className={ContentCSS.animatedOutlet}
           onAnimationComplete={() => {
             if (contentRef?.current) {
@@ -23,10 +23,6 @@ const AnimatedOutlet = ({ contentRef}) => {
           }}
         >
           {outlet}
-          {/* This extra div gives some padding to the bottom of the viewport due to a bug introduced by using useOutlet */}
-          {/* <div style={{height: 100}}>
-          
-          </div> */}
         </motion.div>
       )}
     </AnimatePresence>

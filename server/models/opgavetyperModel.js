@@ -7,6 +7,10 @@ const opgavetyperSchema = new Schema({
         type: String,
         required: true
     },
+    opgavetypeEn: {
+        type: String,
+        required: false
+    },
     kategorier: {
         type: [
             String

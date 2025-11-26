@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Check } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './Ekstra.module.css'
 import axios from 'axios'
 
 const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, førsteUbesvaredeSpørgsmål }) => {
+  const { t, i18n } = useTranslation()
   const [spørgsmål, setSpørgsmål] = useState([])
   const [isLoadingSpørgsmål, setIsLoadingSpørgsmål] = useState(false)
   const [answers, setAnswers] = useState(initialAnswers)
@@ -31,9 +33,11 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
       if (!isLoading && kategorier && kategorier.length > 0) {
         setIsLoadingSpørgsmål(true)
         try {
+          // Extract Danish category names for API (handle both string and object formats)
+          const kategoriNavne = kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
           const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/forKategorier`,
-            { kategorier }
+            { kategorier: kategoriNavne }
           )
           setSpørgsmål(response.data || [])
         } catch (error) {
@@ -65,7 +69,31 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
   }
 
   const renderSpørgsmål = (spørgsmålItem, index) => {
-    const { _id, spørgsmål: spørgsmålTekst, type, selectOptions, feltNavn } = spørgsmålItem
+    const { _id, spørgsmål: spørgsmålTekst, spørgsmålEn, type, selectOptions, feltNavn } = spørgsmålItem
+    // Use English text if language is English and English text exists
+    const displaySpørgsmålTekst = i18n.language === 'en' && spørgsmålEn ? spørgsmålEn : spørgsmålTekst
+    
+    // For Valgmuligheder type, split selectOptions by ":" if language is English
+    // We need to create a mapping between display text and original value
+    let displaySelectOptions = selectOptions || []
+    let optionValueMap = {} // Maps display text to original value
+    
+    if (type === 'Valgmuligheder' && i18n.language === 'en' && selectOptions && selectOptions.length > 0) {
+      displaySelectOptions = selectOptions.map(option => {
+        // Split by ":" and take the English part (after ":")
+        const parts = option.split(':')
+        const displayText = parts.length > 1 ? parts[1].trim() : option
+        // Map display text to original value
+        optionValueMap[displayText] = option
+        return displayText
+      })
+    } else {
+      // For Danish, display text equals original value
+      selectOptions.forEach(option => {
+        optionValueMap[option] = option
+      })
+    }
+    
     const currentValue = answers[feltNavn]
     const shouldPulse = førsteUbesvaredeSpørgsmål && førsteUbesvaredeSpørgsmål._id === _id
     const isAnswered = currentValue !== null && currentValue !== undefined && currentValue !== ''
@@ -75,7 +103,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
         <div key={_id} className={`${Styles.spørgsmålItem} ${isAnswered ? Styles.answered : ''} ${shouldPulse ? Styles.pulsatingCard : ''}`}>
           <div className={Styles.spørgsmålHeader}>
             <span className={Styles.questionNumber}>{index + 1}</span>
-            <label className={Styles.spørgsmålLabel}>{spørgsmålTekst}</label>
+            <label className={Styles.spørgsmålLabel}>{displaySpørgsmålTekst}</label>
           </div>
           <div className={Styles.jaNejContainer}>
             <button
@@ -84,7 +112,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
               onClick={() => handleAnswerChange(feltNavn, true)}
               aria-pressed={currentValue === true}
             >
-              <span>Ja</span>
+              <span>{t('buttons.ja')}</span>
               {currentValue === true && (
                 <div className={Styles.buttonCheckIcon}>
                   <Check size={16} />
@@ -97,7 +125,7 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
               onClick={() => handleAnswerChange(feltNavn, false)}
               aria-pressed={currentValue === false}
             >
-              <span>Nej</span>
+              <span>{t('buttons.nej')}</span>
               {currentValue === false && (
                 <div className={Styles.buttonCheckIcon}>
                   <Check size={16} />
@@ -107,26 +135,37 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
           </div>
         </div>
       )
-    } else if (type === 'Valgmuligheder' && selectOptions && selectOptions.length > 0) {
+    } else if (type === 'Valgmuligheder' && displaySelectOptions && displaySelectOptions.length > 0) {
       return (
         <div key={_id} className={`${Styles.spørgsmålItem} ${isAnswered ? Styles.answered : ''} ${shouldPulse ? Styles.pulsatingCard : ''}`}>
           <div className={Styles.spørgsmålHeader}>
             <span className={Styles.questionNumber}>{index + 1}</span>
             <label className={Styles.spørgsmålLabel} htmlFor={feltNavn}>
-              {spørgsmålTekst}
+              {displaySpørgsmålTekst}
             </label>
           </div>
           <div className={`${Styles.selectWrapper} ${shouldPulse ? Styles.pulsating : ''}`}>
             <select
               id={feltNavn}
               className={`${Styles.selectInput} ${currentValue ? Styles.selectInputSelected : ''} ${shouldPulse ? Styles.pulsating : ''}`}
-              value={currentValue || ''}
-              onChange={(e) => handleAnswerChange(feltNavn, e.target.value)}
+              value={(() => {
+                // Map current stored value to display value
+                if (!currentValue) return ''
+                // If currentValue is in the map, find its display value
+                const displayKey = Object.keys(optionValueMap).find(key => optionValueMap[key] === currentValue)
+                return displayKey || currentValue
+              })()}
+              onChange={(e) => {
+                // Map display value back to original value for storage
+                const selectedDisplayValue = e.target.value
+                const originalValue = optionValueMap[selectedDisplayValue] || selectedDisplayValue
+                handleAnswerChange(feltNavn, originalValue)
+              }}
             >
-              <option value="">Vælg en mulighed...</option>
-              {selectOptions.map((option, optIndex) => (
-                <option key={optIndex} value={option}>
-                  {option}
+              <option value="">{t('ekstra.vaelgEnMulighed')}</option>
+              {displaySelectOptions.map((displayOption, optIndex) => (
+                <option key={optIndex} value={displayOption}>
+                  {displayOption}
                 </option>
               ))}
             </select>
@@ -147,10 +186,10 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
   return (
     <div className={Styles.ekstraContainer}>
       <div className={Styles.headerSection}>
-        <h2 className={StepsStyles.headingH2}>Ekstra oplysninger</h2>
+        <h2 className={StepsStyles.headingH2}>{t('ekstra.ekstraOplysninger')}</h2>
         {spørgsmål.length > 0 && (
           <p className={Styles.subtitle}>
-            Lad os forstå din opgave lidt bedre, så vi kan løse den bedst muligt.
+            {t('ekstra.ladOsForstaa')}
           </p>
         )}
       </div>
@@ -158,8 +197,8 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
       {isLoading || isLoadingSpørgsmål ? (
         <div className={Styles.loadingContainer}>
           <div className={Styles.loadingSpinner}></div>
-          <p className={Styles.loadingText}>Analyserer din opgave...</p>
-          <p className={Styles.loadingSubtext}>Giv os lige et kort øjeblik.</p>
+          <p className={Styles.loadingText}>{t('ekstra.analysererDinOpgave')}</p>
+          <p className={Styles.loadingSubtext}>{t('ekstra.givOsLigeEtKortOjeblik')}</p>
         </div>
       ) : kategorier && kategorier.length > 0 ? (
         <div className={Styles.spørgsmålContainer}>
@@ -170,9 +209,9 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
           ) : (
             <div className={Styles.ingenSpørgsmålContainer}>
               <div className={Styles.emptyStateIcon}>✨</div>
-              <p className={Styles.emptyStateTitle}>Ingen yderligere spørgsmål</p>
+              <p className={Styles.emptyStateTitle}>{t('ekstra.ingenYderligereSporgsmaal')}</p>
               <p className={Styles.emptyStateText}>
-                Vi har alle de oplysninger vi behøver. Du kan fortsætte til næste trin.
+                {t('ekstra.viHarAlleOplysninger')}
               </p>
             </div>
           )}
@@ -180,9 +219,9 @@ const Ekstra = ({ kategorier, isLoading, onAnswersChange, initialAnswers = {}, f
       ) : (
         <div className={Styles.ingenKategorierContainer}>
           <div className={Styles.emptyStateIcon}>📝</div>
-          <p className={Styles.emptyStateTitle}>Ingen kategorier identificeret</p>
+          <p className={Styles.emptyStateTitle}>{t('ekstra.ingenKategorier')}</p>
           <p className={Styles.emptyStateText}>
-            Vi kunne ikke identificere specifikke kategorier for din opgave. Du kan fortsætte til næste trin.
+            {t('ekstra.kunneIkkeIdentificere')}
           </p>
         </div>
       )}

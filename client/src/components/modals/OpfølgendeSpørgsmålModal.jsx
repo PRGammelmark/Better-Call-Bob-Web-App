@@ -23,6 +23,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
 
     // State for nyt/redigeret spørgsmål
     const [spørgsmålTekst, setSpørgsmålTekst] = useState("")
+    const [spørgsmålTekstEn, setSpørgsmålTekstEn] = useState("")
     const [spørgsmålType, setSpørgsmålType] = useState("Ja/nej")
     const [valgteOpgavetyper, setValgteOpgavetyper] = useState([])
     const [selectOptions, setSelectOptions] = useState([])
@@ -56,6 +57,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
 
     const handleReset = () => {
         setSpørgsmålTekst("")
+        setSpørgsmålTekstEn("")
         setSpørgsmålType("Ja/nej")
         setValgteOpgavetyper([])
         setSelectOptions([])
@@ -126,6 +128,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                 `${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/`,
                 {
                     spørgsmål: spørgsmålTekst,
+                    spørgsmålEn: spørgsmålTekstEn || undefined,
                     type: spørgsmålType,
                     opgavetyper: valgteOpgavetyper,
                     selectOptions: spørgsmålType === 'Valgmuligheder' ? selectOptions : [],
@@ -179,6 +182,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                 `${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/${redigerSpørgsmål._id}`,
                 {
                     spørgsmål: spørgsmålTekst,
+                    spørgsmålEn: spørgsmålTekstEn || undefined,
                     type: spørgsmålType,
                     opgavetyper: valgteOpgavetyper,
                     selectOptions: spørgsmålType === 'Valgmuligheder' ? selectOptions : [],
@@ -228,6 +232,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
             opgavetyper: spørgsmål.opgavetyper || []
         })
         setSpørgsmålTekst(spørgsmål.spørgsmål)
+        setSpørgsmålTekstEn(spørgsmål.spørgsmålEn || "")
         setSpørgsmålType(spørgsmål.type)
         setValgteOpgavetyper(spørgsmål.opgavetyper || [])
         setSelectOptions(spørgsmål.selectOptions || [])
@@ -413,6 +418,14 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                                 name="spørgsmål"
                             />
                             <InputLine 
+                                label="Spørgsmål (engelsk)" 
+                                placeholder="Fx 'Do you have your own materials?'" 
+                                required={false} 
+                                value={spørgsmålTekstEn} 
+                                onChange={setSpørgsmålTekstEn}
+                                name="spørgsmålEn"
+                            />
+                            <InputLine 
                                 label="Feltnavn" 
                                 placeholder="Fx 'harMaterialer' (skal være unikt)" 
                                 required={true} 
@@ -432,7 +445,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                             {spørgsmålType === 'Valgmuligheder' && (
                                 <CreateSelectOptionsLine
                                     label="Opret valgmuligheder"
-                                    description="Lav en liste af mulige svar til spørgsmålet."
+                                    description="Lav en liste af mulige svar til spørgsmålet. Adskil danske/engelske svar med et kolon (fx 'Træ:Wood')."
                                     value={selectOptions}
                                     newOptionValue={nySelectOption}
                                     onNewOptionChange={setNySelectOption}
@@ -495,6 +508,13 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                                 name="spørgsmål"
                             />
                             <InputLine 
+                                label="Spørgsmål (engelsk)" 
+                                placeholder="Fx 'Do you have your own materials?'"
+                                value={spørgsmålTekstEn || ""} 
+                                onChange={setSpørgsmålTekstEn}
+                                name="spørgsmålEn"
+                            />
+                            <InputLine 
                                 label="Feltnavn" 
                                 value={feltNavn} 
                                 onChange={setFeltNavn}
@@ -511,7 +531,7 @@ const OpfølgendeSpørgsmålModal = ({ trigger, setTrigger, user, opgavetyper })
                             {spørgsmålType === 'Valgmuligheder' && (
                                 <CreateSelectOptionsLine
                                     label="Opret valgmuligheder"
-                                    description="Lav en liste af mulige svar til spørgsmålet."
+                                    description="Lav en liste af mulige svar til spørgsmålet. Adskil danske/engelske svar med et kolon (fx 'Træ:Wood')."
                                     value={selectOptions}
                                     newOptionValue={nySelectOption}
                                     onNewOptionChange={setNySelectOption}

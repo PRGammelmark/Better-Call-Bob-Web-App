@@ -8,6 +8,65 @@
     overflow-x: visible!important;
 }
 
+.headingWithLanguage {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+
+.headingWithLanguage h2 {
+    margin-bottom: 0;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.languageButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border: 1.5px solid #e8e9ea;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #222222;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+    height: fit-content;
+}
+
+.flagIcon {
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.languageButton span:not(.flagIcon) {
+    font-weight: 600;
+}
+
+.languageButton:hover {
+    border-color: #59bf1a;
+    background: #f8fff4;
+    color: #59bf1a;
+}
+
+.languageButton:active {
+    transform: scale(0.98);
+}
+
+.languageButton span {
+    font-weight: 600;
+}
+
 .opgaveBeskrivelseBottomContainer {
     padding: 10px;
 }
@@ -203,5 +262,19 @@
 
     .opgaveBeskrivelseBottomContainer {
         padding: 0px 10px;
+    }
+
+    .headingWithLanguage {
+        gap: 8px;
+    }
+
+    .languageButton {
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        gap: 5px;
+    }
+
+    .flagIcon {
+        font-size: 1rem;
     }
 }

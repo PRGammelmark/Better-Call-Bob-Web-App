@@ -7,6 +7,10 @@ const opfølgendeSpørgsmålSchema = new Schema({
         type: String,
         required: true
     },
+    spørgsmålEn: {
+        type: String,
+        required: false
+    },
     type: {
         type: String,
         enum: ['Ja/nej', 'Valgmuligheder'],

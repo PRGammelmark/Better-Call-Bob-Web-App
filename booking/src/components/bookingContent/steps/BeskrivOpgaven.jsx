@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
 import { Trash2, ImagePlus } from 'lucide-react'
@@ -6,9 +7,13 @@ import MoonLoader from "react-spinners/MoonLoader";
 import imageCompression from 'browser-image-compression'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { fetchFile } from '@ffmpeg/util';
+import dayjs from 'dayjs'
+import 'dayjs/locale/da'
+import 'dayjs/locale/en'
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
 const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0, onNavigateNext }) => {
+    const { t, i18n } = useTranslation()
     const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
@@ -16,6 +21,17 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
     // Dummy states
     const [åbnBillede, setÅbnBillede] = useState(null)
     const [imageIndex, setImageIndex] = useState(0)
+
+    // Opdater dayjs locale når sprog skifter
+    useEffect(() => {
+        dayjs.locale(i18n.language)
+    }, [i18n.language])
+
+    // Håndter sprogskifte
+    const handleLanguageChange = () => {
+        const newLang = i18n.language === 'da' ? 'en' : 'da'
+        i18n.changeLanguage(newLang)
+    }
 
     // Cleanup object URLs when component unmounts or files change
     useEffect(() => {
@@ -54,7 +70,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
         );
 
         if(opgaveBilleder.length + validFiles.length > 5){
-            window.alert("Du må højst uploade 5 billede- eller videofiler til opgaven.")
+            window.alert(t('beskrivOpgaven.max5Filer'))
             return
         }
         
@@ -129,8 +145,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                         });
                     } catch (error) {
                         console.error("Video compression failed", error);
-                        window.alert(`Noget gik galt under behandling af "${file.name}". 
-                            Prøv igen – du kan evt. også prøve at gemme videoen i et andet filformat.`);
+                        window.alert(t('alerts.nogetGikGaltBehandling', { fileName: file.name }));
                         // Fallback to original file if compression fails
                         const preview = URL.createObjectURL(file);
                         processedFiles.push({
@@ -153,10 +168,21 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
     return (
         <div className={Styles.opgavebeskrivelseContainer}>
             <div className={Styles.opgaveBeskrivelseTopContainer}>
-                <h2 className={StepsStyles.headingH2}>Hvad vil du have lavet?</h2>
+                <div className={Styles.headingWithLanguage}>
+                    <h2 className={StepsStyles.headingH2}>{t('beskrivOpgaven.hvadVilDuHaveLavet')}</h2>
+                    <button 
+                        type="button"
+                        className={Styles.languageButton}
+                        onClick={handleLanguageChange}
+                        aria-label={i18n.language === 'da' ? t('beskrivOpgaven.skiftSprogTilEngelsk') : t('beskrivOpgaven.skiftSprogTilDansk')}
+                    >
+                        <span className={Styles.flagIcon}>{i18n.language === 'da' ? '🇬🇧' : '🇩🇰'}</span>
+                        <span>{i18n.language === 'da' ? 'EN' : 'DA'}</span>
+                    </button>
+                </div>
                 <textarea 
                     name="opgavebeskrivelse" 
-                    placeholder="Eksempel: &#10;&#10;'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'" 
+                    placeholder={t('beskrivOpgaven.placeholder')}
                     className={`${Styles.opgavebeskrivelse} ${shouldPulse ? Styles.pulsating : ''}`} 
                     value={opgaveBeskrivelse} 
                     onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
@@ -168,7 +194,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                       }
                     }}
                 ></textarea>
-                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>Tilføj evt. billeder, dokumenter eller video</h3>
+                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>{t('beskrivOpgaven.tilfoejBilleder')}</h3>
                 <div className={Styles.billederDiv}>
                     {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
                         return (
@@ -206,7 +232,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                     {isProcessing && (
                         <div className={Styles.spinnerDiv}>
                             <MoonLoader size="20px"/>
-                            <p style={{fontSize: 8, textAlign: "center"}}>Behandler filer <br />– vent venligst ...</p>
+                            <p style={{fontSize: 8, textAlign: "center"}}>{t('beskrivOpgaven.behandlerFiler')} <br />{t('beskrivOpgaven.ventVenligst')}</p>
                         </div>
                     )}
                     {!((isProcessing ? 1 : 0) + opgaveBilleder?.length > 4) && <div 
@@ -228,7 +254,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                 </div>
             </div>
             <div className={Styles.opgaveBeskrivelseBottomContainer}>
-                <p>Vi AI-behandler din opgave for at hjælpe dig bedre. Tryk “Næste” for at fortsætte. Vi gemmer kun persondata med dit samtykke.</p>
+                <p>{t('beskrivOpgaven.aiBehandlerInfo')}</p>
             </div>
         </div>
     )

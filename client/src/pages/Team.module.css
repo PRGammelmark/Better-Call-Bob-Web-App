@@ -1,207 +1,331 @@
 .teamContainer {
-    overflow-x: hidden;
-    padding-bottom: 100px;
-    padding-top: 20px;
+    padding: 40px 20px 100px;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
-.adminDiv, .medarbejdereDiv {
-    margin-top: 50px;
-    width: 100%;
-    padding: 20px;
-}
-
-.subheading {
-    margin-bottom: 15px;
+.heading {
     font-family: OmnesBold;
-    display: block;
-    width: 300px;
-    border-bottom: 1px solid #33333330;
-    padding-bottom: 5px;
+    font-size: 2.5rem;
+    margin-bottom: 50px;
+    color: #1a1a1a;
+    text-align: center;
 }
 
-.cardHolder {
+.section {
+    margin-bottom: 60px;
+}
+
+.sectionHeader {
     display: flex;
-    gap: 20px;
-    white-space: wrap;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e8e8e8;
+}
+
+.sectionHeading {
+    font-family: OmnesBold;
+    font-size: 1.8rem;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.countBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background-color: #59bf1a;
+    color: white;
+    font-size: 0.9rem;
+    font-weight: normal;
+    font-family: Omnes;
+}
+
+.addButton {
+    background-color: #59bf1a;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.addButton:hover {
+    background-color: #4da317;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(89, 191, 26, 0.3);
+}
+
+.addButton:active {
+    transform: translateY(0);
+}
+
+.count {
+    font-size: 1.2rem;
+    color: #59bf1a;
+    font-weight: normal;
+}
+
+.cardGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px 25px;
+    row-gap: 70px;
+    margin-top: 30px;
+    padding-top: 50px;
+}
+
+.cardLink {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    position: relative;
+    overflow: visible;
 }
 
 .card {
-    background: #fff;
-    border-radius: 15px;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
-    padding: 10px 16px;
-    max-width: 200px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 55px 20px 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    border: 1px solid #f0f0f0;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: visible;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #59bf1a 0%, #4da317 100%);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.card:hover::before {
+    transform: scaleX(1);
+}
+
+.cardLink {
+    cursor: pointer;
+}
+
+.cardLink .card {
+    cursor: pointer;
+}
+
+.avatarContainer {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 3px solid #f5f5f5;
+    transition: all 0.3s ease;
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    z-index: 1;
+}
+
+.cardLink:hover .avatarContainer {
+    border-color: #59bf1a;
+    transform: translateX(-50%) scale(1.05);
+}
+
+.avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.cardContent {
+    width: 100%;
 }
 
 .name {
     font-family: OmnesBold;
     font-size: 1.1rem;
+    margin: 0 0 8px 0;
+    color: #1a1a1a;
+    line-height: 1.4;
 }
 
-.contactInfo {
-    font-size: 0.9rem;
-}
-
-.italics {
+.description {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 0;
+    line-height: 1.5;
     font-style: italic;
-    display: block;
-    font-size: 0.7rem;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
 }
 
-.links {
-    transition: 0.2s ease;
-}
-
-.links:hover {
-    color: #59bf1a;
-}
-
-.kundeKontaktMobile {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    justify-content: start;
-    justify-content: space-between;
-    border-bottom: 1px solid #33333330;
-    border-top: 1px solid #33333330;
-    padding-bottom: 10px;
-    padding-top: 10px;
-}
-
-.kundeKontaktMobile a.link {
-    text-decoration: none;
-    color: #fff;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    padding: 5px 10px;
-    background-color: #59bf1a28;
-    color: #59bf1a;
-    text-align: center;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: OmnesBold;
-    font-size: 0.8rem;
-    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(89,191,26,0.55) 0px 0px 0px 1px;
-    position: relative;
-}
-
-.kundeKontaktMobile a.link span {
-    position: absolute;
-    bottom: -120%;
-    left: 50%;
-    padding: 5px 10px;
-    width: auto;
-    height: auto;
-    background-color: #00000080;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: OmnesBold;
-    font-size: 0.8rem;
-    border-radius: 10px;
-    opacity: 0;
-    transition: 0.2s ease;
-    transform: translateY(-10%) translateX(-50%);
-    pointer-events: none;
-}
-
-.kundeKontaktMobile a.link:hover span {
-    opacity: 1;
-    transform: translateY(0) translateX(-50%);
-}
-
-.kundeKontaktMobile a.link img {
-    width: 20px;
-    height: 20px;
-}
-
-.button {
-    background-color: #fff;
-    color: #3c5a3f;
-    border-radius: 10px;
-    padding: 5px 10px;
-    font-family: OmnesBold;
-    font-size: 0.8rem;
-    border: 1px solid #3c5a3f;
-    cursor: pointer;
-    width: 100%;
-    transition: 0.2s ease;
-}
-
-.button:hover {
-    background-color: #59bf1a;
-    color: #fff;
-    border: 1px solid #59bf1a;
-}
-
-.infoText {
-    font-size: 0.8rem;
-    margin-top: 10px;
-    display: none;
-}
-
-.flereMedarbejderDetaljer {
-    margin-top: 10px;
-}
-
+/* Mobile Responsive */
 @media screen and (max-width: 750px) {
-    .heading {
-        display: none;
+    .teamContainer {
+        padding: 20px 15px 100px;
     }
 
-    .infoText {
-        display: block;
+    .heading {
+        font-size: 2rem;
+        margin-bottom: 30px;
+    }
+
+    .section {
+        margin-bottom: 40px;
+    }
+
+    .sectionHeader {
         margin-bottom: 20px;
     }
-}
 
-@media screen and (display-mode: standalone) {
-    .teamContainer {
-        padding-top: 0px;
-    }
-    
-    .heading {
-        display: none;
+    .sectionHeading {
+        font-size: 1.4rem;
     }
 
-    .cardHolder {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        overflow-x: scroll;
-        padding: 35px;
+    .addButton {
+        padding: 6px 12px;
+        font-size: 0.85rem;
+    }
+
+    .countBadge {
+        width: 24px;
+        height: 24px;
+        font-size: 0.8rem;
+    }
+
+    .cardGrid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 20px;
-        margin-left: -35px;
-        margin-right: -35px;
-        scrollbar-width: none;
-        -ms-overflow-style: none;  /* Internet Explorer 10+ */
-        overflow: -moz-scrollbars-none;  /* Firefox */
-    }
-
-    .cardHolder::-webkit-scrollbar { 
-        display: none;  /* Safari and Chrome */
+        margin-top: 20px;
+        padding-top: 50px;
     }
 
     .card {
-        width: auto;
+        padding: 60px 20px 25px;
     }
 
-    .contactInfo {
+    .avatarContainer {
+        width: 100px;
+        height: 100px;
+        top: -50px;
+        margin-bottom: 15px;
+    }
+
+    .name {
+        font-size: 1.1rem;
+    }
+
+    .description {
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 750px) {
+    .cardGrid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding-top: 0;
+    }
+
+    .cardLink {
+        overflow: visible;
         display: flex;
         flex-direction: row;
         align-items: center;
-        gap: 5px;
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 15px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f0f0f0;
+        gap: 15px;
     }
 
-    .kundeKontaktMobile a.link span {
+    .cardLink:hover {
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card {
+        padding: 0;
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        gap: 0;
+        overflow: visible;
+        flex: 1;
+        background: transparent;
+        box-shadow: none;
+        border: none;
+    }
+
+    .card::before {
         display: none;
+    }
+
+    .avatarContainer {
+        width: 70px;
+        height: 70px;
+        position: static;
+        top: auto;
+        left: auto;
+        transform: none;
+        margin-bottom: 0;
+        flex-shrink: 0;
+        border: 3px solid #f5f5f5;
+    }
+
+    .cardLink:hover .avatarContainer {
+        transform: scale(1.05);
+        border-color: #59bf1a;
+    }
+
+    .cardContent {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .name {
+        font-size: 1rem;
+        margin-bottom: 4px;
+    }
+
+    .description {
+        font-size: 0.8rem;
+    }
+}
+
+/* Standalone mode (PWA) */
+@media screen and (display-mode: standalone) {
+    .teamContainer {
+        padding-top: 20px;
     }
 }

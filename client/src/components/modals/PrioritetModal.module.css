@@ -1,0 +1,104 @@
+.modalHeader {
+    margin-bottom: 20px;
+}
+
+.modalDescription {
+    margin-bottom: 30px;
+    font-size: 0.9rem;
+    color: #666;
+    line-height: 1.5;
+}
+
+.prioritetContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    margin: 20px 0;
+}
+
+.prioritetInputWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 2px solid #59bf1a;
+    border-radius: 50px;
+    overflow: hidden;
+    background: white;
+}
+
+.prioritetButton {
+    width: 50px;
+    height: 60px;
+    border: none;
+    background: transparent;
+    color: #59bf1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.prioritetButtonLeft {
+    border-right: 1px solid #e0e0e0;
+}
+
+.prioritetButtonRight {
+    border-left: 1px solid #e0e0e0;
+}
+
+.prioritetButton:hover:not(:disabled) {
+    background: #59bf1a;
+    color: white;
+}
+
+.prioritetButton:active:not(:disabled) {
+    background: #4da816;
+}
+
+.prioritetButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    color: #ccc;
+}
+
+.prioritetInput {
+    width: 100px;
+    height: 60px;
+    border: none;
+    border-left: none;
+    border-right: none;
+    text-align: center;
+    font-size: 2rem;
+    font-family: "OmnesBold";
+    color: #222;
+    outline: none;
+    background: transparent;
+    padding: 0 10px;
+}
+
+.prioritetInput:focus {
+    outline: none;
+}
+
+.prioritetInput::-webkit-inner-spin-button,
+.prioritetInput::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.prioritetInput[type='number'] {
+    -moz-appearance: textfield;
+}
+
+.buttonsDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+

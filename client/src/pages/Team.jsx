@@ -1,22 +1,17 @@
 import React from 'react'
 import { useState, useEffect } from 'react'
 import { useAuthContext } from '../hooks/useAuthContext'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import styles from "./Team.module.css"
 import axios from "axios"
-import PageAnimation from '../components/PageAnimation'
-import PhoneIcon from "../assets/phone.svg"
-import MailIcon from "../assets/mail.svg"
-import satser from '../variables'
-import RedigerLøntrin from '../components/modals/RedigerLøntrin'
+import placeholderBillede from '../assets/avatarPlaceholder.png'
+import { Plus } from 'lucide-react'
 
 const Team = () => {
-    const [team, setTeam] = useState(null)
     const [admins, setAdmins] = useState(null)
     const [medarbejdere, setMedarbejdere] = useState(null)
-    const [løntrinModal, setLøntrinModal] = useState(null)
     const {user} = useAuthContext()
-    const userID = user?.id || user?._id;
+    const navigate = useNavigate()
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/brugere/`, {
@@ -25,8 +20,6 @@ const Team = () => {
             }
         })
         .then(res => {
-            setTeam(res.data);
-
             const adminsArray = [];
             const medarbejdereArray = [];
 
@@ -42,101 +35,98 @@ const Team = () => {
             setMedarbejdere(medarbejdereArray)
         })
         .catch(error => console.log(error))
-    }, [løntrinModal])
-
-    const akkumuleredeStandardSatser = (
-        Number(satser.handymanTimerHonorar) + 
-        Number(satser.tømrerTimerHonorar) + 
-        Number(satser.opstartsgebyrHonorar) + 
-        Number(satser.aftenTillægHonorar) + 
-        Number(satser.natTillægHonorar) + 
-        Number(satser.trailerHonorar) + 
-        Number(satser.rådgivningOpmålingVejledningHonorar)
-    )
-
-    const akkumuleredeSatserForBruger = (bruger) => {
-        return Number(bruger.satser ? bruger.satser.handymanTimerHonorar : satser.handymanTimerHonorar) + 
-        Number(bruger.satser ? bruger.satser.tømrerTimerHonorar : satser.tømrerTimerHonorar) + 
-        Number(bruger.satser ? bruger.satser.opstartsgebyrHonorar : satser.opstartsgebyrHonorar) + 
-        Number(bruger.satser ? bruger.satser.aftenTillægHonorar : satser.aftenTillægHonorar) + 
-        Number(bruger.satser ? bruger.satser.natTillægHonorar : satser.natTillægHonorar) + 
-        Number(bruger.satser ? bruger.satser.trailerHonorar : satser.trailerHonorar) + 
-        Number(bruger.satser ? bruger.satser.rådgivningOpmålingVejledningHonorar : satser.rådgivningOpmålingVejledningHonorar)
-    }
+    }, [user])
   
     return (
-            <div className={styles.teamContainer}>
-                <h1 className={`bold ${styles.heading}`}>Teamet</h1>
-                <div className={styles.adminDiv}>
-                    <h2 className={styles.subheading}>Administratorer ({admins && admins.length})</h2>
-                    <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
-                    <div className={styles.cardHolder}>
-                        {admins && admins.map((bruger)=>{
-                            return (
-                                <div className={styles.card} key={bruger._id}>
-                                    <div>
-                                        <p className={styles.name}>{bruger.navn}</p>
-                                        <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                                    </div>
-                                    <div className={styles.kundeKontaktMobile}>
-                                        <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
-                                            <img src={PhoneIcon} alt="Phone Icon" />
-                                            <span className={styles.popup}>{bruger.telefon}</span>
-                                            Ring
-                                        </a>
-                                        <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
-                                            <img src={MailIcon} alt="Mail Icon" />
-                                            <span className={styles.popup}>{bruger.email}</span>
-                                            Skriv
-                                        </a>
-                                    </div>
-                                    <div className={styles.flereMedarbejderDetaljer}>
-                                            {/* {!user.isAdmin && userID === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>} */}
-                                            {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
-                                        </div>
-                                </div>
-                            )
-                        })}
+        <div className={styles.teamContainer}>
+            <h1 className={styles.heading}>Teamet</h1>
+            
+            {admins && admins.length > 0 && (
+                <div className={styles.section}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionHeading}>
+                            Administratorer
+                            <span className={styles.countBadge}>{admins.length}</span>
+                        </h2>
+                        <button 
+                            className={styles.addButton}
+                            onClick={() => navigate('/ny-bruger')}
+                        >
+                            <Plus size={16} />
+                            Tilføj
+                        </button>
                     </div>
-                </div>
-                <div className={styles.medarbejdereDiv}>
-                    <h2 className={styles.subheading}>Medarbejdere ({medarbejdere && medarbejdere.length})</h2>
-                    <p className={styles.infoText}>(Tryk og hold på en kontaktknap for at se flere muligheder.)</p>
-                    <div className={styles.cardHolder}>
-                        {medarbejdere && medarbejdere.map((bruger)=>{
-                            return (
-                                <div className={styles.card} key={bruger._id}>
-                                    <div>
-                                        <Link to={`/profil/${bruger._id}`} style={{textDecoration: 'none', color: 'inherit'}}>
-                                            <p className={styles.name} style={{cursor: 'pointer'}}>{bruger.navn}</p>
-                                        </Link>
-                                        <span className={styles.italics}>{bruger.titel} {bruger.isAdmin ? "// admin" : null}</span>
-                                    </div>
-                                    <div>
-                                        <div className={styles.kundeKontaktMobile}>
-                                            <a className={`${styles.postfix} ${styles.link}`} href={"tel:" + bruger.telefon}>
-                                                <img src={PhoneIcon} alt="Phone Icon" />
-                                                <span className={styles.popup}>{bruger.telefon}</span>
-                                                Ring
-                                            </a>
-                                            <a className={`${styles.postfix} ${styles.link}`} href={"mailto:" + bruger.email}>
-                                                <img src={MailIcon} alt="Mail Icon" />
-                                                <span className={styles.popup}>{bruger.email}</span>
-                                                Skriv
-                                            </a>
-                                        </div>
-                                        <div className={styles.flereMedarbejderDetaljer}>
-                                            {/* {!user.isAdmin && userID === bruger._id && <b style={{textAlign: 'center', display: 'block'}}>Du er på løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</b>} */}
-                                            {user.isAdmin && <button className={styles.button} onClick={() => setLøntrinModal(bruger)}>Løntrin {Math.floor((akkumuleredeSatserForBruger(bruger)/akkumuleredeStandardSatser) * 10)}</button>}
-                                        </div>
+                    <div className={styles.cardGrid}>
+                        {admins.map((bruger) => (
+                            <Link 
+                                to={`/profil/${bruger._id}`} 
+                                className={styles.cardLink}
+                                key={bruger._id}
+                            >
+                                <div className={styles.avatarContainer}>
+                                    <img 
+                                        src={bruger.profilbillede || placeholderBillede} 
+                                        alt={bruger.navn}
+                                        className={styles.avatar}
+                                    />
+                                </div>
+                                <div className={styles.card}>
+                                    <div className={styles.cardContent}>
+                                        <h3 className={styles.name}>{bruger.navn}</h3>
+                                        {bruger.titel && (
+                                            <p className={styles.description}>{bruger.titel}</p>
+                                        )}
                                     </div>
                                 </div>
-                            )
-                        })}
-                        <RedigerLøntrin trigger={løntrinModal} setTrigger={setLøntrinModal} />
+                            </Link>
+                        ))}
                     </div>
                 </div>
-            </div>
+            )}
+
+            {medarbejdere && medarbejdere.length > 0 && (
+                <div className={styles.section}>
+                    <div className={styles.sectionHeader}>
+                        <h2 className={styles.sectionHeading}>
+                            Medarbejdere
+                            <span className={styles.countBadge}>{medarbejdere.length}</span>
+                        </h2>
+                        <button 
+                            className={styles.addButton}
+                            onClick={() => navigate('/ny-bruger')}
+                        >
+                            <Plus size={16} />
+                            Tilføj
+                        </button>
+                    </div>
+                    <div className={styles.cardGrid}>
+                        {medarbejdere.map((bruger) => (
+                            <Link 
+                                to={`/profil/${bruger._id}`} 
+                                className={styles.cardLink}
+                                key={bruger._id}
+                            >
+                                <div className={styles.avatarContainer}>
+                                    <img 
+                                        src={bruger.profilbillede || placeholderBillede} 
+                                        alt={bruger.navn}
+                                        className={styles.avatar}
+                                    />
+                                </div>
+                                <div className={styles.card}>
+                                    <div className={styles.cardContent}>
+                                        <h3 className={styles.name}>{bruger.navn}</h3>
+                                        {bruger.titel && (
+                                            <p className={styles.description}>{bruger.titel}</p>
+                                        )}
+                                    </div>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
     )
 }
 

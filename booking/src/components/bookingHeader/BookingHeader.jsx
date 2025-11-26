@@ -1,4 +1,5 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import Styles from './BookingHeader.module.css'
 import Tooltip from '../basicComponents/Tooltip'
 
@@ -16,6 +17,7 @@ const BookingHeader = ({
   availableWorkerIDs = [],
   isLoadingWorkers = false
 }) => {
+  const { t } = useTranslation()
   const progress = ((currentStep - 1) / (steps.length - 1)) * 100
 
   // Determine if a step can be clicked
@@ -51,31 +53,31 @@ const BookingHeader = ({
     const stepNumber = stepIndex + 1
     
     if (stepNumber === 2) {
-      return `Beskriv din opgave med mindst 5 ord (${wordCount}/5)`
+      return t('tooltips.beskrivDinOpgaveMindst5Ord', { count: wordCount })
     }
     
     if (stepNumber === 3) {
-      return `Beskriv din opgave med mindst 5 ord (${wordCount}/5)`
+      return t('tooltips.beskrivDinOpgaveMindst5Ord', { count: wordCount })
     }
     
     if (stepNumber === 4) {
       // Check what's missing for step 3
       // if (availableWorkerIDs.length > 0) {
       //   if (!valgtDato) {
-      //     return 'Vælg en dato først'
+      //     return t('tooltips.vaelgEnDatoFoerst')
       //   }
       //   if (!valgtTidspunkt) {
-      //     return 'Vælg et tidspunkt først'
+      //     return t('tooltips.vaelgEtTidspunktFoerst')
       //   }
       // } else {
       //   if (isLoadingWorkers) {
-      //     return 'Venter på ledige medarbejdere...'
+      //     return t('tooltips.venterPaaLedigeMedarbejdere')
       //   }
       //   if (!manualTimePreference || !manualTimePreference.trim()) {
-      //     return 'Udfyld ønsket tidspunkt først'
+      //     return t('tooltips.udfyldOensketTidspunktFoerst')
       //   }
       // }
-      return 'Udfyld step 3: Tid og sted'
+      return t('tooltips.udfyldStep3TidOgSted')
     }
     
     return null
@@ -104,6 +106,16 @@ const BookingHeader = ({
             const isActive = index <= (currentStep - 1)
             const tooltipMessage = !isClickable ? getDisabledTooltipMessage(index) : null
             
+            // Map step labels to translation keys
+            const stepTranslationKeys = {
+              'Din opgave': 'steps.dinOpgave',
+              'Ekstra': 'steps.ekstra',
+              'Tid & sted': 'steps.tidOgSted',
+              'Kontaktinfo': 'steps.kontaktinfo'
+            }
+            const stepKey = stepTranslationKeys[step.label] || step.label
+            const translatedLabel = stepTranslationKeys[step.label] ? t(stepKey) : step.label
+            
             const circleContent = (
               <div 
                 className={Styles.circleWrapper}
@@ -113,7 +125,7 @@ const BookingHeader = ({
                 <div className={`${Styles.circle} ${isActive ? Styles.active : ''} ${!isClickable ? Styles.disabled : ''}`}>
                     {index + 1}
                 </div>
-                <div className={`${Styles.circleLabel} ${!isClickable ? Styles.disabled : ''}`}>{step.label}</div>
+                <div className={`${Styles.circleLabel} ${!isClickable ? Styles.disabled : ''}`}>{translatedLabel}</div>
               </div>
             )
             

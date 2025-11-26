@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import Styles from './PrimaryBookingComponent.module.css'
 import BookingNavigationFooter from './bookingNavigationFooter/BookingNavigationFooter'
 import BookingContent from './bookingContent/BookingContent'
@@ -15,14 +16,21 @@ import axios from 'axios'
 import useRecaptcha from '../hooks/useRecaptcha'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
+import 'dayjs/locale/en'
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Tag, Clock, MapPin, CalendarCheck, User, Mail, Phone, Building2, FileText, Briefcase, Check } from 'lucide-react'
 import SummaryStyles from './bookingSummary/BookingSummary.module.css'
 
 const PrimaryBookingComponent = () => {
+  const { t, i18n } = useTranslation()
   const [currentStep, setCurrentStep] = useState(1)
   const [direction, setDirection] = useState(1) // 1 for forward, -1 for backward
   const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Opdater dayjs locale når sprog skifter
+  useEffect(() => {
+    dayjs.locale(i18n.language)
+  }, [i18n.language])
   const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
   const [kortOpgavebeskrivelse, setKortOpgavebeskrivelse] = useState("")
   const [estimeretTidsforbrugTimer, setEstimeretTidsforbrugTimer] = useState(null)
@@ -298,9 +306,11 @@ const PrimaryBookingComponent = () => {
     const fetchSpørgsmål = async () => {
       if (kategorier && kategorier.length > 0) {
         try {
+          // Extract Danish category names for API (handle both string and object formats)
+          const kategoriNavne = kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
           const response = await axios.post(
             `${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/forKategorier`,
-            { kategorier }
+            { kategorier: kategoriNavne }
           )
           setOpfølgendeSpørgsmål(response.data || [])
         } catch (error) {
@@ -354,11 +364,13 @@ const PrimaryBookingComponent = () => {
 
         try {
           // Fetch available workers
+          // Extract Danish category names for API (handle both string and object formats)
+          const kategoriNavne = kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
           const workersResponse = await axios.post(
             `${import.meta.env.VITE_API_URL}/brugere/getAvailableWorkers`,
             {
               adresse,
-              kategorier
+              kategorier: kategoriNavne
             }
           )
           const workerIDs = workersResponse.data?.workerIDs || workersResponse.data || []
@@ -404,7 +416,7 @@ const PrimaryBookingComponent = () => {
           }
         } catch (error) {
           console.error('Error fetching available times:', error)
-          setTidOgStedError('Kunne ikke hente ledige tidspunkter. Prøv venligst igen.')
+          setTidOgStedError(t('tidOgSted.kunneIkkeHenteTidspunkter'))
           setAvailableWorkerIDs([])
           setAvailableWorkerNames([])
           setAllAvailableSlots([])
@@ -591,12 +603,12 @@ const PrimaryBookingComponent = () => {
 
       if (response.data.success) {
         // Show success message
-        alert('Din booking er blevet oprettet! Vi kontakter dig snart.')
+        alert(t('alerts.bookingOprettet'))
         // TODO: Redirect or reset form
       }
     } catch (error) {
       console.error('Error submitting booking:', error)
-      alert(error.response?.data?.message || 'Noget gik galt. Prøv venligst igen.')
+      alert(error.response?.data?.message || t('alerts.nogetGikGalt'))
     } finally {
       setIsSubmitting(false)
     }
@@ -917,7 +929,7 @@ const PrimaryBookingComponent = () => {
                 style={{ touchAction: 'none' }}
               />
               <div className={SummaryStyles.bottomSheetHeader}>
-                <h2 className={SummaryStyles.bottomSheetTitle}>Opsummering</h2>
+                <h2 className={SummaryStyles.bottomSheetTitle}>{t('summary.opsummering')}</h2>
                 <button className={SummaryStyles.bottomSheetCloseButton} onClick={() => setShowSummaryModal(false)}>
                   <X size={20} />
                 </button>
@@ -960,7 +972,7 @@ const PrimaryBookingComponent = () => {
                     }}
                     disabled={isSubmitting || !isStepValid}
                   >
-                    {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                    {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
                   </button>
                 ) : (
                   <button 
@@ -968,7 +980,7 @@ const PrimaryBookingComponent = () => {
                     onClick={handleConfirmBooking} 
                     disabled={isSubmitting || !isStepValid}
                   >
-                    {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                    {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
                   </button>
                 )}
               </div>
@@ -1018,21 +1030,27 @@ const PrimaryBookingComponent = () => {
                 )}
                 {kategorier && kategorier.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '8px' }}>
-                    {kategorier.map((kategori, index) => (
-                      <span key={index} style={{ 
-                        display: 'inline-flex', 
-                        alignItems: 'center', 
-                        backgroundColor: '#f0f0f0', 
-                        border: '1px solid #22222220', 
-                        borderRadius: '12px', 
-                        padding: '4px 10px', 
-                        fontSize: '0.75rem',
-                        color: '#222222'
-                      }}>
-                        <Tag size={10} style={{ marginRight: 4 }} />
-                        {kategori}
-                      </span>
-                    ))}
+                    {kategorier.map((kategori, index) => {
+                      // Handle both string and object formats, use English if language is English
+                      const displayKategori = typeof kategori === 'string' 
+                        ? kategori 
+                        : (i18n.language === 'en' && kategori.opgavetypeEn ? kategori.opgavetypeEn : kategori.opgavetype)
+                      return (
+                        <span key={index} style={{ 
+                          display: 'inline-flex', 
+                          alignItems: 'center', 
+                          backgroundColor: '#f0f0f0', 
+                          border: '1px solid #22222220', 
+                          borderRadius: '12px', 
+                          padding: '4px 10px', 
+                          fontSize: '0.75rem',
+                          color: '#222222'
+                        }}>
+                          <Tag size={10} style={{ marginRight: 4 }} />
+                          {displayKategori}
+                        </span>
+                      )
+                    })}
                   </div>
                 )}
                 {estimeretTidsforbrugTimer !== null && estimeretTidsforbrugTimer !== undefined && (
@@ -1055,9 +1073,19 @@ const PrimaryBookingComponent = () => {
                   {Object.entries(opfølgendeSpørgsmålSvar).map(([key, value]) => {
                     if (value === null || value === undefined || value === '') return null
                     const spørgsmål = opfølgendeSpørgsmål.find(s => s.feltNavn === key)
+                    // Use English text if language is English and English text exists
+                    const displaySpørgsmålTekst = spørgsmål && i18n.language === 'en' && spørgsmål.spørgsmålEn 
+                      ? spørgsmål.spørgsmålEn 
+                      : (spørgsmål?.spørgsmål || key)
+                    // For select options, if value contains ":", show only the English part when language is English
+                    let displayValue = String(value)
+                    if (spørgsmål?.type === 'Valgmuligheder' && i18n.language === 'en' && value.includes(':')) {
+                      const parts = String(value).split(':')
+                      displayValue = parts.length > 1 ? parts[1].trim() : displayValue
+                    }
                     return (
                       <p key={key} className={SummaryStyles.popupText} style={{ marginBottom: '6px', fontSize: '0.85rem' }}>
-                        <strong>{spørgsmål?.spørgsmålTekst || key}:</strong> {String(value)}
+                        <strong>{displaySpørgsmålTekst}:</strong> {displayValue}
                       </p>
                     )
                   })}
@@ -1159,7 +1187,7 @@ const PrimaryBookingComponent = () => {
                       })}
                     </ul>
                     <p className={SummaryStyles.popupText} style={{ marginTop: '10px', marginBottom: '0', fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
-                      <strong>Hvorfor:</strong> Disse medarbejdere blev valgt fordi de har arbejdsområder, der dækker adressen ({formateretAdresse || adresse}), og de har kompetencer inden for følgende opgavetyper: {kategorier && kategorier.length > 0 ? kategorier.join(', ') : 'Generelle opgaver'}.
+                      <strong>Hvorfor:</strong> Disse medarbejdere blev valgt fordi de har arbejdsområder, der dækker adressen ({formateretAdresse || adresse}), og de har kompetencer inden for følgende opgavetyper: {kategorier && kategorier.length > 0 ? kategorier.map(k => typeof k === 'string' ? k : (i18n.language === 'en' && k.opgavetypeEn ? k.opgavetypeEn : k.opgavetype)).join(', ') : 'Generelle opgaver'}.
                     </p>
                   </>
                 ) : (

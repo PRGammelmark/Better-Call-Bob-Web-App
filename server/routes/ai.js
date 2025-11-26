@@ -164,6 +164,18 @@ router.post("/parseKategorierFromText", async (req, res) => {
           const oLower = o.toLowerCase();
           const match = opgavetyperListe.find(x => x.trim().toLowerCase() === oLower);
           return match ? match.trim() : o;
+        })
+        .map(opgavetypeNavn => {
+          // Find the full opgavetype object from database to get English name
+          const opgavetypeObj = opgavetyper.find(ot => 
+            ot.opgavetype && ot.opgavetype.trim().toLowerCase() === opgavetypeNavn.toLowerCase()
+          );
+          
+          // Return object with both Danish and English names
+          return {
+            opgavetype: opgavetypeNavn,
+            opgavetypeEn: opgavetypeObj?.opgavetypeEn || opgavetypeNavn
+          };
         });
       
       console.log("✅ Filtrering færdig");
@@ -210,6 +222,7 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
           role: "system",
           content: `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
           Opsummeringen skal være præcis og informativ, og fange essensen af opgaven.
+          VIGTIGT: Hvis opgavebeskrivelsen er på engelsk, så returnér opsummeringen på engelsk.
           Returnér kun gyldig JSON som output med følgende struktur:
           {
             "opsummering": "opsummeringen her",
@@ -220,7 +233,7 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
         },
         {
           role: "user",
-          content: `Opsumer følgende opgavebeskrivelse til 10 ord eller mindre, og vurder tidsforbruget:\n\n${opgaveBeskrivelse}`,
+          content: `Opsummér følgende opgavebeskrivelse til 10 ord eller mindre, og vurder tidsforbruget:\n\n${opgaveBeskrivelse}`,
         }
       ],
     });

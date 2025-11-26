@@ -1,20 +1,60 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import Styles from './DinKonto.module.css'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush.js'
 import { useSubscribeToPush } from '../hooks/useSubscribeToPush.js'
 import axios from 'axios'
 import Modal from '../components/Modal.jsx'
-import { RectangleEllipsis, BellRing, BellOff, SquarePen } from 'lucide-react';
+import { RectangleEllipsis, BellRing, BellOff, SquarePen, LayoutDashboard, ClipboardList, Wallet, User, Settings, SlidersVertical, Phone, Mail } from 'lucide-react';
 import placeholderBillede from '../assets/avatarPlaceholder.png'
 import Rating from 'react-rating'
 import { Star, Radius, MapPin, Hammer, Box } from "lucide-react"
 import ArbejdsRadiusMap from '../components/ArbejdsRadiusMap.jsx'
 import ArbejdsOmrådeModal from '../components/modals/ArbejdsOmrådeModal.jsx'
 import VælgOpgavetyperModal from '../components/modals/VælgOpgavetyperModal.jsx'
+import PrioritetModal from '../components/modals/PrioritetModal.jsx'
+import RedigerLøntrin from '../components/modals/RedigerLøntrin.jsx'
+import ProfilePictureModal from '../components/modals/ProfilePictureModal.jsx'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import * as beregn from '../utils/beregninger.js'
+import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
+import satser from '../variables.js'
+
+// Tab configuration
+const tabConfig = [
+    {
+        id: "overblik",
+        label: "Overblik",
+        iconType: "LayoutDashboard"
+    },
+    {
+        id: "opgaver",
+        label: "Opgaver",
+        iconType: "ClipboardList"
+    },
+    {
+        id: "økonomi",
+        label: "Økonomi",
+        iconType: "Wallet"
+    },
+    {
+        id: "om",
+        label: "Om",
+        iconType: "User"
+    },
+    {
+        id: "arbejdspræferencer",
+        label: "Arbejdspræferencer",
+        iconType: "Hammer"
+    },
+    {
+        id: "indstillinger",
+        label: "Indstillinger",
+        iconType: "Settings"
+    }
+]
 
 const Profil = () => {
     const { brugerID } = useParams();
@@ -53,13 +93,37 @@ const Profil = () => {
     const [redigerbarEmail, setRedigerbarEmail] = useState("")
     const [nytKodeord, setNytKodeord] = useState("")
     const [gentagNytKodeord, setGentagNytKodeord] = useState("")
+    const [prioritet, setPrioritet] = useState(3)
 
     // state for popups
     const [arbejdsOmrådePopup, setArbejdsOmrådePopup] = useState(false)
     const [opgaveTyperPopup, setOpgaveTyperPopup] = useState(false)
+    const [prioritetPopup, setPrioritetPopup] = useState(false)
+    const [lønsatserModal, setLønsatserModal] = useState(null)
+    const [profilbilledeModal, setProfilbilledeModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     
+    // state for tabs
+    const [activeTab, setActiveTab] = useState("overblik")
+    const [underlineStyle, setUnderlineStyle] = useState({ width: 0, left: 0 })
+    const tabRefs = useRef([])
+    
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    // Create tabs with icons
+    const iconMap = {
+        LayoutDashboard: <LayoutDashboard size={18} />,
+        ClipboardList: <ClipboardList size={18} />,
+        Wallet: <Wallet size={18} />,
+        User: <User size={18} />,
+        Hammer: <Hammer size={18} />,
+        Settings: <Settings size={18} />
+    }
+
+    const tabs = tabConfig.map(tab => ({
+        ...tab,
+        icon: iconMap[tab.iconType]
+    }))
 
     useEffect(() => {
       if (!brugerID) return;
@@ -76,6 +140,7 @@ const Profil = () => {
             setRedigerbarAdresse(res.data.adresse)
             setRedigerbarTelefon(res.data.telefon)
             setRedigerbarEmail(res.data.email)
+            setPrioritet(res.data.prioritet ?? 3)
         })
         .catch(error => console.log(error))
     }, [brugerID, refetchBruger])
@@ -207,6 +272,48 @@ const Profil = () => {
 
     }
 
+    // Update underline position when active tab changes
+    useEffect(() => {
+        const activeIndex = tabs.findIndex((t) => t.id === activeTab);
+        const activeTabElement = tabRefs.current[activeIndex];
+        if (activeTabElement) {
+            setUnderlineStyle({
+                width: activeTabElement.offsetWidth,
+                left: activeTabElement.offsetLeft,
+            });
+        }
+    }, [activeTab, tabs]);
+
+    // Handle tab change
+    const handleTabChange = (tabId) => {
+        setActiveTab(tabId);
+    }
+
+    // Calculate løntrin for employee
+    const beregnLøntrin = (bruger) => {
+        if (!bruger) return null;
+        
+        const akkumuleredeStandardSatser = 
+            Number(satser.handymanTimerHonorar) + 
+            Number(satser.tømrerTimerHonorar) + 
+            Number(satser.rådgivningOpmålingVejledningHonorar) + 
+            Number(satser.opstartsgebyrHonorar) + 
+            Number(satser.aftenTillægHonorar) + 
+            Number(satser.natTillægHonorar) + 
+            Number(satser.trailerHonorar);
+
+        const akkumuleredeBrugerSatser = 
+            Number(bruger.satser ? bruger.satser.handymanTimerHonorar : satser.handymanTimerHonorar) + 
+            Number(bruger.satser ? bruger.satser.tømrerTimerHonorar : satser.tømrerTimerHonorar) + 
+            Number(bruger.satser ? bruger.satser.rådgivningOpmålingVejledningHonorar : satser.rådgivningOpmålingVejledningHonorar) + 
+            Number(bruger.satser ? bruger.satser.opstartsgebyrHonorar : satser.opstartsgebyrHonorar) + 
+            Number(bruger.satser ? bruger.satser.aftenTillægHonorar : satser.aftenTillægHonorar) + 
+            Number(bruger.satser ? bruger.satser.natTillægHonorar : satser.natTillægHonorar) + 
+            Number(bruger.satser ? bruger.satser.trailerHonorar : satser.trailerHonorar);
+
+        return Math.floor((akkumuleredeBrugerSatser / akkumuleredeStandardSatser) * 10);
+    }
+
     if (!bruger) {
       return <div>Indlæser...</div>
     }
@@ -215,118 +322,280 @@ const Profil = () => {
     // <PageAnimation>
       <div className={Styles.pageContent}>
         <div className={Styles.profilHeader}>
-
-          <img src={bruger?.profilbillede || placeholderBillede} alt="Profilbillede" className={Styles.profilBillede} />
+          <div 
+            className={Styles.profilBilledeContainer}
+            onClick={() => canEditSettings && setProfilbilledeModal(true)}
+            style={{ cursor: canEditSettings ? 'pointer' : 'default' }}
+          >
+            <img src={bruger?.profilbillede || placeholderBillede} alt="Profilbillede" className={Styles.profilBillede} />
+            {canEditSettings && (
+              <div className={Styles.profilBilledeOverlay}>
+                <span>Klik for at opdatere</span>
+              </div>
+            )}
+          </div>
           <div className={Styles.profilInfo}>
             <h2>{bruger?.navn}</h2>
             <p>{bruger?.isAdmin ? "Administrator" : "Medarbejder"}{bruger?.titel ? (" • " + bruger?.titel) : "" }</p>
+            {(bruger?.telefon || bruger?.email) && (
+              <div className={Styles.kontaktKnapper}>
+                {bruger?.telefon && (
+                  <a href={`tel:${bruger.telefon}`} className={Styles.kontaktKnap}>
+                    <Phone size={13} />
+                    <span>{bruger.telefon}</span>
+                  </a>
+                )}
+                {bruger?.email && (
+                  <a href={`mailto:${bruger.email}`} className={Styles.kontaktKnap}>
+                    <Mail size={13} />
+                    <span>{bruger.email}</span>
+                  </a>
+                )}
+              </div>
+            )}
           </div>
         </div>
+        
+        {/* Tab Navigation */}
+        <div className={Styles.profilTabsContainer}>
+          {tabs.map((tab, index) => (
+            <button
+              key={tab.id}
+              ref={(el) => (tabRefs.current[index] = el)}
+              onClick={() => handleTabChange(tab.id)}
+              className={`${Styles.profilTabButton} ${activeTab === tab.id ? Styles.active : ""}`}
+            >
+              <span className={Styles.tabIcon}>{tab.icon}</span>
+              {tab.label}
+            </button>
+          ))}
+          <div
+            className={Styles.profilTabUnderline}
+            style={{
+              width: underlineStyle.width,
+              transform: `translateX(${underlineStyle.left}px)`,
+              transition: 'width 0.2s ease, transform 0.4s ease',
+            }}
+          />
+        </div>
+
+        {/* Tab Content */}
         <div className={Styles.indstillingerContent}>
-          {canViewFullProfile && (
-            <div className={Styles.statistikSektion}>
-              <div className={Styles.statistikSektionHeader}>
-                <h2>Statistik</h2>
-                {/* <div className={Styles.statistikButtonsDiv}>
-                  <button onClick={() => setStatisticsRange("denneMåned")} className={`${Styles.statistikButton} ${statisticsRange === "denneMåned" && Styles.activeStatistikButton}`}>
-                    Denne måned
-                  </button>
-                  <button onClick={() => setStatisticsRange("treMåneder")} className={`${Styles.statistikButton} ${statisticsRange === "treMåneder" && Styles.activeStatistikButton}`}>
-                    Sidste 3 måneder
-                  </button>
-                  <button onClick={() => setStatisticsRange("altid")} className={`${Styles.statistikButton} ${statisticsRange === "altid" && Styles.activeStatistikButton}`}>
-                    Altid
-                  </button>
-                </div> */}
-              </div>
-              <div className={`${Styles.boxFrame} ${Styles.flex}`}>
-                <div className={Styles.opgaverStatistik}>
-                  <div className={Styles.statistikItem}>
-                    <b>{opgaver?.length}</b>
-                    <p>opgaver</p>
-                  </div>
-                  <div className={Styles.statistikItem}>
-                    <b>{beregn.totalHonorar(posteringer).formateret}</b>
-                    <p>tjent til dato</p>
-                  </div>
-                </div>
-                <div className={Styles.ratings} style={{position: "relative"}}>
-                  <p style={{position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", fontSize: 14, fontFamily: "OmnesBold"}}>Ratings – kommer snart ...</p>
-                  <div style={{opacity: 0.15}}>
-                  <Rating
-                      fractions={2}
-                      initialRating={3}
-                      readonly
-                      emptySymbol={<Star className={Styles.icon} />}
-                      fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
-                    />
-                    </div>
-                  {/* <div className={Styles.ratingStarsDiv}>
-                    <Rating
-                      fractions={2}
-                      initialRating={3}
-                      readonly
-                      emptySymbol={<Star className={Styles.icon} />}
-                      fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
-                    />
-                  </div>
-                  <div className={Styles.ratingsHeaderDiv}>
-                    <p>4 vurderinger</p>
-                    <p>Gns.: 4.8</p>
+          <AnimatePresence mode="wait">
+            {/* Overblik Tab */}
+            {activeTab === "overblik" && canViewFullProfile && (
+            <motion.div
+              key="overblik"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className={Styles.statistikSektion}>
+                <div className={Styles.statistikSektionHeader}>
+                  <h2>Statistik</h2>
+                  {/* <div className={Styles.statistikButtonsDiv}>
+                    <button onClick={() => setStatisticsRange("denneMåned")} className={`${Styles.statistikButton} ${statisticsRange === "denneMåned" && Styles.activeStatistikButton}`}>
+                      Denne måned
+                    </button>
+                    <button onClick={() => setStatisticsRange("treMåneder")} className={`${Styles.statistikButton} ${statisticsRange === "treMåneder" && Styles.activeStatistikButton}`}>
+                      Sidste 3 måneder
+                    </button>
+                    <button onClick={() => setStatisticsRange("altid")} className={`${Styles.statistikButton} ${statisticsRange === "altid" && Styles.activeStatistikButton}`}>
+                      Altid
+                    </button>
                   </div> */}
                 </div>
-              </div>
-            </div>
-          )}
-          {canViewFullProfile && (
-            <div className={Styles.arbejdsPræferencerSektion}>
-              <h2>Arbejdspræferencer</h2>
-              <div className={Styles.arbejdsPræferencerKnapperDiv}>
-                <div className={Styles.arbejdsPræferencerKnap} onClick={() => canEditSettings && setArbejdsOmrådePopup(true)} style={{cursor: canEditSettings ? 'pointer' : 'default'}}>
-                  <h3>Område</h3>
-                  <div className={Styles.arbejdsPræferencerKnapEndDiv}>
-                    {bruger?.arbejdsOmråde?.adresse && <>
-                    <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                      <MapPin height={14} />
-                      <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
-                      <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse?.split(", ")[1]}</span>
+                <div className={`${Styles.boxFrame} ${Styles.flex}`}>
+                  <div className={Styles.opgaverStatistik}>
+                    <div className={Styles.statistikItem}>
+                      <b>{opgaver?.length}</b>
+                      <p>opgaver</p>
                     </div>
-                    <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                      <Radius height={14} />
-                      {bruger?.arbejdsOmråde?.radius / 1000} km.
+                    <div className={Styles.statistikItem}>
+                      <b>{beregn.totalHonorar(posteringer).formateret}</b>
+                      <p>tjent til dato</p>
                     </div>
-                    </>}
                   </div>
-                </div>
-                <div className={Styles.arbejdsPræferencerKnap} onClick={() => canEditSettings && setOpgaveTyperPopup(true)} style={{cursor: canEditSettings ? 'pointer' : 'default'}}>
-                  <h3>Opgavetyper</h3>
-                  <div className={Styles.arbejdsPræferencerKnapEndDiv}>
-                    <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                      <Hammer height={14} />
-                      {bruger?.opgavetyper?.length || 0} valgte
+                  <div className={Styles.ratings} style={{position: "relative"}}>
+                    <p style={{position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", fontSize: 14, fontFamily: "OmnesBold"}}>Ratings – kommer snart ...</p>
+                    <div style={{opacity: 0.15}}>
+                    <Rating
+                        fractions={2}
+                        initialRating={3}
+                        readonly
+                        emptySymbol={<Star className={Styles.icon} />}
+                        fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                      />
+                      </div>
+                    {/* <div className={Styles.ratingStarsDiv}>
+                      <Rating
+                        fractions={2}
+                        initialRating={3}
+                        readonly
+                        emptySymbol={<Star className={Styles.icon} />}
+                        fullSymbol={<Star className={`${Styles.icon} ${Styles.full}`} />}
+                      />
                     </div>
-                    {/* <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
-                      <Box height={14} />
-                      {antalKategorierFraOpgavetyper(bruger?.opgavetyper)} kategorier
+                    <div className={Styles.ratingsHeaderDiv}>
+                      <p>4 vurderinger</p>
+                      <p>Gns.: 4.8</p>
                     </div> */}
                   </div>
                 </div>
               </div>
-              {/* <ArbejdsRadiusMap /> */}
-            </div>
+            </motion.div>
           )}
-          {canEditSettings && (
-            <div className={Styles.indstillingerSektion}>
-              <h2>Indstillinger</h2>
-              <div className={Styles.infoListe}>
-                <button className={Styles.newButton} onClick={() => setRedigerPersonligeOplysninger(true)}><SquarePen style={{width: 20, height: 20, marginRight: 10}}/>Rediger indstillinger</button>
-                {canEditPassword && <button className={Styles.newButton} onClick={() => setSkiftKodeord(true)}><RectangleEllipsis style={{width: 20, height: 20, marginRight: 10}}/>Skift kodeord</button>}
-              {isOwnProfile && isMobile && ((user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>)}
-              {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
-              <p>{pushDebugMessage}</p>
+
+          {/* Opgaver Tab */}
+          {activeTab === "opgaver" && (
+            <motion.div
+              key="opgaver"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div>
+                {/* Tom for nu */}
               </div>
-            </div>
+            </motion.div>
           )}
+
+          {/* Økonomi Tab */}
+          {activeTab === "økonomi" && (
+            <motion.div
+              key="økonomi"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div>
+                {/* Tom for nu */}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Om Tab */}
+          {activeTab === "om" && (
+            <motion.div
+              key="om"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div>
+                {/* Tom for nu */}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Arbejdspræferencer Tab */}
+          {activeTab === "arbejdspræferencer" && canViewFullProfile && (
+            <motion.div
+              key="arbejdspræferencer"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className={Styles.arbejdsPræferencerSektion}>
+                <h2>Arbejdspræferencer</h2>
+                <div className={Styles.arbejdsPræferencerKnapperDiv}>
+                  <div className={Styles.arbejdsPræferencerKnap} onClick={() => canEditSettings && setArbejdsOmrådePopup(true)} style={{cursor: canEditSettings ? 'pointer' : 'default'}}>
+                    <h3>Område</h3>
+                    <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                      {bruger?.arbejdsOmråde?.adresse && <>
+                      <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                        <MapPin height={14} />
+                        <span className={Styles.desktopInfoBox}>{bruger?.arbejdsOmråde?.adresse}</span>
+                        <span className={Styles.mobileInfoBox}>{bruger?.arbejdsOmråde?.adresse?.split(", ")[1]}</span>
+                      </div>
+                      <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                        <Radius height={14} />
+                        {bruger?.arbejdsOmråde?.radius / 1000} km.
+                      </div>
+                      </>}
+                    </div>
+                  </div>
+                  <div className={Styles.arbejdsPræferencerKnap} onClick={() => canEditSettings && setOpgaveTyperPopup(true)} style={{cursor: canEditSettings ? 'pointer' : 'default'}}>
+                    <h3>Opgavetyper</h3>
+                    <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                      <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                        <Hammer height={14} />
+                        {bruger?.opgavetyper?.length || 0} valgte
+                      </div>
+                      {/* <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                        <Box height={14} />
+                        {antalKategorierFraOpgavetyper(bruger?.opgavetyper)} kategorier
+                      </div> */}
+                    </div>
+                  </div>
+                </div>
+                {/* <ArbejdsRadiusMap /> */}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Indstillinger Tab */}
+          {activeTab === "indstillinger" && canEditSettings && (
+            <motion.div
+              key="indstillinger"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <div className={Styles.indstillingerSektion}>
+                <h2>Indstillinger</h2>
+                <SettingsButtons
+                  items={[
+                    {
+                      title: "Personlige informationer",
+                      icon: <SquarePen />,
+                      onClick: () => setRedigerPersonligeOplysninger(true),
+                    },
+                    ...(canEditPassword ? [{
+                      title: "Skift kodeord",
+                      icon: <RectangleEllipsis />,
+                      onClick: () => setSkiftKodeord(true),
+                    }] : [])
+                  ]}
+                />
+                {isOwnProfile && isMobile && (
+                  <div className={Styles.infoListe}>
+                    {(user.pushSubscription && permission === 'granted') ? <button className={`${Styles.newButton} ${Styles.afmeldPush}`} onClick={handleUnsubscribeToPush}><BellOff style={{width: 20, height: 20, marginRight: 10}}/>Afmeld push-notifikationer</button> : <button className={`${Styles.newButton} ${Styles.tilmeldPush}`} onClick={() => {handleSubscribeToPush(user, updateUser)}}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Accepter push-notifikationer</button>}
+                    {/* <button className={Styles.newButton} onClick={() => nyNotifikation(user, user, "Modificerbar test-notifikation", "Dette er en modificerbar testnotifikation.")}><BellRing style={{width: 20, height: 20, marginRight: 10}}/>Send test-notifikation</button> */}
+                    <p>{pushDebugMessage}</p>
+                  </div>
+                )}
+                {isAdmin && (!bruger?.isAdmin || isOwnProfile) && (
+                  <div className={Styles.indstillingerSektion} style={{ marginTop: '2rem' }}>
+                    <h2>Administrative indstillinger</h2>
+                    <SettingsButtons
+                      items={[
+                        {
+                          title: "Prioritet",
+                          icon: <Star />,
+                          onClick: () => setPrioritetPopup(true),
+                          value: prioritet
+                        },
+                        {
+                          title: "Lønsatser",
+                          icon: <SlidersVertical />,
+                          onClick: () => setLønsatserModal(bruger),
+                          value: beregnLøntrin(bruger) ? `Løntrin ${beregnLøntrin(bruger)}` : null
+                        }
+                      ]}
+                    />
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+          </AnimatePresence>
         </div>
         {canEditSettings && (
           <>
@@ -367,8 +636,20 @@ const Profil = () => {
                       </form>
                 </Modal>
                 )}
+              <ProfilePictureModal trigger={profilbilledeModal} setTrigger={setProfilbilledeModal} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
               <ArbejdsOmrådeModal trigger={arbejdsOmrådePopup} setTrigger={setArbejdsOmrådePopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
               <VælgOpgavetyperModal trigger={opgaveTyperPopup} setTrigger={setOpgaveTyperPopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} opgavetyper={opgavetyper}/>
+              {isAdmin && (!bruger?.isAdmin || isOwnProfile) && (
+                <>
+                  <PrioritetModal trigger={prioritetPopup} setTrigger={setPrioritetPopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
+                  <RedigerLøntrin trigger={lønsatserModal} setTrigger={(value) => {
+                    setLønsatserModal(value);
+                    if (!value) {
+                      setRefetchBruger(prev => !prev);
+                    }
+                  }} />
+                </>
+              )}
           </>
         )}
       </div>

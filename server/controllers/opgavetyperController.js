@@ -27,9 +27,9 @@ const getOpgavetype = async (req,res) => {
 
 // CREATE en opgavetype
 const createOpgavetype = async (req, res) => {
-    const { opgavetype, kategorier, kompleksitet } = req.body;
+    const { opgavetype, opgavetypeEn, kategorier, kompleksitet } = req.body;
     try {
-        const nyOpgavetype = await Opgavetyper.create({ opgavetype, kategorier, kompleksitet });
+        const nyOpgavetype = await Opgavetyper.create({ opgavetype, opgavetypeEn, kategorier, kompleksitet });
         res.status(200).json(nyOpgavetype);
     } catch (error) {
         res.status(400).json({ error: error.message });

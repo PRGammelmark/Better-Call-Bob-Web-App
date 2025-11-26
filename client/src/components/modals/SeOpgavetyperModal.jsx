@@ -24,6 +24,7 @@ const SeOpgavetyperModal = (props) => {
 
     // state managers for oprettelse af ny opgavetype
     const [nyOpgavetypeNavn, setNyOpgavetypeNavn] = useState("")
+    const [nyOpgavetypeNavnEn, setNyOpgavetypeNavnEn] = useState("")
     const [nyOpgavetypeKategori, setNyOpgavetypeKategori] = useState("")
     const [nyOpgavetypeAndenKategori, setNyOpgavetypeAndenKategori] = useState("")
     const [nyOpgavetypeKompleksitet, setNyOpgavetypeKompleksitet] = useState(1)
@@ -52,7 +53,8 @@ const SeOpgavetyperModal = (props) => {
         setRedigerOpgavetype({
             ...opgavetype,
             kategori1: opgavetype.kategorier[0] || "",
-            kategori2: opgavetype.kategorier[1] || ""
+            kategori2: opgavetype.kategorier[1] || "",
+            opgavetypeEn: opgavetype.opgavetypeEn || ""
         });
     };
     
@@ -61,11 +63,13 @@ const SeOpgavetyperModal = (props) => {
         setNyOpgavetypeKategori("")
         setNyOpgavetypeAndenKategori("")
         setNyOpgavetypeNavn("")
+        setNyOpgavetypeNavnEn("")
         setNyOpgavetypeKompleksitet(1)
     }
 
     const nyOpgavetype = {
         "opgavetype": nyOpgavetypeNavn,
+        "opgavetypeEn": nyOpgavetypeNavnEn || undefined,
         "kategorier": [nyOpgavetypeKategori, nyOpgavetypeAndenKategori].filter(Boolean),
         "kompleksitet": nyOpgavetypeKompleksitet
     }
@@ -112,6 +116,7 @@ const SeOpgavetyperModal = (props) => {
     const handleUpdateOpgavetype = () => {
         const updated = {
             opgavetype: redigerOpgavetype.opgavetype,
+            opgavetypeEn: redigerOpgavetype.opgavetypeEn || undefined,
             kategorier: [redigerOpgavetype.kategori1, redigerOpgavetype.kategori2].filter(Boolean),
             kompleksitet: redigerOpgavetype.kompleksitet
         };
@@ -189,6 +194,7 @@ const SeOpgavetyperModal = (props) => {
                 <form action="">
                     <InputsContainer>
                         <InputLine label={"Navn"} placeholder={"Fx 'Ophængning af billeder'"} required={true} value={nyOpgavetypeNavn} onChange={setNyOpgavetypeNavn} />
+                        <InputLine label={"Navn (engelsk)"} placeholder={"Fx 'Picture hanging'"} required={false} value={nyOpgavetypeNavnEn} onChange={setNyOpgavetypeNavnEn} />
                         <SelectLine label="Kategori" options={opgavekategorier} value={nyOpgavetypeKategori} onChange={setNyOpgavetypeKategori} />
                         <div className={`${Styles.animatedContainer} ${nyOpgavetypeKategori ? Styles.show : ""}`}>
                             <SelectLine label="Ekstra kategori (valgfri)" options={opgavekategorier} value={nyOpgavetypeAndenKategori} onChange={setNyOpgavetypeAndenKategori} />
@@ -222,6 +228,12 @@ const SeOpgavetyperModal = (props) => {
                                 label="Navn" 
                                 value={redigerOpgavetype.opgavetype} 
                                 onChange={val => setRedigerOpgavetype({...redigerOpgavetype, opgavetype: val})} 
+                            />
+                            <InputLine 
+                                label="Navn (engelsk)" 
+                                placeholder={"Fx 'Picture hanging'"}
+                                value={redigerOpgavetype.opgavetypeEn || ""} 
+                                onChange={val => setRedigerOpgavetype({...redigerOpgavetype, opgavetypeEn: val})} 
                             />
                             <SelectLine 
                                 label="Kategori" 

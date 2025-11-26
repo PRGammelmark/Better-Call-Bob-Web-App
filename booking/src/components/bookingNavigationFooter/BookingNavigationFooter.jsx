@@ -1,22 +1,24 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import Styles from './BookingNavigationFooter.module.css'
 import Tooltip from '../basicComponents/Tooltip'
 
 const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey, isStepValid = true, shouldPulse = false, wordCount = 0, antalBesvaredeSpørgsmål = 0, onShowSummary }) => {
+  const { t } = useTranslation()
 
   // Determine tooltip message for disabled "Næste" button
   const getDisabledTooltipMessage = () => {
     if (isSubmitting) {
-      return 'Sender...'
+      return t('buttons.sender')
     }
     if (!isStepValid) {
       if (currentStep === 1) {
-        return `Beskriv din opgave med mindst 5 ord (${wordCount}/5)`
+        return t('validation.mindst5Ord', { count: wordCount })
       }
       if (currentStep === 4 || isLastStep) {
-        return 'Udfyld alle påkrævede felter (Fulde navn, Mail og Accept af handelsbetingelser)'
+        return t('validation.udfyldAlleFelterKontakt')
       }
-      return 'Udfyld alle påkrævede felter for at fortsætte'
+      return t('validation.udfyldAlleFelter')
     }
     return null
   }
@@ -27,9 +29,9 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
   // Determine button text for step 2 (Ekstra step)
   const getNextButtonText = () => {
     if (currentStep === 2 && antalBesvaredeSpørgsmål === 0) {
-      return 'Spring over'
+      return t('buttons.springOver')
     }
-    return 'Næste'
+    return t('buttons.naeste')
   }
 
   const nextButtonText = getNextButtonText()
@@ -37,7 +39,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
   return (
     <div className={Styles.bookingNavigationFooter}>
       {/* <button className={Styles.summaryButton} onClick={onShowSummary}>Opsummering</button> */}
-      {currentStep > 1 && <button className={Styles.backButton} onClick={() => setCurrentStep(currentStep - 1)} disabled={isSubmitting}>Tilbage</button>}
+      {currentStep > 1 && <button className={Styles.backButton} onClick={() => setCurrentStep(currentStep - 1)} disabled={isSubmitting}>{t('buttons.tilbage')}</button>}
       {isLastStep ? (
         tooltipMessage ? (
           <>
@@ -47,7 +49,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                 onClick={onShowSummary}
                 disabled={isSubmitting || !isStepValid}
               >
-                Opsummering & bekræft
+                {t('buttons.opsummeringBekraeft')}
               </button>
             </Tooltip>
             <Tooltip content={tooltipMessage} position="top">
@@ -69,7 +71,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                   }}
                   disabled={isSubmitting || !isStepValid}
                 >
-                  {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                  {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
                 </button>
               ) : (
                 <button 
@@ -77,7 +79,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                   onClick={onConfirm} 
                   disabled={isSubmitting || !isStepValid}
                 >
-                  {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                  {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
                 </button>
               )}
             </Tooltip>
@@ -89,7 +91,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
               onClick={onShowSummary}
               disabled={isSubmitting || !isStepValid}
             >
-              Opsummering & bekræft
+              {t('buttons.opsummeringBekraeft')}
             </button>
             {recaptchaSiteKey ? (
               <button 
@@ -109,7 +111,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                 }}
                 disabled={isSubmitting || !isStepValid}
               >
-                {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
               </button>
             ) : (
               <button 
@@ -117,7 +119,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                 onClick={onConfirm} 
                 disabled={isSubmitting || !isStepValid}
               >
-                {isSubmitting ? 'Sender...' : 'Bekræft booking'}
+                {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
               </button>
             )}
           </>
