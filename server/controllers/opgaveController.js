@@ -632,11 +632,14 @@ const getOpgaverPersonalCurrent = async (req, res) => {
         
         // Fetch all matching opgaver and filter in memory to handle both ObjectId and string formats
         const allOpgaver = await Opgave.find({
-            isDeleted: { $exists: false },
-            isArchived: { $exists: false },
-            opgaveAfsluttet: { $exists: false },
-            ansvarlig: { $exists: true, $ne: [] }
-        }).sort({ createdAt: -1 }).populate("kunde");
+            $and: [
+              { $or: [{ isDeleted: null }, { isDeleted: { $exists: false } }] },
+              { $or: [{ isArchived: null }, { isArchived: { $exists: false } }] },
+              { $or: [{ opgaveAfsluttet: null }, { opgaveAfsluttet: { $exists: false } }] },
+              { ansvarlig: { $exists: true, $ne: [] } }
+            ]
+          }).sort({ createdAt: -1 }).populate("kunde");
+          
         
         // Filter to only include opgaver where user is ansvarlig
         const opgaver = allOpgaver.filter(opgave => {

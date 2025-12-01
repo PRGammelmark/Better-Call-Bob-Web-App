@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.9.2",
+    date: "26. november 2025",
+    changes: [
+        "Rettede en fejl, der gjorde, at det personlige overblik over ens egne opgaver for en given dag ikke altid medtog alle besøg.",
+    ]
+},{
     version: "3.9.1",
     date: "26. november 2025",
     changes: [

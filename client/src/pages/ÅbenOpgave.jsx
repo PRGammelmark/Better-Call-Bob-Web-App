@@ -1407,6 +1407,7 @@ const ÅbenOpgave = () => {
                         setUpdateOpgave={setUpdateOpgave}
                         />
                 </div>
+                {user.isAdmin && console.log(opgave)}
                 <div className={ÅbenOpgaveCSS.posteringer}>
                     <div className={ÅbenOpgaveCSS.headerSwitcherDiv}>
                         <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
