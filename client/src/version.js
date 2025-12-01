@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.9.3",
+    date: "26. november 2025",
+    changes: [
+        "Brugere kan nu tilføje ledighed direkte i en ny ledighedskalender, der ligger under Profil -> Arbejdspræferencer -> Ledighed. Knappen åbner et popup-vindue, hvor man frit kan 'tegne' sine ledige tidspunkter ind i kalenderen. Administratorer kan tilgå øvrige medarbejderes ledighedskalender, og oprette, redigere i og slette ledige tider på vegne af medarbejderen.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.9.2",
     date: "26. november 2025",
     changes: [

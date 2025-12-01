@@ -10,13 +10,14 @@ import Modal from '../components/Modal.jsx'
 import { RectangleEllipsis, BellRing, BellOff, SquarePen, LayoutDashboard, ClipboardList, Wallet, User, Settings, SlidersVertical, Phone, Mail } from 'lucide-react';
 import placeholderBillede from '../assets/avatarPlaceholder.png'
 import Rating from 'react-rating'
-import { Star, Radius, MapPin, Hammer, Box } from "lucide-react"
+import { Star, Radius, MapPin, Hammer, Box, Calendar } from "lucide-react"
 import ArbejdsRadiusMap from '../components/ArbejdsRadiusMap.jsx'
 import ArbejdsOmrådeModal from '../components/modals/ArbejdsOmrådeModal.jsx'
 import VælgOpgavetyperModal from '../components/modals/VælgOpgavetyperModal.jsx'
 import PrioritetModal from '../components/modals/PrioritetModal.jsx'
 import RedigerLøntrin from '../components/modals/RedigerLøntrin.jsx'
 import ProfilePictureModal from '../components/modals/ProfilePictureModal.jsx'
+import VisLedighedModal from '../components/modals/VisLedighedModal.jsx'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import * as beregn from '../utils/beregninger.js'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
@@ -111,6 +112,7 @@ const Profil = () => {
     const [prioritetPopup, setPrioritetPopup] = useState(false)
     const [lønsatserModal, setLønsatserModal] = useState(null)
     const [profilbilledeModal, setProfilbilledeModal] = useState(false)
+    const [ledighedModal, setLedighedModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     
     // state for tabs
@@ -534,6 +536,14 @@ const Profil = () => {
                       </div> */}
                     </div>
                   </div>
+                  <div className={Styles.arbejdsPræferencerKnap} onClick={() => setLedighedModal(true)} style={{cursor: 'pointer'}}>
+                    <h3>Ledighed</h3>
+                    <div className={Styles.arbejdsPræferencerKnapEndDiv}>
+                      <div className={Styles.arbejdsPræferencerKnapGraaInfoBoks}>
+                        <Calendar height={14} />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 {/* <ArbejdsRadiusMap /> */}
               </div>
@@ -640,6 +650,7 @@ const Profil = () => {
               <ProfilePictureModal trigger={profilbilledeModal} setTrigger={setProfilbilledeModal} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
               <ArbejdsOmrådeModal trigger={arbejdsOmrådePopup} setTrigger={setArbejdsOmrådePopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
               <VælgOpgavetyperModal trigger={opgaveTyperPopup} setTrigger={setOpgaveTyperPopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} opgavetyper={opgavetyper}/>
+              <VisLedighedModal trigger={ledighedModal} setTrigger={setLedighedModal} brugerID={brugerID} />
               {isAdmin && (!bruger?.isAdmin || isOwnProfile) && (
                 <>
                   <PrioritetModal trigger={prioritetPopup} setTrigger={setPrioritetPopup} user={user} bruger={bruger} refetchBruger={refetchBruger} setRefetchBruger={setRefetchBruger} />
