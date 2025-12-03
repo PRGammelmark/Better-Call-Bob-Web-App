@@ -138,6 +138,17 @@
     "nogetGikGalt": "Noget gik galt. Prøv venligst igen.",
     "nogetGikGaltBehandling": "Noget gik galt under behandling af \"{{fileName}}\". Prøv igen – du kan evt. også prøve at gemme videoen i et andet filformat."
   },
+  "bookingSuccess": {
+    "takForDinBooking": "Tak for din booking!",
+    "bookingOprettet": "Din booking er blevet oprettet.",
+    "viGlæderOs": "Vi glæder os til at hjælpe dig.",
+    "opgave": "Opgave",
+    "beskrivelse": "Beskrivelse",
+    "anslaaetTidsforbrug": "Anslået tidsforbrug",
+    "billeder": "Billeder",
+    "opfølgendeSporgsmaal": "Opfølgende spørgsmål",
+    "viKontakterDigSnart": "Vi kontakter dig snart med yderligere informationer om din booking."
+  },
   "tooltips": {
     "beskrivDinOpgaveMindst5Ord": "Beskriv din opgave med mindst 5 ord ({{count}}/5)",
     "vaelgEnDatoFoerst": "Vælg en dato først",

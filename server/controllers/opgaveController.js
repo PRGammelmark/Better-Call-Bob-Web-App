@@ -2,10 +2,12 @@ import Opgave from '../models/opgaveModel.js'
 import Bruger from '../models/brugerModel.js'
 import Postering from '../models/posteringModel.js'
 import Kunde from '../models/kunderModel.js'
+import Besøg from '../models/besøgModel.js'
 import mongoose from "mongoose"
 import Counter from '../models/counterModel.js';
 import Joi from "joi"
 import axios from 'axios'
+import dayjs from 'dayjs'
 
 import { opretNotifikation } from '../utils/notifikationFunktioner.js'
 
@@ -40,7 +42,14 @@ const bookingSchema = Joi.object({
     harStige: Joi.boolean().required(),
     recaptchaToken: Joi.string().required(),
     engelskKunde: Joi.boolean().optional().default(false),
-    måKontaktesMedReklame: Joi.boolean().optional().default(false)
+    måKontaktesMedReklame: Joi.boolean().optional().default(false),
+    kommentarer: Joi.string().allow("", null).optional(),
+    opfølgendeSpørgsmålSvar: Joi.object().optional(),
+    valgtTidspunkt: Joi.object({
+        brugerID: Joi.string().optional(),
+        start: Joi.date().iso().optional(),
+        end: Joi.date().iso().optional()
+    }).optional().allow(null)
 })
 
 const debounceTimers = {};
@@ -261,7 +270,7 @@ const createBooking = async (req, res) => {
         return res.status(400).json({ message: "Ugyldigt input", details: error.details })
     }
 
-    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame } = req.body;
+    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt } = req.body;
     let captchaRes
 
     try {
@@ -317,6 +326,24 @@ const createBooking = async (req, res) => {
             { new: true, upsert: true }
         );
 
+        // Prepare ansvarlig array - add employee if valgtTidspunkt has brugerID
+        let ansvarlig = [];
+        if (valgtTidspunkt && valgtTidspunkt.brugerID) {
+            try {
+                const medarbejder = await Bruger.findById(valgtTidspunkt.brugerID);
+                if (medarbejder) {
+                    // Add employee to ansvarlig array (as object with _id and navn)
+                    ansvarlig = [{
+                        _id: medarbejder._id,
+                        navn: medarbejder.navn
+                    }];
+                }
+            } catch (error) {
+                console.error("Error fetching medarbejder for ansvarlig:", error);
+                // Continue without adding to ansvarlig if fetch fails
+            }
+        }
+
         // Create opgave
         const opgave = await Opgave.create({
             opgaveBeskrivelse,
@@ -326,7 +353,9 @@ const createBooking = async (req, res) => {
             kundeID: kunde._id.toString(),
             kunde: kunde._id,
             incrementalID: counter.value,
-            kilde: "booking"
+            kilde: "booking",
+            ansvarlig: ansvarlig,
+            aiCreated: true
         });
 
         // Send notification to admin (without user ID since this is an open route)
@@ -343,6 +372,57 @@ const createBooking = async (req, res) => {
         } catch (notifError) {
             console.error("Error creating notification:", notifError);
             // Don't fail the request if notification fails
+        }
+
+        // Send notification to employee if they were added to ansvarlig
+        if (ansvarlig.length > 0) {
+            try {
+                await opretNotifikation({ 
+                    modtagerID: ansvarlig[0]._id, 
+                    udløserID: "system", 
+                    type: "opgaveTildelt", 
+                    titel: "Du har fået en ny opgave via booking.", 
+                    besked: `Opgaven skal løses på ${adresse}, ${postnummerOgBy}.`, 
+                    link: `/opgave/${opgave._id}`, 
+                    erVigtig: true 
+                });
+            } catch (notifError) {
+                console.error("Error creating ansvarlig notification:", notifError);
+                // Don't fail the request if notification fails
+            }
+        }
+
+        // Create besøg if valgtTidspunkt exists with brugerID, start, and end
+        if (valgtTidspunkt && valgtTidspunkt.brugerID && valgtTidspunkt.start && valgtTidspunkt.end) {
+            try {
+                const besøg = await Besøg.create({
+                    datoTidFra: new Date(valgtTidspunkt.start),
+                    datoTidTil: new Date(valgtTidspunkt.end),
+                    brugerID: valgtTidspunkt.brugerID,
+                    opgaveID: opgave._id,
+                    kundeID: kunde._id,
+                    aiCreated: true
+                });
+
+                // Send notification to employee about the visit
+                try {
+                    await opretNotifikation({ 
+                        modtagerID: valgtTidspunkt.brugerID, 
+                        udløserID: "system", 
+                        type: "besøgOprettet", 
+                        titel: "Du har fået et besøg i kalenderen via booking.", 
+                        besked: `Besøget er d. ${dayjs(valgtTidspunkt.start).format("DD. MMMM HH:mm")} - ${dayjs(valgtTidspunkt.end).format("HH:mm")} på ${adresse}, ${postnummerOgBy}.`, 
+                        link: `/`, 
+                        erVigtig: true 
+                    });
+                } catch (notifError) {
+                    console.error("Error creating besøg notification:", notifError);
+                    // Don't fail the request if notification fails
+                }
+            } catch (besøgError) {
+                console.error("Error creating besøg:", besøgError);
+                // Don't fail the request if besøg creation fails
+            }
         }
         
         res.status(200).json({ 

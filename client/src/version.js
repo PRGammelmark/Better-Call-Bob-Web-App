@@ -14,6 +14,19 @@
 // 
 
 const changes = [{
+    version: "3.9.4",
+    date: "26. november 2025",
+    changes: [
+        "Booking-system er live i test-version.",
+        "En succesfuld booking vil nu lede kunden hen på en succes-side, hvor man kan se detaljerne om sin booking.",
+        "Opgaver og besøg, der er automatisk oprettet og tildelt via bookingsystemet, vil nu have en AI-markering, så de tydeligt kan skelnes og følges op på. Disse opgaver er både markeret på administratorens overbliksside, Alle opgaver-siden samt når man er inde på opgaven. AI-oprettede besøg vil være markeret med en særskilt, karakteristisk blå-lys farve i administrator- og opgavekalenderen.",
+        "'Planlagte opgaver'-kortet på administratorens overbliksside viser nu også antallet af AI-oprettede opgaver i systemet. Trykker man på denne vil den åbne 'Alle opgaver'-siden op på 'Planlagte'-tabben med AI-filteret markeret.",
+        "I 'Alle opgaver'-overblikket kan man nu filtrere planlagte opgaver efter om de er AI-oprettet eller ej.",
+        "Det er muligt at fjerne AI-markeringen af opgaver, der er oprettet gennem bookingsystemet. Når man som admin er inde på en sådan opgave skal man blot trykke på menu-knappen i toppen, hvorefter man kan trykke 'Fjern AI-markering'.",
+        "Kommentarer til slettede opgaver blev ikke slettet ordentligt førhen, og blev derfor hængende som 'forælderløs' data. Nu bliver kommentarer slettet korrekt.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.9.3",
     date: "26. november 2025",
     changes: [

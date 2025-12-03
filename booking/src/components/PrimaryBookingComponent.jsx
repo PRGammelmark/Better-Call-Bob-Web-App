@@ -9,6 +9,7 @@ import BeskrivOpgaven from './bookingContent/steps/BeskrivOpgaven'
 import Ekstra from './bookingContent/steps/Ekstra'
 import TidOgSted from './bookingContent/steps/TidOgSted'
 import Kontaktinfo from './bookingContent/steps/Kontaktinfo'
+import BookingSuccess from './bookingContent/steps/BookingSuccess'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { storage } from '../firebase.js'
 import { v4 as uuidv4 } from 'uuid'
@@ -64,6 +65,8 @@ const PrimaryBookingComponent = () => {
   const [isStep4Valid, setIsStep4Valid] = useState(false)
   const [showBookingPopup, setShowBookingPopup] = useState(false)
   const [showSummaryModal, setShowSummaryModal] = useState(false)
+  const [showSuccessScreen, setShowSuccessScreen] = useState(false)
+  const [bookingResponse, setBookingResponse] = useState(null)
   const prevStepRef = useRef(1)
   const lastAnalyzedBeskrivelseRef = useRef("")
   const lastSummarizedBeskrivelseRef = useRef("")
@@ -592,6 +595,7 @@ const PrimaryBookingComponent = () => {
         måKontaktesMedReklame: modtagNyheder,
         kommentarer: kommentarer || "",
         opfølgendeSpørgsmålSvar,
+        valgtTidspunkt: valgtTidspunkt || null, // Include selected timeslot with brugerID, start, end
         recaptchaToken
       }
 
@@ -602,9 +606,9 @@ const PrimaryBookingComponent = () => {
       )
 
       if (response.data.success) {
-        // Show success message
-        alert(t('alerts.bookingOprettet'))
-        // TODO: Redirect or reset form
+        // Store booking response and show success screen
+        setBookingResponse(response.data)
+        setShowSuccessScreen(true)
       }
     } catch (error) {
       console.error('Error submitting booking:', error)
@@ -654,21 +658,21 @@ const PrimaryBookingComponent = () => {
 
   const handleConfirmBooking = async () => {
     // For now, just show the popup instead of submitting
-    setShowBookingPopup(true)
+    // setShowBookingPopup(true)
     
     // TODO: Uncomment this when ready to implement actual booking submission
-    // try {
-    //   if (!recaptchaSiteKey) {
-    //     throw new Error('reCAPTCHA site key mangler. Kontakt venligst support.')
-    //   }
+    try {
+      if (!recaptchaSiteKey) {
+        throw new Error('reCAPTCHA site key mangler. Kontakt venligst support.')
+      }
 
-    //   const recaptchaToken = await executeRecaptcha('submit')
-    //   await handleConfirmBookingWithToken(recaptchaToken)
-    // } catch (error) {
-    //   console.error('Error getting reCAPTCHA token:', error)
-    //   alert('Fejl ved reCAPTCHA verificering. Prøv venligst igen.')
-    //   setIsSubmitting(false)
-    // }
+      const recaptchaToken = await executeRecaptcha('submit')
+      await handleConfirmBookingWithToken(recaptchaToken)
+    } catch (error) {
+      console.error('Error getting reCAPTCHA token:', error)
+      alert('Fejl ved reCAPTCHA verificering. Prøv venligst igen.')
+      setIsSubmitting(false)
+    }
   }
 
   // Wrapper function to handle step changes with direction tracking
@@ -794,6 +798,39 @@ const PrimaryBookingComponent = () => {
     (hasAddress && availableWorkerIDs.length > 0 && !hasSlotsWithin4Months && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
     (hasAddress && availableWorkerIDs.length === 0 && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
     (availableWorkerIDs.length === 0 && isLoadingWorkers)
+
+  // Show success screen if booking was successful
+  if (showSuccessScreen) {
+    return (
+      <div className={Styles.primaryBookingComponent} style={{ height: '100%', width: '100%' }}>
+        <div className={Styles.bookingContainer} style={{ width: '100%', padding: '20px', height: '100%', overflowY: 'auto', position: 'relative' }}>
+          <BookingSuccess
+            bookingData={bookingResponse}
+            kortOpgavebeskrivelse={kortOpgavebeskrivelse}
+            estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
+            kategorier={kategorier}
+            opfølgendeSpørgsmålSvar={opfølgendeSpørgsmålSvar}
+            opfølgendeSpørgsmål={opfølgendeSpørgsmål}
+            adresse={adresse}
+            formateretAdresse={formateretAdresse}
+            valgtDato={valgtDato}
+            valgtTidspunkt={valgtTidspunkt}
+            manualTimePreference={manualTimePreference}
+            fuldeNavn={fuldeNavn}
+            email={email}
+            telefonnummer={telefonnummer}
+            erVirksomhed={erVirksomhed}
+            virksomhed={virksomhed}
+            cvr={cvr}
+            opgaveBilleder={opgaveBilleder}
+            kommentarer={kommentarer}
+            modtagNyheder={modtagNyheder}
+            availableWorkerNames={availableWorkerNames}
+          />
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className={Styles.primaryBookingComponent}>

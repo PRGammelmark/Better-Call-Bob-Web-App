@@ -24,7 +24,7 @@ import AddPostering from '../components/modals/AddPostering.jsx'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
-import { ImagePlus, RotateCcw, Trash2, Edit, ArrowRightToLine, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, ArrowLeftRight, Clock5, UserRoundPlus, Send, CircleAlert, Archive, CalendarClock, ChevronDown } from 'lucide-react';
+import { ImagePlus, RotateCcw, Trash2, Edit, ArrowRightToLine, Navigation, Mail, Phone, MessageCircle, Handshake, CircleCheck, ArrowLeftRight, Clock5, UserRoundPlus, Send, CircleAlert, Archive, CalendarClock, ChevronDown, BotOff } from 'lucide-react';
 import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } from "firebase/storage";
 import { storage } from '../firebase.js'
 import imageCompression from 'browser-image-compression';
@@ -577,6 +577,7 @@ const ÅbenOpgave = () => {
             console.log('Opgave slettet:', response.data);
             const posteringerPåDenneOpgave = posteringer && posteringer.filter(postering => postering.opgaveID === opgave._id);
             const besøgPåDenneOpgave = alleBesøg && alleBesøg.filter(besøg => besøg.opgaveID === opgave._id)
+            const kommentarerPåDenneOpgave = kommentarer && kommentarer.filter(kommentar => kommentar.opgaveID === opgave._id)
             
             // Slet posteringer
             if(posteringerPåDenneOpgave.length > 0) {
@@ -608,6 +609,23 @@ const ÅbenOpgave = () => {
                     })
                     .catch(error => {
                             console.error('Error deleting besøg:', error);
+                    });
+                })
+            }
+
+            // Slet kommentarer
+            if(kommentarerPåDenneOpgave.length > 0) {
+                kommentarerPåDenneOpgave.forEach(kommentar => {
+                    axios.delete(`${import.meta.env.VITE_API_URL}/kommentarer/${kommentar._id}`, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                    .then(response => {
+                        console.log('Kommentar slettet:', response.data);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting kommentar:', error);
                     });
                 })
             }
@@ -656,6 +674,61 @@ const ÅbenOpgave = () => {
         })
         .catch(error => {
             console.error('Error reopening opgave:', error);
+        });
+    }
+
+    function fjernAIMarkering() {
+        const confirmed = window.confirm("Er du sikker på, at du vil fjerne AI-markeringen fra opgaven og tilknyttede besøg?");
+        if (!confirmed) return;
+
+        // Update opgave
+        axios.patch(`${import.meta.env.VITE_API_URL}/opgaver/${opgave._id}`, {
+            aiCreated: false
+        }, {
+            headers: {
+                'Authorization': `Bearer ${user.token}`
+            }
+        })
+        .then(response => {
+            console.log('Opgave AI-markering fjernet:', response.data);
+            
+            // Find all AI-created besøg for this opgave from alleBesøg
+            const aiCreatedBesøg = alleBesøg?.filter(besøg => {
+                const besøgOpgaveID = typeof besøg.opgaveID === 'object' 
+                    ? (besøg.opgaveID?._id || besøg.opgaveID?.id) 
+                    : besøg.opgaveID;
+                return String(besøgOpgaveID) === String(opgaveID) && besøg.aiCreated === true;
+            }) || [];
+            
+            // Update all AI-created besøg
+            if (aiCreatedBesøg.length > 0) {
+                const updatePromises = aiCreatedBesøg.map(besøg => 
+                    axios.patch(`${import.meta.env.VITE_API_URL}/besoeg/${besøg._id}`, {
+                        aiCreated: false
+                    }, {
+                        headers: {
+                            'Authorization': `Bearer ${user.token}`
+                        }
+                    })
+                );
+                
+                Promise.all(updatePromises)
+                    .then(() => {
+                        console.log('Alle besøg AI-markeringer fjernet');
+                        setUpdateOpgave(!updateOpgave);
+                        setTriggerPlanlagteBesøg(!triggerPlanlagteBesøg);
+                    })
+                    .catch(error => {
+                        console.error('Error removing AI marking from besøg:', error);
+                        alert("Kunne ikke fjerne AI-markering fra alle besøg.");
+                    });
+            } else {
+                setUpdateOpgave(!updateOpgave);
+            }
+        })
+        .catch(error => {
+            console.error('Error removing AI marking from opgave:', error);
+            alert("Kunne ikke fjerne AI-markering fra opgaven.");
         });
     }
 
@@ -1109,6 +1182,12 @@ const ÅbenOpgave = () => {
                                 {user.isAdmin && (
                                     <PopUpMenu
                                         actions={[
+                                        // Fjern AI-markering - vis hvis opgaven er AI-oprettet
+                                        opgave.aiCreated && {
+                                            icon: <BotOff />,
+                                            label: "Fjern AI-markering",
+                                            onClick: fjernAIMarkering,
+                                        },
                                         // Sæt påmindelse - vis hvis opgaven ikke er slettet og ikke arkiveret
                                         !opgave.isDeleted && !opgave.isArchived && {
                                             icon: <CalendarClock />,
@@ -1195,8 +1274,9 @@ const ÅbenOpgave = () => {
                 : 
                 <form>
                     <label className={ÅbenOpgaveCSS.label} htmlFor="opgavebeskrivelse">Opgavebeskrivelse</label>
-                    <textarea name="opgavebeskrivelse" className={ÅbenOpgaveCSS.opgavebeskrivelse} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
+                    <textarea name="opgavebeskrivelse" className={`${ÅbenOpgaveCSS.opgavebeskrivelse} ${opgave?.aiCreated ? ÅbenOpgaveCSS.aiCreatedOpgaveBeskrivelse : ''}`} value={opgaveBeskrivelse} onChange={opdaterOpgavebeskrivelse} ></textarea>
                     <div className={ÅbenOpgaveCSS.infoPillsDiv}>
+                        {opgave?.aiCreated && <div className={ÅbenOpgaveCSS.aiCreatedPill}>AI-oprettet</div>}
                         {(kunde?.CVR || kunde?.virksomhed) ? <div className={ÅbenOpgaveCSS.infoPill}>Erhvervskunde</div> : <div className={ÅbenOpgaveCSS.infoPill}>Privatkunde</div>}
                         {kunde?.harStige ? <div className={ÅbenOpgaveCSS.harStige}>Har egen stige 🪜</div> : <div className={ÅbenOpgaveCSS.harIkkeStige}>Har ikke egen stige ❗️</div>}
                         {opgave?.onsketDato && <div className={ÅbenOpgaveCSS.infoPill}>Ønsket start: {dayjs(opgave?.onsketDato).format("DD. MMMM [kl.] HH:mm")}</div>}

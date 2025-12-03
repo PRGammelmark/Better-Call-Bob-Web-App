@@ -211,6 +211,87 @@
   font-weight: 500;
 }
 
+.aiCreatedCard {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #bae6fd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: pulseAiCreatedBorder 2s ease-in-out infinite;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.aiCreatedCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  border-color: #93c5fd;
+}
+
+@keyframes pulseAiCreatedBorder {
+  0%, 100% {
+    border-color: #bae6fd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 0 rgba(186, 230, 253, 0.2);
+  }
+  25% {
+    border-color: #a5d8ff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(165, 216, 255, 0.2);
+  }
+  50% {
+    border-color: #c4b5fd;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(196, 181, 253, 0.2);
+  }
+  75% {
+    border-color: #b8a5f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(184, 165, 240, 0.2);
+  }
+}
+
+.aiCreatedContent {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  position: relative;
+  z-index: 1;
+}
+
+.aiCreatedNumber {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0369a1;
+  line-height: 1;
+  animation: pulseAiCreatedNumber 2s ease-in-out infinite;
+}
+
+.aiCreatedLabel {
+  font-size: 0.7rem;
+  color: #0284c7;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  animation: pulseAiCreatedLabel 2s ease-in-out infinite;
+}
+
+@keyframes pulseAiCreatedNumber {
+  0%, 100% {
+    color: #0369a1;
+  }
+  50% {
+    color: #7c3aed;
+  }
+}
+
+@keyframes pulseAiCreatedLabel {
+  0%, 100% {
+    color: #0284c7;
+  }
+  50% {
+    color: #a855f7;
+  }
+}
+
 .warningsSection {
   display: flex;
   flex-direction: column;
@@ -399,6 +480,18 @@
   .warningStat svg {
     width: 8px;
     height: 8px;
+  }
+
+  .aiCreatedCard {
+    padding: 8px 10px;
+  }
+
+  .aiCreatedNumber {
+    font-size: 1.25rem;
+  }
+
+  .aiCreatedLabel {
+    font-size: 0.65rem;
   }
 }
 

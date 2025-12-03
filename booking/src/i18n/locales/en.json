@@ -138,6 +138,17 @@
     "nogetGikGalt": "Something went wrong. Please try again.",
     "nogetGikGaltBehandling": "Something went wrong while processing \"{{fileName}}\". Try again – you can also try saving the video in a different file format."
   },
+  "bookingSuccess": {
+    "takForDinBooking": "Thank you for your booking!",
+    "bookingOprettet": "Your booking has been created.",
+    "viGlæderOs": "We look forward to helping you.",
+    "opgave": "Task",
+    "beskrivelse": "Description",
+    "anslaaetTidsforbrug": "Estimated time",
+    "billeder": "Images",
+    "opfølgendeSporgsmaal": "Follow-up questions",
+    "viKontakterDigSnart": "We will contact you soon with further information about your booking."
+  },
   "tooltips": {
     "beskrivDinOpgaveMindst5Ord": "Describe your task with at least 5 words ({{count}}/5)",
     "vaelgEnDatoFoerst": "Select a date first",

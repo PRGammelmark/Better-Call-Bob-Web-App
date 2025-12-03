@@ -28,6 +28,91 @@
     background: #dadada;
 }
 
+.aiCreatedOpgaveCard {
+    position: relative;
+    border: 2px solid #bae6fd;
+    border-radius: 0;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    animation: pulseAiCreatedBorder 2s ease-in-out infinite;
+}
+
+.aiCreatedOpgaveCard:hover {
+    border-color: #bae6fd;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+@keyframes pulseAiCreatedBorder {
+    0%, 100% {
+        border-color: #bae6fd;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 0 rgba(186, 230, 253, 0.2);
+    }
+    25% {
+        border-color: #a5d8ff;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(165, 216, 255, 0.2);
+    }
+    50% {
+        border-color: #c4b5fd;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 2px rgba(196, 181, 253, 0.2);
+    }
+    75% {
+        border-color: #b8a5f0;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(184, 165, 240, 0.2);
+    }
+}
+
+.aiCreatedPill {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-weight: 600;
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    border-radius: 20px;
+    animation: pulseAiCreatedText 2s ease-in-out infinite;
+}
+
+.aiCreatedHeading {
+    animation: pulseAiCreatedText 2s ease-in-out infinite;
+}
+
+@keyframes pulseAiCreatedText {
+    0%, 100% {
+        color: #222222;
+    }
+    50% {
+        color: #7c3aed;
+    }
+}
+
+.aiCreatedBesøgKnap {
+    border: 2px solid #bae6fd;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    animation: pulseAiCreatedBorder 2s ease-in-out infinite;
+    position: relative;
+}
+
+.aiCreatedBesøgKnap:hover {
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border-color: #bae6fd;
+}
+
+.aiCreatedBesøgBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    border: 1px solid #bae6fd;
+    color: #0369a1;
+    font-weight: 700;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 6px;
+    animation: pulseAiCreatedText 2s ease-in-out infinite;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
 .cardLeftSide {
     width: 50%;
     display: flex;

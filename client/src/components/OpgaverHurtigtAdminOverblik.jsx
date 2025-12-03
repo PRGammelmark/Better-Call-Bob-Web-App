@@ -71,6 +71,7 @@ const OpgaverHurtigtAdminOverblik = () => {
   const [counts, setCounts] = useState({})
   const [warnings, setWarnings] = useState({})
   const [statistics, setStatistics] = useState({}) // { tabId: { incoming: 0, outgoing: 0, warningIncoming: { red: 0, yellow: 0 }, warningOutgoing: { red: 0, yellow: 0 } } }
+  const [aiCreatedCount, setAiCreatedCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   const handleCardClick = (tabId) => {
@@ -120,6 +121,18 @@ const OpgaverHurtigtAdminOverblik = () => {
       openTab: tabId,
       filters: filters,
       sortOption: (tabId === "planned" || tabId === "current") ? "nextVisit" : "newest"
+    }
+    sessionStorage.setItem("opgaveTabsState", JSON.stringify(stateToSave))
+    navigate('/alle-opgaver')
+  }
+
+  const handleAiCreatedClick = (e) => {
+    e.stopPropagation() // Prevent card click
+    
+    const stateToSave = {
+      openTab: "planned",
+      filters: { aiCreated: "true" },
+      sortOption: "nextVisit"
     }
     sessionStorage.setItem("opgaveTabsState", JSON.stringify(stateToSave))
     navigate('/alle-opgaver')
@@ -340,6 +353,13 @@ const OpgaverHurtigtAdminOverblik = () => {
             })
           }
 
+          // Count AI-created opgaver for planned tab
+          let aiCreatedCount = 0
+          if (tab.id === "planned") {
+            const opgaver = Array.isArray(res.data) ? res.data : []
+            aiCreatedCount = opgaver.filter(opgave => opgave.aiCreated === true).length
+          }
+
           return { 
             tabId: tab.id, 
             count,
@@ -348,7 +368,8 @@ const OpgaverHurtigtAdminOverblik = () => {
             incoming,
             outgoing,
             warningIncoming,
-            warningOutgoing
+            warningOutgoing,
+            aiCreatedCount
           }
         } catch (err) {
           console.error(`Error fetching count for ${tab.id}:`, err)
@@ -360,7 +381,8 @@ const OpgaverHurtigtAdminOverblik = () => {
             incoming: 0,
             outgoing: 0,
             warningIncoming: { red: 0, yellow: 0 },
-            warningOutgoing: { red: 0, yellow: 0 }
+            warningOutgoing: { red: 0, yellow: 0 },
+            aiCreatedCount: 0
           }
         }
       })
@@ -369,8 +391,9 @@ const OpgaverHurtigtAdminOverblik = () => {
       const countsObj = {}
       const warningsObj = {}
       const statisticsObj = {}
+      let plannedAiCreatedCount = 0
       
-      results.forEach(({ tabId, count, yellowWarnings, redWarnings, incoming, outgoing, warningIncoming, warningOutgoing }) => {
+      results.forEach(({ tabId, count, yellowWarnings, redWarnings, incoming, outgoing, warningIncoming, warningOutgoing, aiCreatedCount }) => {
         countsObj[tabId] = count
         warningsObj[tabId] = { yellow: yellowWarnings, red: redWarnings }
         statisticsObj[tabId] = {
@@ -379,11 +402,17 @@ const OpgaverHurtigtAdminOverblik = () => {
           warningIncoming,
           warningOutgoing
         }
+        
+        // Store AI-created count for planned tab
+        if (tabId === "planned") {
+          plannedAiCreatedCount = aiCreatedCount || 0
+        }
       })
       
       setCounts(countsObj)
       setWarnings(warningsObj)
       setStatistics(statisticsObj)
+      setAiCreatedCount(plannedAiCreatedCount)
       setLoading(false)
     }
 
@@ -499,6 +528,19 @@ const OpgaverHurtigtAdminOverblik = () => {
                     {count === 1 ? 'opgave' : 'opgaver'}
                   </span>
                 </div>
+
+                {tab.id === "planned" && aiCreatedCount > 0 && (
+                  <div 
+                    className={Styles.aiCreatedCard}
+                    onClick={handleAiCreatedClick}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <div className={Styles.aiCreatedContent}>
+                      <span className={Styles.aiCreatedNumber}>{aiCreatedCount}</span>
+                      <span className={Styles.aiCreatedLabel}>AI-oprettet</span>
+                    </div>
+                  </div>
+                )}
 
                 {hasWarnings && (
                   <div className={Styles.warningsSection}>

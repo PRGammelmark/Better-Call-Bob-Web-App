@@ -44,6 +44,10 @@ const opgaverSchema = new Schema({
     kilde: {
         type: String,
         required: false
+    },
+    aiCreated: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 

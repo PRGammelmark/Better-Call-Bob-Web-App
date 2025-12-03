@@ -119,14 +119,17 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
 
     const eventStyleGetter = (event) => {
       // let backgroundColor = event.eventColor || '#3c5a3f';
+      const isAiCreated = event.aiCreated === true;
       let style = {
-        backgroundColor: event.eventColor || '#3c5a3f',
+        backgroundColor: isAiCreated ? 'transparent' : (event.eventColor || '#3c5a3f'),
         padding: "2px 3px 3px 3px",
         borderRadius: "2px",
         fontSize: "11px",
       };
+      
       return {
-        style: style
+        style: style,
+        className: isAiCreated ? "aiCreatedCalendarEvent" : ""
       };
     };
 
@@ -184,13 +187,16 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
       const start = dayjs(besøg.datoTidFra).toDate();
       const end = dayjs(besøg.datoTidTil).toDate();
 
+      const isAiCreated = besøg.aiCreated === true;
+      const titleColor = isAiCreated ? '#0369a1' : 'white';
+      
       return {
       ...besøg,
       start,
       end,
       brugerID: besøg.brugerID,
       eventColor: brugere && brugere.find(ansvarlig => ansvarlig._id === besøg.brugerID)?.eventColor || '#3c5a3f',
-      title: <span style={{color: 'white'}}><p style={besøgPStyles}>{dayjs(start).format("HH:mm")}-{dayjs(end).format("HH:mm")}</p><b style={besøgBStyles}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b></span>
+      title: <span style={{color: titleColor}}><p style={{...besøgPStyles, color: titleColor}}>{dayjs(start).format("HH:mm")}-{dayjs(end).format("HH:mm")}</p><b style={{...besøgBStyles, color: titleColor}}>{besøg && besøg.brugerID === userID ? "Dit besøg" : getBrugerName(besøg.brugerID)}</b>{isAiCreated && <span style={{fontSize: '8px', marginLeft: '4px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px'}}>AI</span>}</span>
     };
   });
 

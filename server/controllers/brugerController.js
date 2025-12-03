@@ -180,6 +180,9 @@ const getAvailableWorkers = async (req, res) => {
                         q: adresse,
                         limit: 1,
                         addressdetails: 1
+                    },
+                    headers: {
+                        'User-Agent': 'BetterCallBob/1.0 (https://bettercallbob.dk)'
                     }
                 }
             );
@@ -271,6 +274,9 @@ const getAvailableWorkers = async (req, res) => {
                     q: adresse,
                     limit: 1,
                     addressdetails: 1
+                },
+                headers: {
+                    'User-Agent': 'BetterCallBob/1.0 (https://bettercallbob.dk)'
                 }
             }
         );

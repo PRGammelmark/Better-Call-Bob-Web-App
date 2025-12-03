@@ -43,6 +43,11 @@ const OpgaveSidebar = ({ activeTab, onFilterChange, onSortChange, filters, sortO
             { value: "erhverv", label: "Erhverv" },
             { value: "privat", label: "Privat" },
           ],
+          aiCreated: [
+            { value: "all", label: "Alle opgaver" },
+            { value: "true", label: "AI-oprettet" },
+            { value: "false", label: "Ikke AI-oprettet" },
+          ],
         };
       case "unpaid":
         return {
@@ -201,6 +206,7 @@ const OpgaveSidebar = ({ activeTab, onFilterChange, onSortChange, filters, sortO
                 {filterType === "timeWarning" && "Tidsadvarsel"}
                 {filterType === "besøg" && "Besøg"}
                 {filterType === "paymentStatus" && "Betalingsstatus"}
+                {filterType === "aiCreated" && "AI-oprettet"}
               </span>
             </div>
             <div className={Styles.optionsList}>

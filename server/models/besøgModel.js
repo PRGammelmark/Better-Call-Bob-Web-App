@@ -30,6 +30,10 @@ const besøgSchema = new Schema({
     eventColor: {
         type: String,
         required: false
+    },
+    aiCreated: {
+        type: Boolean,
+        default: false
     }
 })
 

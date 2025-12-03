@@ -323,7 +323,8 @@ const TidOgSted = ({
         return {
           start,
           end,
-          id: slot._id || slot.id
+          id: slot._id || slot.id,
+          brugerID: slot.brugerID
         }
       })
       .filter(slot => {
@@ -367,7 +368,8 @@ const TidOgSted = ({
     if (onTimeChange) {
       onTimeChange({
         start: timeSlot.start.toISOString(),
-        end: timeSlot.end.toISOString()
+        end: timeSlot.end.toISOString(),
+        brugerID: timeSlot.brugerID
       })
     }
   }

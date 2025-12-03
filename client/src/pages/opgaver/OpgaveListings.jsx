@@ -345,6 +345,15 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
           filtered = filtered.filter(opgave => !opgave?.kunde?.CVR && !opgave?.kunde?.virksomhed);
         }
       }
+
+      // AI-oprettet filter
+      if (filters.aiCreated) {
+        if (filters.aiCreated === "true") {
+          filtered = filtered.filter(opgave => opgave.aiCreated === true);
+        } else if (filters.aiCreated === "false") {
+          filtered = filtered.filter(opgave => opgave.aiCreated !== true);
+        }
+      }
     }
 
     if (selectedTab.id === "unpaid") {
@@ -736,6 +745,59 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             },
           }
         );
+
+        // Find and delete related data
+        const besøgPåDenneOpgave = alleBesøg.filter(besøg => {
+          const besøgOpgaveID = typeof besøg.opgaveID === 'object' ? (besøg.opgaveID?._id || besøg.opgaveID?.id) : besøg.opgaveID;
+          return String(besøgOpgaveID) === String(id);
+        });
+        
+        const kommentarerPåDenneOpgave = kommentarerByOpgave[id] || [];
+
+        // Fetch posteringer for this opgave
+        let posteringerPåDenneOpgave = [];
+        try {
+          const posteringerRes = await axios.get(`${import.meta.env.VITE_API_URL}/posteringer/opgave/${id}`, {
+            headers: { Authorization: `Bearer ${user.token}` }
+          });
+          posteringerPåDenneOpgave = posteringerRes.data || [];
+        } catch (err) {
+          console.error("Error fetching posteringer for deletion:", err);
+        }
+
+        // Delete posteringer
+        if (posteringerPåDenneOpgave.length > 0) {
+          posteringerPåDenneOpgave.forEach(postering => {
+            axios.delete(`${import.meta.env.VITE_API_URL}/posteringer/${postering._id}`, {
+              headers: { Authorization: `Bearer ${user.token}` }
+            })
+            .then(() => console.log('Postering slettet:', postering._id))
+            .catch(error => console.error('Error deleting postering:', error));
+          });
+        }
+
+        // Delete besøg
+        if (besøgPåDenneOpgave.length > 0) {
+          besøgPåDenneOpgave.forEach(besøg => {
+            axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${besøg._id}`, {
+              headers: { Authorization: `Bearer ${user.token}` }
+            })
+            .then(() => console.log('Besøg slettet:', besøg._id))
+            .catch(error => console.error('Error deleting besøg:', error));
+          });
+        }
+
+        // Delete kommentarer
+        if (kommentarerPåDenneOpgave.length > 0) {
+          kommentarerPåDenneOpgave.forEach(kommentar => {
+            axios.delete(`${import.meta.env.VITE_API_URL}/kommentarer/${kommentar._id}`, {
+              headers: { Authorization: `Bearer ${user.token}` }
+            })
+            .then(() => console.log('Kommentar slettet:', kommentar._id))
+            .catch(error => console.error('Error deleting kommentar:', error));
+          });
+        }
+
         // Remove from current list since it's now deleted
         setOpgaver((prev) => prev.filter((opg) => opg._id !== id));
       } catch (error) {
@@ -876,8 +938,10 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
         const existingReminder = remindersByOpgave[opgave._id];
         const kommentarer = kommentarerByOpgave[opgave._id] || [];
 
+        const isAiCreated = opgave.aiCreated === true;
+
         return (
-        <div key={opgave._id} className={Styles.opgaveCard} onClick={() => handleTaskClick(opgave._id)}>
+        <div key={opgave._id} className={`${Styles.opgaveCard} ${isAiCreated ? Styles.aiCreatedOpgaveCard : ''}`} onClick={() => handleTaskClick(opgave._id)}>
           {selectedTab.id === "new" && (
             <>
               <div className={Styles.cardLeftSide}>
@@ -1043,7 +1107,12 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                       </p>
                     </div>
                   )}
-                  <h3 className={Styles.opgaveHeading}>{erhvervskunde ? virksomhed : navn}</h3>
+                  {isAiCreated && (
+                    <div className={Styles.tidsindikatorPillContainer}>
+                      <p className={`${Styles.opgaveDatomærke} ${Styles.aiCreatedPill}`}>AI-oprettet</p>
+                    </div>
+                  )}
+                  <h3 className={`${Styles.opgaveHeading} ${isAiCreated ? Styles.aiCreatedHeading : ''}`}>{erhvervskunde ? virksomhed : navn}</h3>
                   <div className={Styles.opgaveDetaljerContainer}>
                     {erhvervskunde && <p className={Styles.opgaveDetaljerLinje}><UserRound className={Styles.opgaveDetaljerIcon}/>Att.: {navn}</p>}
                     <p className={Styles.opgaveDetaljerLinje}><MapPin className={Styles.opgaveDetaljerIcon} />{opgave?.kunde?.adresse}, {opgave?.kunde?.postnummerOgBy}</p>
@@ -1082,25 +1151,33 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
                   )}
 
                   {/* Visit action button */}
-                  {(visitInfo.nextVisit || visitInfo.lastVisit) && (
-                    <div className={Styles.actionButtonsColumn}>
-                      <b className={Styles.besøgButtonHeading}>{visitInfo.hasVisitsNow ? "Besøg i gang:" : (visitInfo.nextVisit ? "Næste besøg:" : "Sidste besøg:")}</b>
-                      <button
-                        className={`${Styles.sekundaerKnap} ${visitInfo.hasVisitsNow ? Styles.besøgIgangKnap : ""}`}
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          const idToOpen = visitInfo.nextVisit ? visitInfo.nextVisit.id : visitInfo.lastVisit.id;
-                          setOpenBesoegId(idToOpen);
-                        }}
-                        aria-label={visitInfo.nextVisit ? 'Åbn næste besøg' : 'Åbn sidste besøg'}
-                      >
-                        <Calendar className={Styles.contactButtonIcon} />
-                        <span>
-                          {visitInfo.nextVisit ? formatBesøgDato(visitInfo.nextVisit.date) : formatBesøgDato(visitInfo.lastVisit.date)}
-                        </span>
-                      </button>
-                    </div>
-                  )}
+                  {(visitInfo.nextVisit || visitInfo.lastVisit) && (() => {
+                    const visitIdToOpen = visitInfo.nextVisit ? visitInfo.nextVisit.id : visitInfo.lastVisit.id;
+                    const visitToShow = alleBesøg.find(besøg => besøg._id === visitIdToOpen);
+                    const isVisitAiCreated = visitToShow?.aiCreated === true;
+                    
+                    return (
+                      <div className={Styles.actionButtonsColumn}>
+                        <b className={Styles.besøgButtonHeading}>{visitInfo.hasVisitsNow ? "Besøg i gang:" : (visitInfo.nextVisit ? "Næste besøg:" : "Sidste besøg:")}</b>
+                        <button
+                          className={`${Styles.sekundaerKnap} ${visitInfo.hasVisitsNow ? Styles.besøgIgangKnap : ""} ${isVisitAiCreated ? Styles.aiCreatedBesøgKnap : ""}`}
+                          onClick={(e) => { 
+                            e.stopPropagation(); 
+                            setOpenBesoegId(visitIdToOpen);
+                          }}
+                          aria-label={visitInfo.nextVisit ? 'Åbn næste besøg' : 'Åbn sidste besøg'}
+                        >
+                          <Calendar className={Styles.contactButtonIcon} />
+                          <span>
+                            {visitInfo.nextVisit ? formatBesøgDato(visitInfo.nextVisit.date) : formatBesøgDato(visitInfo.lastVisit.date)}
+                          </span>
+                          {isVisitAiCreated && (
+                            <span className={Styles.aiCreatedBesøgBadge}>AI</span>
+                          )}
+                        </button>
+                      </div>
+                    );
+                  })()}
                 </div>
               </>
             );

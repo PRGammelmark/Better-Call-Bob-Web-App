@@ -308,40 +308,40 @@ function konverterTilBookingSlots(ledigTid, tidsforbrugTimer) {
 }
 
 /**
- * Fjerner duplikat tidsblokke og beholder den med bedste rating
+ * Fjerner duplikat tidsblokke og beholder den med højeste score (rating + prioritet)
  * @param {Array} slots - Array af booking slots med brugerID
- * @param {Map} brugerRatings - Map af brugerID til rating
+ * @param {Map} brugerScores - Map af brugerID til score (rating + prioritet)
  * @returns {Array} Array af unikke booking slots
  */
-function fjernDuplikaterOgSorterEfterRating(slots, brugerRatings) {
+function fjernDuplikaterOgSorterEfterRating(slots, brugerScores) {
     // Gruppér slots efter tidsinterval (datoTidFra og datoTidTil)
     const slotMap = new Map();
     
     slots.forEach(slot => {
         const key = `${dayjs(slot.datoTidFra).toISOString()}_${dayjs(slot.datoTidTil).toISOString()}`;
-        const rating = brugerRatings.get(String(slot.brugerID)) || 4; // Default rating 4
+        const score = brugerScores.get(String(slot.brugerID)) || 7; // Default score: rating 4 + prioritet 3 = 7
         
         if (!slotMap.has(key)) {
             slotMap.set(key, {
                 slot: slot,
-                rating: rating,
+                score: score,
                 brugerID: slot.brugerID
             });
         } else {
             const existing = slotMap.get(key);
-            // Hvis bedre rating, erstatt
-            if (rating > existing.rating) {
+            // Hvis bedre score, erstatt
+            if (score > existing.score) {
                 slotMap.set(key, {
                     slot: slot,
-                    rating: rating,
+                    score: score,
                     brugerID: slot.brugerID
                 });
-            } else if (rating === existing.rating) {
-                // Hvis samme rating, vælg tilfældigt
+            } else if (score === existing.score) {
+                // Hvis samme score, vælg tilfældigt
                 if (Math.random() > 0.5) {
                     slotMap.set(key, {
                         slot: slot,
-                        rating: rating,
+                        score: score,
                         brugerID: slot.brugerID
                     });
                 }
@@ -390,20 +390,23 @@ const getLedigeBookingTider = async (req, res) => {
             brugerID: { $in: validBrugerIDs.map(id => new mongoose.Types.ObjectId(id)) }
         };
         
-        // Hent ledige tider, besøg og brugere (for ratings)
+        // Hent ledige tider, besøg og brugere (for rating og prioritet)
         const [relevanteLedigeTider, relevanteBesøg, brugere] = await Promise.all([
             LedigTid.find(ledigeTiderQuery).lean(),
             Besøg.find(besøgQuery).lean(),
-            Bruger.find({ _id: { $in: validBrugerIDs.map(id => new mongoose.Types.ObjectId(id)) } }).select('_id rating').lean()
+            Bruger.find({ _id: { $in: validBrugerIDs.map(id => new mongoose.Types.ObjectId(id)) } }).select('_id rating prioritet').lean()
         ]);
         
         // Beregn ledige tider minus besøg
         const ledigeTiderMinusBesøg = beregnLedigeTiderMinusBesøg(relevanteLedigeTider, relevanteBesøg);
         
-        // Opret map af bruger ratings
-        const brugerRatings = new Map();
+        // Opret map af bruger scores (rating + prioritet)
+        const brugerScores = new Map();
         brugere.forEach(bruger => {
-            brugerRatings.set(String(bruger._id), bruger.rating || 4);
+            const rating = bruger.rating ?? 4; // Default rating 4
+            const prioritet = bruger.prioritet ?? 3; // Default prioritet 3
+            const score = rating + prioritet;
+            brugerScores.set(String(bruger._id), score);
         });
         
         // Konverter hver ledig tid til booking slots
@@ -413,8 +416,8 @@ const getLedigeBookingTider = async (req, res) => {
             alleSlots.push(...slots);
         });
         
-        // Fjern duplikater og sorter efter rating
-        const unikkeSlots = fjernDuplikaterOgSorterEfterRating(alleSlots, brugerRatings);
+        // Fjern duplikater og sorter efter score (rating + prioritet)
+        const unikkeSlots = fjernDuplikaterOgSorterEfterRating(alleSlots, brugerScores);
         
         // Sorter slots efter datoTidFra
         unikkeSlots.sort((a, b) => {
