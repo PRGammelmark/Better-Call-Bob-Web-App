@@ -199,7 +199,8 @@ const createOpgave = async (req, res) => {
         if (_id) data._id = _id;
 
         const opgave = await Opgave.create(data);
-        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
+        const kunde = await Kunde.findById(kundeID);
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${kunde.adresse}, ${kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
 
         if (ansvarlig.length > 0) {
             for (const person of ansvarlig) {
@@ -208,7 +209,7 @@ const createOpgave = async (req, res) => {
                 udløserID: req.user._id,
                 type: "opgaveTildelt",
                 titel: "Du har fået en ny opgave.",
-                besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`,
+                besked: `Opgaven skal løses på ${kunde.adresse}, ${kunde.postnummerOgBy}.`,
                 link: `/opgave/${opgave._id}`,
                 erVigtig: true
               });
@@ -254,7 +255,7 @@ const openCreateOpgave = async (req, res) => {
     try {
         const opgave = await Opgave.create({opgaveBeskrivelse, navn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, status, ansvarlig, fakturaOprettesManuelt, tilbudAfgivet, markeretSomFærdig, opgaveAfsluttet, opgaveBetalt, fakturaPDF, incrementalID: counter.value, fakturaPDFUrl, isDeleted, fastlagtFakturaBeløb, isEnglish, harStige, opgaveBilleder})
 
-        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${opgave.kunde.adresse}, ${opgave.kunde.postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
+        await opretNotifikation({ modtagerID: "admin", udløserID: req.user._id, type: "opgaveOprettet", titel: "En ny opgave er blevet oprettet.", besked: `Opgaven skal løses på ${adresse}, ${postnummerOgBy}.`, link: `/opgave/${opgave._id}`, erVigtig: true })
         
         res.status(200).json(opgave)
     } catch (error) {

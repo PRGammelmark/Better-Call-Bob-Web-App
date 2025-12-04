@@ -11,6 +11,7 @@ import { getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject } f
 import { storage } from '../../firebase.js'
 import {v4} from 'uuid'
 import MoonLoader from "react-spinners/MoonLoader";
+import nyNotifikation from '../../utils/nyNotifikation.js';
 
 const UploadDokumentModal = (props) => {
 
@@ -69,9 +70,18 @@ async function uploadDokument(e) {
         })
         .then(() => {
 
-          let brugereMedAdgang = brugere.filter(bruger => brugerAdgang.includes(bruger._id));
-          let brugereMedAdgangUdenMig = brugereMedAdgang.filter(bruger => bruger._id !== user._id);
-          nyNotifikation(user, brugereMedAdgangUdenMig, "Du har fået adgang til et nyt dokument", `Du har fået adgang til et nyt dokument på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/dokumenter`)
+          // Send notifikationer baseret på om adgangen er begrænset
+          if (begrænsBrugerAdgang && brugerAdgang.length > 0) {
+            // Hvis adgangen er begrænset, send kun til valgte brugere
+            let brugereMedAdgang = brugere.filter(bruger => brugerAdgang.includes(bruger._id));
+            let brugereMedAdgangUdenMig = brugereMedAdgang.filter(bruger => bruger._id !== user._id);
+            if (brugereMedAdgangUdenMig.length > 0) {
+              nyNotifikation(user, brugereMedAdgangUdenMig, "Du har fået adgang til et nyt dokument", `Du har fået adgang til et nyt dokument på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/dokumenter`)
+            }
+          } else {
+            // Hvis adgangen ikke er begrænset, send til alle brugere (både medarbejdere og administratorer)
+            nyNotifikation(user, "alle", "Nyt dokument uploadet", `Et nyt dokument "${titel}" er blevet uploadet på Better Call Bob. Gå ind på app'en for at se detaljerne.`, `/dokumenter`)
+          }
           
           setIsUploading(false)
           setRefetchDocuments(!refetchDocuments);

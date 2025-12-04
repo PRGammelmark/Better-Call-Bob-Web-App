@@ -287,6 +287,7 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
       // Valider og sikre at estimeret tidsforbrug er et helt tal
       let estimeretTidsforbrugTimer = parsed.estimeretTidsforbrugTimer || parsed.estimatedHours || 1;
       estimeretTidsforbrugTimer = Math.max(1, Math.round(Number(estimeretTidsforbrugTimer))); // Minimum 1 time, runder til nærmeste heltal
+      estimeretTidsforbrugTimer = Math.min(8, estimeretTidsforbrugTimer); // Maksimum 8 timer
       
       res.json({
         opsummeringDa,

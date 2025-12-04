@@ -1108,7 +1108,7 @@ const PrimaryBookingComponent = () => {
                 {estimeretTidsforbrugTimer !== null && estimeretTidsforbrugTimer !== undefined && (
                   <p className={SummaryStyles.popupText} style={{ marginTop: '8px', marginBottom: '0' }}>
                     <Clock size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-                    <strong>Anslået tidsforbrug:</strong> {estimeretTidsforbrugTimer} {estimeretTidsforbrugTimer === 1 ? 'time' : 'timer'}
+                    <strong>Anslået tidsforbrug:</strong> {estimeretTidsforbrugTimer >= 8 ? '8+' : estimeretTidsforbrugTimer} {estimeretTidsforbrugTimer >= 8 ? 'timer' : (estimeretTidsforbrugTimer === 1 ? 'time' : 'timer')}
                   </p>
                 )}
                 {opgaveBilleder && opgaveBilleder.length > 0 && (

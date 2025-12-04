@@ -79,7 +79,7 @@ const BookingSuccess = ({
           {estimeretTidsforbrugTimer !== null && estimeretTidsforbrugTimer !== undefined && (
             <p className={Styles.text}>
               <Clock size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
-              <strong>{t('bookingSuccess.anslaaetTidsforbrug')}:</strong> {estimeretTidsforbrugTimer} {estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer')}
+              <strong>{t('bookingSuccess.anslaaetTidsforbrug')}:</strong> {estimeretTidsforbrugTimer >= 8 ? '8+' : estimeretTidsforbrugTimer} {estimeretTidsforbrugTimer >= 8 ? t('summary.timer') : (estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer'))}
             </p>
           )}
           {opgaveBilleder && opgaveBilleder.length > 0 && (

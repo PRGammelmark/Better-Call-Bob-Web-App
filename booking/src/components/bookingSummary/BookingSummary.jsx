@@ -88,7 +88,10 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
               <div className={Styles.estimeretTidsforbrugContainer}>
                 <Clock size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
                 <span className={Styles.estimeretTidsforbrug}>
-                  {t('summary.anslaaetTidsforbrug', { hours: estimeretTidsforbrugTimer, hoursText: estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer') })}
+                  {t('summary.anslaaetTidsforbrug', { 
+                    hours: estimeretTidsforbrugTimer >= 8 ? '8+' : estimeretTidsforbrugTimer, 
+                    hoursText: estimeretTidsforbrugTimer >= 8 ? t('summary.timer') : (estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer'))
+                  })}
                 </span>
               </div>
             )}
@@ -195,8 +198,8 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
                 <h3 className={Styles.popupTitle}>{t('summary.tiderKanGiveSigLidt')}</h3>
                 <p className={Styles.popupText}>
                   {t('summary.systemHarVurderet', { 
-                    hours: estimeretTidsforbrugTimer, 
-                    hoursText: estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer')
+                    hours: estimeretTidsforbrugTimer >= 8 ? '8+' : estimeretTidsforbrugTimer, 
+                    hoursText: estimeretTidsforbrugTimer >= 8 ? t('summary.timer') : (estimeretTidsforbrugTimer === 1 ? t('summary.time') : t('summary.timer'))
                   })}
                 </p>
                 <p className={Styles.popupText}>

@@ -217,11 +217,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 12px;
-  margin-top: -4px;
+  margin-top: -8px;
   max-height: 372px;
   overflow-y: auto;
   overflow-x: visible;
-  padding: 4px 4px 4px 4px;
+  padding: 8px 4px 4px 4px;
   scrollbar-width: thin;
   scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
@@ -264,14 +264,14 @@
 
 .timeSlotPreferredBadge {
   position: absolute;
-  top: -8px;
+  top: -9px;
   left: 50%;
   transform: translateX(-50%);
   background: #59bf1a;
   color: #ffffff;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 3px 8px;
+  padding: 4px 8px;
   border-radius: 12px;
   white-space: nowrap;
   z-index: 10;
@@ -557,7 +557,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 950px) {
   .tidOgStedContainer {
     padding: 16px 0;
     gap: 20px;
@@ -586,7 +586,7 @@
   .timeSlotsGrid {
     grid-template-columns: calc(50% - 4px) calc(50% - 4px);
     gap: 8px;
-    padding: 4px 8px 4px 4px;
+    padding: 8px 8px 4px 4px;
     width: 100%;
     box-sizing: border-box;
     margin-left: 0;

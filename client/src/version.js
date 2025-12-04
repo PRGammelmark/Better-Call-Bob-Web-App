@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.9.6",
+    date: "4. december 2025",
+    changes: [
+        "Forbedrede bookingsystemets responsivitet ved forskellige skærmstørrelser.",
+        "Nu afsætter bookingsystemet maks 8 timer til et besøg, hvis opgaven er af større omfang.",
+        "Notifikationer om nye opgaver burde ikke længere erklære adressen som 'undefined'.",
+        "Uploads af dokumenter uden begrænset adgang udløser nu en notifikation for alle brugere i app'en."
+    ]
+},{
     version: "3.9.5",
     date: "4. december 2025",
     changes: [
