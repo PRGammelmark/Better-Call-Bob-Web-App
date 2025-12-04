@@ -34,6 +34,7 @@ import VisBilledeModal from '../components/modals/VisBillede.jsx'
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { fetchFile } from '@ffmpeg/util';
 import RedigerKundeModal from '../components/modals/RedigerKundeModal.jsx'
+import PDFIcon from '../assets/pdf-logo.svg'
 import * as beregn from '../utils/beregninger.js'
 import PopUpMenu from '../components/basicComponents/PopUpMenu.jsx'
 import { useOpgave } from '../context/OpgaveContext.jsx'
@@ -869,7 +870,7 @@ const ÅbenOpgave = () => {
         setDragging(false);
     
         const droppedFiles = e.dataTransfer.files;
-        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'application/pdf'];
     
         const validFiles = Array.from(droppedFiles).filter(file =>
             allowedTypes.includes(file.type)
@@ -882,7 +883,10 @@ const ÅbenOpgave = () => {
 
         if (validFiles.length > 0) {
             let compressedFiles = [];
-            for (let file of validFiles) {
+            const imageFiles = validFiles.filter(file => ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'].includes(file.type));
+            const pdfFiles = validFiles.filter(file => file.type === 'application/pdf');
+            
+            for (let file of imageFiles) {
               try {
                 // Compress image
                 const compressedFile = await imageCompression(file, {
@@ -895,6 +899,9 @@ const ÅbenOpgave = () => {
                 console.error("Image compression failed", error);
               }
             }
+            
+            // Add PDF files without compression
+            compressedFiles.push(...pdfFiles);
             
             try {
                 // Prepare to upload all files
@@ -950,13 +957,14 @@ const ÅbenOpgave = () => {
         const selectedFiles = e.target.files;
         const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
         const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/hevc'];
+        const allowedPDFTypes = ['application/pdf'];
 
         const validFiles = Array.from(selectedFiles).filter(file => 
-            allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type)
+            allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type) || allowedPDFTypes.includes(file.type)
         );
 
         if(opgaveBilleder.length + validFiles.length > 10){
-            window.alert("Du må højst uploade 10 billede- eller videofiler til opgaven.")
+            window.alert("Du må højst uploade 10 filer til opgaven.")
             return
         }
         
@@ -964,9 +972,10 @@ const ÅbenOpgave = () => {
             setUploadingImages(prevUploadingImages => [...prevUploadingImages, ...validFiles]);
             let filesToUpload = [];
         
-            // Separate image and video files
+            // Separate image, video, and PDF files
             const imageFiles = validFiles.filter(file => allowedImageTypes.includes(file.type));
             const videoFiles = validFiles.filter(file => allowedVideoTypes.includes(file.type));
+            const pdfFiles = validFiles.filter(file => allowedPDFTypes.includes(file.type));
             
             // Compress image files (if any)
             let compressedFiles = [];
@@ -1030,8 +1039,8 @@ const ÅbenOpgave = () => {
                 }
             }
 
-            // Combine compressed images and videos for upload
-            filesToUpload = [...compressedFiles, ...compressedVideos];
+            // Combine compressed images, videos, and PDFs for upload
+            filesToUpload = [...compressedFiles, ...compressedVideos, ...pdfFiles];
             console.log(filesToUpload)
             
             try {
@@ -1285,6 +1294,7 @@ const ÅbenOpgave = () => {
                     </div>
                     <div className={ÅbenOpgaveCSS.billederDiv}>
                         {opgaveBilleder?.length > 0 && opgaveBilleder.map((medie, index) => {
+                            const isPDF = medie.includes('.pdf') || medie.includes('application/pdf');
                             return (
                                 <div key={index} className={ÅbenOpgaveCSS.uploadetBillede} >
                                     {medie.includes("video%") 
@@ -1296,6 +1306,14 @@ const ÅbenOpgave = () => {
                                             muted
                                             playsInline
                                             loop
+                                            onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
+                                        />
+                                    : isPDF
+                                    ?
+                                        <img 
+                                            src={PDFIcon} 
+                                            alt={`PDF ${index + 1}`} 
+                                            className={ÅbenOpgaveCSS.imagePreview}
                                             onClick={() => {setÅbnBillede(medie); setImageIndex(index)}}
                                         />
                                     :
@@ -1333,7 +1351,7 @@ const ÅbenOpgave = () => {
                             <input 
                                 type="file" 
                                 name="file" 
-                                accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc" 
+                                accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc, .pdf" 
                                 onChange={handleFileChange} 
                                 multiple 
                                 style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 

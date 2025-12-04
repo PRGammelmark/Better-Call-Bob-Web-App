@@ -14,31 +14,15 @@
     transform: translateX(-50%);
 }
 
-.sletButton {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #FF000000;
-    transition: 0.2s ease;
-    border-radius: 10px;
-    background: #FF000030;
-    color: #222222;
-    font-family: "OmnesBold";
-    margin-top: 20px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.sletButton:hover {
-    border: 1px solid #FF0000;
-    /* color: #FF0000; */
-}
-
 .pdfIcon {
     max-width: 200px;
     cursor: pointer;
     transition: transform 0.2s ease;
+    margin: 0 auto;
+    display: block;
 }
 
 .pdfIcon:hover {
     transform: scale(1.05);
 }
+

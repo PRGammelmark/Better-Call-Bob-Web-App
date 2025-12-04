@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.9.7",
+    date: "5. december 2025",
+    changes: [
+        "Bekræftelses-siden efter succesfuld booking kan nu scrolles, så man rent faktisk kan læse alle detaljerne.",
+        "Nu kan nye kunder vedhæfte PDF-filer til deres opgaver – det kunne fx være samlevejledninger til møbler, fakturaer, arbejdsplaner eller andet.",
+        "Nu kan man også åbne vedhæftede billeder, videofiler og PDF-filer i et popup-vindue i bookingsystemet. Det kunne man ikke før.",
+        "Rettede en fejl, der gjorde, at video-uploads i bookingsystemet kunne hænge. Det er komprimeringen af visse videoformater, der ikke altid lykkes. Nu får komprimeringsprocessen en frist på 10 sekunder, hvorefter den automatisk afbrydes og den ikkekomprimerede videofil vil blive vedhæftet i stedet.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.9.6",
     date: "4. december 2025",
     changes: [

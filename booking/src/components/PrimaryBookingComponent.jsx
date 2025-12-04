@@ -818,7 +818,7 @@ const PrimaryBookingComponent = () => {
   if (showSuccessScreen) {
     return (
       <div className={Styles.primaryBookingComponent} style={{ height: '100%', width: '100%' }}>
-        <div className={Styles.bookingContainer} style={{ width: '100%', padding: '20px', height: '100%', overflowY: 'auto', position: 'relative' }}>
+        <div className={`${Styles.bookingContainer} ${Styles.bookingContainerSuccess}`} style={{ width: '100%', padding: '20px', height: '100%', overflowY: 'auto', position: 'relative' }}>
           <BookingSuccess
             bookingData={bookingResponse}
             kortOpgavebeskrivelse={kortOpgavebeskrivelse}

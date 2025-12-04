@@ -10,6 +10,8 @@ import { fetchFile } from '@ffmpeg/util';
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import 'dayjs/locale/en'
+import PDFIcon from '../../../assets/pdf-logo.svg'
+import VisBilledeModal from '../../modals/VisBillede.jsx'
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
 const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0, onNavigateNext }) => {
@@ -18,9 +20,13 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
 
-    // Dummy states
-    const [åbnBillede, setÅbnBillede] = useState(null)
-    const [imageIndex, setImageIndex] = useState(0)
+    const [åbnBilledeIndex, setÅbnBilledeIndex] = useState(null)
+    
+    // Get the current medieItem from opgaveBilleder array based on index
+    // This ensures we always use the current object reference from the array
+    const currentMedieItem = åbnBilledeIndex !== null && opgaveBilleder[åbnBilledeIndex] 
+        ? opgaveBilleder[åbnBilledeIndex] 
+        : null
 
     // Opdater dayjs locale når sprog skifter
     useEffect(() => {
@@ -33,16 +39,19 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
         i18n.changeLanguage(newLang)
     }
 
-    // Cleanup object URLs when component unmounts or files change
+    // Cleanup object URLs only when component unmounts
+    // Don't revoke URLs when opgaveBilleder changes, as they're still in use
     useEffect(() => {
         return () => {
+            // Only cleanup on unmount
             opgaveBilleder.forEach(item => {
                 if (item.preview && item.preview.startsWith('blob:')) {
                     URL.revokeObjectURL(item.preview);
                 }
             });
         };
-    }, [opgaveBilleder]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []); // Empty dependency array - only run cleanup on unmount
 
     const handleDeleteFile = (index) => {
         const item = opgaveBilleder[index];
@@ -64,9 +73,10 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
         const selectedFiles = e.target.files;
         const allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/heic'];
         const allowedVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/quicktime', 'video/hevc'];
+        const allowedPDFTypes = ['application/pdf'];
 
         const validFiles = Array.from(selectedFiles).filter(file => 
-            allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type)
+            allowedImageTypes.includes(file.type) || allowedVideoTypes.includes(file.type) || allowedPDFTypes.includes(file.type)
         );
 
         if(opgaveBilleder.length + validFiles.length > 5){
@@ -77,89 +87,153 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
         if (validFiles.length > 0) {
             setIsProcessing(true);
             
-            // Separate image and video files
-            const imageFiles = validFiles.filter(file => allowedImageTypes.includes(file.type));
-            const videoFiles = validFiles.filter(file => allowedVideoTypes.includes(file.type));
-            
-            const processedFiles = [];
-            
-            // Compress and process image files
-            if(imageFiles.length > 0) {
-                for (let file of imageFiles) {
-                    try {
-                        const compressedFile = await imageCompression(file, {
-                            maxSizeMB: 1,
-                            maxWidthOrHeight: 1000,
-                            useWebWorker: true,
-                        });
-                        const preview = URL.createObjectURL(compressedFile);
-                        processedFiles.push({
-                            file: compressedFile,
-                            preview: preview,
-                            type: 'image'
-                        });
-                    } catch (error) {
-                        console.error("Image compression failed", error);
-                        // Fallback to original file if compression fails
-                        const preview = URL.createObjectURL(file);
-                        processedFiles.push({
-                            file: file,
-                            preview: preview,
-                            type: 'image'
-                        });
+            try {
+                // Separate image, video, and PDF files
+                const imageFiles = validFiles.filter(file => allowedImageTypes.includes(file.type));
+                const videoFiles = validFiles.filter(file => allowedVideoTypes.includes(file.type));
+                const pdfFiles = validFiles.filter(file => allowedPDFTypes.includes(file.type));
+                
+                const processedFiles = [];
+                
+                // Compress and process image files
+                if(imageFiles.length > 0) {
+                    for (let file of imageFiles) {
+                        try {
+                            const compressedFile = await imageCompression(file, {
+                                maxSizeMB: 1,
+                                maxWidthOrHeight: 1000,
+                                useWebWorker: true,
+                            });
+                            const preview = URL.createObjectURL(compressedFile);
+                            processedFiles.push({
+                                file: compressedFile,
+                                preview: preview,
+                                type: 'image'
+                            });
+                        } catch (error) {
+                            console.error("Image compression failed", error);
+                            // Fallback to original file if compression fails
+                            const preview = URL.createObjectURL(file);
+                            processedFiles.push({
+                                file: file,
+                                preview: preview,
+                                type: 'image'
+                            });
+                        }
                     }
                 }
-            }
 
-            // Compress and process video files
-            if (videoFiles.length > 0) {
-                const ffmpeg = new FFmpeg({ log: false });
-                await ffmpeg.load();
-
-                for (let file of videoFiles) {
-                    try {
-                        const fileName = file.name;
-                        const videoData = await fetchFile(file);
-                        await ffmpeg.writeFile(fileName, videoData);
-
-                        const outputFileName = fileName.replace(/\.[^/.]+$/, '') + '_compressed_video.mp4';
-                        
-                        await ffmpeg.exec([
-                            '-i', fileName,
-                            '-vcodec', 'libx264', 
-                            '-crf', '30', 
-                            '-b:v', '1000k', 
-                            '-preset', 'ultrafast', 
-                            '-acodec', 'copy',
-                            outputFileName
+                // Compress and process video files
+                if (videoFiles.length > 0) {
+                    // Helper function to add timeout to FFmpeg load
+                    const loadFFmpegWithTimeout = (ffmpeg, timeoutMs = 10000) => {
+                        return Promise.race([
+                            ffmpeg.load(),
+                            new Promise((_, reject) => 
+                                setTimeout(() => reject(new Error('FFmpeg load timeout')), timeoutMs)
+                            )
                         ]);
+                    };
 
-                        const compressedVideo = await ffmpeg.readFile(outputFileName);
-                        const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4' });
-                        const preview = URL.createObjectURL(compressedFile);
-                        
-                        processedFiles.push({
-                            file: compressedFile,
-                            preview: preview,
-                            type: 'video'
-                        });
-                    } catch (error) {
-                        console.error("Video compression failed", error);
-                        window.alert(t('alerts.nogetGikGaltBehandling', { fileName: file.name }));
-                        // Fallback to original file if compression fails
+                    let ffmpegLoaded = false;
+                    let ffmpegInstance = null;
+
+                    try {
+                        ffmpegInstance = new FFmpeg({ log: false });
+                        console.log('Loading FFmpeg...');
+                        await loadFFmpegWithTimeout(ffmpegInstance, 10000); // 10 second timeout
+                        ffmpegLoaded = true;
+                        console.log('FFmpeg loaded successfully');
+                    } catch (loadError) {
+                        console.warn("FFmpeg load failed or timed out, using original files:", loadError);
+                        ffmpegLoaded = false;
+                    }
+
+                    if (ffmpegLoaded && ffmpegInstance) {
+                        // Try to compress videos
+                        for (let file of videoFiles) {
+                            try {
+                                console.log(`Processing video file: ${file.name}`);
+                                const fileName = file.name;
+                                const videoData = await fetchFile(file);
+                                await ffmpegInstance.writeFile(fileName, videoData);
+
+                                const outputFileName = fileName.replace(/\.[^/.]+$/, '') + '_compressed_video.mp4';
+                                
+                                console.log(`Compressing video: ${fileName} -> ${outputFileName}`);
+                                
+                                // Add timeout to compression as well
+                                const compressionPromise = ffmpegInstance.exec([
+                                    '-i', fileName,
+                                    '-vcodec', 'libx264', 
+                                    '-crf', '30', 
+                                    '-b:v', '1000k', 
+                                    '-preset', 'ultrafast', 
+                                    '-acodec', 'copy',
+                                    outputFileName
+                                ]);
+                                
+                                await Promise.race([
+                                    compressionPromise,
+                                    new Promise((_, reject) => 
+                                        setTimeout(() => reject(new Error('Video compression timeout')), 30000)
+                                    )
+                                ]);
+
+                                const compressedVideo = await ffmpegInstance.readFile(outputFileName);
+                                const compressedFile = new Blob([compressedVideo.buffer], { type: 'video/mp4' });
+                                const preview = URL.createObjectURL(compressedFile);
+                                
+                                processedFiles.push({
+                                    file: compressedFile,
+                                    preview: preview,
+                                    type: 'video'
+                                });
+                                console.log(`Successfully compressed: ${file.name}`);
+                            } catch (error) {
+                                console.error(`Video compression failed for ${file.name}:`, error);
+                                // Fallback to original file if compression fails
+                                const preview = URL.createObjectURL(file);
+                                processedFiles.push({
+                                    file: file,
+                                    preview: preview,
+                                    type: 'video'
+                                });
+                            }
+                        }
+                    } else {
+                        // FFmpeg not loaded - use original files
+                        console.log('Using original video files without compression');
+                        for (let file of videoFiles) {
+                            const preview = URL.createObjectURL(file);
+                            processedFiles.push({
+                                file: file,
+                                preview: preview,
+                                type: 'video'
+                            });
+                        }
+                    }
+                }
+
+                // Process PDF files
+                if (pdfFiles.length > 0) {
+                    for (let file of pdfFiles) {
                         const preview = URL.createObjectURL(file);
                         processedFiles.push({
                             file: file,
                             preview: preview,
-                            type: 'video'
+                            type: 'pdf'
                         });
                     }
                 }
-            }
 
-            // Add processed files to state
-            setOpgaveBilleder(prev => [...prev, ...processedFiles]);
-            setIsProcessing(false);
+                // Add processed files to state
+                setOpgaveBilleder(prev => [...prev, ...processedFiles]);
+            } catch (error) {
+                console.error("File processing error:", error);
+            } finally {
+                setIsProcessing(false);
+            }
         }
     }
 
@@ -208,14 +282,22 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                                         muted
                                         playsInline
                                         loop
-                                        onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
+                                        onClick={() => setÅbnBilledeIndex(index)}
+                                    />
+                                : medieItem.type === 'pdf'
+                                ?
+                                    <img 
+                                        src={PDFIcon} 
+                                        alt={`PDF ${index + 1}`} 
+                                        className={Styles.imagePreview}
+                                        onClick={() => setÅbnBilledeIndex(index)}
                                     />
                                 :
                                     <img 
                                         src={medieItem.preview} 
                                         alt={`Preview ${index + 1}`} 
                                         className={Styles.imagePreview}
-                                        onClick={() => {setÅbnBillede(medieItem.preview); setImageIndex(index)}}
+                                        onClick={() => setÅbnBilledeIndex(index)}
                                     />
                                 }
                                 <button
@@ -245,7 +327,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                         <input 
                             type="file" 
                             name="file" 
-                            accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc" 
+                            accept=".jpg, .jpeg, .png, .heic, .mp4, .mov, .avi, .hevc, .pdf" 
                             onChange={handleFileChange} 
                             multiple 
                             style={{ opacity: 0, position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', cursor: 'pointer', padding: 0 }} 
@@ -256,6 +338,7 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
             <div className={Styles.opgaveBeskrivelseBottomContainer}>
                 <p>{t('beskrivOpgaven.aiBehandlerInfo')}</p>
             </div>
+            <VisBilledeModal trigger={!!currentMedieItem} setTrigger={(value) => { if (!value) setÅbnBilledeIndex(null); }} medieItem={currentMedieItem} />
         </div>
     )
 }

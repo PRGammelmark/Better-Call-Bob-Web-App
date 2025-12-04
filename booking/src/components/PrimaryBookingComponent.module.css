@@ -132,4 +132,11 @@
         max-height: 70px;
         border-top: 1px solid #e0e0e0;
     }
+
+    /* Allow scrolling on success screen */
+    .bookingContainerSuccess {
+        overflow-y: auto!important;
+        height: 100vh!important;
+        top: 0!important;
+    }
 }
