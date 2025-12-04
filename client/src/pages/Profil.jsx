@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react'
+import React, { useEffect, useState, useRef, useMemo, useLayoutEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import Styles from './DinKonto.module.css'
+import Styles from './Profil.module.css'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush.js'
 import { useSubscribeToPush } from '../hooks/useSubscribeToPush.js'
@@ -36,6 +36,11 @@ const tabConfig = [
         iconType: "ClipboardList"
     },
     {
+      id: "arbejdspræferencer",
+      label: "Arbejdspræferencer",
+      iconType: "Hammer"
+  },
+    {
         id: "økonomi",
         label: "Økonomi",
         iconType: "Wallet"
@@ -44,11 +49,6 @@ const tabConfig = [
         id: "om",
         label: "Om",
         iconType: "User"
-    },
-    {
-        id: "arbejdspræferencer",
-        label: "Arbejdspræferencer",
-        iconType: "Hammer"
     },
     {
         id: "indstillinger",
@@ -118,7 +118,9 @@ const Profil = () => {
     // state for tabs
     const [activeTab, setActiveTab] = useState("overblik")
     const [underlineStyle, setUnderlineStyle] = useState({ width: 0, left: 0 })
+    const [isScrolledToEnd, setIsScrolledToEnd] = useState(false)
     const tabRefs = useRef([])
+    const tabsContainerRef = useRef(null)
     
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -276,20 +278,109 @@ const Profil = () => {
     }
 
     // Update underline position when active tab changes
-    useEffect(() => {
+    useLayoutEffect(() => {
+        // Only run if bruger is loaded (tabs are rendered)
+        if (!bruger) return;
+        
         const activeIndex = tabs.findIndex((t) => t.id === activeTab);
         const activeTabElement = tabRefs.current[activeIndex];
+        const container = tabsContainerRef.current;
+        
         if (activeTabElement) {
             setUnderlineStyle({
                 width: activeTabElement.offsetWidth,
                 left: activeTabElement.offsetLeft,
             });
+            
+            // Scroll to active tab if it's not fully visible
+            if (container) {
+                const scrollLeft = container.scrollLeft;
+                const tabLeft = activeTabElement.offsetLeft;
+                const tabWidth = activeTabElement.offsetWidth;
+                const containerWidth = container.clientWidth;
+                
+                const tabRight = tabLeft + tabWidth;
+                const visibleLeft = scrollLeft;
+                const visibleRight = scrollLeft + containerWidth;
+                
+                let newScrollLeft = scrollLeft;
+                
+                if (tabLeft < visibleLeft) {
+                    newScrollLeft = tabLeft - 10;
+                } else if (tabRight > visibleRight) {
+                    newScrollLeft = tabRight - containerWidth + 10;
+                }
+                
+                if (newScrollLeft !== scrollLeft) {
+                    container.scrollTo({
+                        left: newScrollLeft,
+                        behavior: 'smooth'
+                    });
+                }
+            }
         }
-    }, [activeTab, tabs]);
+    }, [activeTab, tabs, bruger]);
+
+    // Check scroll position to adjust border
+    useEffect(() => {
+        const container = tabsContainerRef.current;
+        if (!container) return;
+
+        const checkScroll = () => {
+            const { scrollLeft, scrollWidth, clientWidth } = container;
+            const isAtEnd = scrollLeft + clientWidth >= scrollWidth - 1; // 1px tolerance
+            setIsScrolledToEnd(isAtEnd);
+        };
+
+        checkScroll(); // Check initially
+        container.addEventListener('scroll', checkScroll);
+        window.addEventListener('resize', checkScroll);
+
+        return () => {
+            container.removeEventListener('scroll', checkScroll);
+            window.removeEventListener('resize', checkScroll);
+        };
+    }, [tabs]);
 
     // Handle tab change
     const handleTabChange = (tabId) => {
         setActiveTab(tabId);
+        
+        // Scroll to selected tab
+        const activeIndex = tabs.findIndex((t) => t.id === tabId);
+        const activeTabElement = tabRefs.current[activeIndex];
+        const container = tabsContainerRef.current;
+        
+        if (activeTabElement && container) {
+            const containerRect = container.getBoundingClientRect();
+            const tabRect = activeTabElement.getBoundingClientRect();
+            const scrollLeft = container.scrollLeft;
+            const tabLeft = activeTabElement.offsetLeft;
+            const tabWidth = activeTabElement.offsetWidth;
+            const containerWidth = container.clientWidth;
+            
+            // Calculate if tab is outside visible area
+            const tabRight = tabLeft + tabWidth;
+            const visibleLeft = scrollLeft;
+            const visibleRight = scrollLeft + containerWidth;
+            
+            let newScrollLeft = scrollLeft;
+            
+            // If tab is to the left of visible area
+            if (tabLeft < visibleLeft) {
+                newScrollLeft = tabLeft - 10; // 10px padding
+            }
+            // If tab is to the right of visible area
+            else if (tabRight > visibleRight) {
+                newScrollLeft = tabRight - containerWidth + 10; // 10px padding
+            }
+            
+            // Smooth scroll to position
+            container.scrollTo({
+                left: newScrollLeft,
+                behavior: 'smooth'
+            });
+        }
     }
 
     // Calculate løntrin for employee
@@ -360,26 +451,33 @@ const Profil = () => {
         </div>
         
         {/* Tab Navigation */}
-        <div className={Styles.profilTabsContainer}>
-          {tabs.map((tab, index) => (
-            <button
-              key={tab.id}
-              ref={(el) => (tabRefs.current[index] = el)}
-              onClick={() => handleTabChange(tab.id)}
-              className={`${Styles.profilTabButton} ${activeTab === tab.id ? Styles.active : ""}`}
-            >
-              <span className={Styles.tabIcon}>{tab.icon}</span>
-              {tab.label}
-            </button>
-          ))}
-          <div
-            className={Styles.profilTabUnderline}
-            style={{
-              width: underlineStyle.width,
-              transform: `translateX(${underlineStyle.left}px)`,
-              transition: 'width 0.2s ease, transform 0.4s ease',
-            }}
-          />
+        <div className={Styles.tabNavigationContainer}>
+          <div 
+            ref={tabsContainerRef}
+            className={Styles.profilTabsContainer}
+          >
+            <div className={`${Styles.profilTabsWrapper} ${isScrolledToEnd ? Styles.scrolledToEnd : ''}`}>
+              {tabs.map((tab, index) => (
+                <button
+                  key={tab.id}
+                  ref={(el) => (tabRefs.current[index] = el)}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`${Styles.profilTabButton} ${activeTab === tab.id ? Styles.active : ""}`}
+                >
+                  <span className={Styles.tabIcon}>{tab.icon}</span>
+                  {tab.label}
+                </button>
+              ))}
+              <div
+                className={Styles.profilTabUnderline}
+                style={{
+                  width: underlineStyle.width,
+                  transform: `translateX(${underlineStyle.left}px)`,
+                  transition: 'width 0.2s ease, transform 0.4s ease',
+                }}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Tab Content */}

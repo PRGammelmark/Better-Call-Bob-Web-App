@@ -844,16 +844,31 @@
 
 /* Tab Navigation Styles */
 .profilTabsContainer {
-    display: flex;
     position: relative;
     overflow-x: auto;
     overflow-y: visible;
-    gap: 20px;
-    padding: 6px 10px 6px 10px;
-    border-bottom: 1px solid #ddd;
     scrollbar-width: none;
     width: 100%;
     margin-bottom: 20px;
+}
+
+.profilTabsWrapper {
+    display: flex;
+    position: relative;
+    gap: 15px;
+    padding: 6px 10px 6px 10px;
+    min-width: fit-content;
+}
+
+.profilTabsWrapper::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10px;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+    pointer-events: none;
 }
 
 .profilTabsContainer::-webkit-scrollbar {
@@ -906,19 +921,62 @@
     position: absolute;
     bottom: 0px;
     left: 0;
-    height: 2px;
+    height: 3px;
     background: #3c5a3f;
     border-radius: 0px;
     transition: 0.25s ease;
 }
 
 @media screen and (max-width: 750px) {
+    .tabNavigationContainer {
+        margin-left: -10px;
+        width: 100vw;
+        overflow-x: visible;
+        position: relative;
+    }
+
     .profilTabsContainer {
         margin-left: 0px;
         margin-top: 0px;
         padding: 6px 10px 6px 10px;
         width: 100%;
     }
+
+    .tabNavigationContainer::before {
+        position: absolute;
+        content: '';
+        top: 0;
+        bottom: 0;
+        width: 25px;
+        left: 0;
+        z-index: 2;
+        background: linear-gradient(to right, rgba(255, 255, 255, 1) 0px, rgba(255, 255, 255, 1) 5px, rgba(255, 255, 255, 0) 25px);
+    }
+
+    .tabNavigationContainer::after {
+        position: absolute;
+        content: '';
+        top: 0;
+        bottom: 0;
+        width: 25px;
+        right: 0;
+        z-index: 2;
+        background: linear-gradient(to left, rgba(255, 255, 255, 1) 0px, rgba(255, 255, 255, 1) 5px, rgba(255, 255, 255, 0) 25px);
+    }
+
+    .profilTabsContainer::after {
+        right: 0;
+        background: linear-gradient(to left, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0));
+    }
+
+    .profilTabsWrapper::after {
+        left: 0px;
+        right: 0px;
+    }
+
+    /* .profilTabsWrapper.scrolledToEnd::after {
+        right: 10px;
+    } */
 
     .profilTabButton {
         font-size: 13px;

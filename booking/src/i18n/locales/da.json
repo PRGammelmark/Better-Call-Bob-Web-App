@@ -95,6 +95,8 @@
     "ingenMedarbejdereFundet": "Ingen medarbejdere fundet",
     "kunneIkkeFindeMedarbejdere": "Vi kunne ikke finde medarbejdere der kan løse denne opgave på denne adresse. Prøv at ændre adressen eller kontakt os direkte.",
     "faktiskeTiderKanAfvige": "* De faktiske til- og fra-tider kan afvige fra de viste tider herover. Vi bestræber os på at give ordentlig besked på dagen hvis vi må foretage ændringer.",
+    "ankomstPlusMinusEnTime": "Ankomst +/- 1 time",
+    "foretrukket": "Foretrukket",
     "placeholderAdresse": "Fx Nørregade 1, 2000 Frederiksberg",
     "placeholderManualTime": "Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
   },

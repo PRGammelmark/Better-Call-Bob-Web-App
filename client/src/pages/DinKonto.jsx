@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Styles from './DinKonto.module.css'
+import Styles from './Profil.module.css'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useUnsubscribeToPush } from '../hooks/useUnsubscribeToPush.js'
 import { useSubscribeToPush } from '../hooks/useSubscribeToPush.js'

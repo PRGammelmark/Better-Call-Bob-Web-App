@@ -622,22 +622,36 @@ const TidOgSted = ({
                     </h3>
                     {availableTimes.length > 0 ? (
                       <div className={Styles.timeSlotsGrid}>
-                        {availableTimes.map((timeSlot, index) => (
-                          <button
-                            key={index}
-                            className={`${Styles.timeSlotButton} ${isTimeSlotSelected(timeSlot) ? Styles.timeSlotButtonSelected : ''} ${pulseField === 'tidsunkt' ? Styles.pulsating : ''}`}
-                            onClick={() => handleTimeSelect(timeSlot)}
-                          >
-                            <div className={Styles.timeSlotButtonContent}>
-                              <span className={Styles.timeSlotButtonText}>
-                                {timeSlot.start.format('HH:mm')} - {timeSlot.end.format('HH:mm')}
-                              </span>
-                            </div>
-                            <div className={Styles.timeSlotCheckIcon}>
-                              <Check size={14} />
-                            </div>
-                          </button>
-                        ))}
+                        {availableTimes.map((timeSlot, index) => {
+                          const isFirst = index === 0
+                          const isLast = index === availableTimes.length - 1
+                          return (
+                            <button
+                              key={index}
+                              className={`${Styles.timeSlotButton} ${isTimeSlotSelected(timeSlot) ? Styles.timeSlotButtonSelected : ''} ${pulseField === 'tidsunkt' ? Styles.pulsating : ''}`}
+                              onClick={() => handleTimeSelect(timeSlot)}
+                            >
+                              {(isFirst || isLast) && (
+                                <span className={Styles.timeSlotPreferredBadge}>
+                                  {t('tidOgSted.foretrukket')}
+                                </span>
+                              )}
+                              <div className={Styles.timeSlotButtonContent}>
+                                <span className={Styles.timeSlotButtonText}>
+                                  {timeSlot.start.format('HH:mm')} - {timeSlot.end.format('HH:mm')}
+                                </span>
+                                {isTimeSlotSelected(timeSlot) && (
+                                  <span className={Styles.timeSlotObsMessage}>
+                                    {t('tidOgSted.ankomstPlusMinusEnTime')}
+                                  </span>
+                                )}
+                              </div>
+                              <div className={Styles.timeSlotCheckIcon}>
+                                <Check size={14} />
+                              </div>
+                            </button>
+                          )
+                        })}
                       </div>
                     ) : (
                       <p className={Styles.noTimesText}>{t('tidOgSted.ingenLedigeTiderDenneDag')}</p>

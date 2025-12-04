@@ -33,7 +33,8 @@ const PrimaryBookingComponent = () => {
     dayjs.locale(i18n.language)
   }, [i18n.language])
   const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
-  const [kortOpgavebeskrivelse, setKortOpgavebeskrivelse] = useState("")
+  const [kortOpgavebeskrivelseDa, setKortOpgavebeskrivelseDa] = useState("")
+  const [kortOpgavebeskrivelseEn, setKortOpgavebeskrivelseEn] = useState("")
   const [estimeretTidsforbrugTimer, setEstimeretTidsforbrugTimer] = useState(null)
   const [opgaveBilleder, setOpgaveBilleder] = useState([])
   const [kategorier, setKategorier] = useState([])
@@ -72,6 +73,11 @@ const PrimaryBookingComponent = () => {
   const lastSummarizedBeskrivelseRef = useRef("")
   const lastKategorierRef = useRef(JSON.stringify(kategorier))
   const { recaptchaSiteKey, executeRecaptcha, registerRecaptchaCallback } = useRecaptcha()
+
+  // Computed value for kortOpgavebeskrivelse based on current language
+  const kortOpgavebeskrivelse = useMemo(() => {
+    return i18n.language === 'en' ? kortOpgavebeskrivelseEn : kortOpgavebeskrivelseDa
+  }, [i18n.language, kortOpgavebeskrivelseDa, kortOpgavebeskrivelseEn])
 
   const steps = [
     { 
@@ -196,10 +202,18 @@ const PrimaryBookingComponent = () => {
         .then(([summaryResponse, categoriesResponse]) => {
           // Handle summary response
           if (typeof summaryResponse.data === 'string') {
-            setKortOpgavebeskrivelse(summaryResponse.data || opgaveBeskrivelse)
+            // Legacy format - set both to same value
+            setKortOpgavebeskrivelseDa(summaryResponse.data || opgaveBeskrivelse)
+            setKortOpgavebeskrivelseEn(summaryResponse.data || opgaveBeskrivelse)
             setEstimeretTidsforbrugTimer(null)
           } else {
-            setKortOpgavebeskrivelse(summaryResponse.data?.opsummering || opgaveBeskrivelse)
+            // New format with both Danish and English summaries
+            const opsummeringDa = summaryResponse.data?.opsummeringDa || ""
+            const opsummeringEn = summaryResponse.data?.opsummeringEn || ""
+            
+            // Only use fallback to opgaveBeskrivelse if both are empty
+            setKortOpgavebeskrivelseDa(opsummeringDa || opgaveBeskrivelse)
+            setKortOpgavebeskrivelseEn(opsummeringEn || opgaveBeskrivelse)
             setEstimeretTidsforbrugTimer(summaryResponse.data?.estimeretTidsforbrugTimer || null)
           }
           
@@ -213,7 +227,8 @@ const PrimaryBookingComponent = () => {
         .catch(error => {
           console.error('Error summarizing opgavebeskrivelse or fetching kategorier:', error)
           // Fallback to original if summarization fails
-          setKortOpgavebeskrivelse(opgaveBeskrivelse)
+          setKortOpgavebeskrivelseDa(opgaveBeskrivelse)
+          setKortOpgavebeskrivelseEn(opgaveBeskrivelse)
           setEstimeretTidsforbrugTimer(null)
           setKategorier([])
           lastSummarizedBeskrivelseRef.current = opgaveBeskrivelse.trim()
@@ -1060,7 +1075,7 @@ const PrimaryBookingComponent = () => {
                     <strong>Beskrivelse:</strong> {kortOpgavebeskrivelse}
                   </p>
                 )}
-                {opgaveBeskrivelse && opgaveBeskrivelse !== kortOpgavebeskrivelse && (
+                {opgaveBeskrivelse && opgaveBeskrivelse !== kortOpgavebeskrivelseDa && opgaveBeskrivelse !== kortOpgavebeskrivelseEn && (
                   <p className={SummaryStyles.popupText} style={{ marginBottom: '8px', fontSize: '0.85rem', color: '#666' }}>
                     <strong>Fuld beskrivelse:</strong> {opgaveBeskrivelse}
                   </p>

@@ -262,6 +262,23 @@
   overflow: visible;
 }
 
+.timeSlotPreferredBadge {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #59bf1a;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  white-space: nowrap;
+  z-index: 10;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .timeSlotButton:hover {
   border-color: #59bf1a;
   background: #f8fff4;
@@ -285,13 +302,25 @@
 
 .timeSlotButtonContent {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: 4px;
 }
 
 .timeSlotButtonText {
   text-align: center;
+}
+
+.timeSlotObsMessage {
+  font-size: 11px;
+  font-weight: 700;
+  color: #856404;
+  /* text-transform: uppercase; */
+  letter-spacing: 0.5px;
+  animation: slideInObs 0.4s ease-out;
+  margin-top: 2px;
 }
 
 .timeSlotCheckIcon {
@@ -727,6 +756,17 @@
   50% {
     border-color: #4da816;
     box-shadow: 0 0 0 4px rgba(89, 191, 26, 0.05);
+  }
+}
+
+@keyframes slideInObs {
+  0% {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

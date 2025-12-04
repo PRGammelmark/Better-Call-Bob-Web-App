@@ -222,18 +222,23 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
           role: "system",
           content: `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
           Opsummeringen skal være præcis og informativ, og fange essensen af opgaven.
-          VIGTIGT: Hvis opgavebeskrivelsen er på engelsk, så returnér opsummeringen på engelsk.
+          
+          KRITISK: Du SKAL returnere BÅDE en dansk opsummering (opsummeringDa) OG en engelsk opsummering (opsummeringEn). Begge felter er påkrævet.
+          
           Returnér kun gyldig JSON som output med følgende struktur:
           {
-            "opsummering": "opsummeringen her",
+            "opsummeringDa": "den danske opsummering her (maks 10 ord)",
+            "opsummeringEn": "the English summary here (max 10 words)",
             "estimeretTidsforbrugTimer": <helt tal>
           }
+          
           Estimeret tidsforbrug skal være et helt tal (antal timer). Vurder realistisk hvor lang tid opgaven tager for en professionel håndværker at udføre.
-          Returnér kun gyldig JSON, uden markdown eller forklaringer.`
+          
+          VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`
         },
         {
           role: "user",
-          content: `Opsummér følgende opgavebeskrivelse til 10 ord eller mindre, og vurder tidsforbruget:\n\n${opgaveBeskrivelse}`,
+          content: `Opsummér følgende opgavebeskrivelse til præcis 10 ord eller mindre. Du skal give mig BÅDE en dansk opsummering (opsummeringDa) OG en engelsk opsummering (opsummeringEn). Vurder også tidsforbruget i hele timer.\n\nOpgavebeskrivelse:\n${opgaveBeskrivelse}`,
         }
       ],
     });
@@ -247,15 +252,36 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
       const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       parsed = JSON.parse(cleanedContent);
       
-      // Valider at opsummeringen er 10 ord eller mindre
-      const opsummering = parsed.opsummering || parsed.summary || "";
-      const wordCount = opsummering.split(/\s+/).filter(word => word.length > 0).length;
+      // Helper function to validate and truncate summary to 10 words
+      const validateAndTruncate = (opsummering) => {
+        if (!opsummering) return "";
+        const wordCount = opsummering.split(/\s+/).filter(word => word.length > 0).length;
+        if (wordCount > 10) {
+          const words = opsummering.split(/\s+/).filter(word => word.length > 0);
+          return words.slice(0, 10).join(' ');
+        }
+        return opsummering;
+      };
       
-      let finalOpsummering = opsummering;
-      if (wordCount > 10) {
-        // Hvis AI'en returnerer mere end 10 ord, tag de første 10 ord
-        const words = opsummering.split(/\s+/).filter(word => word.length > 0);
-        finalOpsummering = words.slice(0, 10).join(' ');
+      // Valider at opsummeringerne er 10 ord eller mindre
+      // Prioritize opsummeringDa/opsummeringEn over legacy fields
+      let opsummeringDa = validateAndTruncate(parsed.opsummeringDa || "");
+      let opsummeringEn = validateAndTruncate(parsed.opsummeringEn || "");
+      
+      // If one is missing but we have a generic summary, use it for both
+      if (!opsummeringDa && !opsummeringEn) {
+        // Fallback to legacy fields if new fields are missing
+        const fallbackSummary = parsed.opsummering || parsed.summary || "";
+        if (fallbackSummary) {
+          opsummeringDa = validateAndTruncate(fallbackSummary);
+          opsummeringEn = validateAndTruncate(fallbackSummary);
+        }
+      } else if (!opsummeringDa && opsummeringEn) {
+        // If only English is provided, use it for Danish too (better than nothing)
+        opsummeringDa = opsummeringEn;
+      } else if (opsummeringDa && !opsummeringEn) {
+        // If only Danish is provided, use it for English too (better than nothing)
+        opsummeringEn = opsummeringDa;
       }
       
       // Valider og sikre at estimeret tidsforbrug er et helt tal
@@ -263,12 +289,13 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
       estimeretTidsforbrugTimer = Math.max(1, Math.round(Number(estimeretTidsforbrugTimer))); // Minimum 1 time, runder til nærmeste heltal
       
       res.json({
-        opsummering: finalOpsummering,
+        opsummeringDa,
+        opsummeringEn,
         estimeretTidsforbrugTimer
       });
     } catch (e) {
       console.error("Kunne ikke parse AI's JSON output:", content);
-      // Fallback: returner kun opsummeringen hvis JSON parsing fejler
+      // Fallback: returner opsummeringer hvis JSON parsing fejler
       const wordCount = content.split(/\s+/).filter(word => word.length > 0).length;
       let finalContent = content;
       if (wordCount > 10) {
@@ -276,7 +303,8 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
         finalContent = words.slice(0, 10).join(' ');
       }
       res.json({
-        opsummering: finalContent,
+        opsummeringDa: finalContent,
+        opsummeringEn: finalContent,
         estimeretTidsforbrugTimer: 1 // Default fallback
       });
     }

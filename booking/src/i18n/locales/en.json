@@ -95,6 +95,8 @@
     "ingenMedarbejdereFundet": "No workers found",
     "kunneIkkeFindeMedarbejdere": "We could not find workers who can solve this task at this address. Try changing the address or contact us directly.",
     "faktiskeTiderKanAfvige": "* The actual arrival and departure times may differ from the times shown above. We strive to give proper notice on the day if we must make changes.",
+    "ankomstPlusMinusEnTime": "Arrival +/- 1 hour",
+    "foretrukket": "Preferred",
     "placeholderAdresse": "E.g. Main Street 1, 2000 Copenhagen",
     "placeholderManualTime": "E.g. 'Monday morning next week' or 'As soon as possible'"
   },

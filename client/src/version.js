@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.9.5",
+    date: "4. december 2025",
+    changes: [
+        "Fanerne på profilsiden er blevet opdateret med en subtil fade-effekt og overflow, så det er blevet mere intuitivt at navigere mellem dem.",
+        "Bookingsystemet viser nu et forbehold for valgte tidspunkter, når en kunde vælger et timeslot, direkte i timeslottet.",
+        "Bookingsystemet markerer nu foretrukne timeslots, så kunder nudges til at vælge dem, der også passer os bedst.",
+        "Bookingsystemet oversætter nu korrekt opsummerede opgavebeskrivelser, afhængigt af kundens sprogpræferencer."
+    ]
+},{
     version: "3.9.4",
     date: "26. november 2025",
     changes: [
