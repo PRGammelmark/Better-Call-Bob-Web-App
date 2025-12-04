@@ -405,6 +405,12 @@ const createBooking = async (req, res) => {
                     aiCreated: true
                 });
 
+                // Update opgave status to "Dato aftalt" if it's not already set
+                if (opgave.status !== "Dato aftalt") {
+                    opgave.status = "Dato aftalt";
+                    await opgave.save();
+                }
+
                 // Send notification to employee about the visit
                 try {
                     await opretNotifikation({ 

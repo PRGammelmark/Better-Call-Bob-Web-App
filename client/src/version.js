@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.9.8",
+    date: "5. december 2025",
+    changes: [
+        "Hvis man opretter et besøg på en opgave vil opgaven nu automatisk opdatere sin status til 'Dato aftalt'.",
+    ]
+},{
     version: "3.9.7",
     date: "5. december 2025",
     changes: [

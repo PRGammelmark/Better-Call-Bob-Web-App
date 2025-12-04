@@ -68,6 +68,13 @@ const createBesøg = async (req, res) => {
 
     try {
         const besøg = await Besøg.create({ datoTidFra, datoTidTil, brugerID, opgaveID, kundeID: udledtKundeID, kommentar, eventColor })
+        
+        // Update opgave status to "Dato aftalt" if it's not already set
+        if (opgave && opgave.status !== "Dato aftalt") {
+            opgave.status = "Dato aftalt";
+            await opgave.save();
+        }
+        
         await opretNotifikation({ modtagerID: brugerID, udløserID: req.user._id, type: "besøgOprettet", titel: `Du har fået et besøg i kalenderen (reg. af ${bruger.navn}) d. ${dayjs(datoTidFra).format("DD. MMMM HH:mm")} - ${dayjs(datoTidTil).format("HH:mm")} på ${kunde?.adresse || "(adresse ikke fundet)"}, ${kunde?.postnummerOgBy || "(område ikke fundet)"}.`, besked: `Se din kalender for at få et overblik.`, link: `/` })
         res.status(200).json(besøg)
     } catch (error) {
