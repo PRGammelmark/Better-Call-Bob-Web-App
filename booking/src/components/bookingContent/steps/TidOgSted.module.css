@@ -584,7 +584,7 @@
   }
 
   .timeSlotsGrid {
-    grid-template-columns: calc(50% - 4px) calc(50% - 4px);
+    grid-template-columns: 1fr;
     gap: 8px;
     padding: 8px 8px 4px 4px;
     width: 100%;

@@ -157,19 +157,144 @@ const unSubscribeToPush = async (req, res) => {
 // GET available workers based on address and task types
 const getAvailableWorkers = async (req, res) => {
     try {
-        const { adresse, kategorier } = req.body;
+        const { adresse, kategorier, latitude, longitude } = req.body;
 
-        console.log('🔍 getAvailableWorkers called with:', { adresse, kategorier });
+        console.log('🔍 getAvailableWorkers called with:', { adresse, kategorier, latitude, longitude });
 
         if (!adresse) {
             console.log('❌ Missing address');
             return res.status(400).json({ error: 'Adresse er påkrævet' });
         }
 
-        // Hvis der ikke er kategorier, valider kun adressen og returner tomt array af workers
-        if (!kategorier || !Array.isArray(kategorier) || kategorier.length === 0) {
-            console.log('⚠️ No categories provided, validating address only');
+        let addressLat, addressLng, formateretAdresse, road, houseNumber, postcode, city;
+
+        // Hvis vi har koordinater direkte fra DAWA, brug dem i stedet for at geocode
+        if (latitude !== undefined && longitude !== undefined && latitude !== null && longitude !== null && !isNaN(latitude) && !isNaN(longitude)) {
+            console.log('📍 Using coordinates directly from DAWA:', { latitude, longitude });
+            addressLat = parseFloat(latitude);
+            addressLng = parseFloat(longitude);
             
+            // Valider at koordinaterne er gyldige (Danmark er ca. 54-58°N, 8-13°E)
+            if (addressLat < 54 || addressLat > 58 || addressLng < 8 || addressLng > 13) {
+                console.log('⚠️ Coordinates outside Denmark, falling back to geocoding');
+                // Fallback til geocoding hvis koordinaterne ikke er i Danmark
+            } else {
+                formateretAdresse = adresse; // Brug adressen som den er fra DAWA
+                
+                // Hvis der ikke er kategorier, returner med koordinaterne
+                if (!kategorier || !Array.isArray(kategorier) || kategorier.length === 0) {
+                    console.log('✅ Returning with DAWA coordinates (no categories)');
+                    return res.status(200).json({
+                        workerIDs: [],
+                        formateretAdresse: formateretAdresse
+                    });
+                }
+                // Hvis vi har kategorier, fortsæt med at finde medarbejdere
+                console.log('✅ Using DAWA coordinates to find workers');
+            }
+        }
+        
+        // Hvis vi ikke har gyldige koordinater, geocode adressen
+        if (!addressLat || !addressLng || isNaN(addressLat) || isNaN(addressLng)) {
+            console.log('⚠️ No valid coordinates, will geocode address:', adresse);
+            // Hvis der ikke er kategorier, valider kun adressen og returner tomt array af workers
+            if (!kategorier || !Array.isArray(kategorier) || kategorier.length === 0) {
+                console.log('⚠️ No categories provided, validating address only');
+                
+                // Geocode the address using Nominatim
+                console.log('🌍 Geocoding address:', adresse);
+                const geocodeResponse = await axios.get(
+                    `https://nominatim.openstreetmap.org/search`,
+                    {
+                        params: {
+                            format: 'json',
+                            q: adresse,
+                            limit: 1,
+                            addressdetails: 1
+                        },
+                        headers: {
+                            'User-Agent': 'BetterCallBob/1.0 (https://bettercallbob.dk)'
+                        }
+                    }
+                );
+                
+                const geocodeData = geocodeResponse.data;
+                console.log('📍 Geocoding result:', geocodeData);
+                
+                if (!geocodeData || geocodeData.length === 0) {
+                    console.log('❌ Address not found');
+                    return res.status(404).json({ error: 'Vi fandt ikke denne adresse. Prøv igen.' });
+                }
+
+                // Valider at resultatet er en gyldig adresse
+                const addressData = geocodeData[0].address || {};
+                const countryCode = geocodeData[0].address?.country_code?.toLowerCase();
+                const resultType = geocodeData[0].type?.toLowerCase();
+                road = addressData.road || '';
+                houseNumber = addressData.house_number || '';
+                postcode = addressData.postcode || '';
+                city = addressData.city || addressData.town || addressData.village || addressData.municipality || '';
+
+                // Tjek om det er i Danmark
+                if (countryCode !== 'dk' && countryCode !== 'denmark') {
+                    console.log('❌ Address not in Denmark');
+                    return res.status(404).json({ 
+                        error: 'Adressen skal være i Danmark. Indtast venligst en gyldig dansk adresse, postnummer eller område.' 
+                    });
+                }
+
+                // Tjek om resultatet er en faktisk adresse (ikke bare et land, region, osv.)
+                const invalidTypes = ['country', 'state', 'region', 'province'];
+                if (invalidTypes.includes(resultType)) {
+                    console.log('❌ Result is not a valid address type');
+                    return res.status(404).json({ 
+                        error: 'Indtast venligst en mere specifik adresse, postnummer eller område.' 
+                    });
+                }
+
+                // Valider at der er minimum adressekomponenter (postnummer eller by)
+                if (!postcode && !city && !road) {
+                    console.log('❌ Address missing required components');
+                    return res.status(404).json({ 
+                        error: 'Vi kunne ikke finde en gyldig adresse. Indtast venligst en adresse, postnummer eller område i Danmark.' 
+                    });
+                }
+
+                // For meget korte queries (fx "s"), tjek også om resultatet faktisk matcher input
+                if (adresse.trim().length < 3) {
+                    console.log('❌ Input too short');
+                    return res.status(404).json({ 
+                        error: 'Indtast venligst en mere specifik adresse, postnummer eller område.' 
+                    });
+                }
+
+                // Format the full address from geocoding result to "Gadenavn gadenummer, postnummer by"
+                formateretAdresse = adresse; // Fallback til original adresse
+
+                if (road) {
+                    // Byg adresse i formatet "Gadenavn gadenummer, postnummer by"
+                    const gadenavnOgNummer = houseNumber ? `${road} ${houseNumber}` : road;
+                    const postnummerOgBy = postcode && city ? `${postcode} ${city}` : (postcode || city);
+                    
+                    if (postnummerOgBy) {
+                        formateretAdresse = `${gadenavnOgNummer}, ${postnummerOgBy}`;
+                    } else {
+                        formateretAdresse = gadenavnOgNummer;
+                    }
+                } else if (postcode && city) {
+                    // Hvis der ikke er vejnavn, men der er postnummer og by, brug det
+                    formateretAdresse = `${postcode} ${city}`;
+                } else if (city) {
+                    // Eller bare byen hvis den findes
+                    formateretAdresse = city;
+                }
+                
+                return res.status(200).json({
+                    workerIDs: [],
+                    formateretAdresse: formateretAdresse
+                });
+            }
+
             // Geocode the address using Nominatim
             console.log('🌍 Geocoding address:', adresse);
             const geocodeResponse = await axios.get(
@@ -199,10 +324,10 @@ const getAvailableWorkers = async (req, res) => {
             const addressData = geocodeData[0].address || {};
             const countryCode = geocodeData[0].address?.country_code?.toLowerCase();
             const resultType = geocodeData[0].type?.toLowerCase();
-            const road = addressData.road || '';
-            const houseNumber = addressData.house_number || '';
-            const postcode = addressData.postcode || '';
-            const city = addressData.city || addressData.town || addressData.village || addressData.municipality || '';
+            road = addressData.road || '';
+            houseNumber = addressData.house_number || '';
+            postcode = addressData.postcode || '';
+            city = addressData.city || addressData.town || addressData.village || addressData.municipality || '';
 
             // Tjek om det er i Danmark
             if (countryCode !== 'dk' && countryCode !== 'denmark') {
@@ -237,102 +362,25 @@ const getAvailableWorkers = async (req, res) => {
                 });
             }
 
-            // Format the full address from geocoding result to "Gadenavn gadenummer, postnummer by"
-            let formateretAdresse = adresse; // Fallback til original adresse
-
+            addressLat = parseFloat(geocodeData[0].lat);
+            addressLng = parseFloat(geocodeData[0].lon);
+            
+            // Format the full address from geocoding result
+            formateretAdresse = adresse; // Fallback til original adresse
             if (road) {
-                // Byg adresse i formatet "Gadenavn gadenummer, postnummer by"
                 const gadenavnOgNummer = houseNumber ? `${road} ${houseNumber}` : road;
                 const postnummerOgBy = postcode && city ? `${postcode} ${city}` : (postcode || city);
-                
                 if (postnummerOgBy) {
                     formateretAdresse = `${gadenavnOgNummer}, ${postnummerOgBy}`;
                 } else {
                     formateretAdresse = gadenavnOgNummer;
                 }
             } else if (postcode && city) {
-                // Hvis der ikke er vejnavn, men der er postnummer og by, brug det
                 formateretAdresse = `${postcode} ${city}`;
             } else if (city) {
-                // Eller bare byen hvis den findes
                 formateretAdresse = city;
             }
-            
-            return res.status(200).json({
-                workerIDs: [],
-                formateretAdresse: formateretAdresse
-            });
         }
-
-        // Geocode the address using Nominatim
-        console.log('🌍 Geocoding address:', adresse);
-        const geocodeResponse = await axios.get(
-            `https://nominatim.openstreetmap.org/search`,
-            {
-                params: {
-                    format: 'json',
-                    q: adresse,
-                    limit: 1,
-                    addressdetails: 1
-                },
-                headers: {
-                    'User-Agent': 'BetterCallBob/1.0 (https://bettercallbob.dk)'
-                }
-            }
-        );
-        
-        const geocodeData = geocodeResponse.data;
-        console.log('📍 Geocoding result:', geocodeData);
-        
-        if (!geocodeData || geocodeData.length === 0) {
-            console.log('❌ Address not found');
-            return res.status(404).json({ error: 'Vi fandt ikke denne adresse. Prøv igen.' });
-        }
-
-        // Valider at resultatet er en gyldig adresse
-        const addressData = geocodeData[0].address || {};
-        const countryCode = geocodeData[0].address?.country_code?.toLowerCase();
-        const resultType = geocodeData[0].type?.toLowerCase();
-        const road = addressData.road || '';
-        const houseNumber = addressData.house_number || '';
-        const postcode = addressData.postcode || '';
-        const city = addressData.city || addressData.town || addressData.village || addressData.municipality || '';
-
-        // Tjek om det er i Danmark
-        if (countryCode !== 'dk' && countryCode !== 'denmark') {
-            console.log('❌ Address not in Denmark');
-            return res.status(404).json({ 
-                error: 'Adressen skal være i Danmark. Indtast venligst en gyldig dansk adresse, postnummer eller område.' 
-            });
-        }
-
-        // Tjek om resultatet er en faktisk adresse (ikke bare et land, region, osv.)
-        const invalidTypes = ['country', 'state', 'region', 'province'];
-        if (invalidTypes.includes(resultType)) {
-            console.log('❌ Result is not a valid address type');
-            return res.status(404).json({ 
-                error: 'Indtast venligst en mere specifik adresse, postnummer eller område.' 
-            });
-        }
-
-        // Valider at der er minimum adressekomponenter (postnummer eller by)
-        if (!postcode && !city && !road) {
-            console.log('❌ Address missing required components');
-            return res.status(404).json({ 
-                error: 'Vi kunne ikke finde en gyldig adresse. Indtast venligst en adresse, postnummer eller område i Danmark.' 
-            });
-        }
-
-        // For meget korte queries (fx "s"), tjek også om resultatet faktisk matcher input
-        if (adresse.trim().length < 3) {
-            console.log('❌ Input too short');
-            return res.status(404).json({ 
-                error: 'Indtast venligst en mere specifik adresse, postnummer eller område.' 
-            });
-        }
-
-        const addressLat = parseFloat(geocodeData[0].lat);
-        const addressLng = parseFloat(geocodeData[0].lon);
         console.log('📍 Address coordinates:', { lat: addressLat, lng: addressLng });
 
         // Get all employees
@@ -439,32 +487,12 @@ const getAvailableWorkers = async (req, res) => {
         console.log(`\n✅ Found ${availableWorkers.length} available workers with IDs:`, workerIDs);
         console.log(`👥 Worker names:`, workerNames);
         
-        // Format the full address from geocoding result to "Gadenavn gadenummer, postnummer by"
-        let formateretAdresse = adresse; // Fallback til original adresse
-        
-        if (road) {
-            // Byg adresse i formatet "Gadenavn gadenummer, postnummer by"
-            const gadenavnOgNummer = houseNumber ? `${road} ${houseNumber}` : road;
-            const postnummerOgBy = postcode && city ? `${postcode} ${city}` : (postcode || city);
-            
-            if (postnummerOgBy) {
-                formateretAdresse = `${gadenavnOgNummer}, ${postnummerOgBy}`;
-            } else {
-                formateretAdresse = gadenavnOgNummer;
-            }
-        } else if (postcode && city) {
-            // Hvis der ikke er vejnavn, men der er postnummer og by, brug det
-            formateretAdresse = `${postcode} ${city}`;
-        } else if (city) {
-            // Eller bare byen hvis den findes
-            formateretAdresse = city;
-        }
-        
+        // formateretAdresse er allerede sat tidligere i koden
         res.status(200).json({
             workerIDs: workerIDs,
             workerNames: workerNames,
             workers: availableWorkers, // Include full worker objects for convenience
-            formateretAdresse: formateretAdresse
+            formateretAdresse: formateretAdresse || adresse
         });
     } catch (error) {
         console.error('❌ Error in getAvailableWorkers:', error);

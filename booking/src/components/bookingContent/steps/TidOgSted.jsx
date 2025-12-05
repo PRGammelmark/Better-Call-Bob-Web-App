@@ -10,6 +10,7 @@ import 'dayjs/locale/en'
 import { Check, MapPin, Calendar, Clock, ChevronDown } from 'lucide-react'
 import StepsStyles from './Steps.module.css'
 import Styles from './TidOgSted.module.css'
+import DawaAutocomplete from './DawaAutocomplete'
 import axios from 'axios'
 
 // Custom day component to highlight days with available times
@@ -139,9 +140,9 @@ const TidOgSted = ({
     }
   }, [availableTimes, valgtTidspunkt, selectedTimeSlot])
 
-  // Fetch available workers and times
-  const handleShowAvailableTimes = async () => {
-    if (!adresse || !adresse.trim()) {
+  // Fetch available workers and times with a specific address
+  const handleShowAvailableTimesWithAddress = async (addressToUse, dawaAddressData = null) => {
+    if (!addressToUse || !addressToUse.trim()) {
       if (onErrorChange) {
         onErrorChange(t('tidOgSted.indtastAdresseFoerst'))
       }
@@ -158,12 +159,75 @@ const TidOgSted = ({
       // Fetch available workers (dette validerer også adressen)
       // Extract Danish category names for API (handle both string and object formats)
       const kategoriNavne = hasNoCategories ? [] : kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
+      
+      // Hvis vi har DAWA adressedata med koordinater, send dem med
+      const requestBody = {
+        adresse: addressToUse,
+        kategorier: kategoriNavne
+      }
+      
+      console.log('📍 DAWA address data received:', dawaAddressData)
+      
+      // Hvis DAWA adressedata har koordinater, send dem med så serveren kan bruge dem direkte
+      // DAWA bruger forskellige strukturer, så vi tjekker flere muligheder
+      // Vigtigt: DAWA bruger x (længdegrad/longitude) og y (breddegrad/latitude)
+      let lat, lng
+      
+      if (dawaAddressData) {
+        // Struktur 1: adresse.x og adresse.y (fra autocomplete response)
+        if (dawaAddressData.adresse?.x !== undefined && dawaAddressData.adresse?.y !== undefined) {
+          lng = dawaAddressData.adresse.x  // x er længdegrad (longitude)
+          lat = dawaAddressData.adresse.y   // y er breddegrad (latitude)
+          console.log('📍 Found coordinates as x/y in adresse object:', { lat, lng })
+        }
+        // Struktur 2: x og y direkte på objektet (hvis adresse ikke er wrapped)
+        else if (dawaAddressData.x !== undefined && dawaAddressData.y !== undefined) {
+          lng = dawaAddressData.x  // x er længdegrad (longitude)
+          lat = dawaAddressData.y   // y er breddegrad (latitude)
+          console.log('📍 Found coordinates as x/y directly on object:', { lat, lng })
+        }
+        // Struktur 3: adgangsadresse.x og adgangsadresse.y (fuld adresse)
+        else if (dawaAddressData.adgangsadresse?.x !== undefined && dawaAddressData.adgangsadresse?.y !== undefined) {
+          lng = dawaAddressData.adgangsadresse.x
+          lat = dawaAddressData.adgangsadresse.y
+          console.log('📍 Found coordinates as x/y in adgangsadresse:', { lat, lng })
+        }
+        // Struktur 4: adgangsadresse.koordinater array (fuld adresse)
+        else if (dawaAddressData.adgangsadresse?.koordinater && Array.isArray(dawaAddressData.adgangsadresse.koordinater)) {
+          const koord = dawaAddressData.adgangsadresse.koordinater
+          if (koord.length >= 2) {
+            lng = koord[0]  // Første element er længdegrad
+            lat = koord[1]  // Andet element er breddegrad
+            console.log('📍 Found coordinates in adgangsadresse.koordinater array:', { lat, lng })
+          }
+        }
+        // Struktur 5: koordinater direkte på objektet som array
+        else if (dawaAddressData.koordinater && Array.isArray(dawaAddressData.koordinater)) {
+          const koord = dawaAddressData.koordinater
+          if (koord.length >= 2) {
+            lng = koord[0]
+            lat = koord[1]
+            console.log('📍 Found coordinates directly on object as array:', { lat, lng })
+          }
+        }
+      }
+      
+      if (lat !== undefined && lng !== undefined && !isNaN(lat) && !isNaN(lng)) {
+        requestBody.latitude = parseFloat(lat)
+        requestBody.longitude = parseFloat(lng)
+        console.log('✅ Sending coordinates to server:', { latitude: requestBody.latitude, longitude: requestBody.longitude })
+      } else {
+        console.log('⚠️ No valid coordinates found in DAWA data')
+        console.log('📍 Available properties:', Object.keys(dawaAddressData || {}))
+        if (dawaAddressData?.adresse) {
+          console.log('📍 Address object properties:', Object.keys(dawaAddressData.adresse))
+          console.log('📍 Address object:', dawaAddressData.adresse)
+        }
+      }
+      
       const workersResponse = await axios.post(
         `${import.meta.env.VITE_API_URL}/brugere/getAvailableWorkers`,
-        {
-          adresse,
-          kategorier: kategoriNavne
-        }
+        requestBody
       )
       const workerIDs = workersResponse.data?.workerIDs || workersResponse.data || []
       const workerNames = workersResponse.data?.workerNames || []
@@ -174,7 +238,7 @@ const TidOgSted = ({
       
       // Opdater formateret adresse hvis den findes, ellers brug den adresse vi brugte
       if (onFormateretAdresseChange) {
-        onFormateretAdresseChange(formateretAdresseFraServer || adresse)
+        onFormateretAdresseChange(formateretAdresseFraServer || addressToUse)
       }
       
       // Opdater parent med den formaterede adresse hvis den findes
@@ -255,6 +319,17 @@ const TidOgSted = ({
       if (onIsLoadingWorkersChange) onIsLoadingWorkersChange(false)
       if (onIsLoadingTimesChange) onIsLoadingTimesChange(false)
     }
+  }
+
+  // Fetch available workers and times
+  const handleShowAvailableTimes = async () => {
+    if (!adresse || !adresse.trim()) {
+      if (onErrorChange) {
+        onErrorChange(t('tidOgSted.indtastAdresseFoerst'))
+      }
+      return
+    }
+    await handleShowAvailableTimesWithAddress(adresse)
   }
 
   // Get dates that have available times (only from tomorrow onwards and within 4 months)
@@ -411,15 +486,11 @@ const TidOgSted = ({
         </div>
         <div className={Styles.addressSection}>
           <div className={`${Styles.addressInputWrapper} ${pulseField === 'adresse' ? Styles.pulsating : ''}`}>
-            <input
-              id="adresse"
-              type="text"
-              className={`${Styles.addressInput} ${formateretAdresse ? Styles.addressInputFound : ''} ${pulseField === 'adresse' ? Styles.pulsating : ''}`}
-              placeholder={t('tidOgSted.placeholderAdresse')}
+            <DawaAutocomplete
               value={formateretAdresse || adresse}
-              onChange={(e) => {
+              onChange={(newValue) => {
                 if (onAddressChange) {
-                  onAddressChange(e.target.value)
+                  onAddressChange(newValue)
                 }
                 // Reset formateret adresse når brugeren ændrer input
                 if (formateretAdresse && onFormateretAdresseChange) {
@@ -438,6 +509,20 @@ const TidOgSted = ({
                   if (onManualTimePreferenceChange) onManualTimePreferenceChange("")
                 }
               }}
+              onSelect={(selectedSuggestion) => {
+                // Når en adresse vælges fra dropdown, hent medarbejdere automatisk
+                const selectedAddress = selectedSuggestion.tekst || selectedSuggestion.visningstekst || ''
+                if (selectedAddress && onAddressChange) {
+                  onAddressChange(selectedAddress)
+                }
+                // Trigger worker fetching med den valgte adresse og koordinater hvis tilgængelige
+                if (selectedAddress) {
+                  handleShowAvailableTimesWithAddress(selectedAddress, selectedSuggestion)
+                }
+              }}
+              placeholder={t('tidOgSted.placeholderAdresse')}
+              pulseField={pulseField === 'adresse' ? 'adresse' : null}
+              isFound={!!formateretAdresse}
             />
             {formateretAdresse && (
               <div className={Styles.addressCheckIcon}>

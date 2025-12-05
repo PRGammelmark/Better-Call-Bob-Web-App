@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "3.9.9",
+    date: "5. december 2025",
+    changes: [
+        "Fremover vil bookingsystemet nu automatisk foreslå adresser for brugeren i en dropdown-liste efterhånden som man taster i adressefeltet.",
+        "Forbedrede adresse-håndteringen i bookingsystemet, så det nu kan håndtere etagenumre, osv.",
+        "Timeslots i bookingsystemets step 3 vises nu i én kolonne på mobilen i stedet for to."
+    ]
+},{
     version: "3.9.8",
     date: "5. december 2025",
     changes: [
