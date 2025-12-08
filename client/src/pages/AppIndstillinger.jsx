@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
-import OpfølgendeSpørgsmålModal from '../components/modals/OpfølgendeSpørgsmålModal.jsx'
+import AISystemPromptModal from '../components/modals/AISystemPromptModal.jsx'
 import ImportOpgavetyperModal from '../components/modals/ImportOpgavetyperModal.jsx'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
 import Button from '../components/basicComponents/buttons/Button.jsx'
@@ -20,13 +20,12 @@ const AppIndstillinger = () => {
 
     const [visOpgavetyperInfo, setVisOpgavetyperInfo] = useState(false);
     const [visOpgavetyperModal, setVisOpgavetyperModal] = useState(false)
-    const [visOpfølgendeSpørgsmålModal, setVisOpfølgendeSpørgsmålModal] = useState(false)
+    const [visAISystemPromptModal, setVisAISystemPromptModal] = useState(false)
     const [visImportOpgavetyperModal, setVisImportOpgavetyperModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
     const [maxArbejdsradius, setMaxArbejdsradius] = useState( indstillinger?.arbejdsområdeKilometerRadius )
     const [kørerFakturaBetalingstjek, setKørerFakturaBetalingstjek] = useState(false)
-    const [antalSpørgsmål, setAntalSpørgsmål] = useState(0)
     const [virksomhedsnavn, setVirksomhedsnavn] = useState(indstillinger?.virksomhedsnavn || "")
     const [cvrNummer, setCvrNummer] = useState(indstillinger?.cvrNummer || "")
     const [adresse, setAdresse] = useState(indstillinger?.adresse || "")
@@ -79,22 +78,6 @@ const AppIndstillinger = () => {
         }
     }, [indstillinger])
 
-    useEffect(() => {
-        if (user?.token) {
-            axios.get(`${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/`, {
-                headers: {
-                    'Authorization': `Bearer ${user.token}`
-                }
-            })
-            .then(res => {
-                setAntalSpørgsmål(res.data?.length || 0)
-            })
-            .catch(error => {
-                console.log(error)
-                setAntalSpørgsmål(0)
-            })
-        }
-    }, [user, visOpfølgendeSpørgsmålModal])
 
     const handleRadiusBlur = async () => {
         try {
@@ -322,14 +305,14 @@ const AppIndstillinger = () => {
 
         <div className={Styles.indstillingerContainer}>
             <h2>Booking <Info className={`${Styles.infoIcon}`} /></h2>
-            <p className={Styles.infoText}>Administrer opfølgende spørgsmål til bookingsystemet. Disse spørgsmål vises baseret på de kategorier, som AI'en tildeler opgaverne.</p>
+            <p className={Styles.infoText}>Administrer indstillinger til bookingsystemet. Tilpas AI'en, der genererer opfølgende spørgsmål baseret på opgavebeskrivelser.</p>
             <SettingsButtons
                 items={[
                     {
                         title: "Opfølgende spørgsmål",
-                        icon: <Calendar />,
-                        onClick: () => setVisOpfølgendeSpørgsmålModal(true),
-                        value: `${antalSpørgsmål} spørgsmål`,
+                        icon: <Brain />,
+                        onClick: () => setVisAISystemPromptModal(true),
+                        value: indstillinger?.aiExtraRules ? "Tilpasset" : "Standard",
                     },
                     {
                         title: "Handelsbetingelser",
@@ -357,7 +340,7 @@ const AppIndstillinger = () => {
 
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
         <ImportOpgavetyperModal trigger={visImportOpgavetyperModal} setTrigger={setVisImportOpgavetyperModal} user={user} kategorier={indstillinger?.opgavetyperKategorier || []} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} />
-        <OpfølgendeSpørgsmålModal trigger={visOpfølgendeSpørgsmålModal} setTrigger={setVisOpfølgendeSpørgsmålModal} user={user} opgavetyper={opgavetyper} />
+        <AISystemPromptModal trigger={visAISystemPromptModal} setTrigger={setVisAISystemPromptModal} user={user} indstillinger={indstillinger} />
     
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>

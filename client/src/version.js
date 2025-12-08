@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.10.0",
+    date: "8. december 2025",
+    changes: [
+        "Bookingsystemet stiller nu automatisk opfølgende spørgsmål til opgavebeskrivelsen ved hjælp af AI.",
+        "Step 2 – 'Ekstra' – er blevet fjernet fra bookingsystemet, og funktionaliteten er integreret i step 1 i stedet.",
+        "'Opfølgende spørgsmål'-knappen i admins app-indstillinger har fået en ny funktion. I stedet for at åbne modalen, hvor man kunne skræddersy spørgsmål til hver opgavetype, får man nu en popup, hvor man kan tilpasse regler og retningslinjer til den AI, der står for at stille opfølgende spørgsmål.",
+        "Designjusteringer og -forbedringer."
+    ]
+},{
     version: "3.9.9",
     date: "5. december 2025",
     changes: [

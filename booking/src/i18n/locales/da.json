@@ -35,8 +35,10 @@
     "skiftSprogTilDansk": "Skift sprog til dansk",
     "placeholder": "Eksempel:\n\n'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'",
     "spørgsmål": "Spørgsmål",
-    "uddybendeSporgsmaal": "Uddyb gerne",
-    "opdaterBeskrivelse": "Opdater venligst din opgavebeskrivelse med mere information."
+    "uddybendeSporgsmaal": "Uddyb gerne din opgavebeskrivelse",
+    "opdaterBeskrivelse": "Opdater venligst din opgavebeskrivelse med mere information.",
+    "analyserer": "Analyserer din opgave",
+    "etOjeblik": "Et øjeblik ..."
   },
   "kontaktinfo": {
     "kontaktinfo": "Kontaktinfo",

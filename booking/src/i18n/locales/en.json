@@ -36,7 +36,9 @@
     "placeholder": "Example:\n\n'I need to hang 2 curtains, 5 pictures, a TV, assemble a wardrobe and mount a lamp. The walls are made of concrete and I have a ladder.'",
     "spørgsmål": "Question",
     "uddybendeSporgsmaal": "Follow-up questions",
-    "opdaterBeskrivelse": "Please update your task description with more information."
+    "opdaterBeskrivelse": "Please update your task description with more information.",
+    "analyserer": "Analyzing your task",
+    "etOjeblik": "One moment ..."
   },
   "kontaktinfo": {
     "kontaktinfo": "Contact info",

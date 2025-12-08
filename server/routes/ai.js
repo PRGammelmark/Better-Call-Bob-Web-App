@@ -2,6 +2,7 @@ import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
 import Opgavetyper from "../models/opgavetyperModel.js";
+import Indstillinger from "../models/indstillingerModel.js";
 
 dotenv.config({ path: "../.env" });
 
@@ -323,24 +324,37 @@ router.post("/generateQuestions", async (req, res) => {
   }
 
   try {
-    const systemPrompt = `Du skal analysere en opgavebeskrivelse og generere relevante opfølgende spørgsmål, der kan hjælpe med at få mere information om opgaven.
+    // Standard system prompt (hardcoded)
+    const standardSystemPrompt = `Du skal analysere en opgavebeskrivelse og generere relevante opfølgende spørgsmål, der kan hjælpe med at få mere information om opgaven.
     
-    Generer kun spørgsmål hvis opgavebeskrivelsen mangler vigtige detaljer. Hvis opgavebeskrivelsen allerede er meget udførlig og indeholder alle nødvendige oplysninger, skal du returnere et tomt array.
-    
-    Hvert spørgsmål skal have både en dansk og en engelsk version.
-    
-    Returnér kun gyldig JSON som output med følgende struktur:
-    [
-      {
-        "spørgsmål": "Det danske spørgsmål her",
-        "spørgsmålEn": "The English question here"
-      },
-      ...
-    ]
-    
-    Hvis der ikke er behov for opfølgende spørgsmål, returnér et tomt array: [].
-    
-    VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`;
+Generer kun spørgsmål hvis opgavebeskrivelsen mangler vigtige detaljer. Hvis opgavebeskrivelsen allerede er meget udførlig og indeholder alle nødvendige oplysninger, skal du returnere et tomt array.
+
+Hvert spørgsmål skal have både en dansk og en engelsk version.
+
+Returnér kun gyldig JSON som output med følgende struktur:
+[
+  {
+    "spørgsmål": "Det danske spørgsmål her",
+    "spørgsmålEn": "The English question here"
+  },
+  ...
+]
+
+Hvis der ikke er behov for opfølgende spørgsmål, returnér et tomt array: [].
+
+VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`;
+
+    // Fetch extra rules from settings and combine with standard prompt
+    let systemPrompt = standardSystemPrompt;
+    try {
+      const indstillinger = await Indstillinger.findOne({ singleton: "ONLY_ONE" });
+      if (indstillinger?.aiExtraRules && indstillinger.aiExtraRules.trim() !== "") {
+        // Combine standard prompt with extra rules
+        systemPrompt = `${standardSystemPrompt}\n\nYDERLIGERE REGLER:\n${indstillinger.aiExtraRules}`;
+      }
+    } catch (err) {
+      console.warn("Kunne ikke hente indstillinger for ekstra regler, bruger kun standard:", err);
+    }
 
     const userPrompt = `Analysér følgende opgavebeskrivelse og generer relevante opfølgende spørgsmål hvis nødvendigt:\n\n${opgaveBeskrivelse}`;
 

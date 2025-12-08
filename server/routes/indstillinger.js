@@ -40,6 +40,11 @@ const indstillingerSchema = Joi.object({
     persondatapolitik: Joi.string()
       .max(1000)
       .allow("")
+      .optional(),
+    
+    aiExtraRules: Joi.string()
+      .max(5000)
+      .allow("")
       .optional()
 });
 
@@ -118,6 +123,7 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.opgavetyperKategorier !== undefined) updateData.opgavetyperKategorier = value.opgavetyperKategorier;
     if (value.handelsbetingelser !== undefined) updateData.handelsbetingelser = value.handelsbetingelser;
     if (value.persondatapolitik !== undefined) updateData.persondatapolitik = value.persondatapolitik;
+    if (value.aiExtraRules !== undefined) updateData.aiExtraRules = value.aiExtraRules;
 
     console.log("Update data:", updateData);
 

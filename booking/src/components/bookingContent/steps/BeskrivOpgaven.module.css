@@ -77,11 +77,16 @@
     color: #888;
 }
 
+.textareaWrapper {
+    position: relative;
+    width: 100%;
+}
+
 .opgavebeskrivelse {
     width: 100%!important;
     border-radius: 10px;
     margin-bottom: 0px;
-    padding: 8px 20px;
+    padding: 8px 20px 30px 20px;
     font-family: Omnes;
     font-size: 0.9rem;
     height: 180px!important;
@@ -90,6 +95,12 @@
     background: #ffffff;
     transition: all 0.2s ease;
     box-shadow: none;
+    cursor: pointer;
+}
+
+.opgavebeskrivelse:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
 
 .opgavebeskrivelse::placeholder {
@@ -126,6 +137,34 @@
         border-color: #4da816;
         box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.2);
     }
+}
+
+.analyzingOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 10px;
+    border: 2px solid #59bf1a;
+    box-shadow: 0 0 0 3px rgba(89, 191, 26, 0.1), 0 4px 12px rgba(89, 191, 26, 0.15);
+    z-index: 10;
+    pointer-events: none;
+}
+
+.analyzingText {
+    font-family: Omnes;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #59bf1a;
+    margin: 0;
+    text-align: center;
 }
 
 /* Images styles */

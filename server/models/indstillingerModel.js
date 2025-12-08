@@ -38,6 +38,10 @@ const indstillingerSchema = new mongoose.Schema({
   persondatapolitik: {
     type: String,
     default: ""
+  },
+  aiExtraRules: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AnimatePresence } from 'framer-motion'
+import { AnimatePresence, motion } from 'framer-motion'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
 import { Trash2, ImagePlus } from 'lucide-react'
@@ -35,6 +35,7 @@ const BeskrivOpgaven = ({
     const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
+    const textareaRef = useRef(null)
 
     const [åbnBilledeIndex, setÅbnBilledeIndex] = useState(null)
     
@@ -270,20 +271,39 @@ const BeskrivOpgaven = ({
                         <span>{i18n.language === 'da' ? 'EN' : 'DA'}</span>
                     </button>
                 </div>
-                <textarea 
-                    name="opgavebeskrivelse" 
-                    placeholder={t('beskrivOpgaven.placeholder')}
-                    className={`${Styles.opgavebeskrivelse} ${shouldPulse ? Styles.pulsating : ''}`} 
-                    value={opgaveBeskrivelse} 
-                    onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
-                    enterKeyHint="done"
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && !e.shiftKey && wordCount >= 5 && onNavigateNext) {
-                        e.preventDefault()
-                        onNavigateNext()
-                      }
-                    }}
-                ></textarea>
+                <div className={Styles.textareaWrapper}>
+                    <textarea 
+                        ref={textareaRef}
+                        name="opgavebeskrivelse" 
+                        placeholder={t('beskrivOpgaven.placeholder')}
+                        className={`${Styles.opgavebeskrivelse} ${shouldPulse ? Styles.pulsating : ''}`} 
+                        value={opgaveBeskrivelse} 
+                        onChange={(e) => setOpgaveBeskrivelse(e.target.value)}
+                        disabled={isAnalyzing}
+                        style={{
+                            filter: isAnalyzing ? 'blur(2px)' : 'blur(0px)',
+                            transition: 'filter 0.3s ease-in-out'
+                        }}
+                    ></textarea>
+                    <AnimatePresence>
+                        {isAnalyzing && (
+                            <motion.div 
+                                className={Styles.analyzingOverlay}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            >
+                                <MoonLoader size={30} color="#59bf1a" />
+                                <p className={Styles.analyzingText}>
+                                    {t('beskrivOpgaven.analyserer')}
+                                    <br />
+                                    {t('beskrivOpgaven.etOjeblik')}
+                                </p>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
                 <AnimatePresence>
                     {showQuestionsPopup && aiQuestions.length > 0 && (
                         <AIFollowUpQuestionsPopup
@@ -293,6 +313,14 @@ const BeskrivOpgaven = ({
                             onClose={onCloseQuestions}
                             onContinue={onContinueQuestions}
                             isIntegrated={true}
+                            onFocusTextarea={() => {
+                              if (textareaRef.current) {
+                                textareaRef.current.focus()
+                                // Set cursor to end of text
+                                const length = textareaRef.current.value.length
+                                textareaRef.current.setSelectionRange(length, length)
+                              }
+                            }}
                         />
                     )}
                 </AnimatePresence>
