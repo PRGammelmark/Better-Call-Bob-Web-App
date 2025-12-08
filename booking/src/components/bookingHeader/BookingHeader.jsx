@@ -9,7 +9,6 @@ const BookingHeader = ({
   steps, 
   canNavigateToStep2, 
   canNavigateToStep3, 
-  canNavigateToStep4,
   wordCount = 0,
   valgtDato,
   valgtTidspunkt,
@@ -34,14 +33,9 @@ const BookingHeader = ({
       return canNavigateToStep2
     }
     
-    // Step 3: clickable if step 2 is clickable (same as step 2 condition)
+    // Step 3: clickable if step 2 condition is met
     if (stepNumber === 3) {
       return canNavigateToStep3
-    }
-    
-    // Step 4: clickable if step 3 condition is met (same as next button on step 3)
-    if (stepNumber === 4) {
-      return canNavigateToStep4
     }
     
     // Default: allow clicking

@@ -6,7 +6,6 @@ import BookingContent from './bookingContent/BookingContent'
 import BookingSummary from './bookingSummary/BookingSummary'
 import BookingHeader from './bookingHeader/BookingHeader'
 import BeskrivOpgaven from './bookingContent/steps/BeskrivOpgaven'
-import Ekstra from './bookingContent/steps/Ekstra'
 import TidOgSted from './bookingContent/steps/TidOgSted'
 import Kontaktinfo from './bookingContent/steps/Kontaktinfo'
 import BookingSuccess from './bookingContent/steps/BookingSuccess'
@@ -41,7 +40,10 @@ const PrimaryBookingComponent = () => {
   const [isLoadingKategorier, setIsLoadingKategorier] = useState(false)
   const [isLoadingKortBeskrivelse, setIsLoadingKortBeskrivelse] = useState(false)
   const [opfølgendeSpørgsmålSvar, setOpfølgendeSpørgsmålSvar] = useState({})
-  const [opfølgendeSpørgsmål, setOpfølgendeSpørgsmål] = useState([])
+  const [aiGeneratedQuestions, setAiGeneratedQuestions] = useState([])
+  const [showQuestionsPopup, setShowQuestionsPopup] = useState(false)
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
+  const [isAnalyzingStep1, setIsAnalyzingStep1] = useState(false)
   const [adresse, setAdresse] = useState("")
   const [formateretAdresse, setFormateretAdresse] = useState(null)
   const [valgtDato, setValgtDato] = useState(null)
@@ -89,23 +91,28 @@ const PrimaryBookingComponent = () => {
           opgaveBilleder={opgaveBilleder}
           setOpgaveBilleder={setOpgaveBilleder}
           wordCount={countWords(opgaveBeskrivelse)}
-          onNavigateNext={() => {
-            if (countWords(opgaveBeskrivelse) >= 5) {
-              handleStepChange(2)
+          onNavigateNext={handleStep1Next}
+          isAnalyzing={isAnalyzingStep1}
+          aiQuestions={aiGeneratedQuestions}
+          showQuestionsPopup={showQuestionsPopup}
+          currentQuestionIndex={currentQuestionIndex}
+          onQuestionIndexChange={setCurrentQuestionIndex}
+          onCloseQuestions={() => {
+            setShowQuestionsPopup(false)
+            // Optionally proceed to step 2 when closing
+            if (kortOpgavebeskrivelseDa && kategorier.length > 0) {
+              setDirection(1)
+              setCurrentStep(2)
             }
           }}
-        />
-      )
-    },
-    { 
-      label: 'Ekstra',
-      render: () => (
-        <Ekstra 
-          kategorier={kategorier}
-          isLoading={isLoadingKategorier}
-          onAnswersChange={setOpfølgendeSpørgsmålSvar}
-          initialAnswers={opfølgendeSpørgsmålSvar}
-          førsteUbesvaredeSpørgsmål={førsteUbesvaredeSpørgsmål}
+          onContinueQuestions={() => {
+            setShowQuestionsPopup(false)
+            // Proceed to step 2
+            if (kortOpgavebeskrivelseDa && kategorier.length > 0) {
+              setDirection(1)
+              setCurrentStep(2)
+            }
+          }}
         />
       )
     },
@@ -137,7 +144,7 @@ const PrimaryBookingComponent = () => {
           error={tidOgStedError}
           onErrorChange={setTidOgStedError}
           estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
-          pulseField={step3PulseField}
+          pulseField={step2PulseField}
         />
       )
     },
@@ -319,38 +326,15 @@ const PrimaryBookingComponent = () => {
     fetchKategorier()
   }, [currentStep, opgaveBeskrivelse])
 
-  // Fetch opfølgende spørgsmål when kategorier are available
-  useEffect(() => {
-    const fetchSpørgsmål = async () => {
-      if (kategorier && kategorier.length > 0) {
-        try {
-          // Extract Danish category names for API (handle both string and object formats)
-          const kategoriNavne = kategorier.map(k => typeof k === 'string' ? k : k.opgavetype)
-          const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/opfolgendeSporgsmaal/forKategorier`,
-            { kategorier: kategoriNavne }
-          )
-          setOpfølgendeSpørgsmål(response.data || [])
-        } catch (error) {
-          console.error('Error fetching opfølgende spørgsmål:', error)
-          setOpfølgendeSpørgsmål([])
-        }
-      } else {
-        setOpfølgendeSpørgsmål([])
-      }
-    }
 
-    fetchSpørgsmål()
-  }, [kategorier])
-
-  // Nulstil step 3 data når kategorier ændrer sig
+  // Nulstil step 2 data når kategorier ændrer sig
   useEffect(() => {
     const currentKategorierStr = JSON.stringify(kategorier)
     const lastKategorierStr = lastKategorierRef.current
     
     // Tjek om kategorier faktisk er ændret (ikke bare første render)
     if (lastKategorierStr !== currentKategorierStr && lastKategorierStr !== JSON.stringify([])) {
-      // Nulstil alle step 3 relaterede data
+      // Nulstil alle step 2 relaterede data
       setAvailableWorkerIDs([])
       setAvailableWorkerNames([])
       setAllAvailableSlots([])
@@ -367,7 +351,7 @@ const PrimaryBookingComponent = () => {
     lastKategorierRef.current = currentKategorierStr
   }, [kategorier])
 
-  // Hent ledige tider automatisk når man kommer tilbage til step 3 med eksisterende adresse og dato
+  // Hent ledige tider automatisk når man kommer tilbage til step 2 med eksisterende adresse og dato
   useEffect(() => {
     const fetchAvailableTimes = async () => {
       const hasAddress = adresse && adresse.trim()
@@ -375,7 +359,7 @@ const PrimaryBookingComponent = () => {
       const hasCategories = kategorier && kategorier.length > 0
       const needsData = allAvailableSlots.length === 0
       
-      if (currentStep === 3 && hasAddress && hasDate && hasCategories && needsData && !isLoadingWorkers && !isLoadingTimes) {
+      if (currentStep === 2 && hasAddress && hasDate && hasCategories && needsData && !isLoadingWorkers && !isLoadingTimes) {
         setIsLoadingWorkers(true)
         setIsLoadingTimes(true)
         setTidOgStedError(null)
@@ -449,43 +433,7 @@ const PrimaryBookingComponent = () => {
     fetchAvailableTimes()
   }, [currentStep, adresse, valgtDato, kategorier, allAvailableSlots.length, isLoadingWorkers, isLoadingTimes, estimeretTidsforbrugTimer])
 
-  // Get first 3 questions (highest priority) - maks 3 spørgsmål
-  const førsteTreSpørgsmål = React.useMemo(() => {
-    if (!opfølgendeSpørgsmål || opfølgendeSpørgsmål.length === 0) return []
-    return opfølgendeSpørgsmål.slice(0, 3)
-  }, [opfølgendeSpørgsmål])
-
-  // Calculate answered questions count (only for first 3)
-  const antalBesvaredeSpørgsmål = React.useMemo(() => {
-    if (!førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) return 0
-    
-    return førsteTreSpørgsmål.filter(spørgsmål => {
-      const svar = opfølgendeSpørgsmålSvar[spørgsmål.feltNavn]
-      return svar !== null && svar !== undefined && svar !== ''
-    }).length
-  }, [førsteTreSpørgsmål, opfølgendeSpørgsmålSvar])
-
-  const totaltAntalSpørgsmål = førsteTreSpørgsmål.length
-
-  // Find first unanswered question in step 2 (only from first 3)
-  const førsteUbesvaredeSpørgsmål = React.useMemo(() => {
-    if (currentStep !== 2 || !førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) {
-      return null
-    }
-    
-    return førsteTreSpørgsmål.find(spørgsmål => {
-      const svar = opfølgendeSpørgsmålSvar[spørgsmål.feltNavn]
-      return svar === null || svar === undefined || svar === ''
-    })
-  }, [currentStep, førsteTreSpørgsmål, opfølgendeSpørgsmålSvar])
-
-  // Check if all questions in step 2 are answered (only first 3)
-  const alleSpørgsmålBesvarede = React.useMemo(() => {
-    if (currentStep !== 2 || !førsteTreSpørgsmål || førsteTreSpørgsmål.length === 0) {
-      return false
-    }
-    return antalBesvaredeSpørgsmål === totaltAntalSpørgsmål
-  }, [currentStep, antalBesvaredeSpørgsmål, totaltAntalSpørgsmål, førsteTreSpørgsmål])
+  const totaltAntalSpørgsmål = aiGeneratedQuestions.length
 
   // Helper function to extract postnummerOgBy from address
   const extractPostnummerOgBy = (address) => {
@@ -690,8 +638,87 @@ const PrimaryBookingComponent = () => {
     }
   }
 
+  // Handler for step 1 "Next" button - analyzes task and generates questions
+  const handleStep1Next = async () => {
+    if (countWords(opgaveBeskrivelse) < 5) {
+      return // Don't proceed if less than 5 words
+    }
+
+    setIsAnalyzingStep1(true)
+    
+    try {
+      // Call all three endpoints in parallel
+      const [summaryResponse, categoriesResponse, questionsResponse] = await Promise.all([
+        axios.post(
+          `${import.meta.env.VITE_API_URL}/ai/summarizeOpgavebeskrivelse`,
+          { opgaveBeskrivelse }
+        ),
+        axios.post(
+          `${import.meta.env.VITE_API_URL}/ai/parseKategorierFromText`,
+          { opgaveBeskrivelse }
+        ),
+        axios.post(
+          `${import.meta.env.VITE_API_URL}/ai/generateQuestions`,
+          { opgaveBeskrivelse }
+        )
+      ])
+
+      // Handle summary response
+      if (typeof summaryResponse.data === 'string') {
+        setKortOpgavebeskrivelseDa(summaryResponse.data || opgaveBeskrivelse)
+        setKortOpgavebeskrivelseEn(summaryResponse.data || opgaveBeskrivelse)
+        setEstimeretTidsforbrugTimer(null)
+      } else {
+        const opsummeringDa = summaryResponse.data?.opsummeringDa || ""
+        const opsummeringEn = summaryResponse.data?.opsummeringEn || ""
+        setKortOpgavebeskrivelseDa(opsummeringDa || opgaveBeskrivelse)
+        setKortOpgavebeskrivelseEn(opsummeringEn || opgaveBeskrivelse)
+        setEstimeretTidsforbrugTimer(summaryResponse.data?.estimeretTidsforbrugTimer || null)
+      }
+
+      // Handle categories response
+      setKategorier(categoriesResponse.data || [])
+      lastAnalyzedBeskrivelseRef.current = opgaveBeskrivelse.trim()
+      lastSummarizedBeskrivelseRef.current = opgaveBeskrivelse.trim()
+
+      // Handle questions response
+      const questions = questionsResponse.data || []
+      setAiGeneratedQuestions(questions)
+      
+      if (questions.length === 0) {
+        // No questions - proceed to step 2
+        setDirection(1)
+        setCurrentStep(2)
+      } else {
+        // Questions generated - show popup and stay in step 1
+        setCurrentQuestionIndex(0)
+        setShowQuestionsPopup(true)
+      }
+    } catch (error) {
+      console.error('Error analyzing step 1:', error)
+      // On error, proceed to step 2 anyway
+      setDirection(1)
+      setCurrentStep(2)
+    } finally {
+      setIsAnalyzingStep1(false)
+    }
+  }
+
   // Wrapper function to handle step changes with direction tracking
   const handleStepChange = (newStep) => {
+    // If trying to go forward from step 1, check if questions are already generated
+    if (currentStep === 1 && newStep === 2) {
+      // If questions are already generated, proceed to step 2
+      if (aiGeneratedQuestions.length > 0) {
+        setDirection(1)
+        setCurrentStep(2)
+      } else {
+        // Otherwise, generate questions first
+        handleStep1Next()
+      }
+      return
+    }
+    
     if (newStep > currentStep) {
       setDirection(1) // Forward
     } else if (newStep < currentStep) {
@@ -719,9 +746,9 @@ const PrimaryBookingComponent = () => {
   
   const hasSlotsWithin4Months = slotsWithin4Months.length > 0
   
-  // Determine which field should pulse in step 3 (priority: adresse → dato → tidsunkt)
-  const step3PulseField = React.useMemo(() => {
-    if (currentStep !== 3) return null
+  // Determine which field should pulse in step 2 (priority: adresse → dato → tidsunkt)
+  const step2PulseField = React.useMemo(() => {
+    if (currentStep !== 2) return null
     
     const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
     const hasDate = valgtDato !== null && valgtDato !== undefined
@@ -757,9 +784,9 @@ const PrimaryBookingComponent = () => {
     return null
   }, [currentStep, formateretAdresse, adresse, valgtDato, valgtTidspunkt, manualTimePreference, availableWorkerIDs, slotsWithin4Months])
 
-  // Check if step 3 is complete
-  const isStep3Complete = React.useMemo(() => {
-    if (currentStep !== 3) return false
+  // Check if step 2 (Tid & Sted) is complete
+  const isStep2Complete = React.useMemo(() => {
+    if (currentStep !== 2) return false
     
     const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
     const hasDate = valgtDato !== null && valgtDato !== undefined
@@ -784,31 +811,27 @@ const PrimaryBookingComponent = () => {
     return false
   }, [currentStep, formateretAdresse, adresse, valgtDato, valgtTidspunkt, manualTimePreference, availableWorkerIDs, slotsWithin4Months])
   
-  // Check if step 3 is valid: either has date+time OR manual time preference (when no workers OR no slots within 4 months)
+  // Check if step 2 (Tid & Sted) is valid: either has date+time OR manual time preference (when no workers OR no slots within 4 months)
   // Also requires address to be filled
   const hasAddress = (formateretAdresse || adresse) && (formateretAdresse || adresse).trim().length > 0
-  const isStep3Valid = currentStep !== 3 || 
+  const isStep2Valid = currentStep !== 2 || 
     (hasAddress && availableWorkerIDs.length > 0 && hasSlotsWithin4Months && valgtDato && valgtTidspunkt) ||
     (hasAddress && availableWorkerIDs.length > 0 && !hasSlotsWithin4Months && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
     (hasAddress && availableWorkerIDs.length === 0 && !isLoadingWorkers && manualTimePreference.trim().length > 0)
   
-  // Check if step 4 is valid (handled by Kontaktinfo component via onValidationChange)
-  const isStep4ValidCheck = currentStep !== 4 || isStep4Valid
+  // Check if step 3 (Kontaktinfo) is valid (handled by Kontaktinfo component via onValidationChange)
+  const isStep3ValidCheck = currentStep !== 3 || isStep4Valid
   
-  const isStepValid = isStep1Valid && isStep3Valid && isStep4ValidCheck
-  const shouldPulseButton = (currentStep === 1 && wordCount >= 5 && !isSubmitting) || 
-                            (currentStep === 2 && alleSpørgsmålBesvarede && !isSubmitting) ||
-                            (currentStep === 3 && isStep3Complete && !isSubmitting)
+  const isStepValid = isStep1Valid && isStep2Valid && isStep3ValidCheck
+  const shouldPulseButton = (currentStep === 1 && wordCount >= 5 && !isSubmitting && !isAnalyzingStep1) || 
+                            (currentStep === 2 && isStep2Complete && !isSubmitting)
 
   // Navigation conditions: check actual conditions regardless of current step
-  // Step 2 can be accessed if step 1 condition is met (wordCount >= 5)
+  // Step 2 (Tid & Sted) can be accessed if step 1 condition is met (wordCount >= 5)
   const canNavigateToStep2 = wordCount >= 5
   
-  // Step 3 can be accessed if step 2 can be accessed (same condition)
-  const canNavigateToStep3 = canNavigateToStep2
-  
-  // Step 4 can be accessed if step 3 condition is met
-  const canNavigateToStep4 = 
+  // Step 3 (Kontaktinfo) can be accessed if step 2 condition is met
+  const canNavigateToStep3 = 
     (hasAddress && availableWorkerIDs.length > 0 && hasSlotsWithin4Months && valgtDato && valgtTidspunkt) ||
     (hasAddress && availableWorkerIDs.length > 0 && !hasSlotsWithin4Months && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
     (hasAddress && availableWorkerIDs.length === 0 && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
@@ -825,7 +848,7 @@ const PrimaryBookingComponent = () => {
             estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
             kategorier={kategorier}
             opfølgendeSpørgsmålSvar={opfølgendeSpørgsmålSvar}
-            opfølgendeSpørgsmål={opfølgendeSpørgsmål}
+            aiGeneratedQuestions={aiGeneratedQuestions}
             adresse={adresse}
             formateretAdresse={formateretAdresse}
             valgtDato={valgtDato}
@@ -857,7 +880,6 @@ const PrimaryBookingComponent = () => {
           steps={steps}
           canNavigateToStep2={canNavigateToStep2}
           canNavigateToStep3={canNavigateToStep3}
-          canNavigateToStep4={canNavigateToStep4}
           wordCount={wordCount}
           valgtDato={valgtDato}
           valgtTidspunkt={valgtTidspunkt}
@@ -876,7 +898,6 @@ const PrimaryBookingComponent = () => {
             steps={steps}
             canNavigateToStep2={canNavigateToStep2}
             canNavigateToStep3={canNavigateToStep3}
-            canNavigateToStep4={canNavigateToStep4}
             wordCount={wordCount}
             valgtDato={valgtDato}
             valgtTidspunkt={valgtTidspunkt}
@@ -895,12 +916,11 @@ const PrimaryBookingComponent = () => {
             setCurrentStep={handleStepChange}
             isLastStep={isLastStep}
             onConfirm={handleConfirmBooking}
-            isSubmitting={isSubmitting}
+            isSubmitting={isSubmitting || isAnalyzingStep1}
             recaptchaSiteKey={recaptchaSiteKey}
             isStepValid={isStepValid}
             shouldPulse={shouldPulseButton}
             wordCount={wordCount}
-            antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
             onShowSummary={() => setShowSummaryModal(true)}
           />
         </div>
@@ -913,13 +933,12 @@ const PrimaryBookingComponent = () => {
           setCurrentStep={handleStepChange}
           isLastStep={isLastStep}
           onConfirm={handleConfirmBooking}
-          isSubmitting={isSubmitting}
+          isSubmitting={isSubmitting || isAnalyzingStep1}
           recaptchaSiteKey={recaptchaSiteKey}
-          isStepValid={isStepValid}
-          shouldPulse={shouldPulseButton}
-          wordCount={wordCount}
-          antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
-          onShowSummary={() => setShowSummaryModal(true)}
+            isStepValid={isStepValid}
+            shouldPulse={shouldPulseButton}
+            wordCount={wordCount}
+            onShowSummary={() => setShowSummaryModal(true)}
         />
       </div>
       <div className={Styles.summaryContainer}>
@@ -930,7 +949,6 @@ const PrimaryBookingComponent = () => {
           estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
           kategorier={kategorier}
           isLoadingKortBeskrivelse={isLoadingKortBeskrivelse}
-          antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
           totaltAntalSpørgsmål={totaltAntalSpørgsmål}
           adresse={adresse}
           valgtDato={valgtDato}
@@ -994,7 +1012,6 @@ const PrimaryBookingComponent = () => {
                   estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
                   kategorier={kategorier}
                   isLoadingKortBeskrivelse={isLoadingKortBeskrivelse}
-                  antalBesvaredeSpørgsmål={antalBesvaredeSpørgsmål}
                   totaltAntalSpørgsmål={totaltAntalSpørgsmål}
                   adresse={adresse}
                   valgtDato={valgtDato}
@@ -1118,31 +1135,6 @@ const PrimaryBookingComponent = () => {
                 )}
               </div>
 
-              {/* Opfølgende Spørgsmål */}
-              {Object.keys(opfølgendeSpørgsmålSvar).length > 0 && (
-                <div style={{ marginBottom: '20px' }}>
-                  <h4 style={{ fontFamily: 'OmnesBold', fontSize: '0.95rem', color: '#222222', marginBottom: '10px' }}>Opfølgende spørgsmål</h4>
-                  {Object.entries(opfølgendeSpørgsmålSvar).map(([key, value]) => {
-                    if (value === null || value === undefined || value === '') return null
-                    const spørgsmål = opfølgendeSpørgsmål.find(s => s.feltNavn === key)
-                    // Use English text if language is English and English text exists
-                    const displaySpørgsmålTekst = spørgsmål && i18n.language === 'en' && spørgsmål.spørgsmålEn 
-                      ? spørgsmål.spørgsmålEn 
-                      : (spørgsmål?.spørgsmål || key)
-                    // For select options, if value contains ":", show only the English part when language is English
-                    let displayValue = String(value)
-                    if (spørgsmål?.type === 'Valgmuligheder' && i18n.language === 'en' && value.includes(':')) {
-                      const parts = String(value).split(':')
-                      displayValue = parts.length > 1 ? parts[1].trim() : displayValue
-                    }
-                    return (
-                      <p key={key} className={SummaryStyles.popupText} style={{ marginBottom: '6px', fontSize: '0.85rem' }}>
-                        <strong>{displaySpørgsmålTekst}:</strong> {displayValue}
-                      </p>
-                    )
-                  })}
-                </div>
-              )}
 
               {/* Kommentarer */}
               {kommentarer && kommentarer.trim() && (
@@ -1251,7 +1243,7 @@ const PrimaryBookingComponent = () => {
             </motion.div>
           </>
         )}
-      </AnimatePresence>
+          </AnimatePresence>
     </div>
   );
 };

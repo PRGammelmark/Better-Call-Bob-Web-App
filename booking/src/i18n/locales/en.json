@@ -1,7 +1,6 @@
 {
   "steps": {
     "dinOpgave": "Your task",
-    "ekstra": "Extra",
     "tidOgSted": "Time & place",
     "kontaktinfo": "Contact info"
   },
@@ -13,7 +12,9 @@
     "opsummeringBekraeft": "Summary & confirm",
     "sender": "Sending...",
     "ja": "Yes",
-    "nej": "No"
+    "nej": "No",
+    "luk": "Close",
+    "fortsæt": "Continue"
   },
   "validation": {
     "mindst5Ord": "Describe your task with at least 5 words ({{count}}/5)",
@@ -32,7 +33,10 @@
     "aiBehandlerInfo": "We AI-process your task to help you better. Click \"Next\" to continue. We only store personal data with your consent.",
     "skiftSprogTilEngelsk": "Switch to English",
     "skiftSprogTilDansk": "Switch to Danish",
-    "placeholder": "Example:\n\n'I need to hang 2 curtains, 5 pictures, a TV, assemble a wardrobe and mount a lamp. The walls are made of concrete and I have a ladder.'"
+    "placeholder": "Example:\n\n'I need to hang 2 curtains, 5 pictures, a TV, assemble a wardrobe and mount a lamp. The walls are made of concrete and I have a ladder.'",
+    "spørgsmål": "Question",
+    "uddybendeSporgsmaal": "Follow-up questions",
+    "opdaterBeskrivelse": "Please update your task description with more information."
   },
   "kontaktinfo": {
     "kontaktinfo": "Contact info",
@@ -107,7 +111,7 @@
     "beskrivDinOpgave": "Describe your task ...",
     "opsummererOpgave": "Summarizing task...",
     "detaljer": "Details",
-    "opfølgendeSporgsmaal": "Follow-up questions: {{answered}}/{{total}}",
+    "opfølgendeSporgsmaal": "Follow-up questions: {{total}}",
     "anslaaetTidsforbrug": "Estimated time: {{hours}} {{hoursText}}",
     "time": "hour",
     "timer": "hours",

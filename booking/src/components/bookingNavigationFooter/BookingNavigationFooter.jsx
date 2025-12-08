@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import Styles from './BookingNavigationFooter.module.css'
 import Tooltip from '../basicComponents/Tooltip'
 
-const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey, isStepValid = true, shouldPulse = false, wordCount = 0, antalBesvaredeSpørgsmål = 0, onShowSummary }) => {
+const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey, isStepValid = true, shouldPulse = false, wordCount = 0, onShowSummary }) => {
   const { t } = useTranslation()
 
   // Determine tooltip message for disabled "Næste" button
@@ -15,7 +15,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
       if (currentStep === 1) {
         return t('validation.mindst5Ord', { count: wordCount })
       }
-      if (currentStep === 4 || isLastStep) {
+      if (currentStep === 3 || isLastStep) {
         return t('validation.udfyldAlleFelterKontakt')
       }
       return t('validation.udfyldAlleFelter')
@@ -23,18 +23,10 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
     return null
   }
 
-  const isNextButtonDisabled = isSubmitting || !isStepValid
+  const isNextButtonDisabled = (isSubmitting !== undefined ? isSubmitting : false) || !isStepValid
   const tooltipMessage = isNextButtonDisabled ? getDisabledTooltipMessage() : null
 
-  // Determine button text for step 2 (Ekstra step)
-  const getNextButtonText = () => {
-    if (currentStep === 2 && antalBesvaredeSpørgsmål === 0) {
-      return t('buttons.springOver')
-    }
-    return t('buttons.naeste')
-  }
-
-  const nextButtonText = getNextButtonText()
+  const nextButtonText = t('buttons.naeste')
 
   return (
     <div className={Styles.bookingNavigationFooter}>
@@ -132,7 +124,14 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
               onClick={() => setCurrentStep(currentStep + 1)} 
               disabled={isNextButtonDisabled}
             >
-              {nextButtonText}
+              {isSubmitting ? (
+                <span className={Styles.buttonContent}>
+                  <span className={Styles.spinner}></span>
+                  {t('buttons.sender')}
+                </span>
+              ) : (
+                nextButtonText
+              )}
             </button>
           </Tooltip>
         ) : (
@@ -141,7 +140,14 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
             onClick={() => setCurrentStep(currentStep + 1)} 
             disabled={isNextButtonDisabled}
           >
-            {nextButtonText}
+            {isSubmitting ? (
+              <span className={Styles.buttonContent}>
+                <span className={Styles.spinner}></span>
+                {t('buttons.sender')}
+              </span>
+            ) : (
+              nextButtonText
+            )}
           </button>
         )
       )}

@@ -1,7 +1,6 @@
 {
   "steps": {
     "dinOpgave": "Din opgave",
-    "ekstra": "Ekstra",
     "tidOgSted": "Tid & sted",
     "kontaktinfo": "Kontaktinfo"
   },
@@ -13,7 +12,9 @@
     "opsummeringBekraeft": "Opsummering & bekræft",
     "sender": "Sender...",
     "ja": "Ja",
-    "nej": "Nej"
+    "nej": "Nej",
+    "luk": "Luk",
+    "fortsæt": "Fortsæt"
   },
   "validation": {
     "mindst5Ord": "Beskriv din opgave med mindst 5 ord ({{count}}/5)",
@@ -32,7 +33,10 @@
     "aiBehandlerInfo": "Vi AI-behandler din opgave for at hjælpe dig bedre. Tryk \"Næste\" for at fortsætte. Vi gemmer kun persondata med dit samtykke.",
     "skiftSprogTilEngelsk": "Skift sprog til engelsk",
     "skiftSprogTilDansk": "Skift sprog til dansk",
-    "placeholder": "Eksempel:\n\n'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'"
+    "placeholder": "Eksempel:\n\n'Jeg skal have hængt 2 gardiner op, 5 billeder, et tv, samlet et klædeskab og monteret en lampe. Væggene er af beton og jeg har en stige.'",
+    "spørgsmål": "Spørgsmål",
+    "uddybendeSporgsmaal": "Uddyb gerne",
+    "opdaterBeskrivelse": "Opdater venligst din opgavebeskrivelse med mere information."
   },
   "kontaktinfo": {
     "kontaktinfo": "Kontaktinfo",
@@ -107,7 +111,7 @@
     "beskrivDinOpgave": "Beskriv din opgave ...",
     "opsummererOpgave": "Opsummerer opgave...",
     "detaljer": "Detaljer",
-    "opfølgendeSporgsmaal": "Opfølgende spørgsmål: {{answered}}/{{total}}",
+    "opfølgendeSporgsmaal": "Opfølgende spørgsmål: {{total}}",
     "anslaaetTidsforbrug": "Anslået tidsforbrug: {{hours}} {{hoursText}}",
     "time": "time",
     "timer": "timer",

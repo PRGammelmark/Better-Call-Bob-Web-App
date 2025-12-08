@@ -1,0 +1,426 @@
+.popupOverlay {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.popupContainer {
+  width: 100%;
+  max-width: 600px;
+  background-color: rgba(34, 34, 34, 0.95);
+  border-radius: 24px 24px 0 0;
+  padding: 24px;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  max-height: 50vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.closeButton:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 1);
+}
+
+.popupContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.questionNumber {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.questionText {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.95);
+  line-height: 1.6;
+  font-weight: 500;
+  margin: 0;
+  width: 100%;
+}
+
+.instructionText {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  line-height: 1.5;
+  margin: 0;
+  margin-top: 8px;
+}
+
+.popupFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navButton {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  padding: 12px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s, color 0.2s;
+  min-width: 48px;
+}
+
+.navButton:hover:not(.navButtonDisabled) {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 1);
+}
+
+.navButtonDisabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.dotsContainer {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(34, 34, 34, 0.3);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.dotActive {
+  background-color: rgba(34, 34, 34, 0.8);
+  transform: scale(1.2);
+}
+
+.continueButton {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: rgba(255, 255, 255, 0.95);
+  cursor: pointer;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s;
+  min-width: 100px;
+}
+
+.continueButton:hover {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 1);
+}
+
+/* Integrated version - inside the form */
+.integratedContainer {
+  width: 90%;
+  max-width: 500px;
+  background-color: #fafafa;
+  border: 1px solid rgba(89, 191, 26, 0.25);
+  border-radius: 12px;
+  padding: 16px 30px;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: -20px;
+  margin-bottom: 0;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+  z-index: 10;
+  overflow: visible;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 8px 0px, rgba(89, 191, 26, 0.05) 0px 0px 0px 1px;
+}
+
+.integratedHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  position: absolute;
+  top: -10px;
+  left: 30px;
+}
+
+.integratedContent {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow: hidden;
+  position: relative;
+}
+
+.questionWrapper {
+  position: relative;
+  width: 100%;
+  min-height: 2.6em;
+  overflow: hidden;
+}
+
+.integratedFooter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 4px;
+  min-height: 20px;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+
+.integratedContainer .questionNumber {
+  font-size: 0.6875rem;
+  color: rgba(89, 191, 26, 0.9);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background-color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(89, 191, 26, 0.2);
+  white-space: nowrap;
+}
+
+.integratedContainer .questionText {
+  font-size: 0.9375rem;
+  color: #222222;
+  line-height: 1.4;
+  font-weight: 500;
+  margin: 0;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  flex-shrink: 0;
+}
+
+.integratedContainer .instructionText {
+  font-size: 0.75rem;
+  color: rgba(34, 34, 34, 0.7);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.integratedContainer .dotsContainer {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ffffff;
+  border: 1px solid rgba(89, 191, 26, 0.2);
+  border-radius: 20px;
+  padding: 6px 12px;
+  z-index: 15;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 6px 0px, rgba(89, 191, 26, 0.1) 0px 0px 0px 1px;
+}
+
+.integratedContainer .dotsContainer .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(89, 191, 26, 0.3);
+  transition: background-color 0.2s, transform 0.2s;
+}
+
+.integratedContainer .dotsContainer .dotActive {
+  background-color: rgba(89, 191, 26, 0.9);
+  transform: scale(1.2);
+}
+
+.integratedContainer .navButton {
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: #ffffff;
+  color: #222222;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  border: 1px solid rgba(89, 191, 26, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 2px 6px 0px;
+  transition: all 0.2s ease, transform 0.15s ease;
+}
+
+.integratedContainer .navButton:active {
+  transform: translateY(-50%) scale(0.97);
+}
+
+.integratedContainer .navButtonLeft {
+  left: -16px;
+}
+
+.integratedContainer .navButtonRight {
+  right: -16px;
+}
+
+/* Desktop: Ensure arrows are positioned relative to container and half overlapping */
+@media (min-width: 769px) {
+  .integratedContainer .navButton {
+    position: absolute;
+  }
+  
+  .integratedContainer .navButtonLeft {
+    left: -16px;
+  }
+
+  .integratedContainer .navButtonRight {
+    right: -16px;
+  }
+  
+  .integratedContainer .continueButton {
+    position: absolute;
+    right: -45px;
+  }
+}
+
+.integratedContainer .navButton:hover:not(.navButtonDisabled) {
+  background-color: rgba(89, 191, 26, 0.08);
+  border-color: rgba(89, 191, 26, 0.4);
+  color: rgba(89, 191, 26, 0.9);
+  box-shadow: rgba(89, 191, 26, 0.15) 0px 2px 8px 0px;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.integratedContainer .navButton:hover:not(.navButtonDisabled):active {
+  transform: translateY(-50%) scale(0.97);
+}
+
+.integratedContainer .continueButton {
+  padding: 10px 20px;
+  font-size: 0.875rem;
+  min-width: 90px;
+  background: rgba(34, 34, 34, 0.15);
+  color: #222222;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: -45px;
+  z-index: 20;
+}
+
+.integratedContainer .continueButton:hover {
+  background-color: rgba(34, 34, 34, 0.25);
+  color: #222222;
+}
+
+/* Mobile optimizations */
+@media (max-width: 750px) {
+  .popupContainer {
+    max-height: 60vh;
+    padding: 20px;
+  }
+
+  .questionText {
+    font-size: 1rem;
+  }
+
+  .popupFooter {
+    gap: 12px;
+  }
+
+  .navButton {
+    min-width: 44px;
+    padding: 10px;
+  }
+
+  .continueButton {
+    padding: 10px 20px;
+    font-size: 0.875rem;
+  }
+
+  .integratedContainer {
+    padding: 16px;
+    padding-top: 24px;
+    gap: 12px;
+  }
+
+  .integratedContainer .questionText {
+    font-size: 0.9375rem;
+  }
+
+  .integratedContainer .instructionText {
+    font-size: 0.75rem;
+  }
+
+  .integratedFooter {
+    padding-top: 15px;
+    justify-content: center;
+    gap: 0;
+    min-height: 20px;
+  }
+
+  .integratedFooter .navButton,
+  .integratedFooter .navButtonLeft,
+  .integratedFooter .navButtonRight {
+    display: none;
+  }
+
+  .integratedFooter .continueButton,
+  .integratedFooter .continueButtonRight {
+    display: none;
+  }
+
+  .integratedFooter .dotsContainer {
+    flex: none;
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+}
+

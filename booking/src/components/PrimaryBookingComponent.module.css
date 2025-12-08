@@ -2,7 +2,7 @@
 .primaryBookingComponent {
     display: flex;
     flex-direction: row;
-    height: clamp(500px, 80vh, 1200px);
+    height: clamp(800px, 80vh, 1200px);
     width: clamp(1030px, 80vw, 1400px);
     /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.28); */
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;    border-radius: 10px;

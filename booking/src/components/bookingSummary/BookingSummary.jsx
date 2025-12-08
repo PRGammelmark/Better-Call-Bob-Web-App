@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import Styles from './BookingSummary.module.css'
 import { ShieldCheck, Tag, Clock, Check, MapPin, CalendarCheck, X, User, Mail, Phone, Building2 } from 'lucide-react'
@@ -7,14 +7,38 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import 'dayjs/locale/en'
 
-const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kategorier, isLoadingKortBeskrivelse, antalBesvaredeSpørgsmål, totaltAntalSpørgsmål, adresse, valgtDato, valgtTidspunkt, manualTimePreference, fuldeNavn, email, telefonnummer, erVirksomhed, virksomhed, cvr, onClose }) => {
+const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kategorier, isLoadingKortBeskrivelse, totaltAntalSpørgsmål, adresse, valgtDato, valgtTidspunkt, manualTimePreference, fuldeNavn, email, telefonnummer, erVirksomhed, virksomhed, cvr, onClose }) => {
   const { t, i18n } = useTranslation()
   const [showPopup, setShowPopup] = useState(false)
+  const [showKategorier, setShowKategorier] = useState(false)
+  const holdTimerRef = useRef(null)
   
   // Opdater dayjs locale når sprog skifter
   useEffect(() => {
     dayjs.locale(i18n.language)
   }, [i18n.language])
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current)
+      }
+    }
+  }, [])
+
+  const handlePressStart = () => {
+    holdTimerRef.current = setTimeout(() => {
+      setShowKategorier(true)
+    }, 1000)
+  }
+
+  const handlePressEnd = () => {
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current)
+      holdTimerRef.current = null
+    }
+  }
   return (
     <div className={Styles.bookingSummaryContainer}>
       <div className={Styles.bookingSummaryHeadingContainer}>
@@ -42,33 +66,77 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
 
         <div className={Styles.opgaveBeskrivelseContainer}>
           {!kortOpgavebeskrivelse && !isLoadingKortBeskrivelse && (
-            <p className={Styles.kortBeskrivelse}>{t('summary.beskrivDinOpgave')}</p>
+            <p 
+              className={Styles.kortBeskrivelse}
+              onMouseDown={handlePressStart}
+              onMouseUp={handlePressEnd}
+              onMouseLeave={handlePressEnd}
+              onTouchStart={handlePressStart}
+              onTouchEnd={handlePressEnd}
+              style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+            >
+              {t('summary.beskrivDinOpgave')}
+            </p>
           )}
           {isLoadingKortBeskrivelse ? (
-            <p className={Styles.kortBeskrivelse}>{t('summary.opsummererOpgave')}</p>
+            <p 
+              className={Styles.kortBeskrivelse}
+              onMouseDown={handlePressStart}
+              onMouseUp={handlePressEnd}
+              onMouseLeave={handlePressEnd}
+              onTouchStart={handlePressStart}
+              onTouchEnd={handlePressEnd}
+              style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+            >
+              {t('summary.opsummererOpgave')}
+            </p>
           ) : (
-            <b className={Styles.kortBeskrivelse}>{kortOpgavebeskrivelse}</b>
+            <b 
+              className={Styles.kortBeskrivelse}
+              onMouseDown={handlePressStart}
+              onMouseUp={handlePressEnd}
+              onMouseLeave={handlePressEnd}
+              onTouchStart={handlePressStart}
+              onTouchEnd={handlePressEnd}
+              style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+            >
+              {kortOpgavebeskrivelse}
+            </b>
           )}
         </div>
 
-        {kategorier && kategorier.length > 0 && (
-          <div className={Styles.kategorierContainer}>
-            <div className={Styles.kategorierListe}>
-              {kategorier.map((kategori, index) => {
-                // Handle both string and object formats, use English if language is English
-                const displayKategori = typeof kategori === 'string' 
-                  ? kategori 
-                  : (i18n.language === 'en' && kategori.opgavetypeEn ? kategori.opgavetypeEn : kategori.opgavetype)
-                return (
-                  <span key={index} className={Styles.kategoriPill}>
-                    <Tag size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-                    {displayKategori}
-                  </span>
-                )
-              })}
-            </div>
-          </div>
-        )}
+        <AnimatePresence>
+          {showKategorier && kategorier && kategorier.length > 0 && (
+            <motion.div 
+              className={Styles.kategorierContainer}
+              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+              animate={{ opacity: 1, height: 'auto', marginBottom: 15 }}
+              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+              transition={{ duration: 0.3, ease: 'easeOut' }}
+            >
+              <div className={Styles.kategorierListe}>
+                {kategorier.map((kategori, index) => {
+                  // Handle both string and object formats, use English if language is English
+                  const displayKategori = typeof kategori === 'string' 
+                    ? kategori 
+                    : (i18n.language === 'en' && kategori.opgavetypeEn ? kategori.opgavetypeEn : kategori.opgavetype)
+                  return (
+                    <motion.span 
+                      key={index} 
+                      className={Styles.kategoriPill}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: index * 0.05, duration: 0.2 }}
+                    >
+                      <Tag size={12} style={{ marginRight: 4, verticalAlign: 'middle' }} />
+                      {displayKategori}
+                    </motion.span>
+                  )
+                })}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
         {(totaltAntalSpørgsmål > 0 || 
           (estimeretTidsforbrugTimer !== null && estimeretTidsforbrugTimer !== undefined) || 
           (adresse && adresse.trim()) || 
@@ -80,7 +148,7 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
               <div className={Styles.opfølgendeSpørgsmålContainer}>
                 <Check size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />
                 <span className={Styles.opfølgendeSpørgsmål}>
-                  {t('summary.opfølgendeSporgsmaal', { answered: antalBesvaredeSpørgsmål, total: totaltAntalSpørgsmål })}
+                  {t('summary.opfølgendeSporgsmaal', { total: totaltAntalSpørgsmål })}
                 </span>
               </div>
             )}

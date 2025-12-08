@@ -315,4 +315,81 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
   }
 });
 
+router.post("/generateQuestions", async (req, res) => {
+  const { opgaveBeskrivelse } = req.body;
+
+  if (!opgaveBeskrivelse) {
+    return res.status(400).json({ error: "Manglende opgaveBeskrivelse i request body" });
+  }
+
+  try {
+    const systemPrompt = `Du skal analysere en opgavebeskrivelse og generere relevante opfølgende spørgsmål, der kan hjælpe med at få mere information om opgaven.
+    
+    Generer kun spørgsmål hvis opgavebeskrivelsen mangler vigtige detaljer. Hvis opgavebeskrivelsen allerede er meget udførlig og indeholder alle nødvendige oplysninger, skal du returnere et tomt array.
+    
+    Hvert spørgsmål skal have både en dansk og en engelsk version.
+    
+    Returnér kun gyldig JSON som output med følgende struktur:
+    [
+      {
+        "spørgsmål": "Det danske spørgsmål her",
+        "spørgsmålEn": "The English question here"
+      },
+      ...
+    ]
+    
+    Hvis der ikke er behov for opfølgende spørgsmål, returnér et tomt array: [].
+    
+    VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`;
+
+    const userPrompt = `Analysér følgende opgavebeskrivelse og generer relevante opfølgende spørgsmål hvis nødvendigt:\n\n${opgaveBeskrivelse}`;
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
+        },
+        {
+          role: "user",
+          content: userPrompt,
+        }
+      ],
+    });
+
+    const content = completion.choices[0].message.content.trim();
+
+    // Parse JSON fra AI-svar
+    let parsed;
+    try {
+      // Fjern eventuel markdown formatting
+      const cleanedContent = content.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      parsed = JSON.parse(cleanedContent);
+      
+      // Valider at det er et array
+      if (!Array.isArray(parsed)) {
+        console.warn("Parsed resultat er ikke et array, konverterer til tomt array");
+        parsed = [];
+      }
+      
+      // Valider at hvert spørgsmål har de korrekte felter
+      parsed = parsed.filter(q => q.spørgsmål && q.spørgsmålEn).map(q => ({
+        spørgsmål: String(q.spørgsmål).trim(),
+        spørgsmålEn: String(q.spørgsmålEn).trim()
+      }));
+      
+      res.json(parsed);
+    } catch (e) {
+      console.error("Kunne ikke parse AI's JSON output:", content);
+      // Hvis parsing fejler, returner tomt array
+      res.json([]);
+    }
+  } catch (error) {
+    console.error("AI spørgsmålsgenerering fejl:", error);
+    res.status(500).json({ error: "Fejl ved AI spørgsmålsgenerering" });
+  }
+});
+
 export default router;

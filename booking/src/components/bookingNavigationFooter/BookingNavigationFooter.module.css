@@ -44,6 +44,35 @@
     cursor: not-allowed;
 }
 
+.nextButton:disabled:not(.pulsating) {
+    background: #e0e0e0;
+    color: #bbbbbb;
+}
+
+.buttonContent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+    flex-shrink: 0;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .nextButton.pulsating {
     background: #59bf1a !important;
     color: #fff !important;

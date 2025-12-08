@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { AnimatePresence } from 'framer-motion'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
 import { Trash2, ImagePlus } from 'lucide-react'
@@ -12,9 +13,24 @@ import 'dayjs/locale/da'
 import 'dayjs/locale/en'
 import PDFIcon from '../../../assets/pdf-logo.svg'
 import VisBilledeModal from '../../modals/VisBillede.jsx'
+import AIFollowUpQuestionsPopup from './AIFollowUpQuestionsPopup'
 
 // File structure: { file: File/Blob, preview: string (object URL), type: 'image' | 'video' }
-const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBilleder, setOpgaveBilleder, wordCount = 0, onNavigateNext }) => {
+const BeskrivOpgaven = ({ 
+  opgaveBeskrivelse, 
+  setOpgaveBeskrivelse, 
+  opgaveBilleder, 
+  setOpgaveBilleder, 
+  wordCount = 0, 
+  onNavigateNext, 
+  isAnalyzing = false,
+  aiQuestions = [],
+  showQuestionsPopup = false,
+  currentQuestionIndex = 0,
+  onQuestionIndexChange,
+  onCloseQuestions,
+  onContinueQuestions
+}) => {
     const { t, i18n } = useTranslation()
     const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
@@ -268,6 +284,18 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                       }
                     }}
                 ></textarea>
+                <AnimatePresence>
+                    {showQuestionsPopup && aiQuestions.length > 0 && (
+                        <AIFollowUpQuestionsPopup
+                            questions={aiQuestions}
+                            currentIndex={currentQuestionIndex}
+                            onIndexChange={onQuestionIndexChange}
+                            onClose={onCloseQuestions}
+                            onContinue={onContinueQuestions}
+                            isIntegrated={true}
+                        />
+                    )}
+                </AnimatePresence>
                 <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>{t('beskrivOpgaven.tilfoejBilleder')}</h3>
                 <div className={Styles.billederDiv}>
                     {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
@@ -336,7 +364,9 @@ const BeskrivOpgaven = ({ opgaveBeskrivelse, setOpgaveBeskrivelse, opgaveBillede
                 </div>
             </div>
             <div className={Styles.opgaveBeskrivelseBottomContainer}>
-                <p>{t('beskrivOpgaven.aiBehandlerInfo')}</p>
+                {!isAnalyzing && !showQuestionsPopup && (
+                    <p>{t('beskrivOpgaven.aiBehandlerInfo')}</p>
+                )}
             </div>
             <VisBilledeModal trigger={!!currentMedieItem} setTrigger={(value) => { if (!value) setÅbnBilledeIndex(null); }} medieItem={currentMedieItem} />
         </div>
