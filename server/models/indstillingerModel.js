@@ -42,6 +42,14 @@ const indstillingerSchema = new mongoose.Schema({
   aiExtraRules: {
     type: String,
     default: ""
+  },
+  aiTidsestimaterPrompt: {
+    type: String,
+    default: ""
+  },
+  bookingLogo: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

@@ -215,13 +215,8 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
   }
 
   try {
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      temperature: 0.2,
-      messages: [
-        {
-          role: "system",
-          content: `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
+    // Standard system prompt (hardcoded)
+    const standardSystemPrompt = `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
           Opsummeringen skal være præcis og informativ, og fange essensen af opgaven.
           
           KRITISK: Du SKAL returnere BÅDE en dansk opsummering (opsummeringDa) OG en engelsk opsummering (opsummeringEn). Begge felter er påkrævet.
@@ -235,7 +230,27 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
           
           Estimeret tidsforbrug skal være et helt tal (antal timer). Vurder realistisk hvor lang tid opgaven tager for en professionel håndværker at udføre.
           
-          VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`
+          VIGTIGT: Returnér kun gyldig JSON, uden markdown formatting (ingen \`\`\`json eller \`\`\`), uden forklaringer eller ekstra tekst.`;
+
+    // Fetch extra rules from settings and combine with standard prompt
+    let systemPrompt = standardSystemPrompt;
+    try {
+      const indstillinger = await Indstillinger.findOne({ singleton: "ONLY_ONE" });
+      if (indstillinger?.aiTidsestimaterPrompt && indstillinger.aiTidsestimaterPrompt.trim() !== "") {
+        // Combine standard prompt with extra rules
+        systemPrompt = `${standardSystemPrompt}\n\nYDERLIGERE REGLER:\n${indstillinger.aiTidsestimaterPrompt}`;
+      }
+    } catch (err) {
+      console.warn("Kunne ikke hente indstillinger for ekstra regler til tidsestimater, bruger kun standard:", err);
+    }
+
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4o-mini",
+      temperature: 0.2,
+      messages: [
+        {
+          role: "system",
+          content: systemPrompt
         },
         {
           role: "user",

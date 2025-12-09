@@ -1,7 +1,8 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import Styles from './BookingHeader.module.css'
 import Tooltip from '../basicComponents/Tooltip'
+import axios from 'axios'
 
 const BookingHeader = ({ 
   currentStep, 
@@ -17,7 +18,23 @@ const BookingHeader = ({
   isLoadingWorkers = false
 }) => {
   const { t } = useTranslation()
+  const [bookingLogo, setBookingLogo] = useState('')
   const progress = ((currentStep - 1) / (steps.length - 1)) * 100
+
+  // Fetch booking logo from settings
+  useEffect(() => {
+    const fetchBookingLogo = async () => {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/indstillinger`)
+        if (response.data?.bookingLogo) {
+          setBookingLogo(response.data.bookingLogo)
+        }
+      } catch (error) {
+        console.error('Error fetching booking logo:', error)
+      }
+    }
+    fetchBookingLogo()
+  }, [])
 
   // Determine if a step can be clicked
   const canClickStep = (stepIndex) => {
@@ -86,55 +103,64 @@ const BookingHeader = ({
 
   return (
     <div className={Styles.bookingHeader}>
-      <div className={Styles.progressWrapper}>
-        <div className={Styles.progressBar}>
-          <div 
-            className={Styles.progressFill} 
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-
-        <div className={Styles.circles}>
-          {steps.map((step, index) => {
-            const isClickable = canClickStep(index)
-            const isActive = index <= (currentStep - 1)
-            const tooltipMessage = !isClickable ? getDisabledTooltipMessage(index) : null
-            
-            // Map step labels to translation keys
-            const stepTranslationKeys = {
-              'Din opgave': 'steps.dinOpgave',
-              'Ekstra': 'steps.ekstra',
-              'Tid & sted': 'steps.tidOgSted',
-              'Kontaktinfo': 'steps.kontaktinfo'
-            }
-            const stepKey = stepTranslationKeys[step.label] || step.label
-            const translatedLabel = stepTranslationKeys[step.label] ? t(stepKey) : step.label
-            
-            const circleContent = (
+      <div className={Styles.headerContent}>
+        {bookingLogo && (
+          <div className={Styles.logoContainer}>
+            <img src={bookingLogo} alt="Logo" className={Styles.logo} />
+          </div>
+        )}
+        <div className={Styles.stepsContainer}>
+          <div className={Styles.progressWrapper}>
+            <div className={Styles.progressBar}>
               <div 
-                className={Styles.circleWrapper}
-                style={{ left: `${(index / (steps.length - 1)) * 100}%` }}
-                onClick={() => handleStepClick(index)}
-              >
-                <div className={`${Styles.circle} ${isActive ? Styles.active : ''} ${!isClickable ? Styles.disabled : ''}`}>
-                    {index + 1}
-                </div>
-                <div className={`${Styles.circleLabel} ${!isClickable ? Styles.disabled : ''}`}>{translatedLabel}</div>
-              </div>
-            )
-            
-            if (tooltipMessage) {
-              return (
-                <div key={index} className={Styles.tooltipContainer} style={{ left: `${(index / (steps.length - 1)) * 100}%` }}>
-                  <Tooltip content={tooltipMessage} position="bottom">
-                    {circleContent}
-                  </Tooltip>
-                </div>
-              )
-            }
-            
-            return <React.Fragment key={index}>{circleContent}</React.Fragment>
-          })}
+                className={Styles.progressFill} 
+                style={{ width: `${progress}%` }}
+              ></div>
+            </div>
+
+            <div className={Styles.circles}>
+              {steps.map((step, index) => {
+                const isClickable = canClickStep(index)
+                const isActive = index <= (currentStep - 1)
+                const tooltipMessage = !isClickable ? getDisabledTooltipMessage(index) : null
+                
+                // Map step labels to translation keys
+                const stepTranslationKeys = {
+                  'Din opgave': 'steps.dinOpgave',
+                  'Ekstra': 'steps.ekstra',
+                  'Tid & sted': 'steps.tidOgSted',
+                  'Kontaktinfo': 'steps.kontaktinfo'
+                }
+                const stepKey = stepTranslationKeys[step.label] || step.label
+                const translatedLabel = stepTranslationKeys[step.label] ? t(stepKey) : step.label
+                
+                const circleContent = (
+                  <div 
+                    className={Styles.circleWrapper}
+                    style={{ left: `${(index / (steps.length - 1)) * 100}%` }}
+                    onClick={() => handleStepClick(index)}
+                  >
+                    <div className={`${Styles.circle} ${isActive ? Styles.active : ''} ${!isClickable ? Styles.disabled : ''}`}>
+                        {index + 1}
+                    </div>
+                    <div className={`${Styles.circleLabel} ${!isClickable ? Styles.disabled : ''}`}>{translatedLabel}</div>
+                  </div>
+                )
+                
+                if (tooltipMessage) {
+                  return (
+                    <div key={index} className={Styles.tooltipContainer} style={{ left: `${(index / (steps.length - 1)) * 100}%` }}>
+                      <Tooltip content={tooltipMessage} position="bottom">
+                        {circleContent}
+                      </Tooltip>
+                    </div>
+                  )
+                }
+                
+                return <React.Fragment key={index}>{circleContent}</React.Fragment>
+              })}
+            </div>
+          </div>
         </div>
       </div>
     </div>

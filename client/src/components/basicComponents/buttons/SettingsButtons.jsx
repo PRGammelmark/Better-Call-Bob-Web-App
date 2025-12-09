@@ -55,6 +55,23 @@ const SettingsButtons = ({ items = [] }) => {
             <span className={Styles.postfix}>{item.postfix ? (" " + item.postfix) : ""}</span>
             <span className={Styles.chevronOpenIndicator}>{item.onClick && <ChevronRight height={18}/>}</span>
             </div>
+          ) : item.fileUpload ? (
+            <div className={Styles.fileUploadContainer}>
+              {item.preview && (
+                <img src={item.preview} alt="Preview" className={Styles.filePreview} />
+              )}
+              <label className={Styles.fileUploadButton}>
+                <input
+                  type="file"
+                  accept={item.accept || "*/*"}
+                  onChange={item.onFileChange}
+                  disabled={item.isUploading}
+                  style={{ display: 'none' }}
+                />
+                {item.isUploading ? 'Uploader...' : item.preview ? item.uploadButtonText || 'Skift' : item.uploadButtonText || 'Upload'}
+              </label>
+              {item.onClick && <ChevronRight height={16}/>}
+            </div>
           ) : item.value ? (
             <div className={Styles.itemValue}>
               {item.prefix ? " " + item.prefix : ""}

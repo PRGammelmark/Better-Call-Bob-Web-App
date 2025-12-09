@@ -45,6 +45,16 @@ const indstillingerSchema = Joi.object({
     aiExtraRules: Joi.string()
       .max(5000)
       .allow("")
+      .optional(),
+    
+    aiTidsestimaterPrompt: Joi.string()
+      .max(5000)
+      .allow("")
+      .optional(),
+    
+    bookingLogo: Joi.string()
+      .max(1000)
+      .allow("")
       .optional()
 });
 
@@ -124,6 +134,8 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.handelsbetingelser !== undefined) updateData.handelsbetingelser = value.handelsbetingelser;
     if (value.persondatapolitik !== undefined) updateData.persondatapolitik = value.persondatapolitik;
     if (value.aiExtraRules !== undefined) updateData.aiExtraRules = value.aiExtraRules;
+    if (value.aiTidsestimaterPrompt !== undefined) updateData.aiTidsestimaterPrompt = value.aiTidsestimaterPrompt;
+    if (value.bookingLogo !== undefined) updateData.bookingLogo = value.bookingLogo;
 
     console.log("Update data:", updateData);
 

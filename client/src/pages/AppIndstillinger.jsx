@@ -1,16 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain, Image, Clock, MessageCircleQuestion } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
 import AISystemPromptModal from '../components/modals/AISystemPromptModal.jsx'
+import AITidsestimaterPromptModal from '../components/modals/AITidsestimaterPromptModal.jsx'
 import ImportOpgavetyperModal from '../components/modals/ImportOpgavetyperModal.jsx'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
 import Button from '../components/basicComponents/buttons/Button.jsx'
 import CVRAutocomplete from '../components/basicComponents/inputs/CVRAutocomplete.jsx'
 import { useNavigate } from 'react-router-dom'
+import { storage } from '../firebase.js'
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
+import imageCompression from 'browser-image-compression'
 
 const AppIndstillinger = () => {
 
@@ -21,6 +25,7 @@ const AppIndstillinger = () => {
     const [visOpgavetyperInfo, setVisOpgavetyperInfo] = useState(false);
     const [visOpgavetyperModal, setVisOpgavetyperModal] = useState(false)
     const [visAISystemPromptModal, setVisAISystemPromptModal] = useState(false)
+    const [visAITidsestimaterPromptModal, setVisAITidsestimaterPromptModal] = useState(false)
     const [visImportOpgavetyperModal, setVisImportOpgavetyperModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
@@ -31,6 +36,8 @@ const AppIndstillinger = () => {
     const [adresse, setAdresse] = useState(indstillinger?.adresse || "")
     const [handelsbetingelser, setHandelsbetingelser] = useState(indstillinger?.handelsbetingelser || "")
     const [persondatapolitik, setPersondatapolitik] = useState(indstillinger?.persondatapolitik || "")
+    const [bookingLogo, setBookingLogo] = useState(indstillinger?.bookingLogo || "")
+    const [isUploadingLogo, setIsUploadingLogo] = useState(false)
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -73,6 +80,9 @@ const AppIndstillinger = () => {
             }
             if (indstillinger.persondatapolitik != null) {
                 setPersondatapolitik(indstillinger.persondatapolitik);
+            }
+            if (indstillinger.bookingLogo != null) {
+                setBookingLogo(indstillinger.bookingLogo);
             }
             hasInitializedRef.current = true
         }
@@ -229,6 +239,66 @@ const AppIndstillinger = () => {
         }
     }
 
+    const handleLogoUpload = async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vælg venligst et billede')
+            return
+        }
+
+        setIsUploadingLogo(true)
+        try {
+            // Compress the image
+            const compressedFile = await imageCompression(file, {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 500,
+                useWebWorker: true,
+            })
+
+            // Upload to Firebase Storage
+            const storagePath = `booking/logo.jpg`
+            const storageRef = ref(storage, storagePath)
+
+            // Delete old logo if it exists
+            if (bookingLogo) {
+                try {
+                    const oldImageRef = ref(storage, storagePath)
+                    await deleteObject(oldImageRef)
+                } catch (error) {
+                    console.log('Kunne ikke slette gammelt logo:', error)
+                }
+            }
+
+            // Upload new logo
+            await uploadBytes(storageRef, compressedFile)
+            const downloadURL = await getDownloadURL(storageRef)
+
+            // Update indstillinger in database
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { bookingLogo: downloadURL },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`,
+                    },
+                }
+            )
+
+            setBookingLogo(downloadURL)
+            console.log('Logo opdateret')
+        } catch (error) {
+            console.error('Fejl ved upload af logo:', error)
+            alert('Kunne ikke uploade logo. Prøv igen.')
+        } finally {
+            setIsUploadingLogo(false)
+            // Reset file input
+            e.target.value = ''
+        }
+    }
+
   return (
     <div className={Styles.pageContent}>
         <h1>App-indstillinger</h1>
@@ -310,9 +380,15 @@ const AppIndstillinger = () => {
                 items={[
                     {
                         title: "Opfølgende spørgsmål",
-                        icon: <Brain />,
+                        icon: <MessageCircleQuestion />,
                         onClick: () => setVisAISystemPromptModal(true),
                         value: indstillinger?.aiExtraRules ? "Tilpasset" : "Standard",
+                    },
+                    {
+                        title: "Tidsestimater",
+                        icon: <Clock />,
+                        onClick: () => setVisAITidsestimaterPromptModal(true),
+                        value: indstillinger?.aiTidsestimaterPrompt ? "Tilpasset" : "Standard",
                     },
                     {
                         title: "Handelsbetingelser",
@@ -333,6 +409,16 @@ const AppIndstillinger = () => {
                         onChange: (v) => setPersondatapolitik(v),
                         onBlur: handlePersondatapolitikBlur,
                         placeholder: "Indsæt link"
+                    },
+                    {
+                        title: "Logo",
+                        icon: <Image />,
+                        fileUpload: true,
+                        preview: bookingLogo,
+                        isUploading: isUploadingLogo,
+                        accept: "image/*",
+                        uploadButtonText: bookingLogo ? "Skift logo" : "Upload logo",
+                        onFileChange: handleLogoUpload
                     }
                 ]}
             />
@@ -341,6 +427,7 @@ const AppIndstillinger = () => {
         <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
         <ImportOpgavetyperModal trigger={visImportOpgavetyperModal} setTrigger={setVisImportOpgavetyperModal} user={user} kategorier={indstillinger?.opgavetyperKategorier || []} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} />
         <AISystemPromptModal trigger={visAISystemPromptModal} setTrigger={setVisAISystemPromptModal} user={user} indstillinger={indstillinger} />
+        <AITidsestimaterPromptModal trigger={visAITidsestimaterPromptModal} setTrigger={setVisAITidsestimaterPromptModal} user={user} indstillinger={indstillinger} />
     
         <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
             <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>

@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.10.1",
+    date: "9. december 2025",
+    changes: [
+        "Nu præsenteres bookingsystemet med et logo i øverste venstre hjørne. Man kan indstille logoet fra app'en.",
+        "Nu kan man tilpasse bookingsystemets tidsestimater fra app'en."
+    ]
+},{
     version: "3.10.0",
     date: "8. december 2025",
     changes: [
