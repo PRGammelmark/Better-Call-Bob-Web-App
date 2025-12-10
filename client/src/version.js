@@ -14,6 +14,15 @@
 // 
 
 const changes = [{
+    version: "3.10.2",
+    date: "10. december 2025",
+    changes: [
+        "Bookingsystemet har nu fået endnu mere responsivitet til forskellige skærmstørrelser.",
+        "Nu er der mulighed for at tilføje et maskot-billede i bunden af bookingsystemets summary-sektion.",
+        "OBS-felt med priser er blevet tilføjet til bookingsystemet.",
+        "Smårettelser og justeringer."
+    ]
+},{
     version: "3.10.1",
     date: "9. december 2025",
     changes: [

@@ -541,8 +541,21 @@ const PrimaryBookingComponent = () => {
       // Note: Server validation will catch this, but we provide a fallback
       const telefonToSend = normalizedTelefon || "00000000"
       
+      // Append AI questions to opgaveBeskrivelse if they exist
+      let finalOpgaveBeskrivelse = opgaveBeskrivelse
+      if (aiGeneratedQuestions && aiGeneratedQuestions.length > 0) {
+        const questionsText = aiGeneratedQuestions.map((q, index) => {
+          const questionText = i18n.language === 'en' 
+            ? (q.spørgsmålEn || q.spørgsmål) 
+            : (q.spørgsmål || q.spørgsmålEn)
+          return `${index + 1}. ${questionText}`
+        }).join('\n')
+        
+        finalOpgaveBeskrivelse = `${opgaveBeskrivelse}\n\n${t('beskrivOpgaven.aiSporgsmaal') || 'AI opfølgende spørgsmål:'}\n${questionsText}`
+      }
+      
       const bookingData = {
-        opgaveBeskrivelse,
+        opgaveBeskrivelse: finalOpgaveBeskrivelse,
         opgaveBilleder: uploadedFileURLs,
         fornavn,
         efternavn,
@@ -583,6 +596,7 @@ const PrimaryBookingComponent = () => {
     opgaveBeskrivelse, 
     opgaveBilleder, 
     opfølgendeSpørgsmålSvar,
+    aiGeneratedQuestions,
     fuldeNavn,
     email,
     telefonnummer,
@@ -593,7 +607,9 @@ const PrimaryBookingComponent = () => {
     cvr,
     virksomhed,
     kommentarer,
-    modtagNyheder
+    modtagNyheder,
+    i18n.language,
+    t
   ])
 
   // Callback function for reCAPTCHA as per Google's guide

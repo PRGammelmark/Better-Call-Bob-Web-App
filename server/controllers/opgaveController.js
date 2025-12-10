@@ -31,7 +31,7 @@ const bookingSchema = Joi.object({
     opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
     opgaveBilleder: Joi.array().items(Joi.string().uri()).optional(),
     fornavn: Joi.string().min(2).max(100).required(),
-    efternavn: Joi.string().min(2).max(100).required(),
+    efternavn: Joi.string().max(100).allow("", null),
     adresse: Joi.string().min(5).max(200).required(),
     postnummerOgBy: Joi.string().pattern(/^\d{4}\s[a-zA-ZæøåÆØÅ\s\-]+$/).required(),
     onsketDato: Joi.date().iso().required(),
@@ -271,7 +271,13 @@ const createBooking = async (req, res) => {
         return res.status(400).json({ message: "Ugyldigt input", details: error.details })
     }
 
-    const { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt } = req.body;
+    let { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt } = req.body;
+    
+    // Default efternavn hvis det mangler eller er for kort
+    if (!efternavn || !efternavn.trim() || efternavn.trim().length < 2) {
+        efternavn = "Intet-efternavn-angivet"
+    }
+    
     let captchaRes
 
     try {

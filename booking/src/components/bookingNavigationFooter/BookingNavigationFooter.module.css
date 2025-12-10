@@ -148,7 +148,7 @@
 }
 
 /* Vis kun på mobil */
-@media (max-width: 750px) {
+@media (max-width: 750px) or (max-height: 700px) {
     .summaryButton {
         display: block;
     }

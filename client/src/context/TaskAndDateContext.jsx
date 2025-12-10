@@ -9,8 +9,7 @@ export const TaskAndDateProvider = ({ children }) => {
     const [chosenTask, setChosenTask] = useState(null);
     const [chosenDate, setChosenDate] = useState(dayjs());
     const [chosenEndDate, setChosenEndDate] = useState(null);
-
-    let customerForChosenTask = {}
+    const [customerForChosenTask, setCustomerForChosenTask] = useState({});
     
     useEffect(() => {
         if(user && chosenTask){
@@ -20,15 +19,15 @@ export const TaskAndDateProvider = ({ children }) => {
                 }
             })
             .then(response => {
-                customerForChosenTask = response.data.kunde
+                setCustomerForChosenTask(response.data.kunde || response.data || {})
             })
             .catch(error => {
                 console.log(error)
-                customerForChosenTask = {}
+                setCustomerForChosenTask({})
             })
         }
         if(!user || !chosenTask){
-            customerForChosenTask = {}
+            setCustomerForChosenTask({})
         }
     }, [chosenTask, user])
 

@@ -6,10 +6,12 @@ import { AnimatePresence, motion } from 'framer-motion'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import 'dayjs/locale/en'
+import HenrikFoto from '../../assets/HenrikFoto.webp'
 
-const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kategorier, isLoadingKortBeskrivelse, totaltAntalSpørgsmål, adresse, valgtDato, valgtTidspunkt, manualTimePreference, fuldeNavn, email, telefonnummer, erVirksomhed, virksomhed, cvr, onClose }) => {
+const BookingSummary = ({ currentStep, kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kategorier, isLoadingKortBeskrivelse, totaltAntalSpørgsmål, adresse, valgtDato, valgtTidspunkt, manualTimePreference, fuldeNavn, email, telefonnummer, erVirksomhed, virksomhed, cvr, onClose }) => {
   const { t, i18n } = useTranslation()
   const [showPopup, setShowPopup] = useState(false)
+  const [showPricePopup, setShowPricePopup] = useState(false)
   const [showKategorier, setShowKategorier] = useState(false)
   const holdTimerRef = useRef(null)
   
@@ -197,6 +199,12 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
             <span className={Styles.obsText}>{t('summary.obsText')} <br /><span className={Styles.obsLink} onClick={() => setShowPopup(true)}>{t('summary.laesMere')}</span></span>
           </div>
         )}
+        {currentStep === 3 && (
+          <div className={Styles.obsContainerPrice}>
+            <span className={Styles.obsLabelPrice}>{t('summary.obs')}</span>
+            <span className={Styles.obsTextPrice}>{t('summary.obsTextPriser')} <span className={Styles.obsLinkPrice} onClick={() => setShowPricePopup(true)}>{t('summary.laesMereHer')}</span>.</span>
+          </div>
+        )}
         {(fuldeNavn || email || telefonnummer || (erVirksomhed && (virksomhed || cvr))) && (
           <>
             <b className={Styles.sectionHeading}>{t('summary.kontaktoplysninger')}</b>
@@ -239,6 +247,7 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
         </div>
         <div className={Styles.summaryBottomContainer}>
           <p><ShieldCheck /> {t('summary.beskyttetAfRecaptcha')}</p>
+          <img src={HenrikFoto} alt="Henrik" className={Styles.maskotFoto} />
         </div>
         
         <AnimatePresence>
@@ -278,6 +287,80 @@ const BookingSummary = ({ kortOpgavebeskrivelse, estimeretTidsforbrugTimer, kate
                 </p>
                 <p className={Styles.popupText}>
                   {t('summary.tusindTak')}
+                </p>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {showPricePopup && (
+            <>
+              <motion.div
+                className={Styles.popupOverlay}
+                onClick={() => setShowPricePopup(false)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              />
+              <motion.div
+                className={Styles.popup}
+                onClick={(e) => e.stopPropagation()}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <button className={Styles.popupCloseButton} onClick={() => setShowPricePopup(false)}>
+                  <X size={18} />
+                </button>
+                <h3 className={Styles.popupTitle}>{t('summary.voresPriser')}</h3>
+                <p className={Styles.popupText}>
+                  {t('summary.priserBrødtekst1')}
+                </p>
+                <p className={Styles.popupText} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
+                  {t('summary.priserBrødtekst2')}
+                </p>
+                <p className={Styles.popupText} style={{ marginBottom: '0 px' }}>
+                  <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.opstartsgebyr')}</b>
+                </p>
+                <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>
+                  {t('summary.opstartsgebyrBeskrivelse')}
+                </p>
+                <p className={Styles.popupText} style={{ marginBottom: '0px' }}>
+                  <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.timepris')}</b>
+                </p>
+                <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>
+                  {t('summary.timeprisBeskrivelse')}
+                </p>
+                <p className={Styles.popupText} style={{ marginBottom: '0px' }}>
+                  <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.tillæg')}</b>
+                </p>
+                <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>
+                  {t('summary.tillægBeskrivelse')}
+                </p>
+                <ul style={{ margin: '0 0 12px 20px', padding: 0 }}>
+                  <li style={{ marginBottom: '8px', fontSize: '0.8rem', color: '#444444', marginBottom: '4px' }}>
+                    <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.aftentillæg')}</b>
+                  </li>
+                  <li style={{ marginBottom: '8px', fontSize: '0.8rem', color: '#444444', marginBottom: '4px' }}>
+                    <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.nattillæg')}</b>
+                  </li>
+                  <li style={{ marginBottom: '8px', fontSize: '0.8rem', color: '#444444' }}>
+                    <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.trailerTillæg')}</b>
+                  </li>
+                </ul>
+                <p className={Styles.popupText} style={{ marginBottom: '0px' }}>
+                  <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.materialepriser')}</b>
+                </p>
+                <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>
+                  {t('summary.materialepriserBeskrivelse')}
+                </p>
+                <p className={Styles.popupText} style={{ marginBottom: '0px' }}>
+                  <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.kørselUdenForCentrum')}</b>
+                </p>
+                <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>
+                  {t('summary.kørselUdenForCentrumBeskrivelse')}
                 </p>
               </motion.div>
             </>

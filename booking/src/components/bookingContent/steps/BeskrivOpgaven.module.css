@@ -290,7 +290,7 @@
     color: #59bf1a;
 }
 
-@media (max-width: 750px) {
+@media (max-width: 750px) or (max-height: 700px) {
     .opgavebeskrivelseContainer {
         padding: 10px 0px;
     }
