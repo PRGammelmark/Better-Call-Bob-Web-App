@@ -1,6 +1,6 @@
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Check, Tag, Clock, MapPin, CalendarCheck, User, Mail, Phone, Building2, FileText, MessageSquare, HelpCircle } from 'lucide-react'
+import { Check, Clock, MapPin, CalendarCheck, User, Mail, Phone, Building2, FileText, MessageSquare, HelpCircle } from 'lucide-react'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import 'dayjs/locale/en'
@@ -60,21 +60,6 @@ const BookingSuccess = ({
             <p className={Styles.text}>
               <strong>{t('bookingSuccess.beskrivelse')}:</strong> {kortOpgavebeskrivelse}
             </p>
-          )}
-          {kategorier && kategorier.length > 0 && (
-            <div className={Styles.categoriesContainer}>
-              {kategorier.map((kategori, index) => {
-                const displayKategori = typeof kategori === 'string' 
-                  ? kategori 
-                  : (i18n.language === 'en' && kategori.opgavetypeEn ? kategori.opgavetypeEn : kategori.opgavetype)
-                return (
-                  <span key={index} className={Styles.categoryTag}>
-                    <Tag size={12} style={{ marginRight: 4 }} />
-                    {displayKategori}
-                  </span>
-                )
-              })}
-            </div>
           )}
           {estimeretTidsforbrugTimer !== null && estimeretTidsforbrugTimer !== undefined && (
             <p className={Styles.text}>

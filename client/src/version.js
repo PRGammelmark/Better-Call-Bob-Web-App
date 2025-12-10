@@ -14,6 +14,16 @@
 // 
 
 const changes = [{
+    version: "3.10.3",
+    date: "10. december 2025",
+    changes: [
+        "Rettede en fejl i bookingsystemet, der gjorde, at billeder og videoer blev 'tabt' ved navigation tilbage til step 1 fra et senere led i bookingprocessen.",
+        "Rettede en fejl, hvor åbning af uploadede billeder i popup i bookingsystemet ikke virkede efter hensigten.",
+        "Mobilversionen af bookingsystemet har nu fået maskot-billede på step 1. Derudover har AI obs-teksten fået en blur-baggrund hen over footeren.",
+        "Upload-knappen i bookingsystemets step 1 har fået grønt fokus. Fjernede teksten, der specificerede hvad brugeren kunne uploade, og tilføjede i stedet animerede ikoner, der viser hvad upload-knappen kan bruges til.",
+        "Designjusteringer på steps-indikatorer i bookingsystemets header."
+    ]
+},{
     version: "3.10.2",
     date: "10. december 2025",
     changes: [

@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next'
 import Styles from './BookingNavigationFooter.module.css'
 import Tooltip from '../basicComponents/Tooltip'
 
-const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, recaptchaSiteKey, isStepValid = true, shouldPulse = false, wordCount = 0, onShowSummary }) => {
+const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onConfirm, isSubmitting, isAnalyzing = false, recaptchaSiteKey, isStepValid = true, shouldPulse = false, wordCount = 0, onShowSummary }) => {
   const { t } = useTranslation()
 
   // Determine tooltip message for disabled "Næste" button
   const getDisabledTooltipMessage = () => {
+    if (isAnalyzing) {
+      return t('buttons.analyserer')
+    }
     if (isSubmitting) {
       return t('buttons.sender')
     }
@@ -23,10 +26,21 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
     return null
   }
 
-  const isNextButtonDisabled = (isSubmitting !== undefined ? isSubmitting : false) || !isStepValid
+  const isNextButtonDisabled = (isSubmitting !== undefined ? isSubmitting : false) || (isAnalyzing !== undefined ? isAnalyzing : false) || !isStepValid
   const tooltipMessage = isNextButtonDisabled ? getDisabledTooltipMessage() : null
 
   const nextButtonText = t('buttons.naeste')
+  
+  // Determine button text based on state
+  const getButtonText = () => {
+    if (isAnalyzing) {
+      return t('buttons.analyserer')
+    }
+    if (isSubmitting) {
+      return t('buttons.sender')
+    }
+    return null
+  }
 
   return (
     <div className={Styles.bookingNavigationFooter}>
@@ -39,7 +53,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
               <button 
                 className={`${Styles.nextButton} ${Styles.mobileSummaryButton}`}
                 onClick={onShowSummary}
-                disabled={isSubmitting || !isStepValid}
+                disabled={isSubmitting || isAnalyzing || !isStepValid}
               >
                 {t('buttons.opsummeringBekraeft')}
               </button>
@@ -61,17 +75,17 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                       onConfirm()
                     }
                   }}
-                  disabled={isSubmitting || !isStepValid}
+                  disabled={isSubmitting || isAnalyzing || !isStepValid}
                 >
-                  {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
+                  {getButtonText() || t('buttons.bekraeftBooking')}
                 </button>
               ) : (
                 <button 
                   className={`${Styles.nextButton} ${Styles.desktopConfirmButton}`}
                   onClick={onConfirm} 
-                  disabled={isSubmitting || !isStepValid}
+                  disabled={isSubmitting || isAnalyzing || !isStepValid}
                 >
-                  {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
+                  {getButtonText() || t('buttons.bekraeftBooking')}
                 </button>
               )}
             </Tooltip>
@@ -81,7 +95,7 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
             <button 
               className={`${Styles.nextButton} ${Styles.mobileSummaryButton}`}
               onClick={onShowSummary}
-              disabled={isSubmitting || !isStepValid}
+              disabled={isSubmitting || isAnalyzing || !isStepValid}
             >
               {t('buttons.opsummeringBekraeft')}
             </button>
@@ -101,17 +115,17 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
                     onConfirm()
                   }
                 }}
-                disabled={isSubmitting || !isStepValid}
+                disabled={isSubmitting || isAnalyzing || !isStepValid}
               >
-                {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
+                {getButtonText() || t('buttons.bekraeftBooking')}
               </button>
             ) : (
               <button 
                 className={`${Styles.nextButton} ${Styles.desktopConfirmButton}`}
                 onClick={onConfirm} 
-                disabled={isSubmitting || !isStepValid}
+                disabled={isSubmitting || isAnalyzing || !isStepValid}
               >
-                {isSubmitting ? t('buttons.sender') : t('buttons.bekraeftBooking')}
+                {getButtonText() || t('buttons.bekraeftBooking')}
               </button>
             )}
           </>
@@ -124,10 +138,10 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
               onClick={() => setCurrentStep(currentStep + 1)} 
               disabled={isNextButtonDisabled}
             >
-              {isSubmitting ? (
+              {isAnalyzing || isSubmitting ? (
                 <span className={Styles.buttonContent}>
                   <span className={Styles.spinner}></span>
-                  {t('buttons.sender')}
+                  {getButtonText()}
                 </span>
               ) : (
                 nextButtonText
@@ -140,10 +154,10 @@ const BookingNavigationFooter = ({ currentStep, setCurrentStep, isLastStep, onCo
             onClick={() => setCurrentStep(currentStep + 1)} 
             disabled={isNextButtonDisabled}
           >
-            {isSubmitting ? (
+            {isAnalyzing || isSubmitting ? (
               <span className={Styles.buttonContent}>
                 <span className={Styles.spinner}></span>
-                {t('buttons.sender')}
+                {getButtonText()}
               </span>
             ) : (
               nextButtonText

@@ -6,7 +6,7 @@
     background: white;
     box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.15) 0px 0px 0px 1px;
     border-radius: 20px;
-    z-index: 1000;
+    z-index: 10000;
     min-width: 400px;
     width: 80vw;
     max-width: 700px;
@@ -24,7 +24,7 @@
     right: calc(-1 * env(safe-area-inset-right, 0px));
     bottom: calc(-1 * env(safe-area-inset-bottom, 0px));
     background: rgba(0, 0, 0, 0.8);
-    z-index: 999;
+    z-index: 9999;
     will-change: opacity;
     overscroll-behavior: none!important;
 }

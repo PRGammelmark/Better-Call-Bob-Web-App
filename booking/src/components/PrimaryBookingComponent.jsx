@@ -660,6 +660,23 @@ const PrimaryBookingComponent = () => {
       return // Don't proceed if less than 5 words
     }
 
+    // Check if the description has changed since last analysis
+    const hasBeskrivelseChanged = lastAnalyzedBeskrivelseRef.current !== opgaveBeskrivelse.trim()
+    
+    // If description hasn't changed, skip analysis and proceed based on existing state
+    if (!hasBeskrivelseChanged) {
+      // If questions already exist, show them
+      if (aiGeneratedQuestions.length > 0) {
+        setCurrentQuestionIndex(0)
+        setShowQuestionsPopup(true)
+      } else {
+        // Otherwise proceed to step 2
+        setDirection(1)
+        setCurrentStep(2)
+      }
+      return
+    }
+
     setIsAnalyzingStep1(true)
     
     try {
@@ -932,7 +949,8 @@ const PrimaryBookingComponent = () => {
             setCurrentStep={handleStepChange}
             isLastStep={isLastStep}
             onConfirm={handleConfirmBooking}
-            isSubmitting={isSubmitting || isAnalyzingStep1}
+            isSubmitting={isSubmitting}
+            isAnalyzing={isAnalyzingStep1}
             recaptchaSiteKey={recaptchaSiteKey}
             isStepValid={isStepValid}
             shouldPulse={shouldPulseButton}
@@ -949,7 +967,8 @@ const PrimaryBookingComponent = () => {
           setCurrentStep={handleStepChange}
           isLastStep={isLastStep}
           onConfirm={handleConfirmBooking}
-          isSubmitting={isSubmitting || isAnalyzingStep1}
+          isSubmitting={isSubmitting}
+          isAnalyzing={isAnalyzingStep1}
           recaptchaSiteKey={recaptchaSiteKey}
             isStepValid={isStepValid}
             shouldPulse={shouldPulseButton}

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
-import { Trash2, ImagePlus } from 'lucide-react'
+import { Trash2, Camera, FileText } from 'lucide-react'
 import MoonLoader from "react-spinners/MoonLoader";
 import imageCompression from 'browser-image-compression'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
@@ -12,6 +12,7 @@ import dayjs from 'dayjs'
 import 'dayjs/locale/da'
 import 'dayjs/locale/en'
 import PDFIcon from '../../../assets/pdf-logo.svg'
+import HenrikFoto from '../../../assets/HenrikFoto.webp'
 import VisBilledeModal from '../../modals/VisBillede.jsx'
 import AIFollowUpQuestionsPopup from './AIFollowUpQuestionsPopup'
 
@@ -35,9 +36,11 @@ const BeskrivOpgaven = ({
     const shouldPulse = wordCount < 5
     const [dragging, setDragging] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
+    const [currentIcon, setCurrentIcon] = useState(0) // 0 = Image, 1 = FileText
     const textareaRef = useRef(null)
 
     const [åbnBilledeIndex, setÅbnBilledeIndex] = useState(null)
+    const previewUrlsRegeneratedRef = useRef(false)
     
     // Get the current medieItem from opgaveBilleder array based on index
     // This ensures we always use the current object reference from the array
@@ -50,25 +53,66 @@ const BeskrivOpgaven = ({
         dayjs.locale(i18n.language)
     }, [i18n.language])
 
+    // Regenerer preview URLs når komponenten vises igen, hvis de mangler eller er ugyldige
+    // Dette håndterer tilfældet hvor komponenten unmountes og remountes
+    useEffect(() => {
+        // Tjek om nogen items har file objekter men mangler preview URLs
+        const itemsNeedingPreview = opgaveBilleder.filter(item => 
+            item.file && (!item.preview || !item.preview.startsWith('blob:'))
+        )
+
+        // Kun regenerer hvis der er items der mangler preview, og vi ikke lige har regenereret
+        if (itemsNeedingPreview.length > 0 && !previewUrlsRegeneratedRef.current) {
+            const updatedBilleder = opgaveBilleder.map(item => {
+                // Hvis item har file men mangler preview eller preview ikke er blob URL, regenerer den
+                if (item.file && (!item.preview || !item.preview.startsWith('blob:'))) {
+                    // Revoke gammel URL hvis den eksisterer og er blob
+                    if (item.preview && item.preview.startsWith('blob:')) {
+                        try {
+                            URL.revokeObjectURL(item.preview)
+                        } catch (e) {
+                            // Ignorer fejl hvis URL allerede er revoked
+                        }
+                    }
+                    // Opret ny preview URL fra file objektet
+                    const newPreview = URL.createObjectURL(item.file)
+                    return {
+                        ...item,
+                        preview: newPreview
+                    }
+                }
+                return item
+            })
+            setOpgaveBilleder(updatedBilleder)
+            previewUrlsRegeneratedRef.current = true
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [opgaveBilleder.length]) // Kør når antal billeder ændres eller komponenten vises igen
+
+    // Reset flag når komponenten unmountes, så URLs kan regenereres næste gang
+    useEffect(() => {
+        return () => {
+            previewUrlsRegeneratedRef.current = false
+        }
+    }, [])
+
+    // Roter mellem ikoner
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setCurrentIcon(prev => (prev === 0 ? 1 : 0))
+        }, 4000) // Skift hver 4. sekund
+        return () => clearInterval(interval)
+    }, [])
+
     // Håndter sprogskifte
     const handleLanguageChange = () => {
         const newLang = i18n.language === 'da' ? 'en' : 'da'
         i18n.changeLanguage(newLang)
     }
 
-    // Cleanup object URLs only when component unmounts
-    // Don't revoke URLs when opgaveBilleder changes, as they're still in use
-    useEffect(() => {
-        return () => {
-            // Only cleanup on unmount
-            opgaveBilleder.forEach(item => {
-                if (item.preview && item.preview.startsWith('blob:')) {
-                    URL.revokeObjectURL(item.preview);
-                }
-            });
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Empty dependency array - only run cleanup on unmount
+    // Fjern cleanup ved unmount - URLs skal bevares i state så længe filerne er der
+    // Cleanup sker kun når filer faktisk slettes (i handleDeleteFile)
+    // Den oprindelige cleanup-effekt forårsagede problemet ved at revoke URLs der stadig var i brug
 
     const handleDeleteFile = (index) => {
         const item = opgaveBilleder[index];
@@ -324,7 +368,6 @@ const BeskrivOpgaven = ({
                         />
                     )}
                 </AnimatePresence>
-                <h3 className={StepsStyles.headingH3} style={{marginTop: 15}}>{t('beskrivOpgaven.tilfoejBilleder')}</h3>
                 <div className={Styles.billederDiv}>
                     {opgaveBilleder?.length > 0 && opgaveBilleder.map((medieItem, index) => {
                         return (
@@ -379,7 +422,33 @@ const BeskrivOpgaven = ({
                         onDragLeave={() => setDragging(false)} 
                         onDrop={handleFileDrop}
                     >
-                        <ImagePlus />
+                        <div className={Styles.iconContainer}>
+                            <AnimatePresence mode="sync">
+                                {currentIcon === 0 ? (
+                                    <motion.div
+                                        key="camera"
+                                        initial={{ x: 24, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        exit={{ x: -24, opacity: 0 }}
+                                        transition={{ duration: 0.4 }}
+                                        className={Styles.iconWrapper}
+                                    >
+                                        <Camera />
+                                    </motion.div>
+                                ) : (
+                                    <motion.div
+                                        key="filetext"
+                                        initial={{ x: 24, opacity: 0 }}
+                                        animate={{ x: 0, opacity: 1 }}
+                                        exit={{ x: -24, opacity: 0 }}
+                                        transition={{ duration: 0.4 }}
+                                        className={Styles.iconWrapper}
+                                    >
+                                        <FileText />
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                         <input 
                             type="file" 
                             name="file" 
@@ -395,6 +464,7 @@ const BeskrivOpgaven = ({
                 {!isAnalyzing && !showQuestionsPopup && (
                     <p>{t('beskrivOpgaven.aiBehandlerInfo')}</p>
                 )}
+                <img src={HenrikFoto} alt="Henrik" className={`${Styles.maskotFoto} ${showQuestionsPopup ? Styles.hideOnMobile : ''}`} />
             </div>
             <VisBilledeModal trigger={!!currentMedieItem} setTrigger={(value) => { if (!value) setÅbnBilledeIndex(null); }} medieItem={currentMedieItem} />
         </div>
