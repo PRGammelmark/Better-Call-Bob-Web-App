@@ -73,7 +73,8 @@ const TidOgSted = ({
   error,
   onErrorChange,
   estimeretTidsforbrugTimer = null,
-  pulseField = null
+  pulseField = null,
+  step2WasWiped = false
 }) => {
   const { t, i18n } = useTranslation()
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null)
@@ -530,6 +531,13 @@ const TidOgSted = ({
               </div>
             )}
           </div>
+          {step2WasWiped && (
+            <div className={Styles.wipeObsContainer}>
+              <p className={Styles.wipeObsText}>
+                {t('tidOgSted.systemHarAendretParametre')}
+              </p>
+            </div>
+          )}
           {!showCalendar && (
             <button
               className={`${Styles.showTimesButton} ${error && !isLoadingWorkers && !isLoadingTimes ? Styles.showTimesButtonError : ''}`}

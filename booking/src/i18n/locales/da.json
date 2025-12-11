@@ -107,7 +107,8 @@
     "ankomstPlusMinusEnTime": "Ankomst +/- 1 time",
     "foretrukket": "Vi foretrækker",
     "placeholderAdresse": "Fx Nørregade 1, 2000 Frederiksberg",
-    "placeholderManualTime": "Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'"
+    "placeholderManualTime": "Fx 'Mandag morgen næste uge' eller 'Så hurtigt som muligt'",
+    "systemHarAendretParametre": "Vores system har ændret din opgaves parametre. Udfyld venligst dette trin forfra."
   },
   "summary": {
     "dinHandymanBooking": "Din handyman-booking",

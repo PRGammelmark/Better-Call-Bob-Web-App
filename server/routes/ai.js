@@ -218,13 +218,14 @@ router.post("/summarizeOpgavebeskrivelse", async (req, res) => {
     // Standard system prompt (hardcoded)
     const standardSystemPrompt = `Du skal opsummere en opgavebeskrivelse til præcis 10 ord eller mindre, og samtidig vurdere hvor lang tid opgaven tager i hele timer.
           Opsummeringen skal være præcis og informativ, og fange essensen af opgaven.
+          Husk derudover, at opsummeringen skal være grammatisk korrekt. Start sætningen med stort, og slut med punktum.
           
           KRITISK: Du SKAL returnere BÅDE en dansk opsummering (opsummeringDa) OG en engelsk opsummering (opsummeringEn). Begge felter er påkrævet.
           
           Returnér kun gyldig JSON som output med følgende struktur:
           {
-            "opsummeringDa": "den danske opsummering her (maks 10 ord)",
-            "opsummeringEn": "the English summary here (max 10 words)",
+            "opsummeringDa": "Den danske opsummering her (maks 10 ord).",
+            "opsummeringEn": "The English summary here (max 10 words).",
             "estimeretTidsforbrugTimer": <helt tal>
           }
           

@@ -5,6 +5,7 @@ const BesøgContext = createContext();
 
 export const BesøgProvider = ({ children }) => {
     const { user } = useAuthContext();
+    const userID = user?.id || user?._id;
     
     const [alleBesøg, setAlleBesøg] = useState([]);
     const [egneBesøg, setEgneBesøg] = useState([]);
@@ -27,18 +28,23 @@ export const BesøgProvider = ({ children }) => {
     
     // Conditionally execute side-effects but don't return early
     useEffect(() => {
-        if (user) {
+        if (user && userID) {
             axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
                 headers: { 'Authorization': `Bearer ${user.token}` }
             })
             .then(res => {
-                const filteredVisits = res.data.filter(besøg => besøg.brugerID === userID);
+                const filteredVisits = res.data.filter(besøg => {
+                    const besøgBrugerID = typeof besøg.brugerID === 'object' 
+                        ? String(besøg.brugerID?._id || besøg.brugerID?.id) 
+                        : String(besøg.brugerID);
+                    return besøgBrugerID === String(userID);
+                });
                 setAlleBesøg(res.data);
                 setEgneBesøg(filteredVisits);
             })
             .catch(error => console.log(error));
         }
-    }, [user, refetchBesøg]);
+    }, [user, userID, refetchBesøg]);
 
     useEffect(() => {
         if (user) {
@@ -53,19 +59,23 @@ export const BesøgProvider = ({ children }) => {
     }, [user, refetchMedarbejdere])
 
     useEffect(() => {
-        if (user) {
+        if (user && userID) {
             axios.get(`${import.meta.env.VITE_API_URL}/ledige-tider`, {
                 headers: { 'Authorization': `Bearer ${user.token}` }
             })
             .then(res => {
                 setAlleLedigeTider(res.data);
-                setEgneLedigeTider(res.data.filter(ledigTid => ledigTid.brugerID === userID));
+                const filteredLedigeTider = res.data.filter(ledigTid => {
+                    const tidBrugerID = typeof ledigTid.brugerID === 'object' 
+                        ? String(ledigTid.brugerID?._id || ledigTid.brugerID?.id) 
+                        : String(ledigTid.brugerID);
+                    return tidBrugerID === String(userID);
+                });
+                setEgneLedigeTider(filteredLedigeTider);
             })
             .catch(error => console.log(error));
         }
-    }, [user, refetchLedigeTider]);
-
-    const userID = user?.id || user?._id;
+    }, [user, userID, refetchLedigeTider]);
 
     return (
         <BesøgContext.Provider value={{ 

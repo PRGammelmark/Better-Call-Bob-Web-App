@@ -13,6 +13,11 @@ const VisLedighedModal = ({ trigger, setTrigger, brugerID }) => {
     const [openDialog, setOpenDialog] = useState(false);
     const [eventData, setEventData] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    // Local state for filtered data - don't modify global context
+    const [localAlleLedigeTider, setLocalAlleLedigeTider] = useState([]);
+    const [localAlleBesøg, setLocalAlleBesøg] = useState([]);
+    const [localEgneLedigeTider, setLocalEgneLedigeTider] = useState([]);
+    const [localEgneBesøg, setLocalEgneBesøg] = useState([]);
 
     const getBrugerName = (brugerID) => {
         const bruger = brugere && brugere.find(user => (user?._id || user?.id) === brugerID);
@@ -72,23 +77,42 @@ const VisLedighedModal = ({ trigger, setTrigger, brugerID }) => {
                 })
             ]).then(([brugereRes, egneLedigeTiderRes, alleLedigeTiderRes, egneBesøgRes, alleBesøgRes]) => {
                 setBrugere(brugereRes.data || []);
-                setEgneLedigeTider(egneLedigeTiderRes.data || []);
+                
+                // Use local state instead of modifying global context
+                setLocalEgneLedigeTider(egneLedigeTiderRes.data || []);
                 
                 // Filter to only show ledige tider for the selected user
-                const filteredLedigeTider = (alleLedigeTiderRes.data || []).filter(ledigTid => ledigTid.brugerID === brugerID);
-                setAlleLedigeTider(filteredLedigeTider);
+                const filteredLedigeTider = (alleLedigeTiderRes.data || []).filter(ledigTid => {
+                    const tidBrugerID = typeof ledigTid.brugerID === 'object' 
+                        ? String(ledigTid.brugerID?._id || ledigTid.brugerID?.id) 
+                        : String(ledigTid.brugerID);
+                    const targetBrugerID = String(brugerID);
+                    return tidBrugerID === targetBrugerID;
+                });
+                setLocalAlleLedigeTider(filteredLedigeTider);
                 
-                setEgneBesøg(egneBesøgRes.data || []);
+                setLocalEgneBesøg(egneBesøgRes.data || []);
                 
                 // Filter to only show besøg for the selected user
-                const filteredBesøg = (alleBesøgRes.data || []).filter(besøg => besøg.brugerID === brugerID);
-                setAlleBesøg(filteredBesøg);
+                const filteredBesøg = (alleBesøgRes.data || []).filter(besøg => {
+                    const besøgBrugerID = typeof besøg.brugerID === 'object' 
+                        ? String(besøg.brugerID?._id || besøg.brugerID?.id) 
+                        : String(besøg.brugerID);
+                    const targetBrugerID = String(brugerID);
+                    return besøgBrugerID === targetBrugerID;
+                });
+                setLocalAlleBesøg(filteredBesøg);
                 
                 setIsLoading(false);
             });
         } else if (!trigger) {
             // Reset state when modal closes
             setIsLoading(false);
+            // Clear local state when modal closes
+            setLocalAlleLedigeTider([]);
+            setLocalAlleBesøg([]);
+            setLocalEgneLedigeTider([]);
+            setLocalEgneBesøg([]);
         }
     }, [trigger, brugerID, user, setEgneLedigeTider, setEgneBesøg, setAlleLedigeTider, setAlleBesøg]);
 
@@ -108,9 +132,18 @@ const VisLedighedModal = ({ trigger, setTrigger, brugerID }) => {
                         brugerID={brugerID}
                         brugere={brugere}
                         getBrugerName={getBrugerName}
-                        alleLedigeTider={alleLedigeTider}
-                        alleBesøg={alleBesøg}
-                        setAlleLedigeTider={setAlleLedigeTider}
+                        alleLedigeTider={localAlleLedigeTider}
+                        alleBesøg={localAlleBesøg}
+                        setAlleLedigeTider={(updater) => {
+                            // Update local state, and also trigger refetch of global context
+                            if (typeof updater === 'function') {
+                                setLocalAlleLedigeTider(updater);
+                            } else {
+                                setLocalAlleLedigeTider(updater);
+                            }
+                            // Trigger refetch of global context so changes persist
+                            refetchLedigeTider ? setRefetchLedigeTider(false) : setRefetchLedigeTider(true);
+                        }}
                         refetchLedigeTider={refetchLedigeTider}
                         setRefetchLedigeTider={setRefetchLedigeTider}
                     />

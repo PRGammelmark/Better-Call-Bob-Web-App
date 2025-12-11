@@ -55,6 +55,7 @@ const PrimaryBookingComponent = () => {
   const [isLoadingWorkers, setIsLoadingWorkers] = useState(false)
   const [isLoadingTimes, setIsLoadingTimes] = useState(false)
   const [tidOgStedError, setTidOgStedError] = useState(null)
+  const [step2WasWiped, setStep2WasWiped] = useState(false)
   // Kontaktinfo state
   const [fuldeNavn, setFuldeNavn] = useState("")
   const [email, setEmail] = useState("")
@@ -74,6 +75,7 @@ const PrimaryBookingComponent = () => {
   const lastAnalyzedBeskrivelseRef = useRef("")
   const lastSummarizedBeskrivelseRef = useRef("")
   const lastKategorierRef = useRef(JSON.stringify(kategorier))
+  const lastEstimeretTidsforbrugTimerRef = useRef(estimeretTidsforbrugTimer)
   const { recaptchaSiteKey, executeRecaptcha, registerRecaptchaCallback } = useRecaptcha()
 
   // Computed value for kortOpgavebeskrivelse based on current language
@@ -123,7 +125,13 @@ const PrimaryBookingComponent = () => {
           kategorier={kategorier}
           adresse={adresse}
           formateretAdresse={formateretAdresse}
-          onAddressChange={setAdresse}
+          onAddressChange={(newAddress) => {
+            setAdresse(newAddress)
+            // Fjern wipe-flag når brugeren begynder at udfylde adresse igen
+            if (step2WasWiped && newAddress.trim()) {
+              setStep2WasWiped(false)
+            }
+          }}
           onFormateretAdresseChange={setFormateretAdresse}
           onDateChange={setValgtDato}
           onTimeChange={setValgtTidspunkt}
@@ -145,6 +153,7 @@ const PrimaryBookingComponent = () => {
           onErrorChange={setTidOgStedError}
           estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
           pulseField={step2PulseField}
+          step2WasWiped={step2WasWiped}
         />
       )
     },
@@ -327,29 +336,39 @@ const PrimaryBookingComponent = () => {
   }, [currentStep, opgaveBeskrivelse])
 
 
-  // Nulstil step 2 data når kategorier ændrer sig
+  // Nulstil step 2 data når kategorier eller estimeretTidsforbrugTimer ændrer sig
   useEffect(() => {
     const currentKategorierStr = JSON.stringify(kategorier)
     const lastKategorierStr = lastKategorierRef.current
+    const currentEstimeretTidsforbrugTimer = estimeretTidsforbrugTimer
+    const lastEstimeretTidsforbrugTimer = lastEstimeretTidsforbrugTimerRef.current
     
     // Tjek om kategorier faktisk er ændret (ikke bare første render)
-    if (lastKategorierStr !== currentKategorierStr && lastKategorierStr !== JSON.stringify([])) {
-      // Nulstil alle step 2 relaterede data
+    const kategorierChanged = lastKategorierStr !== currentKategorierStr && lastKategorierStr !== JSON.stringify([])
+    
+    // Tjek om estimeretTidsforbrugTimer faktisk er ændret (ikke bare første render)
+    const tidsforbrugChanged = lastEstimeretTidsforbrugTimer !== currentEstimeretTidsforbrugTimer && lastEstimeretTidsforbrugTimer !== null
+    
+    if (kategorierChanged || tidsforbrugChanged) {
+      // Nulstil alle step 2 relaterede data inkl. adresse
+      setAdresse("")
+      setFormateretAdresse(null)
       setAvailableWorkerIDs([])
       setAvailableWorkerNames([])
       setAllAvailableSlots([])
       setValgtDato(null)
       setValgtTidspunkt(null)
       setManualTimePreference("")
-      setFormateretAdresse(null)
       setTidOgStedError(null)
       setIsLoadingWorkers(false)
       setIsLoadingTimes(false)
+      setStep2WasWiped(true)
     }
     
-    // Opdater ref til nuværende kategorier
+    // Opdater refs til nuværende værdier
     lastKategorierRef.current = currentKategorierStr
-  }, [kategorier])
+    lastEstimeretTidsforbrugTimerRef.current = currentEstimeretTidsforbrugTimer
+  }, [kategorier, estimeretTidsforbrugTimer])
 
   // Hent ledige tider automatisk når man kommer tilbage til step 2 med eksisterende adresse og dato
   useEffect(() => {
@@ -554,8 +573,14 @@ const PrimaryBookingComponent = () => {
         finalOpgaveBeskrivelse = `${opgaveBeskrivelse}\n\n${t('beskrivOpgaven.aiSporgsmaal') || 'AI opfølgende spørgsmål:'}\n${questionsText}`
       }
       
+      // Append manual time preference to opgaveBeskrivelse if it exists and no valgtTidspunkt
+      if (manualTimePreference && manualTimePreference.trim().length > 0 && !valgtTidspunkt) {
+        finalOpgaveBeskrivelse = `${finalOpgaveBeskrivelse}\n\nØnsket tidspunkt: ${manualTimePreference}`
+      }
+      
       const bookingData = {
         opgaveBeskrivelse: finalOpgaveBeskrivelse,
+        kortOpgavebeskrivelse: kortOpgavebeskrivelseDa || "",
         opgaveBilleder: uploadedFileURLs,
         fornavn,
         efternavn,
@@ -572,6 +597,7 @@ const PrimaryBookingComponent = () => {
         kommentarer: kommentarer || "",
         opfølgendeSpørgsmålSvar,
         valgtTidspunkt: valgtTidspunkt || null, // Include selected timeslot with brugerID, start, end
+        onsketTidspunkt: manualTimePreference && manualTimePreference.trim().length > 0 && !valgtTidspunkt ? manualTimePreference.trim() : null,
         recaptchaToken
       }
 

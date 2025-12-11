@@ -506,6 +506,25 @@
   line-height: 1.4;
 }
 
+.wipeObsContainer {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background-color: #e7f3ff;
+  border-radius: 8px;
+  border-left: 3px solid #2196f3;
+  margin-top: 8px;
+  animation: slideInObs 0.3s ease-out;
+}
+
+.wipeObsText {
+  font-size: 0.875rem;
+  color: #1565c0;
+  line-height: 1.5;
+  margin: 0;
+}
+
 .manualTimePreferenceSection {
   display: flex;
   flex-direction: column;

@@ -10,6 +10,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 
 import { opretNotifikation } from '../utils/notifikationFunktioner.js'
+import { sendEmail } from '../emailService.js'
 
 const opgaveSchema = Joi.object({
     opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
@@ -29,6 +30,7 @@ const opgaveSchema = Joi.object({
 
 const bookingSchema = Joi.object({
     opgaveBeskrivelse: Joi.string().min(10).max(2000).required(),
+    kortOpgavebeskrivelse: Joi.string().max(200).optional().allow("", null),
     opgaveBilleder: Joi.array().items(Joi.string().uri()).optional(),
     fornavn: Joi.string().min(2).max(100).required(),
     efternavn: Joi.string().max(100).allow("", null),
@@ -49,7 +51,8 @@ const bookingSchema = Joi.object({
         brugerID: Joi.string().optional(),
         start: Joi.date().iso().optional(),
         end: Joi.date().iso().optional()
-    }).optional().allow(null)
+    }).optional().allow(null),
+    onsketTidspunkt: Joi.string().max(500).optional().allow("", null)
 })
 
 const debounceTimers = {};
@@ -271,7 +274,7 @@ const createBooking = async (req, res) => {
         return res.status(400).json({ message: "Ugyldigt input", details: error.details })
     }
 
-    let { opgaveBeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt } = req.body;
+    let { opgaveBeskrivelse, kortOpgavebeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt, onsketTidspunkt } = req.body;
     
     // Default efternavn hvis det mangler eller er for kort
     if (!efternavn || !efternavn.trim() || efternavn.trim().length < 2) {
@@ -354,8 +357,10 @@ const createBooking = async (req, res) => {
         // Create opgave
         const opgave = await Opgave.create({
             opgaveBeskrivelse,
+            kortOpgavebeskrivelse: kortOpgavebeskrivelse || null,
             opgaveBilleder: opgaveBilleder || [],
             onsketDato,
+            onsketTidspunkt: onsketTidspunkt || null,
             status: "Modtaget",
             kundeID: kunde._id.toString(),
             kunde: kunde._id,
@@ -436,6 +441,89 @@ const createBooking = async (req, res) => {
                 console.error("Error creating besøg:", besøgError);
                 // Don't fail the request if besøg creation fails
             }
+        }
+
+        // Send booking confirmation email to customer
+        try {
+            // Determine if customer is business (erhverv) or private (privat)
+            const isErhvervskunde = !!(CVR || virksomhed);
+            
+            // Format booking time if valgtTidspunkt exists
+            let bekræftelsesTekst = "";
+            let betalingsTekst = "";
+            
+            // Use saved kortOpgavebeskrivelse from opgave, or fallback to truncated version
+            const kortOpgavebeskrivelse = opgave.kortOpgavebeskrivelse || 
+                (opgaveBeskrivelse.length > 200 
+                    ? opgaveBeskrivelse.substring(0, 200) + '...' 
+                    : opgaveBeskrivelse);
+            
+            if (valgtTidspunkt && valgtTidspunkt.start && valgtTidspunkt.end) {
+                const aftaledato = dayjs(valgtTidspunkt.start).format("DD. MMMM YYYY");
+                const aftaltklokkesletStart = dayjs(valgtTidspunkt.start).format("HH:mm");
+                bekræftelsesTekst = `<b>Vi bekræfter hermed, at vi kommer den ${aftaledato} omkring kl. ${aftaltklokkesletStart}.</b>`;
+            } else if (opgave.onsketTidspunkt) {
+                bekræftelsesTekst = `<b>Dit ønskede tidspunkt: ${opgave.onsketTidspunkt}</b><br />Vi vender tilbage til dig hurtigst muligt for at afstemme præcist hvornår vi kan komme.`;
+            }
+            
+            // Payment text based on customer type
+            if (isErhvervskunde) {
+                betalingsTekst = `<p>Når opgaven er afsluttet vil vi sende jer en faktura for arbejdet. Normalt er vores betalingsbetingelser 8 dage fra fakturaens udstedelse, med mindre andet er aftalt.</p>`;
+            } else {
+                betalingsTekst = `<p>Når opgaven er afsluttet kan du nemt betale med Mobile Pay direkte til vores handyman. Hvis du ikke har mulighed for at benytte MobilePay, bedes du på forhånd kontakte vores kundeservice for at aftale en alternativ betalingsmetode.</p>`;
+            }
+
+            const emailSubject = "Tak for din booking - vi ser frem til at hjælpe dig!";
+            
+            const emailBody = `
+                Kære ${fornavn},
+                <br /><br />
+                Tak fordi ${isErhvervskunde ? 'I' : 'du'} valgte Better Call Bob.
+                <br />
+                <p> ---------------------- </p>
+                ${bekræftelsesTekst}<br />
+                Din opgave opsummeret: "${kortOpgavebeskrivelse}"
+                <p> ---------------------- </p>
+                <p>Vores handyman medbringer værktøj samt almindelige skruer og rawlplugs. Normalt kommer vi på cykel, så hvis der er behov for en stige, og ${isErhvervskunde ? 'I' : 'du'} ikke selv har en, er det vigtigt at informere os om det på forhånd, så vi kan tage den med.</p>
+                ${betalingsTekst}
+                <p>Har ${isErhvervskunde ? 'I' : 'du'} spørgsmål, så prøv vores chatbot på hjemmesiden – den kan svare på det meste. ${isErhvervskunde ? 'I' : 'Du'} kan også finde svar på de mest almindelige spørgsmål i vores <a href="https://bettercallbob.dk/faq/" target="_blank">hjemmesides FAQ</a> og <a href="https://bettercallbob.dk#priser" target="_blank">prisliste</a>. Hvis ${isErhvervskunde ? 'I' : 'du'} ikke kan finde svar på hjemmesiden, er ${isErhvervskunde ? 'I' : 'du'} altid velkommen til at kontakte os. Vores kundeservice har åbent alle hverdage fra kl. 08-18.</p>
+                <p>Med venlig hilsen</p>
+                <b>Better Call Bob Kundeservice</b><br />
+                Telefon: (+45) 71 99 48 48<br />
+                Mail: hej@bettercallbob.dk<br />
+                Web: www.bettercallbob.dk
+            `.trim();
+
+            const emailHtml = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            line-height: 1.6;
+                            color: #333;
+                            max-width: 600px;
+                            margin: 0 auto;
+                            padding: 20px;
+                        }
+                        p {
+                            margin-bottom: 12px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${emailBody}
+                </body>
+                </html>
+            `.trim();
+
+            await sendEmail(email, emailSubject, emailBody.replace(/<[^>]*>/g, ''), emailHtml);
+            console.log(`Booking confirmation email sent to ${email}`);
+        } catch (emailError) {
+            console.error("Error sending booking confirmation email:", emailError);
+            // Don't fail the request if email fails
         }
         
         res.status(200).json({ 

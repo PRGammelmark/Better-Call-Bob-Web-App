@@ -50,6 +50,10 @@ const indstillingerSchema = new mongoose.Schema({
   bookingLogo: {
     type: String,
     default: ""
+  },
+  bookingFavicon: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

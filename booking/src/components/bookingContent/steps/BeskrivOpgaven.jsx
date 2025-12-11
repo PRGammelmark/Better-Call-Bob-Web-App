@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import StepsStyles from './Steps.module.css'
 import Styles from './BeskrivOpgaven.module.css'
-import { Trash2, Camera, FileText } from 'lucide-react'
+import { Trash2, Camera, FileText, Globe } from 'lucide-react'
 import MoonLoader from "react-spinners/MoonLoader";
 import imageCompression from 'browser-image-compression'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
@@ -311,7 +311,7 @@ const BeskrivOpgaven = ({
                         onClick={handleLanguageChange}
                         aria-label={i18n.language === 'da' ? t('beskrivOpgaven.skiftSprogTilEngelsk') : t('beskrivOpgaven.skiftSprogTilDansk')}
                     >
-                        <span className={Styles.flagIcon}>{i18n.language === 'da' ? '🇬🇧' : '🇩🇰'}</span>
+                        <Globe className={Styles.languageIcon} size={18} />
                         <span>{i18n.language === 'da' ? 'EN' : 'DA'}</span>
                     </button>
                 </div>

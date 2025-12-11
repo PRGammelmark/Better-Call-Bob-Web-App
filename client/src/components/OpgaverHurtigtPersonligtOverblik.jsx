@@ -141,7 +141,9 @@ const OpgaverHurtigtPersonligtOverblik = () => {
         : String(besøg.opgaveID)
       
       const opgave = opgaverMap.get(opgaveID)
-      if (opgave) {
+      
+      // Skip archived opgaver
+      if (opgave && !opgave.isArchived) {
         entries.push({
           ...opgave,
           _visitToday: besøg, // Single visit for this entry

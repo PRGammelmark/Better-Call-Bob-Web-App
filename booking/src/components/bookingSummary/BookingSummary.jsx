@@ -321,7 +321,7 @@ const BookingSummary = ({ currentStep, kortOpgavebeskrivelse, estimeretTidsforbr
                 <p className={Styles.popupText} style={{ marginBottom: '12px', paddingBottom: '12px', borderBottom: '1px solid #e0e0e0' }}>
                   {t('summary.priserBrødtekst2')}
                 </p>
-                <p className={Styles.popupText} style={{ marginBottom: '0 px' }}>
+                <p className={Styles.popupText} style={{ marginBottom: '0px' }}>
                   <b style={{ fontFamily: 'OmnesBold' }}>{t('summary.opstartsgebyr')}</b>
                 </p>
                 <p className={Styles.popupText} style={{ fontSize: '0.8rem' }}>

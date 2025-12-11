@@ -32,17 +32,29 @@
     border: 1px solid #59bf1a;
   }
 
-  .iconAndTitleDiv {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-  }
+.iconAndTitleDiv {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
 
-  .iconAndTitleDiv h3 {
-    font-size: 0.9rem;
-    font-weight: 400;
-  }
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.iconAndTitleDiv h3 {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.subtitle {
+  font-size: 0.75rem;
+  color: #666;
+  font-weight: 400;
+}
 
   .iconSpan {
     display: flex;

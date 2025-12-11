@@ -14,6 +14,17 @@
 // 
 
 const changes = [{
+    version: "3.10.4",
+    date: "11. december 2025",
+    changes: [
+        "Opdaterede bookingsystemets sprog-knap, så det nu fremstår med et globus-ikon i stedet for et flag.",
+        "Nu kan man indstille bookingsystemets browser-ikon fra app'en.",
+        "Bookingsystemets boks til opfølgende spørgsmål fylder nu ikke så meget i højden på mobil-skærme, hvilket gør det nemmere at læse både spørgsmålet og input-feltet når tastaturet er åbent.",
+        "Justerede ikonernes stregtykkelse på bookingsystemets upload-knap.",
+        "Bookingsystemet vil nu sende en automatisk mail til kunden med en bekræftelse efter succesfuld booking.",
+        "Rettede en fejl i app'en, der gjorde, at kalendervisningen på administratorens overbliksside ikke blev opdateret med besøgsevents fra alle medarbejdere, hvis administratoren selv tidligere havde ændret sine egne ledige tidspunkter fra ledighedskalenderen på profilsidens arbejdspræferencer-tab."
+    ]
+},{
     version: "3.10.3",
     date: "10. december 2025",
     changes: [

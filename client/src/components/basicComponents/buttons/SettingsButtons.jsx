@@ -15,7 +15,10 @@ const SettingsButtons = ({ items = [] }) => {
         >
           <div className={Styles.iconAndTitleDiv}>
             {item.icon ? <span className={Styles.iconSpan}>{item.icon}</span> : ""}
-            <h3>{item.title}</h3>
+            <div className={Styles.titleContainer}>
+              <h3>{item.title}</h3>
+              {item.subtitle && <span className={Styles.subtitle}>{item.subtitle}</span>}
+            </div>
           </div>
 
           {item.infoBoxes && (

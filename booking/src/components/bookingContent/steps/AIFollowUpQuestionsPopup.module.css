@@ -386,7 +386,8 @@
   .integratedContainer {
     padding: 16px;
     padding-top: 24px;
-    gap: 12px;
+    padding-bottom: 1px;
+    gap: 0px;
   }
 
   .integratedContainer .questionText {
@@ -398,10 +399,11 @@
   }
 
   .integratedFooter {
-    padding-top: 15px;
+    padding-top: 8px;
     justify-content: center;
     gap: 0;
     min-height: 20px;
+    padding-bottom: 0;
   }
 
   .integratedFooter .navButton,
@@ -418,7 +420,7 @@
   .integratedFooter .dotsContainer {
     flex: none;
     position: absolute;
-    bottom: 0px;
+    bottom: -12px;
     left: 50%;
     transform: translateX(-50%);
   }

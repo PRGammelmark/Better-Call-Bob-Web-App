@@ -163,7 +163,8 @@ const OpgaverIDagAdminOverblik = () => {
       const opgave = opgaverMap.get(opgaveID)
       const bruger = brugereMap.get(brugerID)
       
-      if (opgave) {
+      // Skip archived opgaver
+      if (opgave && !opgave.isArchived) {
         entries.push({
           ...opgave,
           _visitToday: besøg,

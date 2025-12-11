@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain, Image, Clock, MessageCircleQuestion } from 'lucide-react'
+import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain, Image, Clock, MessageCircleQuestion, Globe } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
@@ -38,6 +38,8 @@ const AppIndstillinger = () => {
     const [persondatapolitik, setPersondatapolitik] = useState(indstillinger?.persondatapolitik || "")
     const [bookingLogo, setBookingLogo] = useState(indstillinger?.bookingLogo || "")
     const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+    const [bookingFavicon, setBookingFavicon] = useState(indstillinger?.bookingFavicon || "")
+    const [isUploadingFavicon, setIsUploadingFavicon] = useState(false)
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -83,6 +85,9 @@ const AppIndstillinger = () => {
             }
             if (indstillinger.bookingLogo != null) {
                 setBookingLogo(indstillinger.bookingLogo);
+            }
+            if (indstillinger.bookingFavicon != null) {
+                setBookingFavicon(indstillinger.bookingFavicon);
             }
             hasInitializedRef.current = true
         }
@@ -299,6 +304,66 @@ const AppIndstillinger = () => {
         }
     }
 
+    const handleFaviconUpload = async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vælg venligst et billede')
+            return
+        }
+
+        setIsUploadingFavicon(true)
+        try {
+            // Compress the image - favicon should be smaller
+            const compressedFile = await imageCompression(file, {
+                maxSizeMB: 0.2,
+                maxWidthOrHeight: 256,
+                useWebWorker: true,
+            })
+
+            // Upload to Firebase Storage
+            const storagePath = `booking/favicon.ico`
+            const storageRef = ref(storage, storagePath)
+
+            // Delete old favicon if it exists
+            if (bookingFavicon) {
+                try {
+                    const oldImageRef = ref(storage, storagePath)
+                    await deleteObject(oldImageRef)
+                } catch (error) {
+                    console.log('Kunne ikke slette gammelt favicon:', error)
+                }
+            }
+
+            // Upload new favicon
+            await uploadBytes(storageRef, compressedFile)
+            const downloadURL = await getDownloadURL(storageRef)
+
+            // Update indstillinger in database
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { bookingFavicon: downloadURL },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`,
+                    },
+                }
+            )
+
+            setBookingFavicon(downloadURL)
+            console.log('Favicon opdateret')
+        } catch (error) {
+            console.error('Fejl ved upload af favicon:', error)
+            alert('Kunne ikke uploade favicon. Prøv igen.')
+        } finally {
+            setIsUploadingFavicon(false)
+            // Reset file input
+            e.target.value = ''
+        }
+    }
+
   return (
     <div className={Styles.pageContent}>
         <h1>App-indstillinger</h1>
@@ -419,6 +484,17 @@ const AppIndstillinger = () => {
                         accept: "image/*",
                         uploadButtonText: bookingLogo ? "Skift logo" : "Upload logo",
                         onFileChange: handleLogoUpload
+                    },
+                    {
+                        title: "Browserikon",
+                        subtitle: "Dimensioner: 512x512 px.",
+                        icon: <Globe />,
+                        fileUpload: true,
+                        preview: bookingFavicon,
+                        isUploading: isUploadingFavicon,
+                        accept: "image/*",
+                        uploadButtonText: bookingFavicon ? "Skift ikon" : "Upload ikon",
+                        onFileChange: handleFaviconUpload
                     }
                 ]}
             />

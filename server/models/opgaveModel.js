@@ -4,7 +4,9 @@ const Schema = mongoose.Schema;
 
 const opgaverSchema = new Schema({
     opgaveBeskrivelse: String,
+    kortOpgavebeskrivelse: String,
     onsketDato: Date,
+    onsketTidspunkt: String,
     status: {
         type: String,
         default: "Modtaget"

@@ -107,7 +107,8 @@
     "ankomstPlusMinusEnTime": "Arrival +/- 1 hour",
     "foretrukket": "We prefer",
     "placeholderAdresse": "E.g. Main Street 1, 2000 Copenhagen",
-    "placeholderManualTime": "E.g. 'Monday morning next week' or 'As soon as possible'"
+    "placeholderManualTime": "E.g. 'Monday morning next week' or 'As soon as possible'",
+    "systemHarAendretParametre": "Our system has changed your task parameters. Please fill out this step again."
   },
   "summary": {
     "dinHandymanBooking": "Your handyman booking",
