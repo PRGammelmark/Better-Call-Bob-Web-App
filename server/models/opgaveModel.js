@@ -50,6 +50,33 @@ const opgaverSchema = new Schema({
     aiCreated: {
         type: Boolean,
         default: false
+    },
+    // UTM tracking parameters grouped in an object
+    utm: {
+        source: {
+            type: String,
+            required: false
+        },
+        campaign: {
+            type: String,
+            required: false
+        },
+        medium: {
+            type: String,
+            required: false
+        },
+        term: {
+            type: String,
+            required: false
+        },
+        content: {
+            type: String,
+            required: false
+        }
+    },
+    gclid: {
+        type: String,
+        required: false
     }
 }, { timestamps: true })
 

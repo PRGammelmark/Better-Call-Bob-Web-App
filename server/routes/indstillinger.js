@@ -60,6 +60,11 @@ const indstillingerSchema = Joi.object({
     bookingFavicon: Joi.string()
       .max(1000)
       .allow("")
+      .optional(),
+    
+    bookingRedirectUrl: Joi.string()
+      .max(2000)
+      .allow("")
       .optional()
 });
 
@@ -142,6 +147,7 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.aiTidsestimaterPrompt !== undefined) updateData.aiTidsestimaterPrompt = value.aiTidsestimaterPrompt;
     if (value.bookingLogo !== undefined) updateData.bookingLogo = value.bookingLogo;
     if (value.bookingFavicon !== undefined) updateData.bookingFavicon = value.bookingFavicon;
+    if (value.bookingRedirectUrl !== undefined) updateData.bookingRedirectUrl = value.bookingRedirectUrl;
 
     console.log("Update data:", updateData);
 

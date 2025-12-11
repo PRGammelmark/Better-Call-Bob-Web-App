@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.10.5",
+    date: "11. december 2025",
+    changes: [
+        "Ved booking-succes leder bookingsystemet nu tilbage til hjemmesidens 'Tak for din booking'-side for nemmere Google Ads-tracking. Fremover vil kunder kunne inputte redirect-URL'en til bookingsystemer under App-indstillinger -> Booking -> Omdirigering ved succes.",
+        "Nu lagrer bookingsystemet også informationer om evt. Google Ads-kampagner, der har ledt kunden til bookingsystemet."
+    ]
+},{
     version: "3.10.4",
     date: "11. december 2025",
     changes: [

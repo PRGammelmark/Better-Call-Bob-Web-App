@@ -40,6 +40,7 @@ const AppIndstillinger = () => {
     const [isUploadingLogo, setIsUploadingLogo] = useState(false)
     const [bookingFavicon, setBookingFavicon] = useState(indstillinger?.bookingFavicon || "")
     const [isUploadingFavicon, setIsUploadingFavicon] = useState(false)
+    const [bookingRedirectUrl, setBookingRedirectUrl] = useState(indstillinger?.bookingRedirectUrl || "")
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -88,6 +89,9 @@ const AppIndstillinger = () => {
             }
             if (indstillinger.bookingFavicon != null) {
                 setBookingFavicon(indstillinger.bookingFavicon);
+            }
+            if (indstillinger.bookingRedirectUrl != null) {
+                setBookingRedirectUrl(indstillinger.bookingRedirectUrl);
             }
             hasInitializedRef.current = true
         }
@@ -166,6 +170,25 @@ const AppIndstillinger = () => {
             console.log("Persondatapolitik opdateret")
         } catch (err) {
             console.error("Fejl ved opdatering af persondatapolitik", err)
+        }
+    }
+
+    const handleBookingRedirectUrlBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    bookingRedirectUrl: bookingRedirectUrl
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("Redirect ved succes opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af redirect ved succes", err)
         }
     }
 
@@ -495,6 +518,17 @@ const AppIndstillinger = () => {
                         accept: "image/*",
                         uploadButtonText: bookingFavicon ? "Skift ikon" : "Upload ikon",
                         onFileChange: handleFaviconUpload
+                    },
+                    {
+                        title: "Omdirigering ved succes",
+                        subtitle: "Indtast omdirigerings-URL ved succesfuld booking",
+                        icon: <Link />,
+                        input: true,
+                        type: "text",
+                        value: bookingRedirectUrl,
+                        onChange: (v) => setBookingRedirectUrl(v),
+                        onBlur: handleBookingRedirectUrlBlur,
+                        placeholder: "https://eksempel.dk/tak"
                     }
                 ]}
             />

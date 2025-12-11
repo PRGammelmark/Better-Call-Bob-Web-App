@@ -52,7 +52,14 @@ const bookingSchema = Joi.object({
         start: Joi.date().iso().optional(),
         end: Joi.date().iso().optional()
     }).optional().allow(null),
-    onsketTidspunkt: Joi.string().max(500).optional().allow("", null)
+    onsketTidspunkt: Joi.string().max(500).optional().allow("", null),
+    // Add UTM tracking parameters
+    utm_source: Joi.string().max(200).optional().allow("", null),
+    utm_campaign: Joi.string().max(200).optional().allow("", null),
+    utm_medium: Joi.string().max(200).optional().allow("", null),
+    utm_term: Joi.string().max(200).optional().allow("", null),
+    utm_content: Joi.string().max(200).optional().allow("", null),
+    gclid: Joi.string().max(200).optional().allow("", null)
 })
 
 const debounceTimers = {};
@@ -274,7 +281,7 @@ const createBooking = async (req, res) => {
         return res.status(400).json({ message: "Ugyldigt input", details: error.details })
     }
 
-    let { opgaveBeskrivelse, kortOpgavebeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt, onsketTidspunkt } = req.body;
+    let { opgaveBeskrivelse, kortOpgavebeskrivelse, opgaveBilleder, fornavn, efternavn, CVR, virksomhed, adresse, postnummerOgBy, telefon, email, onsketDato, harStige, recaptchaToken, engelskKunde, måKontaktesMedReklame, valgtTidspunkt, onsketTidspunkt, utm_source, utm_campaign, utm_medium, utm_term, utm_content, gclid } = req.body;
     
     // Default efternavn hvis det mangler eller er for kort
     if (!efternavn || !efternavn.trim() || efternavn.trim().length < 2) {
@@ -355,6 +362,15 @@ const createBooking = async (req, res) => {
         }
 
         // Create opgave
+        // Build UTM object if any UTM parameters are provided
+        const utmObject = (utm_source || utm_campaign || utm_medium || utm_term || utm_content) ? {
+            source: utm_source || null,
+            campaign: utm_campaign || null,
+            medium: utm_medium || null,
+            term: utm_term || null,
+            content: utm_content || null
+        } : null
+
         const opgave = await Opgave.create({
             opgaveBeskrivelse,
             kortOpgavebeskrivelse: kortOpgavebeskrivelse || null,
@@ -367,7 +383,10 @@ const createBooking = async (req, res) => {
             incrementalID: counter.value,
             kilde: "booking",
             ansvarlig: ansvarlig,
-            aiCreated: true
+            aiCreated: true,
+            // Add UTM tracking parameters as grouped object
+            utm: utmObject,
+            gclid: gclid || null
         });
 
         // Send notification to admin (without user ID since this is an open route)

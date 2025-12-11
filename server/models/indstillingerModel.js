@@ -54,6 +54,10 @@ const indstillingerSchema = new mongoose.Schema({
   bookingFavicon: {
     type: String,
     default: ""
+  },
+  bookingRedirectUrl: {
+    type: String,
+    default: ""
   }
 }, { timestamps: true });
 

@@ -487,11 +487,12 @@ const OpgaverHurtigtAdminOverblik = () => {
           const warningLabels = getWarningLabels(tab.id)
 
           const hasNewTasks = tab.id === "new" && count > 0
+          const hasAiCreatedTasks = tab.id === "planned" && aiCreatedCount > 0
 
           return (
             <div 
               key={tab.id} 
-              className={`${Styles.card} ${hasNewTasks ? Styles.cardWithNewTasks : ''}`}
+              className={`${Styles.card} ${hasNewTasks || hasAiCreatedTasks ? Styles.cardWithNewTasks : ''}`}
               style={{ 
                 '--card-color': tab.color,
                 '--card-bg': tab.bgColor,

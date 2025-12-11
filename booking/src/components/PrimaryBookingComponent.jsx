@@ -31,6 +31,54 @@ const PrimaryBookingComponent = () => {
   useEffect(() => {
     dayjs.locale(i18n.language)
   }, [i18n.language])
+
+  // Capture UTM parameters and gclid from URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    
+    // Get UTM parameters
+    const source = urlParams.get('utm_source') || ""
+    const campaign = urlParams.get('utm_campaign') || ""
+    const medium = urlParams.get('utm_medium') || ""
+    const term = urlParams.get('utm_term') || ""
+    const content = urlParams.get('utm_content') || ""
+    const gclidParam = urlParams.get('gclid') || ""
+    
+    // Set state
+    setUtmSource(source)
+    setUtmCampaign(campaign)
+    setUtmMedium(medium)
+    setUtmTerm(term)
+    setUtmContent(content)
+    setGclid(gclidParam)
+    
+    // Store in sessionStorage to persist through navigation
+    if (source || campaign || medium || term || content || gclidParam) {
+      sessionStorage.setItem('utm_source', source)
+      sessionStorage.setItem('utm_campaign', campaign)
+      sessionStorage.setItem('utm_medium', medium)
+      sessionStorage.setItem('utm_term', term)
+      sessionStorage.setItem('utm_content', content)
+      sessionStorage.setItem('gclid', gclidParam)
+    }
+  }, [])
+  
+  // Also check sessionStorage on mount in case URL params were lost
+  useEffect(() => {
+    const storedSource = sessionStorage.getItem('utm_source')
+    const storedCampaign = sessionStorage.getItem('utm_campaign')
+    const storedMedium = sessionStorage.getItem('utm_medium')
+    const storedTerm = sessionStorage.getItem('utm_term')
+    const storedContent = sessionStorage.getItem('utm_content')
+    const storedGclid = sessionStorage.getItem('gclid')
+    
+    if (storedSource && !utmSource) setUtmSource(storedSource)
+    if (storedCampaign && !utmCampaign) setUtmCampaign(storedCampaign)
+    if (storedMedium && !utmMedium) setUtmMedium(storedMedium)
+    if (storedTerm && !utmTerm) setUtmTerm(storedTerm)
+    if (storedContent && !utmContent) setUtmContent(storedContent)
+    if (storedGclid && !gclid) setGclid(storedGclid)
+  }, [])
   const [opgaveBeskrivelse, setOpgaveBeskrivelse] = useState("")
   const [kortOpgavebeskrivelseDa, setKortOpgavebeskrivelseDa] = useState("")
   const [kortOpgavebeskrivelseEn, setKortOpgavebeskrivelseEn] = useState("")
@@ -71,6 +119,13 @@ const PrimaryBookingComponent = () => {
   const [showSummaryModal, setShowSummaryModal] = useState(false)
   const [showSuccessScreen, setShowSuccessScreen] = useState(false)
   const [bookingResponse, setBookingResponse] = useState(null)
+  // UTM tracking parameters
+  const [utmSource, setUtmSource] = useState("")
+  const [utmCampaign, setUtmCampaign] = useState("")
+  const [utmMedium, setUtmMedium] = useState("")
+  const [utmTerm, setUtmTerm] = useState("")
+  const [utmContent, setUtmContent] = useState("")
+  const [gclid, setGclid] = useState("")
   const prevStepRef = useRef(1)
   const lastAnalyzedBeskrivelseRef = useRef("")
   const lastSummarizedBeskrivelseRef = useRef("")
@@ -578,6 +633,14 @@ const PrimaryBookingComponent = () => {
         finalOpgaveBeskrivelse = `${finalOpgaveBeskrivelse}\n\nØnsket tidspunkt: ${manualTimePreference}`
       }
       
+      // Get UTM parameters from state or sessionStorage
+      const utmSourceValue = utmSource || sessionStorage.getItem('utm_source') || ""
+      const utmCampaignValue = utmCampaign || sessionStorage.getItem('utm_campaign') || ""
+      const utmMediumValue = utmMedium || sessionStorage.getItem('utm_medium') || ""
+      const utmTermValue = utmTerm || sessionStorage.getItem('utm_term') || ""
+      const utmContentValue = utmContent || sessionStorage.getItem('utm_content') || ""
+      const gclidValue = gclid || sessionStorage.getItem('gclid') || ""
+
       const bookingData = {
         opgaveBeskrivelse: finalOpgaveBeskrivelse,
         kortOpgavebeskrivelse: kortOpgavebeskrivelseDa || "",
@@ -598,7 +661,14 @@ const PrimaryBookingComponent = () => {
         opfølgendeSpørgsmålSvar,
         valgtTidspunkt: valgtTidspunkt || null, // Include selected timeslot with brugerID, start, end
         onsketTidspunkt: manualTimePreference && manualTimePreference.trim().length > 0 && !valgtTidspunkt ? manualTimePreference.trim() : null,
-        recaptchaToken
+        recaptchaToken,
+        // Add UTM tracking parameters
+        utm_source: utmSourceValue,
+        utm_campaign: utmCampaignValue,
+        utm_medium: utmMediumValue,
+        utm_term: utmTermValue,
+        utm_content: utmContentValue,
+        gclid: gclidValue
       }
 
       // Submit booking to server
@@ -608,9 +678,42 @@ const PrimaryBookingComponent = () => {
       )
 
       if (response.data.success) {
-        // Store booking response and show success screen
-        setBookingResponse(response.data)
-        setShowSuccessScreen(true)
+        // Fetch redirect URL from indstillinger
+        try {
+          const indstillingerResponse = await axios.get(`${import.meta.env.VITE_API_URL}/indstillinger`)
+          const redirectUrl = indstillingerResponse.data?.bookingRedirectUrl
+          
+          if (redirectUrl && redirectUrl.trim()) {
+            // Build redirect URL with gclid if present
+            let finalRedirectUrl = redirectUrl.trim()
+            if (gclidValue) {
+              try {
+                // Try to parse as absolute URL
+                const url = new URL(finalRedirectUrl)
+                url.searchParams.set('gclid', gclidValue)
+                finalRedirectUrl = url.toString()
+              } catch (e) {
+                // If it's a relative URL, append gclid as query parameter
+                const separator = finalRedirectUrl.includes('?') ? '&' : '?'
+                finalRedirectUrl = `${finalRedirectUrl}${separator}gclid=${encodeURIComponent(gclidValue)}`
+              }
+            }
+            // Redirect to the configured URL
+            window.location.href = finalRedirectUrl
+          } else {
+            // Fallback: Store booking response and show success screen (commented out as requested)
+            // setBookingResponse(response.data)
+            // setShowSuccessScreen(true)
+            // If no redirect URL is configured, just show a simple success message
+            alert(t('alerts.bookingSuccess') || 'Din booking er blevet modtaget!')
+          }
+        } catch (error) {
+          console.error('Error fetching indstillinger for redirect:', error)
+          // Fallback: Store booking response and show success screen (commented out as requested)
+          // setBookingResponse(response.data)
+          // setShowSuccessScreen(true)
+          alert(t('alerts.bookingSuccess') || 'Din booking er blevet modtaget!')
+        }
       }
     } catch (error) {
       console.error('Error submitting booking:', error)
@@ -635,7 +738,13 @@ const PrimaryBookingComponent = () => {
     kommentarer,
     modtagNyheder,
     i18n.language,
-    t
+    t,
+    utmSource,
+    utmCampaign,
+    utmMedium,
+    utmTerm,
+    utmContent,
+    gclid
   ])
 
   // Callback function for reCAPTCHA as per Google's guide
@@ -896,38 +1005,38 @@ const PrimaryBookingComponent = () => {
     (hasAddress && availableWorkerIDs.length === 0 && !isLoadingWorkers && manualTimePreference.trim().length > 0) ||
     (availableWorkerIDs.length === 0 && isLoadingWorkers)
 
-  // Show success screen if booking was successful
-  if (showSuccessScreen) {
-    return (
-      <div className={Styles.primaryBookingComponent} style={{ height: '100%', width: '100%' }}>
-        <div className={`${Styles.bookingContainer} ${Styles.bookingContainerSuccess}`} style={{ width: '100%', padding: '20px', height: '100%', overflowY: 'auto', position: 'relative' }}>
-          <BookingSuccess
-            bookingData={bookingResponse}
-            kortOpgavebeskrivelse={kortOpgavebeskrivelse}
-            estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
-            kategorier={kategorier}
-            opfølgendeSpørgsmålSvar={opfølgendeSpørgsmålSvar}
-            aiGeneratedQuestions={aiGeneratedQuestions}
-            adresse={adresse}
-            formateretAdresse={formateretAdresse}
-            valgtDato={valgtDato}
-            valgtTidspunkt={valgtTidspunkt}
-            manualTimePreference={manualTimePreference}
-            fuldeNavn={fuldeNavn}
-            email={email}
-            telefonnummer={telefonnummer}
-            erVirksomhed={erVirksomhed}
-            virksomhed={virksomhed}
-            cvr={cvr}
-            opgaveBilleder={opgaveBilleder}
-            kommentarer={kommentarer}
-            modtagNyheder={modtagNyheder}
-            availableWorkerNames={availableWorkerNames}
-          />
-        </div>
-      </div>
-    )
-  }
+  // Show success screen if booking was successful (commented out - now using redirect)
+  // if (showSuccessScreen) {
+  //   return (
+  //     <div className={Styles.primaryBookingComponent} style={{ height: '100%', width: '100%' }}>
+  //       <div className={`${Styles.bookingContainer} ${Styles.bookingContainerSuccess}`} style={{ width: '100%', padding: '20px', height: '100%', overflowY: 'auto', position: 'relative' }}>
+  //         <BookingSuccess
+  //           bookingData={bookingResponse}
+  //           kortOpgavebeskrivelse={kortOpgavebeskrivelse}
+  //           estimeretTidsforbrugTimer={estimeretTidsforbrugTimer}
+  //           kategorier={kategorier}
+  //           opfølgendeSpørgsmålSvar={opfølgendeSpørgsmålSvar}
+  //           aiGeneratedQuestions={aiGeneratedQuestions}
+  //           adresse={adresse}
+  //           formateretAdresse={formateretAdresse}
+  //           valgtDato={valgtDato}
+  //           valgtTidspunkt={valgtTidspunkt}
+  //           manualTimePreference={manualTimePreference}
+  //           fuldeNavn={fuldeNavn}
+  //           email={email}
+  //           telefonnummer={telefonnummer}
+  //           erVirksomhed={erVirksomhed}
+  //           virksomhed={virksomhed}
+  //           cvr={cvr}
+  //           opgaveBilleder={opgaveBilleder}
+  //           kommentarer={kommentarer}
+  //           modtagNyheder={modtagNyheder}
+  //           availableWorkerNames={availableWorkerNames}
+  //         />
+  //       </div>
+  //     </div>
+  //   )
+  // }
 
   return (
     <div className={Styles.primaryBookingComponent}>
