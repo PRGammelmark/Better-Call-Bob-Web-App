@@ -1,0 +1,116 @@
+/* Desktop Sidebar */
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    padding: 20px;
+    padding-right: 30px;
+    border-right: 1px solid #e0e0e0;
+    min-height: calc(100vh - 200px);
+    height: 100%;
+    background: #f1f3f5;
+    border-radius: 12px;
+    margin-right: 20px;
+}
+
+.mainHeading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: OmnesBold;
+    color: #222;
+    margin-bottom: 25px;
+}
+
+.categorySection {
+    margin-bottom: 30px;
+}
+
+.categoryHeading {
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: OmnesBold;
+    color: #222;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.categoryIcon {
+    display: flex;
+    align-items: center;
+    color: #59bf1a;
+}
+
+.categoryButtons {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sidebarButton {
+    padding: 4px 15px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #222;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.sidebarButton:hover {
+    background: #e9ecef;
+}
+
+.sidebarButton.active {
+    background: #59bf1a;
+    color: white;
+    font-weight: 500;
+}
+
+/* Mobile Sidebar */
+.sidebarMobile {
+    width: 100%;
+    padding: 0;
+}
+
+.sidebarMobile .mainHeading {
+    font-size: 1.3rem;
+    font-weight: 700;
+    font-family: OmnesBold;
+    color: #222;
+    margin-bottom: 25px;
+}
+
+.sidebarMobile .categorySection {
+    margin-bottom: 30px;
+}
+
+.sidebarMobile .categoryHeading {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 15px;
+    text-transform: none;
+    letter-spacing: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sidebarMobile .categoryIcon {
+    display: flex;
+    align-items: center;
+    color: #59bf1a;
+}
+
+@media screen and (max-width: 750px) {
+    .sidebar {
+        display: none;
+    }
+}
+

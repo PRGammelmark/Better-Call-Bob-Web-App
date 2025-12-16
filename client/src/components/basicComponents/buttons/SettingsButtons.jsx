@@ -34,27 +34,40 @@ const SettingsButtons = ({ items = [] }) => {
 
           {item.input ? (
             <div className={Styles.inputContainer}>
-            <input
-              type={item.type || "text"}
-              value={item.value ?? ""}   // fallback til tom streng
-              onChange={(e) => {
-                if (item.type === "number") {
-                  let v = Number(e.target.value);
-                  if (isNaN(v)) v = item.min ?? 0;
-                  if (item.min !== undefined) v = Math.max(v, item.min);
-                  if (item.max !== undefined) v = Math.min(v, item.max);
-                  item.onChange?.(v);
-                } else {
-                  item.onChange?.(e.target.value);
-                }
-              }}
-              min={item.min}
-              max={item.max}
-              onBlur={item.onBlur}
-              placeholder={item.placeholder}
-              className={Styles.inputField}
-
-            />
+            {item.type === "select" ? (
+              <select
+                value={item.value ?? ""}
+                onChange={(e) => item.onChange?.(e.target.value)}
+                className={Styles.inputField}
+              >
+                {item.options?.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type={item.type || "text"}
+                value={item.value ?? ""}   // fallback til tom streng
+                onChange={(e) => {
+                  if (item.type === "number") {
+                    let v = Number(e.target.value);
+                    if (isNaN(v)) v = item.min ?? 0;
+                    if (item.min !== undefined) v = Math.max(v, item.min);
+                    if (item.max !== undefined) v = Math.min(v, item.max);
+                    item.onChange?.(v);
+                  } else {
+                    item.onChange?.(e.target.value);
+                  }
+                }}
+                min={item.min}
+                max={item.max}
+                onBlur={item.onBlur}
+                placeholder={item.placeholder}
+                className={Styles.inputField}
+              />
+            )}
             <span className={Styles.postfix}>{item.postfix ? (" " + item.postfix) : ""}</span>
             <span className={Styles.chevronOpenIndicator}>{item.onClick && <ChevronRight height={18}/>}</span>
             </div>

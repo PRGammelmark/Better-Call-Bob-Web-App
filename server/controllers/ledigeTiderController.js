@@ -4,6 +4,7 @@ import mongoose from "mongoose"
 import { opretNotifikation } from "../utils/notifikationFunktioner.js"
 import Bruger from '../models/brugerModel.js'
 import dayjs from 'dayjs'
+import 'dayjs/locale/da.js'
 import { justerForDST } from "../utils/justerForDST.js"
 
 // GET alle ledige tider
@@ -431,6 +432,132 @@ const getLedigeBookingTider = async (req, res) => {
     }
 }
 
+// GET næste to sammenhængende ledige timer (offentligt endpoint)
+const getNæsteToLedigeTimer = async (req, res) => {
+    try {
+        console.log('getNæsteToLedigeTimer called - endpoint is public');
+        // Sæt dansk locale for dayjs
+        dayjs.locale('da');
+        
+        // Beregn datointerval: fra i morgen til 2 uger frem
+        const iMorgen = dayjs().add(1, 'day').startOf('day');
+        const slutDato = dayjs().add(2, 'week').endOf('day');
+        
+        // Byg query for ledige tider - alle brugere
+        const ledigeTiderQuery = {
+            datoTidFra: { $lte: slutDato.toDate() },
+            datoTidTil: { $gte: iMorgen.toDate() }
+        };
+        
+        // Byg query for besøg - alle brugere
+        const besøgQuery = {
+            datoTidFra: { $lte: slutDato.toDate() },
+            datoTidTil: { $gte: iMorgen.toDate() }
+        };
+        
+        // Hent ledige tider og besøg
+        const [relevanteLedigeTider, relevanteBesøg] = await Promise.all([
+            LedigTid.find(ledigeTiderQuery).lean(),
+            Besøg.find(besøgQuery).lean()
+        ]);
+        
+        // Beregn ledige tider minus besøg
+        const ledigeTiderMinusBesøg = beregnLedigeTiderMinusBesøg(relevanteLedigeTider, relevanteBesøg);
+        
+        // Find første to sammenhængende hele timer (2-timers blok)
+        let næsteToTimer = null;
+        
+        // Saml alle potentielle 2-timers blokke
+        const toTimersBlokke = [];
+        
+        ledigeTiderMinusBesøg.forEach(ledigTid => {
+            const start = dayjs(ledigTid.datoTidFra);
+            const end = dayjs(ledigTid.datoTidTil);
+            
+            // Start fra første hele time efter eller ved starttidspunktet
+            let currentStart = start.startOf('hour');
+            if (start.isAfter(currentStart)) {
+                currentStart = currentStart.add(1, 'hour');
+            }
+            
+            // Tjek om vi skal starte fra i morgen
+            if (currentStart.isBefore(iMorgen)) {
+                currentStart = iMorgen.startOf('hour');
+            }
+            
+            // Tjek at currentStart stadig er inden for den ledige periode
+            if (currentStart.isAfter(end) || currentStart.isSame(end)) {
+                return; // Skip denne ledige tid hvis den slutter før i morgen
+            }
+            
+            // Generer 2-timers blokke indtil slutningen
+            while (currentStart.isBefore(end)) {
+                const blokSlut = currentStart.add(2, 'hour');
+                
+                // Tjek at tiden er fra i morgen eller senere
+                if (currentStart.isBefore(iMorgen)) {
+                    currentStart = currentStart.add(1, 'hour');
+                    continue;
+                }
+                
+                // Tjek at hele 2-timers blokken er inden for den ledige tid
+                if (blokSlut.isAfter(end)) {
+                    break;
+                }
+                
+                // Tjek at det er hele timer (start og slut skal være ved hele timer)
+                if (currentStart.minute() === 0 && currentStart.second() === 0 && 
+                    blokSlut.minute() === 0 && blokSlut.second() === 0) {
+                    toTimersBlokke.push({
+                        datoTidFra: currentStart.toDate(),
+                        datoTidTil: blokSlut.toDate(),
+                        brugerID: ledigTid.brugerID
+                    });
+                }
+                
+                currentStart = currentStart.add(1, 'hour');
+            }
+        });
+        
+        // Sorter efter datoTidFra for at finde den tidligste
+        toTimersBlokke.sort((a, b) => {
+            return dayjs(a.datoTidFra).diff(dayjs(b.datoTidFra));
+        });
+        
+        if (toTimersBlokke.length === 0) {
+            return res.status(404).json({ error: 'Ingen ledige timer fundet' });
+        }
+        
+        næsteToTimer = toTimersBlokke[0];
+        
+        // Formatér tidspunkt
+        const tidspunkt = dayjs(næsteToTimer.datoTidFra);
+        const time = tidspunkt.format('HH:mm');
+        const dato = tidspunkt.startOf('day');
+        const dageFraNu = dato.diff(dayjs().startOf('day'), 'day');
+        
+        // Bestem dateFromNow
+        let dateFromNow;
+        if (dageFraNu === 1) {
+            dateFromNow = 'i morgen';
+        } else if (dageFraNu >= 2 && dageFraNu <= 7) {
+            // Brug dansk locale for ugedag
+            dateFromNow = `på ${tidspunkt.format('dddd')}`;
+        } else {
+            // Hvis uden for 2-7 dage, brug stadig ugedag (skulle ikke ske da vi kun kigger 2 uger frem)
+            dateFromNow = `på ${tidspunkt.format('dddd')}`;
+        }
+        
+        res.status(200).json({
+            time: time,
+            dateFromNow: dateFromNow
+        });
+    } catch (error) {
+        console.error('getNæsteToLedigeTimer: Fejl ved beregning af næste ledige timer:', error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
 
 export {
     getLedigeTider,
@@ -441,5 +568,6 @@ export {
     getLedigeTiderForMedarbejder,
     getLedighed,
     getLedighedForMultipleUsers,
-    getLedigeBookingTider
+    getLedigeBookingTider,
+    getNæsteToLedigeTimer
 }

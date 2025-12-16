@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.11.0",
+    date: "16. december 2025",
+    changes: [
+        "App-indstillinger-siden er blevet opdateret med nyt design, struktur og indstillingsmuligheder.",
+        "Serveren har nu fået et offentligt endpoint, der gør det muligt for hjemmesiden at hente de næste to sammenhængende ledige timer fra medarbejdergruppen."
+    ]
+},{
     version: "3.10.5",
     date: "11. december 2025",
     changes: [

@@ -2,12 +2,16 @@ import React from 'react'
 import Styles from './Footer.module.css'
 import { Link } from 'react-router-dom'
 import { currentVersion } from '../version.js'
+import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 
 const Footer = () => {
+  const { indstillinger } = useIndstillinger()
+  const virksomhedsnavn = indstillinger?.virksomhedsnavn || 'Better Call Bob'
+
   return (
     <footer className={Styles.footer}>
         <div>
-          <span className={Styles.footerSpan}><p className='bold'>Better Call Bob</p></span>
+          <span className={Styles.footerSpan}><p className='bold'>{virksomhedsnavn}</p></span>
         </div>
         <div className={Styles.versionDiv}>
           <p style={{fontSize: 14, marginBottom: 2}}>v.{currentVersion}</p>

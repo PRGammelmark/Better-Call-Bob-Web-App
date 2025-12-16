@@ -1,20 +1,81 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Styles from './AppIndstillinger.module.css'
-import { Info, Hammer, Box, Radius, Coins, Calendar, Download, Building, Hash, MapPin, Link, Brain, Image, Clock, MessageCircleQuestion, Globe } from 'lucide-react'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
-import SeOpgavetyperModal from '../components/modals/SeOpgavetyperModal.jsx'
-import AISystemPromptModal from '../components/modals/AISystemPromptModal.jsx'
-import AITidsestimaterPromptModal from '../components/modals/AITidsestimaterPromptModal.jsx'
-import ImportOpgavetyperModal from '../components/modals/ImportOpgavetyperModal.jsx'
-import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
-import Button from '../components/basicComponents/buttons/Button.jsx'
-import CVRAutocomplete from '../components/basicComponents/inputs/CVRAutocomplete.jsx'
 import { useNavigate } from 'react-router-dom'
 import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import imageCompression from 'browser-image-compression'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronLeft } from 'lucide-react'
+import SettingsSidebar from './appIndstillinger/SettingsSidebar.jsx'
+import Virksomhedsoplysninger from './appIndstillinger/Virksomhedsoplysninger.jsx'
+import Links from './appIndstillinger/Links.jsx'
+import Arbejdspræferencer from './appIndstillinger/Arbejdspræferencer.jsx'
+import Branding from './appIndstillinger/Branding.jsx'
+import Fintuning from './appIndstillinger/Fintuning.jsx'
+import TimerTillæg from './appIndstillinger/TimerTillæg.jsx'
+import Materialer from './appIndstillinger/Materialer.jsx'
+import Opkrævning from './appIndstillinger/Opkrævning.jsx'
+import Rettigheder from './appIndstillinger/Rettigheder.jsx'
+import Informationsbokse from './appIndstillinger/Informationsbokse.jsx'
+import BetaFunktioner from './appIndstillinger/BetaFunktioner.jsx'
+
+// Page order for determining navigation direction on mobile
+const PAGE_ORDER = [
+    'virksomhedsoplysninger',
+    'links',
+    'beta-funktioner',
+    'timer-tillæg',
+    'materialer',
+    'opkrævning',
+    'rettigheder',
+    'arbejdspræferencer',
+    'branding',
+    'fintuning',
+    'informationsbokse'
+]
+
+// Page titles for mobile header
+const PAGE_TITLES = {
+    'virksomhedsoplysninger': 'Virksomhedsoplysninger',
+    'links': 'Links',
+    'beta-funktioner': 'Beta-funktioner',
+    'timer-tillæg': 'Timer & tillæg',
+    'materialer': 'Materialer',
+    'opkrævning': 'Opkrævning',
+    'rettigheder': 'Rettigheder',
+    'arbejdspræferencer': 'Arbejdspræferencer',
+    'branding': 'Branding',
+    'fintuning': 'Fintuning',
+    'informationsbokse': 'Informationsbokse'
+}
+
+// Animation variants for desktop (fade)
+const desktopVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1 },
+    exit: { opacity: 0 }
+}
+
+// Animation variants for mobile (slide) - uses custom prop for dynamic direction
+// Forward (into tree): both entry and exit move right-to-left
+// Backward (out of tree): both entry and exit move left-to-right
+const mobileVariants = {
+    initial: (direction) => ({ 
+        x: direction === 'forward' ? '100%' : '-100%', 
+        opacity: 0 
+    }),
+    animate: { 
+        x: 0, 
+        opacity: 1 
+    },
+    exit: (direction) => ({ 
+        x: direction === 'forward' ? '-100%' : '100%', 
+        opacity: 0 
+    })
+}
 
 const AppIndstillinger = () => {
 
@@ -22,11 +83,11 @@ const AppIndstillinger = () => {
     const { user } = useAuthContext();
     const { indstillinger } = useIndstillinger();
 
-    const [visOpgavetyperInfo, setVisOpgavetyperInfo] = useState(false);
-    const [visOpgavetyperModal, setVisOpgavetyperModal] = useState(false)
+    const [activePage, setActivePage] = useState(null) // null means show sidebar on mobile
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 750)
+    const [animationDirection, setAnimationDirection] = useState('forward') // 'forward' or 'backward'
     const [visAISystemPromptModal, setVisAISystemPromptModal] = useState(false)
     const [visAITidsestimaterPromptModal, setVisAITidsestimaterPromptModal] = useState(false)
-    const [visImportOpgavetyperModal, setVisImportOpgavetyperModal] = useState(false)
     const [opgavetyper, setOpgavetyper] = useState([])
     const [refetchOpgavetyper, setRefetchOpgavetyper] = useState(false)
     const [maxArbejdsradius, setMaxArbejdsradius] = useState( indstillinger?.arbejdsområdeKilometerRadius )
@@ -34,13 +95,63 @@ const AppIndstillinger = () => {
     const [virksomhedsnavn, setVirksomhedsnavn] = useState(indstillinger?.virksomhedsnavn || "")
     const [cvrNummer, setCvrNummer] = useState(indstillinger?.cvrNummer || "")
     const [adresse, setAdresse] = useState(indstillinger?.adresse || "")
+    const [postnummer, setPostnummer] = useState(indstillinger?.postnummer || "")
+    const [by, setBy] = useState(indstillinger?.by || "")
+    const [telefonnummer, setTelefonnummer] = useState(indstillinger?.telefonnummer || "")
+    const [email, setEmail] = useState(indstillinger?.email || "")
+    const [hjemmeside, setHjemmeside] = useState(indstillinger?.hjemmeside || "")
     const [handelsbetingelser, setHandelsbetingelser] = useState(indstillinger?.handelsbetingelser || "")
     const [persondatapolitik, setPersondatapolitik] = useState(indstillinger?.persondatapolitik || "")
-    const [bookingLogo, setBookingLogo] = useState(indstillinger?.bookingLogo || "")
+    const [logo, setLogo] = useState(indstillinger?.logo || "")
     const [isUploadingLogo, setIsUploadingLogo] = useState(false)
+    const [logoSize, setLogoSize] = useState(indstillinger?.logoSize || 100)
+    const [bookingLogo, setBookingLogo] = useState(indstillinger?.bookingLogo || "")
+    const [isUploadingBookingLogo, setIsUploadingBookingLogo] = useState(false)
     const [bookingFavicon, setBookingFavicon] = useState(indstillinger?.bookingFavicon || "")
     const [isUploadingFavicon, setIsUploadingFavicon] = useState(false)
     const [bookingRedirectUrl, setBookingRedirectUrl] = useState(indstillinger?.bookingRedirectUrl || "")
+
+    // Handle page navigation with direction tracking
+    const handlePageChange = (newPage) => {
+        if (newPage === activePage) return
+        
+        const newIndex = newPage !== null ? PAGE_ORDER.indexOf(newPage) : -1
+        const currentIndex = activePage !== null ? PAGE_ORDER.indexOf(activePage) : -1
+        
+        // Determine direction: going from sidebar (null) to page is forward, page to sidebar is backward
+        if (activePage === null && newPage !== null) {
+            setAnimationDirection('forward')
+        } else if (activePage !== null && newPage === null) {
+            setAnimationDirection('backward')
+        } else if (newIndex > currentIndex) {
+            setAnimationDirection('forward')
+        } else {
+            setAnimationDirection('backward')
+        }
+        
+        setActivePage(newPage)
+    }
+
+    // Handle window resize for mobile detection
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 750)
+            // On desktop, always show a page (default to first if none selected)
+            if (window.innerWidth > 750 && activePage === null) {
+                setActivePage('virksomhedsoplysninger')
+            }
+        }
+        handleResize() // Initial check
+        window.addEventListener('resize', handleResize)
+        return () => window.removeEventListener('resize', handleResize)
+    }, [activePage])
+
+    // Set default page on desktop
+    useEffect(() => {
+        if (!isMobile && activePage === null) {
+            setActivePage('virksomhedsoplysninger')
+        }
+    }, [isMobile, activePage])
 
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
@@ -78,11 +189,32 @@ const AppIndstillinger = () => {
             if (indstillinger.adresse != null) {
                 setAdresse(indstillinger.adresse);
             }
+            if (indstillinger.postnummer != null) {
+                setPostnummer(indstillinger.postnummer);
+            }
+            if (indstillinger.by != null) {
+                setBy(indstillinger.by);
+            }
+            if (indstillinger.telefonnummer != null) {
+                setTelefonnummer(indstillinger.telefonnummer);
+            }
+            if (indstillinger.email != null) {
+                setEmail(indstillinger.email);
+            }
+            if (indstillinger.hjemmeside != null) {
+                setHjemmeside(indstillinger.hjemmeside);
+            }
             if (indstillinger.handelsbetingelser != null) {
                 setHandelsbetingelser(indstillinger.handelsbetingelser);
             }
             if (indstillinger.persondatapolitik != null) {
                 setPersondatapolitik(indstillinger.persondatapolitik);
+            }
+            if (indstillinger.logo != null) {
+                setLogo(indstillinger.logo);
+            }
+            if (indstillinger.logoSize != null) {
+                setLogoSize(indstillinger.logoSize);
             }
             if (indstillinger.bookingLogo != null) {
                 setBookingLogo(indstillinger.bookingLogo);
@@ -132,6 +264,121 @@ const AppIndstillinger = () => {
             console.log("Adresse opdateret")
         } catch (err) {
             console.error("Fejl ved opdatering af adresse", err)
+        }
+    }
+
+    const handlePostnummerBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    postnummer: postnummer
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("Postnummer opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af postnummer", err)
+        }
+    }
+
+    const handleByBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    by: by
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("By opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af by", err)
+        }
+    }
+
+    const handleTelefonnummerBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    telefonnummer: telefonnummer
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("Telefonnummer opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af telefonnummer", err)
+        }
+    }
+
+    const handleEmailBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    email: email
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("E-mail opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af e-mail", err)
+        }
+    }
+
+    const handleHjemmesideBlur = async () => {
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    hjemmeside: hjemmeside
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("Hjemmeside opdateret")
+        } catch (err) {
+            console.error("Fejl ved opdatering af hjemmeside", err)
+        }
+    }
+
+    const handleLogoSizeChange = async (newSize) => {
+        setLogoSize(newSize)
+        try {
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { 
+                    logoSize: newSize
+                },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`
+                    }
+                }
+            )
+            console.log("Logo størrelse opdateret til:", newSize)
+        } catch (err) {
+            console.error("Fejl ved opdatering af logo størrelse", err)
         }
     }
 
@@ -198,29 +445,28 @@ const AppIndstillinger = () => {
         const newVirksomhedsnavn = company.name || company.company || virksomhedsnavn
         // CVR API returnerer CVR-nummer som tal, så vi konverterer til string
         const newCvrNummer = company.vat ? String(company.vat) : cvrNummer
-        // Adresse kan være i forskellige formater fra CVR API
-        const addressParts = [
-            company.street,
-            company.zipcode,
-            company.city
-        ].filter(Boolean)
-        const newAdresse = addressParts.length > 0 
-            ? addressParts.join(', ') 
-            : (company.address || adresse)
+        // Adresse, postnummer og by skal opdateres separat
+        const newAdresse = company.street || adresse
+        const newPostnummer = company.zipcode ? String(company.zipcode) : postnummer
+        const newBy = company.city || by
 
-        console.log("CVR Select - Nye værdier:", { newVirksomhedsnavn, newCvrNummer, newAdresse })
+        console.log("CVR Select - Nye værdier:", { newVirksomhedsnavn, newCvrNummer, newAdresse, newPostnummer, newBy })
 
         // Opdater state først
         setVirksomhedsnavn(newVirksomhedsnavn)
         setCvrNummer(newCvrNummer)
         setAdresse(newAdresse)
+        setPostnummer(newPostnummer)
+        setBy(newBy)
 
         // Gem til database
         try {
             const payload = { 
                 virksomhedsnavn: String(newVirksomhedsnavn || ""),
                 cvrNummer: String(newCvrNummer || ""),
-                adresse: String(newAdresse || "")
+                adresse: String(newAdresse || ""),
+                postnummer: String(newPostnummer || ""),
+                by: String(newBy || "")
             }
             console.log("Sender til API:", payload)
             
@@ -287,6 +533,66 @@ const AppIndstillinger = () => {
             })
 
             // Upload to Firebase Storage
+            const storagePath = `logo/logo.jpg`
+            const storageRef = ref(storage, storagePath)
+
+            // Delete old logo if it exists
+            if (logo) {
+                try {
+                    const oldImageRef = ref(storage, storagePath)
+                    await deleteObject(oldImageRef)
+                } catch (error) {
+                    console.log('Kunne ikke slette gammelt logo:', error)
+                }
+            }
+
+            // Upload new logo
+            await uploadBytes(storageRef, compressedFile)
+            const downloadURL = await getDownloadURL(storageRef)
+
+            // Update indstillinger in database
+            await axios.patch(
+                `${import.meta.env.VITE_API_URL}/indstillinger`,
+                { logo: downloadURL },
+                {
+                    headers: {
+                        'Authorization': `Bearer ${user.token}`,
+                    },
+                }
+            )
+
+            setLogo(downloadURL)
+            console.log('Logo opdateret')
+        } catch (error) {
+            console.error('Fejl ved upload af logo:', error)
+            alert('Kunne ikke uploade logo. Prøv igen.')
+        } finally {
+            setIsUploadingLogo(false)
+            // Reset file input
+            e.target.value = ''
+        }
+    }
+
+    const handleBookingLogoUpload = async (e) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        // Validate file type
+        if (!file.type.startsWith('image/')) {
+            alert('Vælg venligst et billede')
+            return
+        }
+
+        setIsUploadingBookingLogo(true)
+        try {
+            // Compress the image
+            const compressedFile = await imageCompression(file, {
+                maxSizeMB: 0.5,
+                maxWidthOrHeight: 500,
+                useWebWorker: true,
+            })
+
+            // Upload to Firebase Storage
             const storagePath = `booking/logo.jpg`
             const storageRef = ref(storage, storagePath)
 
@@ -316,12 +622,12 @@ const AppIndstillinger = () => {
             )
 
             setBookingLogo(downloadURL)
-            console.log('Logo opdateret')
+            console.log('Booking logo opdateret')
         } catch (error) {
-            console.error('Fejl ved upload af logo:', error)
-            alert('Kunne ikke uploade logo. Prøv igen.')
+            console.error('Fejl ved upload af booking logo:', error)
+            alert('Kunne ikke uploade booking logo. Prøv igen.')
         } finally {
-            setIsUploadingLogo(false)
+            setIsUploadingBookingLogo(false)
             // Reset file input
             e.target.value = ''
         }
@@ -387,171 +693,185 @@ const AppIndstillinger = () => {
         }
     }
 
-  return (
-    <div className={Styles.pageContent}>
-        <h1>App-indstillinger</h1>
-        <div className={Styles.indstillingerContainer}>
-        <h2>Firmaoplysninger</h2>
-        <div className={Styles.settingsButtonsWrapper}>
-            <CVRAutocomplete
-                title="Virksomhedsnavn"
-                icon={<Building />}
-                value={virksomhedsnavn}
-                onChange={(v) => setVirksomhedsnavn(v)}
-                onSelect={handleCVRSelect}
-                placeholder="Indtast virksomhedsnavn"
-                searchType="name"
-            />
-            <CVRAutocomplete
-                title="CVR-nummer"
-                icon={<Hash />}
-                value={cvrNummer}
-                onChange={(v) => setCvrNummer(v)}
-                onSelect={handleCVRSelect}
-                placeholder="Indtast CVR-nummer"
-                searchType="vat"
-            />
-            <SettingsButtons
-                items={[
-                    {
-                        title: "Adresse",
-                        icon: <MapPin />,
-                        input: true,
-                        type: "text",
-                        value: adresse,
-                        onChange: (v) => setAdresse(v),
-                        onBlur: handleAdresseBlur,
-                        placeholder: "Indtast adresse"
-                    }
-                ]}
-            />
-        </div>
-        </div>
+    const renderPage = () => {
+        switch (activePage) {
+            case 'virksomhedsoplysninger':
+                return (
+                    <Virksomhedsoplysninger
+                        virksomhedsnavn={virksomhedsnavn}
+                        setVirksomhedsnavn={setVirksomhedsnavn}
+                        cvrNummer={cvrNummer}
+                        setCvrNummer={setCvrNummer}
+                        adresse={adresse}
+                        setAdresse={setAdresse}
+                        handleAdresseBlur={handleAdresseBlur}
+                        postnummer={postnummer}
+                        setPostnummer={setPostnummer}
+                        handlePostnummerBlur={handlePostnummerBlur}
+                        by={by}
+                        setBy={setBy}
+                        handleByBlur={handleByBlur}
+                        handleCVRSelect={handleCVRSelect}
+                        telefonnummer={telefonnummer}
+                        setTelefonnummer={setTelefonnummer}
+                        handleTelefonnummerBlur={handleTelefonnummerBlur}
+                        email={email}
+                        setEmail={setEmail}
+                        handleEmailBlur={handleEmailBlur}
+                        hjemmeside={hjemmeside}
+                        setHjemmeside={setHjemmeside}
+                        handleHjemmesideBlur={handleHjemmesideBlur}
+                        logo={logo}
+                        isUploadingLogo={isUploadingLogo}
+                        handleLogoUpload={handleLogoUpload}
+                        logoSize={logoSize}
+                        handleLogoSizeChange={handleLogoSizeChange}
+                    />
+                )
+            case 'links':
+                return (
+                    <Links
+                        handelsbetingelser={handelsbetingelser}
+                        setHandelsbetingelser={setHandelsbetingelser}
+                        persondatapolitik={persondatapolitik}
+                        setPersondatapolitik={setPersondatapolitik}
+                        handleHandelsbetingelserBlur={handleHandelsbetingelserBlur}
+                        handlePersondatapolitikBlur={handlePersondatapolitikBlur}
+                    />
+                )
+            case 'arbejdspræferencer':
+                return (
+                    <Arbejdspræferencer
+                        opgavetyper={opgavetyper}
+                        indstillinger={indstillinger}
+                        user={user}
+                        refetchOpgavetyper={refetchOpgavetyper}
+                        setRefetchOpgavetyper={setRefetchOpgavetyper}
+                        maxArbejdsradius={maxArbejdsradius}
+                        setMaxArbejdsradius={setMaxArbejdsradius}
+                        handleRadiusBlur={handleRadiusBlur}
+                    />
+                )
+            case 'branding':
+                return (
+                    <Branding
+                        bookingLogo={bookingLogo}
+                        bookingFavicon={bookingFavicon}
+                        bookingRedirectUrl={bookingRedirectUrl}
+                        isUploadingLogo={isUploadingBookingLogo}
+                        isUploadingFavicon={isUploadingFavicon}
+                        handleLogoUpload={handleBookingLogoUpload}
+                        handleFaviconUpload={handleFaviconUpload}
+                        setBookingRedirectUrl={setBookingRedirectUrl}
+                        handleBookingRedirectUrlBlur={handleBookingRedirectUrlBlur}
+                    />
+                )
+            case 'fintuning':
+                return (
+                    <Fintuning
+                        indstillinger={indstillinger}
+                        user={user}
+                        visAISystemPromptModal={visAISystemPromptModal}
+                        setVisAISystemPromptModal={setVisAISystemPromptModal}
+                        visAITidsestimaterPromptModal={visAITidsestimaterPromptModal}
+                        setVisAITidsestimaterPromptModal={setVisAITidsestimaterPromptModal}
+                    />
+                )
+            case 'timer-tillæg':
+                return <TimerTillæg />
+            case 'materialer':
+                return <Materialer />
+            case 'opkrævning':
+                return <Opkrævning />
+            case 'rettigheder':
+                return <Rettigheder />
+            case 'informationsbokse':
+                return <Informationsbokse />
+            case 'beta-funktioner':
+                return (
+                    <BetaFunktioner
+                        kørerFakturaBetalingstjek={kørerFakturaBetalingstjek}
+                        handleKørFakturaBetalingstjek={handleKørFakturaBetalingstjek}
+                    />
+                )
+            default:
+                return null
+        }
+    }
 
-        <div className={Styles.indstillingerContainer}>
-        <h2>Arbejdspræferencer <Info className={`${Styles.infoIcon} ${visOpgavetyperInfo ? Styles.active : ""}`} onClick={() => setVisOpgavetyperInfo(!visOpgavetyperInfo)}/></h2>
-        <p className={`${Styles.infoText} ${visOpgavetyperInfo ? Styles.visible : ""}`}>Herunder kan du bl.a. indstille hvilke opgavetyper, I arbejder med i jeres virksomhed. Du kan også definere maks. radius i dine medarbejderes områdeindstillinger.</p>
-        <SettingsButtons
-            items={[
-                {
-                    title: "Opgavetyper",
-                    icon: <Hammer />,
-                    onClick: () => setVisOpgavetyperModal(true),
-                    value: `${opgavetyper?.length || 0} typer, ${indstillinger?.opgavetyperKategorier?.length || 0} kategorier`,
-                },
-                {
-                    title: "Importer opgavetyper",
-                    icon: <Download />,
-                    onClick: () => setVisImportOpgavetyperModal(true),
-                    // value: "Standard-opgavetyper",
-                },
-                {
-                    title: "Max. arbejdsradius",
-                    icon: <Radius />,
-                    input: true,
-                    type: "number",
-                    min: 0,
-                    max: 200,
-                    value: maxArbejdsradius,
-                    postfix: "km.",
-                    onChange: (v) => setMaxArbejdsradius(v),
-                    onBlur: handleRadiusBlur
-                }
-            ]}
-        />
-        </div>
+    // Get animation variants based on device type
+    const getVariants = () => {
+        return isMobile ? mobileVariants : desktopVariants
+    }
 
-        <div className={Styles.indstillingerContainer}>
-            <h2>Booking <Info className={`${Styles.infoIcon}`} /></h2>
-            <p className={Styles.infoText}>Administrer indstillinger til bookingsystemet. Tilpas AI'en, der genererer opfølgende spørgsmål baseret på opgavebeskrivelser.</p>
-            <SettingsButtons
-                items={[
-                    {
-                        title: "Opfølgende spørgsmål",
-                        icon: <MessageCircleQuestion />,
-                        onClick: () => setVisAISystemPromptModal(true),
-                        value: indstillinger?.aiExtraRules ? "Tilpasset" : "Standard",
-                    },
-                    {
-                        title: "Tidsestimater",
-                        icon: <Clock />,
-                        onClick: () => setVisAITidsestimaterPromptModal(true),
-                        value: indstillinger?.aiTidsestimaterPrompt ? "Tilpasset" : "Standard",
-                    },
-                    {
-                        title: "Handelsbetingelser",
-                        icon: <Link />,
-                        input: true,
-                        type: "text",
-                        value: handelsbetingelser,
-                        onChange: (v) => setHandelsbetingelser(v),
-                        onBlur: handleHandelsbetingelserBlur,
-                        placeholder: "Indsæt link"
-                    },
-                    {
-                        title: "Persondatapolitik",
-                        icon: <Link />,
-                        input: true,
-                        type: "text",
-                        value: persondatapolitik,
-                        onChange: (v) => setPersondatapolitik(v),
-                        onBlur: handlePersondatapolitikBlur,
-                        placeholder: "Indsæt link"
-                    },
-                    {
-                        title: "Logo",
-                        icon: <Image />,
-                        fileUpload: true,
-                        preview: bookingLogo,
-                        isUploading: isUploadingLogo,
-                        accept: "image/*",
-                        uploadButtonText: bookingLogo ? "Skift logo" : "Upload logo",
-                        onFileChange: handleLogoUpload
-                    },
-                    {
-                        title: "Browserikon",
-                        subtitle: "Dimensioner: 512x512 px.",
-                        icon: <Globe />,
-                        fileUpload: true,
-                        preview: bookingFavicon,
-                        isUploading: isUploadingFavicon,
-                        accept: "image/*",
-                        uploadButtonText: bookingFavicon ? "Skift ikon" : "Upload ikon",
-                        onFileChange: handleFaviconUpload
-                    },
-                    {
-                        title: "Omdirigering ved succes",
-                        subtitle: "Indtast omdirigerings-URL ved succesfuld booking",
-                        icon: <Link />,
-                        input: true,
-                        type: "text",
-                        value: bookingRedirectUrl,
-                        onChange: (v) => setBookingRedirectUrl(v),
-                        onBlur: handleBookingRedirectUrlBlur,
-                        placeholder: "https://eksempel.dk/tak"
-                    }
-                ]}
-            />
+    return (
+        <div className={Styles.pageContent}>
+            <h1>App-indstillinger</h1>
+            <div className={Styles.container}>
+                {!isMobile && (
+                    <SettingsSidebar 
+                        activePage={activePage} 
+                        setActivePage={handlePageChange} 
+                        isMobile={isMobile}
+                    />
+                )}
+                <div className={Styles.contentArea}>
+                    <AnimatePresence mode="wait" custom={animationDirection}>
+                        {isMobile && activePage === null && (
+                            <motion.div
+                                key="sidebar"
+                                className={Styles.animatedContent}
+                                custom={animationDirection}
+                                variants={getVariants()}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                            >
+                                <SettingsSidebar 
+                                    activePage={activePage} 
+                                    setActivePage={handlePageChange} 
+                                    isMobile={isMobile}
+                                />
+                            </motion.div>
+                        )}
+                        {activePage && (
+                            <motion.div
+                                key={activePage}
+                                className={Styles.animatedContent}
+                                custom={animationDirection}
+                                variants={getVariants()}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                style={{ 
+                                    overflowX: 'visible',
+                                    overflowY: 'visible',
+                                    paddingBottom: '10px',
+                                    width: '100%'
+                                }}
+                            >
+                                {isMobile && (
+                                    <div className={Styles.mobileHeader}>
+                                        <button 
+                                            className={Styles.backButton}
+                                            onClick={() => handlePageChange(null)}
+                                        >
+                                            <ChevronLeft size={20} />
+                                            Tilbage
+                                        </button>
+                                        <div className={Styles.mobilePageTitle}>{PAGE_TITLES[activePage]}</div>
+                                    </div>
+                                )}
+                                {renderPage()}
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
         </div>
-
-        <SeOpgavetyperModal trigger={visOpgavetyperModal} setTrigger={setVisOpgavetyperModal} opgavetyper={opgavetyper} user={user} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} kategorier={indstillinger?.opgavetyperKategorier}/>
-        <ImportOpgavetyperModal trigger={visImportOpgavetyperModal} setTrigger={setVisImportOpgavetyperModal} user={user} kategorier={indstillinger?.opgavetyperKategorier || []} refetchOpgavetyper={refetchOpgavetyper} setRefetchOpgavetyper={setRefetchOpgavetyper} />
-        <AISystemPromptModal trigger={visAISystemPromptModal} setTrigger={setVisAISystemPromptModal} user={user} indstillinger={indstillinger} />
-        <AITidsestimaterPromptModal trigger={visAITidsestimaterPromptModal} setTrigger={setVisAITidsestimaterPromptModal} user={user} indstillinger={indstillinger} />
-    
-        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-            <Button onClick={() => navigate('/kalender')}>Gå til test-kalender (beta)</Button>
-            <Button 
-                onClick={handleKørFakturaBetalingstjek} 
-                disabled={kørerFakturaBetalingstjek}
-                style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-            >
-                <Coins style={{ width: 16, height: 16 }} />
-                {kørerFakturaBetalingstjek ? 'Kører...' : 'Kør fakturabetalingstjek'}
-            </Button>
-        </div>
-    </div>
-  )
+    )
 }
 
 export default AppIndstillinger

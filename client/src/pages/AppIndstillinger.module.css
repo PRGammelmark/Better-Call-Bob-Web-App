@@ -1,10 +1,64 @@
 .pageContent {
-    max-width: 600px;
+    max-width: 1200px;
     padding-top: 20px;
+    width: 100%;
 }
 
 .pageContent h1 {
     margin-bottom: 40px;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    gap: 0px;
+    align-items: stretch;
+    min-height: calc(100vh - 200px);
+    overflow: visible;
+}
+
+.contentArea {
+    flex: 1;
+    min-width: 0; /* Allows flex item to shrink below content size */
+    position: relative;
+    padding-top: 5px;
+    padding-left: 5px;
+    padding-right: 5px;
+    overflow: visible;
+}
+
+.mobileHeader {
+    margin-bottom: 20px;
+}
+
+.backButton {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 8px 5px 4px;
+    margin-bottom: 4px;
+    /* margin-top: -10px; */
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #666;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.backButton:hover {
+    background: #f0f0f0;
+    color: #222;
+}
+
+.mobilePageTitle {
+    font-size: 1.1rem;
+    font-weight: 700;
+    font-family: "OmnesBold";
+    margin: 0;
+    color: #222;
 }
 
 .indstillingerContainer h2 {
@@ -118,8 +172,25 @@ h2 {
     margin-top: 10px;
 }
 
+/* Animation container for Framer Motion */
+.animatedContent {
+    width: 100%;
+}
+
 @media (max-width: 750px) {
     .pageContent {
         padding-top: 20px;
+        max-width: 100%;
+    }
+
+    .container {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .contentArea {
+        width: 100%;
+        overflow: hidden; /* enable slide exit/enter without clipping viewport */
+        min-height: 420px; /* space for absolutely positioned animated pages */
     }
 }

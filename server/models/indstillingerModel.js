@@ -31,6 +31,26 @@ const indstillingerSchema = new mongoose.Schema({
     type: String,
     default: ""
   },
+  postnummer: {
+    type: String,
+    default: ""
+  },
+  by: {
+    type: String,
+    default: ""
+  },
+  telefonnummer: {
+    type: String,
+    default: ""
+  },
+  email: {
+    type: String,
+    default: ""
+  },
+  hjemmeside: {
+    type: String,
+    default: ""
+  },
   handelsbetingelser: {
     type: String,
     default: ""
@@ -46,6 +66,14 @@ const indstillingerSchema = new mongoose.Schema({
   aiTidsestimaterPrompt: {
     type: String,
     default: ""
+  },
+  logo: {
+    type: String,
+    default: ""
+  },
+  logoSize: {
+    type: Number,
+    default: 100
   },
   bookingLogo: {
     type: String,

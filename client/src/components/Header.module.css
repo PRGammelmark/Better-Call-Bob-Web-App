@@ -2,7 +2,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0px 50px;
+    padding: 0px 50px 0px 10px;
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.15); */
     box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 5px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     background: #fff;
@@ -12,7 +12,8 @@
 }
 
 .headerImg {
-    width: clamp(100px, 10vw, 200px);
+    /* width: clamp(100px, 10vw, 200px); */
+    height: 60%;
 }
 
 .headerUl {

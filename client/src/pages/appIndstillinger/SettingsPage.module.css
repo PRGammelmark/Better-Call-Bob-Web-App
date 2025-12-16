@@ -1,0 +1,83 @@
+.settingsPage {
+    width: 100%;
+}
+
+.settingsPage h1 {
+    margin-bottom: 30px;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+@media (max-width: 750px) {
+    .settingsPage h1 {
+        display: none;
+    }
+}
+
+.sectionHeading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-top: 30px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.sectionHeading:first-of-type {
+    margin-top: 0;
+}
+
+.indstillingerContainer h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 10px;
+}
+
+.settingsButtonsWrapper {
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: visible;
+}
+
+.infoIcon {
+    cursor: pointer;
+    width: 25px;
+    height: 25px;
+    padding: 0px;
+    border-radius: 50px;
+}
+
+.infoIcon:hover {
+    color: #59bf1a;
+}
+
+.infoIcon.active {
+    background: #59bf1a;
+    color: #fff;
+}
+
+.infoText {
+    margin-bottom: 10px;
+    max-height: 0px;
+    transition: 0.4s ease;
+    opacity: 0;
+    overflow: hidden;
+    font-size: 0.9rem;
+}
+
+.infoText.visible {
+    max-height: 150px;
+    opacity: 1;
+    margin-bottom: 20px;
+    margin-top: 10px;
+}
+

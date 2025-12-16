@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useLocation, useNavigate, matchPath } from 'react-router-dom'
-import Logo from '../assets/bcb-logo.svg'
+import LogoPlaceholder from '../assets/logo-placeholder.png'
 import HamburgerIcon from '../assets/hamburgerIcon.svg'
 import BackIcon from '../assets/backMobile.svg'
 import SwitchArrows from '../assets/switchArrows.svg'
@@ -9,6 +9,7 @@ import Styles from './Header.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
+import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import { currentVersion, changes } from '../version.js'
 import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut, Menu, Calendar } from 'lucide-react';
 import NotifikationKlokke from './NotifikationKlokke'
@@ -22,8 +23,14 @@ const Header = () => {
   const { managerOverblik, setManagerOverblik } = useOverblikView()
   const { user } = useAuthContext();
   const { logout } = useLogout();
+  const { indstillinger } = useIndstillinger();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Use logo from indstillinger if available, otherwise use placeholder logo
+  const headerLogo = indstillinger?.logo || LogoPlaceholder;
+  // Use logoSize from indstillinger if available, otherwise use default 100%
+  const logoSize = indstillinger?.logoSize || 100;
 
   // Mapping of routes to titles
   const routeTitles = {
@@ -105,7 +112,12 @@ useEffect(() => {
   return (
     <>
       <header className={`${Styles.header} ${Styles.desktopHeader}`}>
-          <img className={Styles.headerImg} src={Logo} alt="" />
+          <img 
+            className={Styles.headerImg} 
+            src={headerLogo} 
+            alt="" 
+            style={{ height: `${logoSize}%` }}
+          />
           <div className={Styles.headerButtonsContainer}>
             <NotifikationKlokke background="#e7eae7" color="#222222" />
             <div className={Styles.headerButton} onClick={handleLogout}>

@@ -32,6 +32,42 @@ const indstillingerSchema = Joi.object({
       .allow("")
       .optional(),
     
+    postnummer: Joi.string()
+      .max(20)
+      .allow("")
+      .optional(),
+    
+    by: Joi.string()
+      .max(100)
+      .allow("")
+      .optional(),
+    
+    telefonnummer: Joi.string()
+      .max(50)
+      .allow("")
+      .optional(),
+    
+    email: Joi.string()
+      .email()
+      .max(200)
+      .allow("")
+      .optional(),
+    
+    hjemmeside: Joi.string()
+      .max(500)
+      .allow("")
+      .optional()
+      .custom((value, helpers) => {
+        if (value && value.trim() !== "") {
+          // Check if it's a valid URL (with or without protocol)
+          const urlPattern = /^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/i;
+          if (!urlPattern.test(value)) {
+            return helpers.error('string.uri');
+          }
+        }
+        return value;
+      }),
+    
     handelsbetingelser: Joi.string()
       .max(1000)
       .allow("")
@@ -50,6 +86,16 @@ const indstillingerSchema = Joi.object({
     aiTidsestimaterPrompt: Joi.string()
       .max(5000)
       .allow("")
+      .optional(),
+    
+    logo: Joi.string()
+      .max(1000)
+      .allow("")
+      .optional(),
+    
+    logoSize: Joi.number()
+      .min(50)
+      .max(100)
       .optional(),
     
     bookingLogo: Joi.string()
@@ -139,12 +185,19 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.virksomhedsnavn !== undefined) updateData.virksomhedsnavn = value.virksomhedsnavn;
     if (value.cvrNummer !== undefined) updateData.cvrNummer = value.cvrNummer;
     if (value.adresse !== undefined) updateData.adresse = value.adresse;
+    if (value.postnummer !== undefined) updateData.postnummer = value.postnummer;
+    if (value.by !== undefined) updateData.by = value.by;
+    if (value.telefonnummer !== undefined) updateData.telefonnummer = value.telefonnummer;
+    if (value.email !== undefined) updateData.email = value.email;
+    if (value.hjemmeside !== undefined) updateData.hjemmeside = value.hjemmeside;
     if (value.arbejdsområdeKilometerRadius !== undefined) updateData.arbejdsområdeKilometerRadius = value.arbejdsområdeKilometerRadius;
     if (value.opgavetyperKategorier !== undefined) updateData.opgavetyperKategorier = value.opgavetyperKategorier;
     if (value.handelsbetingelser !== undefined) updateData.handelsbetingelser = value.handelsbetingelser;
     if (value.persondatapolitik !== undefined) updateData.persondatapolitik = value.persondatapolitik;
     if (value.aiExtraRules !== undefined) updateData.aiExtraRules = value.aiExtraRules;
     if (value.aiTidsestimaterPrompt !== undefined) updateData.aiTidsestimaterPrompt = value.aiTidsestimaterPrompt;
+    if (value.logo !== undefined) updateData.logo = value.logo;
+    if (value.logoSize !== undefined) updateData.logoSize = value.logoSize;
     if (value.bookingLogo !== undefined) updateData.bookingLogo = value.bookingLogo;
     if (value.bookingFavicon !== undefined) updateData.bookingFavicon = value.bookingFavicon;
     if (value.bookingRedirectUrl !== undefined) updateData.bookingRedirectUrl = value.bookingRedirectUrl;
