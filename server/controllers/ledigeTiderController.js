@@ -435,13 +435,30 @@ const getLedigeBookingTider = async (req, res) => {
 // GET næste to sammenhængende ledige timer (offentligt endpoint)
 const getNæsteToLedigeTimer = async (req, res) => {
     try {
-        console.log('getNæsteToLedigeTimer called - endpoint is public');
         // Sæt dansk locale for dayjs
         dayjs.locale('da');
         
-        // Beregn datointerval: fra i morgen til 2 uger frem
-        const iMorgen = dayjs().add(1, 'day').startOf('day');
-        const slutDato = dayjs().add(2, 'week').endOf('day');
+        // Hjælpefunktion til at få tidspunkt i dansk tidszone (Europe/Copenhagen)
+        const getDanskTidspunkt = (date) => {
+            if (!date) {
+                // Hvis ingen dato, brug nuværende tid i dansk tidszone
+                const now = new Date();
+                // Brug toLocaleString til at få korrekt tid i dansk tidszone
+                const danskTidString = now.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
+                // Parse tilbage til Date objekt (sv-SE format: YYYY-MM-DD HH:mm:ss)
+                return dayjs(danskTidString);
+            }
+            // Konverter Date objekt til dansk tidszone
+            const danskTidString = date.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
+            return dayjs(danskTidString);
+        };
+        
+        // Få nuværende tid i dansk tidszone
+        const nuDansk = getDanskTidspunkt();
+        
+        // Beregn datointerval: fra i morgen til 2 uger frem (i dansk tidszone)
+        const iMorgen = nuDansk.add(1, 'day').startOf('day');
+        const slutDato = nuDansk.add(2, 'week').endOf('day');
         
         // Byg query for ledige tider - alle brugere
         const ledigeTiderQuery = {
@@ -471,8 +488,9 @@ const getNæsteToLedigeTimer = async (req, res) => {
         const toTimersBlokke = [];
         
         ledigeTiderMinusBesøg.forEach(ledigTid => {
-            const start = dayjs(ledigTid.datoTidFra);
-            const end = dayjs(ledigTid.datoTidTil);
+            // Konverter til dansk tidszone
+            const start = getDanskTidspunkt(new Date(ledigTid.datoTidFra));
+            const end = getDanskTidspunkt(new Date(ledigTid.datoTidTil));
             
             // Start fra første hele time efter eller ved starttidspunktet
             let currentStart = start.startOf('hour');
@@ -480,7 +498,7 @@ const getNæsteToLedigeTimer = async (req, res) => {
                 currentStart = currentStart.add(1, 'hour');
             }
             
-            // Tjek om vi skal starte fra i morgen
+            // Tjek om vi skal starte fra i morgen (i dansk tidszone)
             if (currentStart.isBefore(iMorgen)) {
                 currentStart = iMorgen.startOf('hour');
             }
@@ -530,11 +548,11 @@ const getNæsteToLedigeTimer = async (req, res) => {
         
         næsteToTimer = toTimersBlokke[0];
         
-        // Formatér tidspunkt
-        const tidspunkt = dayjs(næsteToTimer.datoTidFra);
+        // Formatér tidspunkt i dansk tidszone
+        const tidspunkt = getDanskTidspunkt(new Date(næsteToTimer.datoTidFra));
         const time = tidspunkt.format('HH:mm');
         const dato = tidspunkt.startOf('day');
-        const dageFraNu = dato.diff(dayjs().startOf('day'), 'day');
+        const dageFraNu = dato.diff(nuDansk.startOf('day'), 'day');
         
         // Bestem dateFromNow
         let dateFromNow;
