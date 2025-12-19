@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.11.2",
+    date: "19. december 2025",
+    changes: [
+        "Tilføjede rettelser i bookingsystemet, der reducerer risikoen for, at browsere automatisk vil forsøge at oversætte UI-teksterne.",
+        "Nu vil bookingsystemet automatisk indlæses med den indbyggede engelsksprogede oversættelse for engelsksprogede brugere."
+    ]
+},{
     version: "3.11.1",
     date: "19. december 2025",
     changes: [
