@@ -7,7 +7,8 @@ import Styles from './AIFollowUpQuestionsPopup.module.css'
 const AIFollowUpQuestionsPopup = ({ 
   questions = [], 
   currentIndex = 0, 
-  onIndexChange
+  onIndexChange,
+  onFocusTextarea
 }) => {
   const { t, i18n } = useTranslation()
   const [touchStart, setTouchStart] = useState(null)
@@ -57,17 +58,32 @@ const AIFollowUpQuestionsPopup = ({
     }
   }
 
-  const handlePrevious = () => {
+  const handlePrevious = (e) => {
+    e.stopPropagation()
     if (currentIndex > 0) {
       setDirection(-1)
       onIndexChange(currentIndex - 1)
     }
   }
 
-  const handleNext = () => {
+  const handleNext = (e) => {
+    e.stopPropagation()
     if (currentIndex < questions.length - 1) {
       setDirection(1)
       onIndexChange(currentIndex + 1)
+    }
+  }
+
+  // Handle click on container - focus textarea unless clicking on navigation buttons
+  const handleContainerClick = (e) => {
+    // Don't focus if clicking on navigation buttons or dots
+    const target = e.target
+    const isNavButton = target.closest(`.${Styles.navButton}`) || 
+                        target.closest(`.${Styles.dotsContainer}`) ||
+                        target.closest(`.${Styles.integratedHeader}`)
+    
+    if (!isNavButton && onFocusTextarea) {
+      onFocusTextarea()
     }
   }
 
@@ -107,6 +123,7 @@ const AIFollowUpQuestionsPopup = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onClick={handleContainerClick}
     >
       <div className={Styles.integratedHeader}>
         <div className={Styles.questionNumber}>

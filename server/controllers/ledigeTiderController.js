@@ -5,6 +5,7 @@ import { opretNotifikation } from "../utils/notifikationFunktioner.js"
 import Bruger from '../models/brugerModel.js'
 import dayjs from 'dayjs'
 import 'dayjs/locale/da.js'
+import 'dayjs/locale/en.js'
 import { justerForDST } from "../utils/justerForDST.js"
 
 // GET alle ledige tider
@@ -554,7 +555,7 @@ const getNæsteToLedigeTimer = async (req, res) => {
         const dato = tidspunkt.startOf('day');
         const dageFraNu = dato.diff(nuDansk.startOf('day'), 'day');
         
-        // Bestem dateFromNow
+        // Bestem dateFromNow (dansk)
         let dateFromNow;
         if (dageFraNu === 1) {
             dateFromNow = 'i morgen';
@@ -566,9 +567,31 @@ const getNæsteToLedigeTimer = async (req, res) => {
             dateFromNow = `på ${tidspunkt.format('dddd')}`;
         }
         
+        // Bestem dateFromNowEng (engelsk)
+        dayjs.locale('en');
+        const tidspunktEng = getDanskTidspunkt(new Date(næsteToTimer.datoTidFra));
+        let dateFromNowEng;
+        if (dageFraNu === 1) {
+            dateFromNowEng = 'tomorrow';
+        } else if (dageFraNu >= 2 && dageFraNu <= 7) {
+            // Brug engelsk locale for ugedag
+            dateFromNowEng = `${tidspunktEng.format('dddd')}`;
+        } else {
+            // Hvis uden for 2-7 dage, brug stadig ugedag (skulle ikke ske da vi kun kigger 2 uger frem)
+            dateFromNowEng = `${tidspunktEng.format('dddd')}`;
+        }
+        
+        // Formatér timeEng med AM/PM (12-timers format)
+        const timeEng = tidspunktEng.format('hh:mm A');
+        
+        // Sæt locale tilbage til dansk
+        dayjs.locale('da');
+        
         res.status(200).json({
             time: time,
-            dateFromNow: dateFromNow
+            dateFromNow: dateFromNow,
+            timeEng: timeEng,
+            dateFromNowEng: dateFromNowEng
         });
     } catch (error) {
         console.error('getNæsteToLedigeTimer: Fejl ved beregning af næste ledige timer:', error);

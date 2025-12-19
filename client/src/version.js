@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "3.11.1",
+    date: "19. december 2025",
+    changes: [
+        "Rettede en fejl i bookingsystemet, så tryk på opfølgende spørgsmål fremover automatisk vil placere cursoren i tekstinputfeltet til opgavebeskrivelsen.",
+        "Justerede server-endpoint, der leverer information om næste ledige tid til booking, så det nu også giver en engelsk version af dato og tidspunkt.",
+    ]
+},{
     version: "3.11.0",
     date: "16. december 2025",
     changes: [
