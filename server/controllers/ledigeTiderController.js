@@ -599,6 +599,180 @@ const getNæsteToLedigeTimer = async (req, res) => {
     }
 }
 
+// GET næste 7 datoer med mindst to sammenhængende ledige timer (offentligt endpoint)
+const getNæste7LedigeDatoer = async (req, res) => {
+    try {
+        // Sæt dansk locale for dayjs
+        dayjs.locale('da');
+        
+        // Hjælpefunktion til at få tidspunkt i dansk tidszone (Europe/Copenhagen)
+        const getDanskTidspunkt = (date) => {
+            if (!date) {
+                // Hvis ingen dato, brug nuværende tid i dansk tidszone
+                const now = new Date();
+                // Brug toLocaleString til at få korrekt tid i dansk tidszone
+                const danskTidString = now.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
+                // Parse tilbage til Date objekt (sv-SE format: YYYY-MM-DD HH:mm:ss)
+                return dayjs(danskTidString);
+            }
+            // Konverter Date objekt til dansk tidszone
+            const danskTidString = date.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
+            return dayjs(danskTidString);
+        };
+        
+        // Få nuværende tid i dansk tidszone
+        const nuDansk = getDanskTidspunkt();
+        
+        // Beregn datointerval: fra i morgen til 2 måneder frem (i dansk tidszone)
+        const iMorgen = nuDansk.add(1, 'day').startOf('day');
+        const slutDato = nuDansk.add(2, 'month').endOf('day');
+        
+        // Byg query for ledige tider - alle brugere
+        const ledigeTiderQuery = {
+            datoTidFra: { $lte: slutDato.toDate() },
+            datoTidTil: { $gte: iMorgen.toDate() }
+        };
+        
+        // Byg query for besøg - alle brugere
+        const besøgQuery = {
+            datoTidFra: { $lte: slutDato.toDate() },
+            datoTidTil: { $gte: iMorgen.toDate() }
+        };
+        
+        // Hent ledige tider og besøg
+        const [relevanteLedigeTider, relevanteBesøg] = await Promise.all([
+            LedigTid.find(ledigeTiderQuery).lean(),
+            Besøg.find(besøgQuery).lean()
+        ]);
+        
+        // Beregn ledige tider minus besøg
+        const ledigeTiderMinusBesøg = beregnLedigeTiderMinusBesøg(relevanteLedigeTider, relevanteBesøg);
+        
+        // Find datoer med mindst to sammenhængende ledige timer
+        const datoerMedToTimer = new Set();
+        
+        ledigeTiderMinusBesøg.forEach(ledigTid => {
+            // Konverter til dansk tidszone
+            const start = getDanskTidspunkt(new Date(ledigTid.datoTidFra));
+            const end = getDanskTidspunkt(new Date(ledigTid.datoTidTil));
+            
+            // Start fra første hele time efter eller ved starttidspunktet
+            let currentStart = start.startOf('hour');
+            if (start.isAfter(currentStart)) {
+                currentStart = currentStart.add(1, 'hour');
+            }
+            
+            // Tjek om vi skal starte fra i morgen (i dansk tidszone)
+            if (currentStart.isBefore(iMorgen)) {
+                currentStart = iMorgen.startOf('hour');
+            }
+            
+            // Tjek at currentStart stadig er inden for den ledige periode
+            if (currentStart.isAfter(end) || currentStart.isSame(end)) {
+                return; // Skip denne ledige tid hvis den slutter før i morgen
+            }
+            
+            // Generer 2-timers blokke indtil slutningen
+            while (currentStart.isBefore(end)) {
+                const blokSlut = currentStart.add(2, 'hour');
+                
+                // Tjek at tiden er fra i morgen eller senere
+                if (currentStart.isBefore(iMorgen)) {
+                    currentStart = currentStart.add(1, 'hour');
+                    continue;
+                }
+                
+                // Tjek at hele 2-timers blokken er inden for den ledige tid
+                if (blokSlut.isAfter(end)) {
+                    break;
+                }
+                
+                // Tjek at det er hele timer (start og slut skal være ved hele timer)
+                if (currentStart.minute() === 0 && currentStart.second() === 0 && 
+                    blokSlut.minute() === 0 && blokSlut.second() === 0) {
+                    // Tilføj datoen til settet (format: YYYY-MM-DD)
+                    const dato = currentStart.format('YYYY-MM-DD');
+                    datoerMedToTimer.add(dato);
+                }
+                
+                currentStart = currentStart.add(1, 'hour');
+            }
+        });
+        
+        // Konverter til array og sorter efter dato
+        const ledigeDatoer = Array.from(datoerMedToTimer)
+            .sort((a, b) => {
+                return dayjs(a).diff(dayjs(b));
+            })
+            .slice(0, 7); // Tag kun de første 7
+        
+        // Hvis der ikke er nok datoer, returner tom array
+        if (ledigeDatoer.length === 0) {
+            return res.status(200).json({
+                ledigeDatoer: [],
+                månederDansk: [],
+                månederEngelsk: []
+            });
+        }
+        
+        // Ekstraher unikke måneder fra datoerne og find første dato for hver måned
+        const månederMap = new Map(); // Map af månedsnummer til månedsnavn og første dato
+        
+        // Sæt dansk locale
+        dayjs.locale('da');
+        ledigeDatoer.forEach(dato => {
+            const datoObj = dayjs(dato);
+            const månedsnummer = datoObj.month(); // 0-11
+            const månedsnavnDansk = datoObj.format('MMMM'); // F.eks. "januar"
+            if (!månederMap.has(månedsnummer)) {
+                månederMap.set(månedsnummer, { 
+                    dansk: månedsnavnDansk,
+                    førsteDato: dato // Gem første dato i denne måned
+                });
+            } else {
+                // Opdater første dato hvis denne dato er tidligere
+                const eksisterende = månederMap.get(månedsnummer);
+                if (dayjs(dato).isBefore(dayjs(eksisterende.førsteDato))) {
+                    eksisterende.førsteDato = dato;
+                }
+            }
+        });
+        
+        // Sæt engelsk locale
+        dayjs.locale('en');
+        ledigeDatoer.forEach(dato => {
+            const datoObj = dayjs(dato);
+            const månedsnummer = datoObj.month(); // 0-11
+            const månedsnavnEngelsk = datoObj.format('MMMM'); // F.eks. "January"
+            if (månederMap.has(månedsnummer)) {
+                månederMap.get(månedsnummer).engelsk = månedsnavnEngelsk;
+            }
+        });
+        
+        // Konverter til array og sorter efter første dato (kronologisk)
+        const månederSorteret = Array.from(månederMap.entries())
+            .sort((a, b) => {
+                // Sorter efter første dato i hver måned (kronologisk)
+                return dayjs(a[1].førsteDato).diff(dayjs(b[1].førsteDato));
+            });
+        
+        const månederDansk = månederSorteret.map(([_, navne]) => navne.dansk);
+        const månederEngelsk = månederSorteret.map(([_, navne]) => navne.engelsk);
+        
+        // Sæt locale tilbage til dansk
+        dayjs.locale('da');
+        
+        res.status(200).json({
+            ledigeDatoer: ledigeDatoer,
+            månederDansk: månederDansk,
+            månederEngelsk: månederEngelsk
+        });
+    } catch (error) {
+        console.error('getNæste7LedigeDatoer: Fejl ved beregning af ledige datoer:', error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
 
 export {
     getLedigeTider,
@@ -610,5 +784,6 @@ export {
     getLedighed,
     getLedighedForMultipleUsers,
     getLedigeBookingTider,
-    getNæsteToLedigeTimer
+    getNæsteToLedigeTimer,
+    getNæste7LedigeDatoer
 }

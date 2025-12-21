@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "3.11.3",
+    date: "21. december 2025",
+    changes: [
+        "Implementerede en ny offentlig serverfunktion, der returnerer de næste syv ledige tider fra medarbejdergruppen.",
+    ]
+},{
     version: "3.11.2",
     date: "19. december 2025",
     changes: [

@@ -1,11 +1,14 @@
 import express from "express"
-import { getLedigeTider, createLedigTid, getLedigTid, deleteLedigTid, updateLedigTid, getLedigeTiderForMedarbejder, getLedighed, getLedighedForMultipleUsers, getLedigeBookingTider, getNæsteToLedigeTimer } from "../controllers/ledigeTiderController.js"
+import { getLedigeTider, createLedigTid, getLedigTid, deleteLedigTid, updateLedigTid, getLedigeTiderForMedarbejder, getLedighed, getLedighedForMultipleUsers, getLedigeBookingTider, getNæsteToLedigeTimer, getNæste7LedigeDatoer } from "../controllers/ledigeTiderController.js"
 import requireAuth from "../middleware/requireAuth.js";
 
 const router = express.Router();
 
 // GET næste to sammenhængende ledige timer - offentligt endpoint (placeret først for at sikre matching)
 router.get("/naeste-to-ledige-timer", getNæsteToLedigeTimer)
+
+// GET næste 7 datoer med mindst to sammenhængende ledige timer - offentligt endpoint
+router.get("/naeste-7-ledige-datoer", getNæste7LedigeDatoer)
 
 // GET ledighed (ledige tider minus besøg) - ingen auth påkrævet
 router.get("/ledighed", getLedighed)
