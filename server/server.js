@@ -68,7 +68,10 @@ const allowedOrigins = [
     'http://localhost:5174',             // Development
     'http://192.168.1.11:3000',          // Development
     'http://192.168.1.11:5173',          // Development
-    'http://192.168.1.11:5174'           // Development
+    'http://192.168.1.11:5174',          // Development
+    'http://192.168.1.13:3000',          // Development
+    'http://192.168.1.13:5173',          // Development
+    'http://192.168.1.13:5174'           // Development
 ];
 
 const corsOptions = {
