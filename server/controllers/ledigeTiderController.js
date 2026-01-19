@@ -444,14 +444,21 @@ const getNæsteToLedigeTimer = async (req, res) => {
             if (!date) {
                 // Hvis ingen dato, brug nuværende tid i dansk tidszone
                 const now = new Date();
-                // Brug toLocaleString til at få korrekt tid i dansk tidszone
-                const danskTidString = now.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
-                // Parse tilbage til Date objekt (sv-SE format: YYYY-MM-DD HH:mm:ss)
-                return dayjs(danskTidString);
+                // Brug dansk locale til at få korrekt tid i dansk tidszone
+                const danskTidString = now.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                const [datePart, timePart] = danskTidString.split(', ');
+                const [day, month, year] = datePart.split('.');
+                const [hour, minute, second] = timePart.split('.');
+                return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
             }
-            // Konverter Date objekt til dansk tidszone
-            const danskTidString = date.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
-            return dayjs(danskTidString);
+            // Konverter Date objekt til dansk tidszone med dansk locale
+            const danskTidString = date.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+            // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+            const [datePart, timePart] = danskTidString.split(', ');
+            const [day, month, year] = datePart.split('.');
+            const [hour, minute, second] = timePart.split('.');
+            return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
         };
         
         // Få nuværende tid i dansk tidszone
@@ -610,14 +617,21 @@ const getNæste7LedigeDatoer = async (req, res) => {
             if (!date) {
                 // Hvis ingen dato, brug nuværende tid i dansk tidszone
                 const now = new Date();
-                // Brug toLocaleString til at få korrekt tid i dansk tidszone
-                const danskTidString = now.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
-                // Parse tilbage til Date objekt (sv-SE format: YYYY-MM-DD HH:mm:ss)
-                return dayjs(danskTidString);
+                // Brug dansk locale til at få korrekt tid i dansk tidszone
+                const danskTidString = now.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                const [datePart, timePart] = danskTidString.split(', ');
+                const [day, month, year] = datePart.split('.');
+                const [hour, minute, second] = timePart.split('.');
+                return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
             }
-            // Konverter Date objekt til dansk tidszone
-            const danskTidString = date.toLocaleString('sv-SE', { timeZone: 'Europe/Copenhagen' });
-            return dayjs(danskTidString);
+            // Konverter Date objekt til dansk tidszone med dansk locale
+            const danskTidString = date.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+            // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+            const [datePart, timePart] = danskTidString.split(', ');
+            const [day, month, year] = datePart.split('.');
+            const [hour, minute, second] = timePart.split('.');
+            return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
         };
         
         // Få nuværende tid i dansk tidszone

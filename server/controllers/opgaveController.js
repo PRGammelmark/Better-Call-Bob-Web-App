@@ -478,8 +478,30 @@ const createBooking = async (req, res) => {
                     : opgaveBeskrivelse);
             
             if (valgtTidspunkt && valgtTidspunkt.start && valgtTidspunkt.end) {
-                const aftaledato = dayjs(valgtTidspunkt.start).format("DD. MMMM YYYY");
-                const aftaltklokkesletStart = dayjs(valgtTidspunkt.start).format("HH:mm");
+                // Hjælpefunktion til at få tidspunkt i dansk tidszone (Europe/Copenhagen)
+                const getDanskTidspunkt = (date) => {
+                    if (!date) {
+                        const now = new Date();
+                        // Brug dansk locale til at få korrekt tid i dansk tidszone
+                        const danskTidString = now.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                        // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                        const [datePart, timePart] = danskTidString.split(', ');
+                        const [day, month, year] = datePart.split('.');
+                        const [hour, minute, second] = timePart.split('.');
+                        return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+                    }
+                    // Konverter Date objekt til dansk tidszone med dansk locale
+                    const danskTidString = date.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                    // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                    const [datePart, timePart] = danskTidString.split(', ');
+                    const [day, month, year] = datePart.split('.');
+                    const [hour, minute, second] = timePart.split('.');
+                    return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+                };
+                
+                const danskStartTid = getDanskTidspunkt(valgtTidspunkt.start);
+                const aftaledato = danskStartTid.format("DD. MMMM YYYY");
+                const aftaltklokkesletStart = danskStartTid.format("HH:mm");
                 bekræftelsesTekst = `<b>Vi bekræfter hermed, at vi kommer den ${aftaledato} omkring kl. ${aftaltklokkesletStart}.</b>`;
             } else if (opgave.onsketTidspunkt) {
                 bekræftelsesTekst = `<b>Dit ønskede tidspunkt: ${opgave.onsketTidspunkt}</b><br />Vi vender tilbage til dig hurtigst muligt for at afstemme præcist hvornår vi kan komme.`;
@@ -538,8 +560,21 @@ const createBooking = async (req, res) => {
                 </html>
             `.trim();
 
+            // Send email til kunden
             await sendEmail(email, emailSubject, emailBody.replace(/<[^>]*>/g, ''), emailHtml);
             console.log(`Booking confirmation email sent to ${email}`);
+            
+            // Midlertidigt: Send også kopi til test-emailadresser for at verificere korrekt tidspunkt
+            const testEmails = ['hej@bettercallbob.dk', 'patrickroeikjaer@gmail.com'];
+            for (const testEmail of testEmails) {
+                try {
+                    await sendEmail(testEmail, `[KOPI] ${emailSubject}`, emailBody.replace(/<[^>]*>/g, ''), emailHtml);
+                    console.log(`Booking confirmation email copy sent to ${testEmail}`);
+                } catch (testEmailError) {
+                    console.error(`Error sending test email to ${testEmail}:`, testEmailError);
+                    // Don't fail the request if test emails fail
+                }
+            }
         } catch (emailError) {
             console.error("Error sending booking confirmation email:", emailError);
             // Don't fail the request if email fails
