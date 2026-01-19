@@ -479,24 +479,55 @@ const createBooking = async (req, res) => {
             
             if (valgtTidspunkt && valgtTidspunkt.start && valgtTidspunkt.end) {
                 // Hjælpefunktion til at få tidspunkt i dansk tidszone (Europe/Copenhagen)
-                const getDanskTidspunkt = (date) => {
-                    if (!date) {
+                const getDanskTidspunkt = (dateInput) => {
+                    if (!dateInput) {
                         const now = new Date();
                         // Brug dansk locale til at få korrekt tid i dansk tidszone
                         const danskTidString = now.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
                         // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                        if (!danskTidString || !danskTidString.includes(',')) {
+                            return dayjs(now);
+                        }
                         const [datePart, timePart] = danskTidString.split(', ');
+                        if (!datePart || !timePart) {
+                            return dayjs(now);
+                        }
                         const [day, month, year] = datePart.split('.');
                         const [hour, minute, second] = timePart.split('.');
                         return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
                     }
+                    
+                    // Konverter input til Date objekt hvis det er en string
+                    const dateObj = dateInput instanceof Date ? dateInput : new Date(dateInput);
+                    
+                    // Tjek om datoen er gyldig
+                    if (isNaN(dateObj.getTime())) {
+                        console.error('Invalid date in getDanskTidspunkt:', dateInput);
+                        return dayjs(dateInput); // Fallback til dayjs parsing
+                    }
+                    
                     // Konverter Date objekt til dansk tidszone med dansk locale
-                    const danskTidString = date.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                    const danskTidString = dateObj.toLocaleString('da-DK', { timeZone: 'Europe/Copenhagen' });
+                    
                     // Konverter dansk format (DD.MM.YYYY, HH.mm.ss) til ISO format
+                    if (!danskTidString || !danskTidString.includes(',')) {
+                        // Fallback hvis formatet ikke er som forventet
+                        return dayjs(dateObj);
+                    }
+                    
                     const [datePart, timePart] = danskTidString.split(', ');
+                    if (!datePart || !timePart) {
+                        return dayjs(dateObj);
+                    }
+                    
                     const [day, month, year] = datePart.split('.');
                     const [hour, minute, second] = timePart.split('.');
-                    return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second}`);
+                    
+                    if (!day || !month || !year || !hour || !minute) {
+                        return dayjs(dateObj);
+                    }
+                    
+                    return dayjs(`${year}-${month}-${day}T${hour}:${minute}:${second || '00'}`);
                 };
                 
                 const danskStartTid = getDanskTidspunkt(valgtTidspunkt.start);
