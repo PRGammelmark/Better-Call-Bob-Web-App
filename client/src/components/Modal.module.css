@@ -194,6 +194,52 @@
     font-size: 0.9rem;
 }
 
+/* Skeleton loader styles */
+.skeletonLine {
+    background: linear-gradient(
+        90deg,
+        #f0f0f0 0%,
+        #e0e0e0 50%,
+        #f0f0f0 100%
+    );
+    background-size: 200% 100%;
+    animation: skeletonPulse 1.5s ease-in-out infinite;
+    border-radius: 4px;
+    margin-bottom: 12px;
+}
+
+.skeletonHeading {
+    height: 28px;
+    width: 70%;
+    margin-bottom: 20px;
+}
+
+.skeletonText {
+    height: 18px;
+    width: 60%;
+}
+
+.skeletonTextShort {
+    height: 18px;
+    width: 40%;
+}
+
+.skeletonButton {
+    height: 50px;
+    width: 100%;
+    margin-top: 20px;
+    border-radius: 10px;
+}
+
+@keyframes skeletonPulse {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
 @media screen and (max-width: 750px) {
     .modal {
         width: 100vw;

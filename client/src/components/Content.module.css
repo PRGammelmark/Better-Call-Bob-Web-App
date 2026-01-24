@@ -108,6 +108,14 @@ ul li a:hover {
     background: #f0f0f0;
 }
 
+.sidebar ul li div {
+    border-radius: 20px;
+}
+
+ul li div:hover {
+    background: #f0f0f0;
+}
+
 ul li a.active {
     background: #59bf1a!important;
     transition: 0.2s ease;

@@ -25,8 +25,15 @@ const sendFaktura = async ({ posteringer, inklAdministrationsGebyr, user, altern
     const erErhvervskunde = kunde?.CVR || kunde?.virksomhed;
     const isEnglish = kunde?.isEnglish || false;
     const opgaveID = posteringer[0]?.opgaveID;
-    const posteringerTotalPris = posteringer.reduce((acc, postering) => acc + postering.totalPris, 0);
-    const posteringerTotalPrisInklMoms = posteringerTotalPris * 1.25; // totalPris is without VAT, need to add 25% VAT
+    // Understøt både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+    const posteringerTotalPrisInklMoms = posteringer.reduce((acc, postering) => {
+        // Ny struktur har totalPrisInklMoms direkte
+        if (postering.totalPrisInklMoms !== undefined && postering.totalPrisInklMoms !== null) {
+            return acc + postering.totalPrisInklMoms;
+        }
+        // Gammel struktur: totalPris er eks. moms, så vi ganger med 1.25
+        return acc + (postering.totalPris || 0) * 1.25;
+    }, 0);
     const alleredeBetaltBeløb = posteringer.reduce((acc, postering) => acc + postering.betalinger?.reduce((acc, betaling) => acc + betaling.betalingsbeløb, 0), 0);
     const administrationsGebyrInklMoms = inklAdministrationsGebyr ? 49 * 1.25 : 0; // Administration fee: 49 DKK excl. VAT = 61.25 DKK incl. VAT
     const restbeløbTilOpkrævning = posteringerTotalPrisInklMoms + administrationsGebyrInklMoms - alleredeBetaltBeløb;

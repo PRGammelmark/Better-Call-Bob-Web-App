@@ -13,13 +13,23 @@ export async function registrerBetalinger(betalingsbeløb, betalingsID, betaling
         "opkrævninger.reference": { $in: ids }
     });
 
-    const sorteredePosteringer = posteringer.sort((a, b) => a.totalPris - b.totalPris);
+    // Hjælpefunktion til at få total pris inkl. moms (understøtter både ny og gammel struktur)
+    const getTotalPrisInklMoms = (postering) => {
+        // Ny struktur har totalPrisInklMoms direkte
+        if (postering.totalPrisInklMoms !== undefined && postering.totalPrisInklMoms !== null) {
+            return postering.totalPrisInklMoms;
+        }
+        // Gammel struktur: totalPris er eks. moms, så vi ganger med 1.25
+        return (postering.totalPris || 0) * 1.25;
+    };
+
+    const sorteredePosteringer = posteringer.sort((a, b) => getTotalPrisInklMoms(a) - getTotalPrisInklMoms(b));
     const antalPosteringer = sorteredePosteringer.length;
     
     let fikseretBetalingsbeløb = 0;
     
     if(!betalingsbeløb) {
-        const manglendeBetalingsbeløbForAllePosteringer = sorteredePosteringer.reduce((sum, postering) => sum + (postering.totalPris * 1.25) - postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0), 0);
+        const manglendeBetalingsbeløbForAllePosteringer = sorteredePosteringer.reduce((sum, postering) => sum + getTotalPrisInklMoms(postering) - postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0), 0);
         fikseretBetalingsbeløb = manglendeBetalingsbeløbForAllePosteringer;
     }
 
@@ -34,7 +44,7 @@ export async function registrerBetalinger(betalingsbeløb, betalingsID, betaling
 
     while(resterendeBetaltBeløb > 0) { 
         const postering = sorteredePosteringer.shift();
-        const posteringManglendeBeløb = (postering.totalPris * 1.25) - postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0);
+        const posteringManglendeBeløb = getTotalPrisInklMoms(postering) - postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0);
 
         if(sorteredePosteringer.length === 0) {
             postering.betalinger.push({

@@ -1,5 +1,5 @@
 import { useState, useContext, useRef, useEffect, useActionState } from "react";
-import { Bell, Trash2, Plus, BellDot, CalendarPlus, CalendarMinus, CalendarSearch, ClipboardPlus, MessageCirclePlus, MessageCircleMore, ClockPlus, ClockFading, ClockAlert, UserPlus, UserMinus, CircleFadingPlus, ClipboardCheck, ClipboardCopy, ImagePlus, ClipboardX, Settings, Check, Star, Folder } from "lucide-react";
+import { Bell, Trash2, Plus, BellDot, CalendarPlus, CalendarMinus, CalendarSearch, ClipboardPlus, MessageCirclePlus, MessageCircleMore, ClockPlus, ClockFading, ClockAlert, UserPlus, UserMinus, CircleFadingPlus, ClipboardCheck, ClipboardCopy, ImagePlus, ClipboardX, Settings, Check, Star, Folder, X } from "lucide-react";
 import { NotifikationContext } from "../context/NotifikationContext";
 import Styles from './NotifikationKlokke.module.css'
 import dayjs from "dayjs";
@@ -11,13 +11,11 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import PopUpMenu from './basicComponents/PopUpMenu.jsx'
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function NotifikationKlokke({ background, color }) {
+export default function NotifikationKlokke({ background, color, åbenNotifikationer, setÅbenNotifikationer, onOpen }) {
   const { notifikationer, setNotifikationer } = useContext(NotifikationContext);
   const [henterFlereNotifikationer, setHenterFlereNotifikationer] = useState(false);
   const [ikkeFlereNotifikationer, setIkkeFlereNotifikationer] = useState(false);
-  const [åbenNotifikationer, setÅbenNotifikationer] = useState(false);
   const [activeTab, setActiveTab] = useState("vigtige");
-  const wrapperRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
   const tabRefs = useRef([]);
   const [underlineStyle, setUnderlineStyle] = useState({ width: 0, left: 0 });
@@ -106,31 +104,13 @@ useEffect(() => {
         left: activeTabElement.offsetLeft,
       });
     }
-  }, [activeTab]);
+  }, [activeTab, åbenNotifikationer]);
 
   // Filter notifications based on active tab
   const filteredNotifikationer = activeTab === "vigtige" 
     ? notifikationer.filter(n => n.erVigtig)
     : notifikationer;
-
-  // Luk dropdown hvis klik udenfor
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
-        setÅbenNotifikationer(false);
-      }
-    };
   
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-  
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, []);
-  
-
   const handleClick = (notifikation) => {    
     axios.patch(`${import.meta.env.VITE_API_URL}/notifikationer/laest/${notifikation._id}`, {}, {
       headers: { 'Authorization': `Bearer ${user.token}` }
@@ -170,6 +150,10 @@ useEffect(() => {
       .catch(err => console.log(err));
     }
   
+    if (!åbenNotifikationer) {
+      // Luk andre åbne dropdowns
+      onOpen && onOpen();
+    }
     setÅbenNotifikationer(!åbenNotifikationer);
   }
 
@@ -239,13 +223,30 @@ useEffect(() => {
   }
 
   return (
-    <div className={Styles.notifikationKlokkeContainer} ref={wrapperRef}>
+    <div className={Styles.notifikationKlokkeContainer}>
       <div 
         className={Styles.bell} 
         style={{ background, color }} 
         onClick={() => handleÅbnNotifikationer()}
       >
-        <Bell size={20} />
+        <div className={Styles.iconWrapper}>
+          <Bell
+            size={20}
+            className={
+              isMobile && åbenNotifikationer
+                ? Styles.iconHidden
+                : Styles.iconVisible
+            }
+          />
+          <X
+            size={20}
+            className={
+              isMobile && åbenNotifikationer
+                ? Styles.iconVisible
+                : Styles.iconHidden
+            }
+          />
+        </div>
         {usete.length > 0 && (
           <span className={Styles.useteBadge}>{usete.length}</span>
         )}

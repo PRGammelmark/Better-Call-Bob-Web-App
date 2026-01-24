@@ -8,6 +8,7 @@ import axios from "axios";
 import { useAuthContext } from "../../hooks/useAuthContext";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+import { getPosteringTotalPrisInklMoms } from "../../utils/beregninger.js";
 
 const adminTabs = [
   {
@@ -217,7 +218,7 @@ const OpgaveTabs = ({ view = "admin" }) => {
             // Calculate warnings for unpaid tab
             opgaverMap.forEach((posteringer, opgaveID) => {
               const totalPosteringerAmount = posteringer.reduce((total, postering) => {
-                const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+                const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
                 return total + posteringTotalPris;
               }, 0);
               
@@ -227,7 +228,7 @@ const OpgaveTabs = ({ view = "admin" }) => {
               }, 0);
               
               const totalRemainingAmount = posteringer.reduce((total, postering) => {
-                const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+                const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
                 const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
                 const remainingAmount = posteringTotalPris - betalingerSum;
                 return total + remainingAmount;

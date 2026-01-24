@@ -18,7 +18,8 @@ const SeOpkrævningerModal = (props) => {
     // 3 = faktura sendt
     const posteringBetalt = useMemo(() => {
         let status = 0;
-        const posteringTotalPris = props.postering.totalPris * 1.25;
+        // Understøt både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+        const posteringTotalPris = props.postering.totalPrisInklMoms ?? (props.postering.totalPris * 1.25);
         const betalingerSum = props.postering?.betalinger?.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0) || 0;
         if(betalingerSum > 0) {
             if(betalingerSum < posteringTotalPris) {
@@ -34,7 +35,7 @@ const SeOpkrævningerModal = (props) => {
             }
         }
         return status;
-    }, [props.postering.totalPris, props.postering.betalinger, props.postering.opkrævninger]);
+    }, [props.postering.totalPrisInklMoms, props.postering.totalPris, props.postering.betalinger, props.postering.opkrævninger]);
 
     const economicHeaders = {
         'Accept': 'application/json',

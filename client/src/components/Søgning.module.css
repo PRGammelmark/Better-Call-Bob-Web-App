@@ -1,0 +1,540 @@
+.søgningContainer {
+    position: relative;
+    display: inline-block;
+    z-index: 100;
+}
+
+.søgningContainer * {
+    user-select: none;
+}
+
+/* =================== DESKTOP STYLES =================== */
+
+/* Wrapper der animerer fra knap til input */
+.searchButtonWrapper {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid transparent;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.searchButtonWrapper:has(.searchInput:focus) {
+    border-color: #3c5a3f;
+    box-shadow: 0 0 0 3px rgba(60, 90, 63, 0.1);
+}
+
+/* Søgeknap */
+.searchButton {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    flex-shrink: 0;
+}
+
+.searchButton:hover {
+    opacity: 0.8;
+}
+
+.searchButtonOpen {
+    cursor: default;
+}
+
+.searchButtonOpen:hover {
+    opacity: 1;
+}
+
+.iconWrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconWrapper svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+}
+
+.iconVisible {
+    opacity: 1;
+}
+
+.iconHidden {
+    opacity: 0;
+}
+
+/* Input wrapper */
+.inputWrapper {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+    padding-right: 8px;
+    gap: 8px;
+}
+
+.searchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 10px 0;
+    font-size: 1rem;
+    outline: none;
+    color: #222;
+    font-family: inherit;
+    min-width: 0;
+    user-select: text;
+}
+
+.searchInput::placeholder {
+    color: #999;
+}
+
+.closeButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    cursor: pointer;
+    color: #666;
+    transition: 0.15s ease;
+    flex-shrink: 0;
+}
+
+.closeButton:hover {
+    background: #d0d0d0;
+    color: #333;
+}
+
+/* Resultat dropdown */
+.dropdownContainer {
+    overflow: hidden;
+    border-radius: 12px;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 1000;
+    min-width: 420px;
+    max-width: 420px;
+    max-height: 70vh;
+    box-shadow: rgba(0, 0, 0, 0.08) 0px 8px 32px 0px,
+                rgba(0, 0, 0, 0.1) 0px 0px 0px 1px;
+}
+
+.dropdown {
+    max-height: 70vh;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    overflow-x: hidden;
+    background: white;
+    border-radius: 12px;
+}
+
+/* Results Container */
+.resultsContainer {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+/* Category */
+.resultCategory {
+    padding-bottom: 8px;
+}
+
+.categoryHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #888;
+    position: sticky;
+    top: 0;
+    background: #fafafa;
+    border-bottom: 1px solid #eee;
+    z-index: 10;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    user-select: none;
+}
+
+.categoryHeader:hover {
+    background: #f0f0f0;
+}
+
+.categoryHeader:active {
+    background: #e8e8e8;
+}
+
+.categoryHeader svg {
+    width: 14px;
+    height: 14px;
+}
+
+.categoryCount {
+    color: #aaa;
+    font-weight: 500;
+}
+
+.categoryChevron {
+    margin-left: auto;
+    transition: transform 0.2s ease;
+    color: #aaa;
+}
+
+.categoryChevronCollapsed {
+    transform: rotate(-90deg);
+}
+
+/* Result Row */
+.resultRow {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    transition: 0.15s ease;
+    position: relative;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.resultRow:last-child {
+    border-bottom: none;
+}
+
+.resultRow:hover {
+    background: #f5f5f5;
+}
+
+.resultRow:active {
+    background: #ebebeb;
+}
+
+.resultIcon {
+    width: 40px;
+    height: 40px;
+    color: #555;
+    aspect-ratio: 1/1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f0;
+    border-radius: 50%;
+    flex-shrink: 0;
+    transition: 0.15s ease;
+}
+
+.resultRow:hover .resultIcon {
+    background: #e5e5e5;
+}
+
+.profileImage {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.colorDot {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.resultContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.resultName {
+    font-family: "OmnesBold", sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.opgaveNummer {
+    font-size: 0.8rem;
+    color: #3c5a3f;
+    font-family: "OmnesBold", sans-serif;
+}
+
+.virksomhedBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.7rem;
+    color: #666;
+    background: #f0f0f0;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: inherit;
+    font-weight: normal;
+}
+
+.resultSubtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.statusBadge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.statusModtaget {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.statusÅben {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.statusPlanlagt {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.statusAfsluttet {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.statusAfventerSvar {
+    background: #fce4ec;
+    color: #c2185b;
+}
+
+.arrowIcon {
+    color: #ccc;
+    flex-shrink: 0;
+    transition: 0.15s ease;
+}
+
+.resultRow:hover .arrowIcon {
+    color: #888;
+    transform: translateX(2px);
+}
+
+/* Empty / Loading States */
+.emptyState,
+.hintState,
+.loadingState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    color: #999;
+    gap: 12px;
+    text-align: center;
+}
+
+.emptyState svg,
+.hintState svg {
+    color: #ddd;
+}
+
+.loadingSpinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid #e0e0e0;
+    border-top-color: #3c5a3f;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =================== MOBILE STYLES =================== */
+
+/* Mobil søgeknap i header */
+.mobileSearchButton {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.2s ease;
+    border: 1px solid transparent;
+}
+
+.mobileSearchButton:active {
+    transform: scale(0.92);
+    opacity: 0.8;
+}
+
+/* Mobil søge-header overlay */
+.mobileSearchHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: #3c5a3f;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 12px;
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    .mobileSearchHeader {
+        padding-top: env(safe-area-inset-top);
+        height: calc(60px + env(safe-area-inset-top));
+    }
+}
+
+.mobileSearchInputWrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 10px;
+    padding: 0 12px;
+    gap: 10px;
+    height: 42px;
+}
+
+.mobileSearchIcon {
+    color: #888;
+    flex-shrink: 0;
+}
+
+.mobileSearchInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    outline: none;
+    color: #222;
+    font-family: inherit;
+    min-width: 0;
+    user-select: text;
+    -webkit-user-select: text;
+}
+
+.mobileSearchInput::placeholder {
+    color: #999;
+}
+
+.mobileClearButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0e0e0;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    color: #666;
+    flex-shrink: 0;
+}
+
+.mobileClearButton:active {
+    background: #d0d0d0;
+}
+
+.mobileCloseButton {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 0.95rem;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 8px 4px;
+    white-space: nowrap;
+}
+
+.mobileCloseButton:active {
+    opacity: 0.7;
+}
+
+/* Mobil resultat container */
+.mobileResultsContainer {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: #fff;
+    z-index: 10001;
+}
+
+@supports (padding-top: env(safe-area-inset-top)) {
+    .mobileResultsContainer {
+        top: calc(60px + env(safe-area-inset-top));
+    }
+}
+
+.mobileResultsScroll {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior-y: contain;
+    padding-bottom: env(safe-area-inset-bottom, 16px);
+}
+
+/* Mobile-specific result styles */
+@media (max-width: 750px) {
+    .resultRow {
+        padding: 14px 16px;
+    }
+
+    .categoryHeader {
+        background: #f5f5f5;
+        padding: 10px 16px;
+        z-index: 10;
+    }
+
+    .emptyState,
+    .hintState,
+    .loadingState {
+        padding: 60px 24px;
+    }
+}

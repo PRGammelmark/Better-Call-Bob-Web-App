@@ -27,40 +27,6 @@
     overflow: visible;
 }
 
-.mobileHeader {
-    margin-bottom: 20px;
-}
-
-.backButton {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    padding: 5px 8px 5px 4px;
-    margin-bottom: 4px;
-    /* margin-top: -10px; */
-    background: transparent;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #666;
-    transition: all 0.2s ease;
-    font-family: inherit;
-}
-
-.backButton:hover {
-    background: #f0f0f0;
-    color: #222;
-}
-
-.mobilePageTitle {
-    font-size: 1.1rem;
-    font-weight: 700;
-    font-family: "OmnesBold";
-    margin: 0;
-    color: #222;
-}
-
 .indstillingerContainer h2 {
     font-size: 1.2rem;
     font-weight: 700;
@@ -190,7 +156,7 @@ h2 {
 
     .contentArea {
         width: 100%;
-        overflow: hidden; /* enable slide exit/enter without clipping viewport */
+        overflow: visible; /* enable slide exit/enter without clipping viewport */
         min-height: 420px; /* space for absolutely positioned animated pages */
     }
 }

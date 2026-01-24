@@ -5,9 +5,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import Styles from './Calendar.module.css'
 import '../../extra-styles/styles.scss';
-import Modal from '../../components/Modal.jsx'
-import ModalStyles from '../../components/Modal.module.css';
-import { Link } from 'react-router-dom'
+import BesoegsInfoModal from '../../components/modals/BesoegsInfoModal.jsx'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 
@@ -45,13 +43,10 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
 
     const [egneBesøg, setEgneBesøg] = useState([]);
     const [egneLedighedTider, setEgneLedighedTider] = useState([])
-    const [kundeTilknyttetBesøg, setKundeTilknyttetBesøg] = useState(null)
-    const [kunder, setKunder] = useState([])
 
     useEffect(() => {
       if(openDialog === false){
         setEventData(null)
-        setOpgaveTilknyttetBesøg(null)
       }
     }, [openDialog]);
 
@@ -81,16 +76,6 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
         console.log(filterEgneLedigeTider)
       })
       .catch(error => console.log(error))
-
-      axios.get(`${import.meta.env.VITE_API_URL}/kunder`, {
-        headers: {
-          'Authorization': `Bearer ${user.token}`
-        }
-      })
-      .then(res => {
-        setKunder(res.data)
-      })
-      .catch(error => console.log(error))
     }, [])
 
     // HVORDAN EVENTS VISES I KALENDEREN
@@ -110,22 +95,9 @@ const TraditionalCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetB
     }))
 
    const openCalendarEvent = useCallback((callEvent) => {
-      const opgaveTilknyttetBesøg = callEvent.opgaveID;
-
-      axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        })
-        .then(res => {
-          setOpgaveTilknyttetBesøg(res.data)
-          setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === res.data.kundeID))
-        })
-        .catch(error => console.log(error))
-
       setEventData(callEvent);
       setOpenDialog(true);
-}, [openDialog, kunder]);
+}, [setEventData, setOpenDialog]);
 
 const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
   const newEventBorders = {
@@ -179,17 +151,39 @@ const flytEllerÆndreEvent = useCallback(({event, start, end}) => {
         onEventDrop={flytEllerÆndreEvent}
         onEventResize={flytEllerÆndreEvent}
       />
-      <Modal trigger={openDialog} setTrigger={setOpenDialog}>
-        <h2 className={ModalStyles.modalHeading}>{(opgaveTilknyttetBesøg || aktueltBesøg) ? "Planlagt besøg på " + (kundeTilknyttetBesøg?.adresse || aktueltBesøg.adresse) : "Ingen data"}</h2>
-        <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Ingen kunde"}</p>
-        <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>
-        <br />
-        <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>
-        <p>{opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg.opgaveBeskrivelse : null}</p>
-        <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
-          <button className={ModalStyles.buttonFullWidth}>Gå til opgave {opgaveTilknyttetBesøg ? "#" + opgaveTilknyttetBesøg._id.slice(-3) : null}</button>
-        </Link>
-      </Modal>
+      {eventData && (
+        <BesoegsInfoModal
+          trigger={openDialog}
+          setTrigger={setOpenDialog}
+          besoegId={eventData._id}
+          onUpdated={() => {
+            // Refetch besøg data
+            axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
+              headers: {
+                'Authorization': `Bearer ${user.token}`
+              }
+            })
+            .then(res => {
+              const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
+              setEgneBesøg(filterEgneBesøg)
+            })
+            .catch(error => console.log(error))
+          }}
+          onDeleted={() => {
+            // Refetch besøg data
+            axios.get(`${import.meta.env.VITE_API_URL}/besoeg`, {
+              headers: {
+                'Authorization': `Bearer ${user.token}`
+              }
+            })
+            .then(res => {
+              const filterEgneBesøg = res.data.filter(opgave => opgave.brugerID === userID)
+              setEgneBesøg(filterEgneBesøg)
+            })
+            .catch(error => console.log(error))
+          }}
+        />
+      )}
     </div>
   )
 }

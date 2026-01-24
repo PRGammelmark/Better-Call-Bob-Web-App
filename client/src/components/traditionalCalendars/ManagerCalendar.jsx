@@ -7,12 +7,11 @@ import Styles from './ÅbenOpgaveCalendar.module.css'
 import '../../extra-styles/styles.scss';
 import Modal from '../../components/Modal.jsx'
 import ModalStyles from '../../components/Modal.module.css';
-import { Link } from 'react-router-dom'
+import BesoegsInfoModal from '../../components/modals/BesoegsInfoModal.jsx'
 import withDragAndDrop from 'react-big-calendar/lib/addons/dragAndDrop'
 import 'react-big-calendar/lib/addons/dragAndDrop/styles.css'
 import ThreeDayView from './ThreeDayView.jsx'
 import { useTaskAndDate } from '../../context/TaskAndDateContext.jsx'
-import DivSlideAnimation from '../../components/DivSlideAnimation.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
 import { justerForDST } from '../../utils/justerForDST.js'
 import { getLedighed } from '../../utils/getLedighed.js'
@@ -45,11 +44,6 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
   const [view, setView] = useState("month")
   const [visKunLedighedOverblik, setVisKunLedighedOverblik] = useState(false)
   const [visOgsåBesøgOverblik, setVisOgsåBesøgOverblik] = useState(true)
-  const [editBesøg, setEditBesøg] = useState(false)
-  const [selectedTimeFrom, setSelectedTimeFrom] = useState("");
-  const [selectedTimeTo, setSelectedTimeTo] = useState("");
-  const [comment, setComment] = useState("");
-  const [opretBesøgError, setOpretBesøgError] = useState("");
   const [fratrækBesøgFraLedigeTider, setFratrækBesøgFraLedigeTider] = useState(true)
   const [alleOpgaver, setAlleOpgaver] = useState([])
   const [besøgDenneMåned, setBesøgDenneMåned] = useState(0)
@@ -219,32 +213,37 @@ const ManagerCalendar = ({user, openDialog, setOpenDialog, opgaveTilknyttetBesø
   });
 
    const openCalendarEvent = useCallback((callEvent) => {
-
-    const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
-
-      if(opgaveTilknyttetBesøg !== ""){
-        console.log("Opgave tilknyttet besøg", opgaveTilknyttetBesøg)
-      axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
-          headers: {
-            'Authorization': `Bearer ${user.token}`
-          }
-        })
-        .then(res => {
-          setOpgaveTilknyttetBesøg(res.data)
-          setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === res.data.kundeID))
-        })
-        .catch(error => console.log(error))
+      // Tjek om det er ledig tid eller besøg
+      if (callEvent.objectIsLedigTid) {
+        // Håndter ledig tid - beholder eksisterende logik
+        const opgaveTilknyttetBesøg = callEvent.opgaveID || "";
+        if(opgaveTilknyttetBesøg !== ""){
+          console.log("Opgave tilknyttet besøg", opgaveTilknyttetBesøg)
+          axios.get(`${import.meta.env.VITE_API_URL}/opgaver/${opgaveTilknyttetBesøg}`, {
+              headers: {
+                'Authorization': `Bearer ${user.token}`
+              }
+            })
+            .then(res => {
+              setOpgaveTilknyttetBesøg(res.data)
+              setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === res.data.kundeID))
+            })
+            .catch(error => console.log(error))
+        } else {
+          setOpgaveTilknyttetBesøg(callEvent)
+          setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === callEvent.kundeID))
+        }
+        setEventData(callEvent);
+        setOpenDialog(true);
       } else {
-        setOpgaveTilknyttetBesøg(callEvent)
-        setKundeTilknyttetBesøg(kunder.find(kunde => kunde._id === callEvent.kundeID))
+        // Håndter besøg - brug BesoegsInfoModal
+        setEventData(callEvent);
+        setOpenDialog(true);
       }
-      setEventData(callEvent);
-      editBesøg && setEditBesøg(false);
-      setOpenDialog(true);
-}, [openDialog, kunder]);
+}, [setEventData, setOpenDialog, setOpgaveTilknyttetBesøg, setKundeTilknyttetBesøg, kunder, user.token]);
 
 useEffect(() => {
-  if(!openDialog && !editBesøg){
+  if(!openDialog){
     setOpgaveTilknyttetBesøg(null)
     setKundeTilknyttetBesøg(null)
     setEventData(null)
@@ -366,42 +365,12 @@ const handleDateChange = (date) => {
   setChosenDate(date);
 }
 
-const openEditDialog = () => {
-  setChosenDate(dayjs(eventData.datoTidFra).format("YYYY-MM-DD"))
-  setSelectedTimeFrom(dayjs(eventData.datoTidFra).format("HH:mm"))
-  setSelectedTimeTo(dayjs(eventData.datoTidTil).format("HH:mm"))
-  setComment(eventData.kommentar)
-  setEditBesøg(true)
-}
-
 const openCalendarDay = (slotInfo) => {
     if(slotInfo.action === "click"){
         return
     }
     setChosenDate(slotInfo.start)
     setAddBesøgModal(slotInfo)
-}
-
-const onRedigerBesøg = (e) => {
-  e.preventDefault()
-
-  const besøg = {
-    datoTidFra: dayjs(`${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeFrom}:00.000${dayjs().format("Z")}`),
-    datoTidTil: dayjs(`${dayjs(chosenDate).format("YYYY-MM-DD")}T${selectedTimeTo}:00.000${dayjs().format("Z")}`),
-    kommentar: comment ? comment : ""
-  }
-
-  axios.patch(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, besøg, {
-    headers: {
-      'Authorization': `Bearer ${user.token}`
-    }
-  })
-  .then(res => {
-    console.log("Besøg opdateret", res.data)
-    setOpenDialog(false)
-    refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true)
-  })
-  .catch(error => console.log(error))
 }
 
   return (
@@ -462,60 +431,15 @@ const onRedigerBesøg = (e) => {
             <b className={Styles.besøgFilterDivItemHeading}>Ledighed</b>
           </div>
       </div>
-      <Modal trigger={openDialog} setTrigger={setOpenDialog}>
-        {editBesøg ? (
-          opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? 
-          ""
-          :
-          (
-            // Rediger planlagt besøg
-            <DivSlideAnimation>
-            <h2 className={ModalStyles.modalHeading}>Rediger {eventData && eventData.brugerID === userID ? "dit" : ""} besøg</h2>
-                <div className={ModalStyles.modalSubheadingContainer}>
-                  <h3 className={ModalStyles.modalSubheading}>Kunde: {kundeTilknyttetBesøg?.navn || "Navn ikke fundet"}</h3>
-                  {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid === false && <h3 className={ModalStyles.modalSubheading}>{kundeTilknyttetBesøg?.adresse || "Ingen adresse"}</h3>}
-                </div>
-                <form action="" onSubmit={onRedigerBesøg}>
-                    <label className={ModalStyles.modalLabel} htmlFor="besøg-dato">Dato</label>
-                    <input className={ModalStyles.modalInput} type="date" id="besøg-dato" value={chosenDate ? dayjs(chosenDate).format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD")} onChange={(e) => setChosenDate(e.target.value)} />
-                    <label className={ModalStyles.modalLabel} htmlFor="besøg-tid-fra">Tid</label>
-                    <div className={ModalStyles.timeInputs}>
-                        <div className={ModalStyles.timeInput}>
-                            <input className={ModalStyles.modalInput} type="time" id="besøg-tid-fra" value={selectedTimeFrom} onChange={(e) => setSelectedTimeFrom(e.target.value)} />
-                        </div>
-                        <div className={ModalStyles.timeSeparator}>–</div>
-                        <div className={ModalStyles.timeInput}>
-                            <input className={ModalStyles.modalInput} type="time" id="besøg-tid-til" value={selectedTimeTo} onChange={(e) => setSelectedTimeTo(e.target.value)} />
-                        </div>
-                    </div>
-                    <label className={ModalStyles.modalLabel} htmlFor="besøg-kommentar">Evt. kommentar</label>
-                    <textarea className={ModalStyles.modalInput} id="besøg-kommentar" rows="3" value={comment} onChange={(e) => setComment(e.target.value)}></textarea>
-                    <button className={ModalStyles.buttonFullWidth}>Opdatér besøg</button>
-                    {opretBesøgError && <p className={ModalStyles.errorMessage}>{opretBesøgError}</p>}
-                </form>
-            </DivSlideAnimation>
-          )
-        )
-        : 
-        <>
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg.brugerID)}</h2> : <h2 className={ModalStyles.modalHeading}>{(kundeTilknyttetBesøg?.adresse) || (aktueltBesøg && aktueltBesøg.adresse) ? "Planlagt besøg på " + (kundeTilknyttetBesøg.adresse || aktueltBesøg.adresse) : "Adresse ikke fundet"}</h2>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p><b className={ModalStyles.bold}>Hos:</b> {kundeTilknyttetBesøg?.navn || "Kunde ikke fundet"}</p>}
-        {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button> : ""}
-        <br />
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>{eventData && eventData.kommentar ? "Kommentar" : "Ingen kommentarer til besøget"}</b>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{eventData ? eventData.kommentar : null}</p>}
-        <br />
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <b className={ModalStyles.bold}>Oprindelig opgavebeskrivelse:</b>}
-        {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <p>{opgaveTilknyttetBesøg?.opgaveBeskrivelse || "Opgave ikke fundet"}</p>}
-        {opgaveTilknyttetBesøg && (opgaveTilknyttetBesøg.objectIsLedigTid ? "" : <Link to={`../opgave/${opgaveTilknyttetBesøg ? opgaveTilknyttetBesøg._id : null}`}>
-          <button className={ModalStyles.buttonFullWidth}>📋 Gå til opgaven</button>
-        </Link>)}
-        {(user.isAdmin || (eventData?._id === userID)) && opgaveTilknyttetBesøg?.objectIsLedigTid ? (
-          // Knapper til ledig tid
-          <div className={ModalStyles.deleteEditButtons}>
-            {eventData && (
-              <>
+      {/* Modal for ledig tid */}
+      {eventData && eventData.objectIsLedigTid && (
+        <Modal trigger={openDialog} setTrigger={setOpenDialog}>
+          <>
+            <h2 className={ModalStyles.modalHeading}>Ledig tid for {getBrugerName(opgaveTilknyttetBesøg?.brugerID || eventData.brugerID)}</h2>
+            {eventData && <p><b className={ModalStyles.bold}>Dato & tid:</b> {eventData ? dayjs(eventData.datoTidFra).format("D. MMMM") : null}, kl. {eventData ? dayjs(eventData.datoTidFra).format("HH:mm") : null}-{eventData ? dayjs(eventData.datoTidTil).format("HH:mm") : null}</p>}
+            {opgaveTilknyttetBesøg && opgaveTilknyttetBesøg.objectIsLedigTid && <button className={ModalStyles.buttonFullWidth} onClick={() => {setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}); setOpenDialog(false)}}>Opret besøg</button>}
+            {(user.isAdmin || (eventData?.brugerID === userID)) && (
+              <div className={ModalStyles.deleteEditButtons}>
                 <button 
                   className={ModalStyles.deleteButton} 
                   onClick={() => {
@@ -535,51 +459,26 @@ const onRedigerBesøg = (e) => {
                 >
                   Slet ledig tid
                 </button>
-              </>
+              </div>
             )}
-          </div>
-        )
-        : (
-          // Knapper til planlagt besøg
-          <div className={ModalStyles.deleteEditButtons}>
-            {eventData && (
-              <>
-                <button 
-                  className={ModalStyles.deleteButton} 
-                  style={{marginTop: 0}}
-                  onClick={() => {
-                    if (window.confirm("Er du sikker på, at du vil slette dette besøg?")) {
-                      axios.delete(`${import.meta.env.VITE_API_URL}/besoeg/${eventData._id}`, {
-                        headers: {
-                          'Authorization': `Bearer ${user.token}`
-                        }
-                      })
-                      .then(res => {
-                        setOpenDialog(false);
-                        refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
-                      })
-                      .catch(error => console.log(error));
-                    }
-                  }}
-                >
-                  Slet besøg
-                </button>
-                <button 
-                  className={ModalStyles.editButton} 
-                  onClick={() => {
-                    openEditDialog();
-                  }}
-                >
-                  Rediger besøg
-                </button>
-              </>
-            )}
-          </div>
-        )}
-        </>
-        
-      }
-      </Modal>
+          </>
+        </Modal>
+      )}
+      
+      {/* BesoegsInfoModal for besøg */}
+      {eventData && !eventData.objectIsLedigTid && (
+        <BesoegsInfoModal
+          trigger={openDialog}
+          setTrigger={setOpenDialog}
+          besoegId={eventData._id}
+          onUpdated={() => {
+            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
+          }}
+          onDeleted={() => {
+            refetchBesøg ? setRefetchBesøg(false) : setRefetchBesøg(true);
+          }}
+        />
+      )}
       {/* setAddBesøgModal({action: "ledigTidSelect", ansvarligID: opgaveTilknyttetBesøg.brugerID, ansvarligNavn: getBrugerName(opgaveTilknyttetBesøg.brugerID), start: dayjs(eventData.datoTidFra), end: dayjs(eventData.datoTidTil)}) */}
       <AddBesøg trigger={addBesøgModal} setTrigger={setAddBesøgModal} />
     </div>

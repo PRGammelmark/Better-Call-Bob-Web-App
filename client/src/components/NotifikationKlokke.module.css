@@ -10,9 +10,34 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: 0.15s ease;
+    transition: 0.2s ease;
     border: 1px solid #22222200;
     position: relative;
+}
+
+.iconWrapper {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.iconWrapper svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: opacity 0.2s ease;
+}
+
+.iconVisible {
+    opacity: 1;
+}
+
+.iconHidden {
+    opacity: 0;
 }
 
 .bell:hover {
@@ -338,11 +363,13 @@
       position: fixed;
       top: 54px;
       right: 0;
+      left: 0;
+      bottom: 0;
       z-index: 1000;
       margin-top: 6px;
       width: 100vw;
-      height: calc(100vh - 52px);
-      max-height: calc(100vh - 52px);
+      height: auto;
+      max-height: none;
       border-radius: 0px;
       box-shadow: none;
       border: 1px solid #e0e0e0;
@@ -356,11 +383,13 @@
     }
   
   .dropdown {
-      max-height: calc(100vh - 60px);
+      height: 100%;
+      max-height: none;
       overflow-y: auto;
       overflow-x: hidden;
       background: white;
       border-radius: 0px;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
       /* box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
                   rgba(0, 0, 0, 0.12) 0px 0px 0px 1px; */
                   box-shadow: none;

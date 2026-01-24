@@ -13,6 +13,7 @@ import BesoegsInfoModal from '../../components/modals/BesoegsInfoModal.jsx'
 import TilfoejKommentarModal from '../../components/modals/TilfoejKommentarModal.jsx'
 import OpgaveKommentarSection from '../../components/OpgaveKommentarSection.jsx'
 import { motion, AnimatePresence } from 'framer-motion'
+import { getPosteringTotalPrisInklMoms } from '../../utils/beregninger.js'
 
 const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scrollContainerRef, view = "admin" }) => {
   const {user} = useAuthContext();
@@ -363,8 +364,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
           const posteringer = opgave._posteringer || [];
           
           const totalPosteringerAmount = posteringer.reduce((total, postering) => {
-            const posteringTotalPris = (postering.totalPris || 0) * 1.25;
-            return total + posteringTotalPris;
+            return total + getPosteringTotalPrisInklMoms(postering);
           }, 0);
           
           const totalOpkrævetAmount = posteringer.reduce((total, postering) => {
@@ -373,7 +373,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
           }, 0);
           
           const totalRemainingAmount = posteringer.reduce((total, postering) => {
-            const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+            const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
             const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
             const remainingAmount = posteringTotalPris - betalingerSum;
             return total + remainingAmount;
@@ -524,12 +524,12 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
           return dayjs(aDate).diff(dayjs(bDate));
         } else if (sortOption === "amountHigh" || sortOption === "amountLow") {
           const aAmount = (a._posteringer || []).reduce((total, postering) => {
-            const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+            const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
             const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
             return total + (posteringTotalPris - betalingerSum);
           }, 0);
           const bAmount = (b._posteringer || []).reduce((total, postering) => {
-            const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+            const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
             const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
             return total + (posteringTotalPris - betalingerSum);
           }, 0);
@@ -1188,7 +1188,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             
             // Calculate total unpaid amount across all posteringer for this opgave
             const totalRemainingAmount = posteringer.reduce((total, postering) => {
-              const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+              const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
               const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
               const remainingAmount = posteringTotalPris - betalingerSum;
               return total + remainingAmount;
@@ -1203,7 +1203,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             
             // Calculate total posteringer amount (what should be charged)
             const totalPosteringerAmount = posteringer.reduce((total, postering) => {
-              const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+              const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
               return total + posteringTotalPris;
             }, 0);
             
@@ -1329,7 +1329,7 @@ const OpgaveListings = ({ selectedTab, filters = {}, sortOption = "newest", scro
             let formattedAmount = "";
             if (posteringer.length > 0) {
               totalRemainingAmount = posteringer.reduce((total, postering) => {
-                const posteringTotalPris = (postering.totalPris || 0) * 1.25;
+                const posteringTotalPris = getPosteringTotalPrisInklMoms(postering);
                 const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0;
                 const remainingAmount = posteringTotalPris - betalingerSum;
                 return total + remainingAmount;

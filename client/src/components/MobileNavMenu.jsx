@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useLogout } from '../hooks/useLogout.js'
 import { currentVersion } from '../version.js'
-import { LayoutGrid, ClipboardCheck, User, Users, ScrollText, Settings, Library, X, House } from 'lucide-react';
+import { LayoutGrid, ClipboardCheck, User, Users, ScrollText, Settings, Library, X, House, Coins } from 'lucide-react';
 
 
 const MobileNavMenu = ({ setShowNavMenu}) => {
@@ -79,6 +79,14 @@ const MobileNavMenu = ({ setShowNavMenu}) => {
                             <h2>Team</h2>
                         </div>
                     </Link>
+                    {user.isAdmin && <Link style={linkStyles} to={'okonomi'} onClick={() => setShowNavMenu(false)}>
+                        <div className={Styles.newMobileNavItem}>
+                            <div className={Styles.newMobileNavItemIconCircle}>
+                                <Coins className={Styles.newMobileNavItemIcon} />
+                            </div>
+                            <h2>Økonomi</h2>
+                        </div>
+                    </Link>}
                     <Link style={linkStyles} to={'dokumenter'} onClick={() => setShowNavMenu(false)}>
                         <div className={Styles.newMobileNavItem}>
                             <div className={Styles.newMobileNavItemIconCircle}>

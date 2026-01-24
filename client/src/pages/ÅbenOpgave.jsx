@@ -20,7 +20,7 @@ import BetalViaFakturaModal from '../components/modals/betalingsflows/BetalViaFa
 import VælgMobilePayBetalingsmetode from '../components/modals/VælgMobilePayBetalingsmetode.jsx'
 import useBetalMedFaktura from '../hooks/useBetalMedFaktura.js'
 import CloseIcon from "../assets/closeIcon.svg"
-import AddPostering from '../components/modals/AddPostering.jsx'
+import AddPosteringV2 from '../components/modals/AddPosteringV2'
 import AfslutUdenBetaling from '../components/modals/AfslutUdenBetaling.jsx'
 import Postering from '../components/Postering.jsx'
 import SwitcherStyles from './Switcher.module.css'
@@ -1378,7 +1378,12 @@ const ÅbenOpgave = () => {
                             <div className={ÅbenOpgaveCSS.kundeHeadingContainer}>
                                 <b className={ÅbenOpgaveCSS.kundeHeading} onClick={() => navigate(`/kunde/${kunde?._id}`)}>{kunde?.virksomhed ? kunde?.virksomhed : kunde?.navn}</b>
                                 {(!kunde?.CVR && !kunde?.virksomhed) ? <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>Privatkunde</p> : <p className={ÅbenOpgaveCSS.privatEllerErhvervskunde}>{kunde?.CVR && "CVR.: " + kunde?.CVR || <span style={{color: "#ff0000cc", display: "flex", alignItems: "center", gap: "2px"}}><CircleAlert size="12px" color="#ff0000cc" /> CVR-nummer ikke oplyst</span>} • Erhvervskunde</p>}
-                                {user.isAdmin && <button className={ÅbenOpgaveCSS.redigerKundeButtonMobile} onClick={() => setRedigerKundeModal(true)}>Rediger</button>}
+                                {user.isAdmin && <div className={ÅbenOpgaveCSS.opgavestatusContainerMobile}>
+                                    <PopUpMenu actions={[
+                                        { icon: <Edit />, label: 'Rediger kundeinfo', onClick: () => setRedigerKundeModal(true) },
+                                        { icon: <ArrowRightToLine />, label: 'Gå til kunde', onClick: () => navigate(`/kunde/${kunde?._id}`) }
+                                    ]} />
+                                </div>}
                             </div>
                             
                             <p className={ÅbenOpgaveCSS.adresseTekst}>{kunde?.adresse}, {kunde?.postnummerOgBy}</p>
@@ -1505,7 +1510,6 @@ const ÅbenOpgave = () => {
                         setUpdateOpgave={setUpdateOpgave}
                         />
                 </div>
-                {user.isAdmin && console.log(opgave)}
                 <div className={ÅbenOpgaveCSS.posteringer}>
                     <div className={ÅbenOpgaveCSS.headerSwitcherDiv}>
                         <b className={ÅbenOpgaveCSS.prefix}>Posteringer</b>
@@ -1524,7 +1528,7 @@ const ÅbenOpgave = () => {
                         })}
                     </div>
                     {(færdiggjort || opgave.opgaveAfsluttet) ? null : <button onClick={() => setOpenModal(true)} className={ÅbenOpgaveCSS.tilføjPosteringButton}>+ Ny postering</button>}
-                    <AddPostering trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave} posteringer={posteringer}/>
+                    <AddPosteringV2 trigger={openModal} setTrigger={setOpenModal} opgaveID={opgaveID} nuværendeAnsvarlige={nuværendeAnsvarlige} setNuværendeAnsvarlige={setNuværendeAnsvarlige} opgave={opgave} posteringer={posteringer}/>
                     <OpgaveStatus user={user} opgave={opgave} posteringer={posteringer} kunde={kunde} færdiggjort={færdiggjort} opgaveAfsluttet={opgaveAfsluttet} visInklMoms={visInklMoms} setTvingAfslutOpgaveModal={setTvingAfslutOpgaveModal} åbnForÆndringer={åbnForÆndringer} setUpdateOpgave={setUpdateOpgave} updateOpgave={updateOpgave} setOpenVælgMobilePayBetalingsmetodeModal={setOpenVælgMobilePayBetalingsmetodeModal} setOpenBetalViaFakturaModal={setOpenBetalViaFakturaModal} setOpenBetalViaMobilePayAnmodningModal={setOpenBetalViaMobilePayAnmodningModal} setOpenBetalViaMobilePayScanQRModal={setOpenBetalViaMobilePayScanQRModal}/>
                     {!kunde.virksomhed && !kunde.CVR && <OpretRegningModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretRegningModal={åbnOpretRegningModal} setÅbnOpretRegningModal={setÅbnOpretRegningModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} isEnglish={isEnglish} />}
                     {(kunde.virksomhed || kunde.CVR) && <OpretFakturaModal user={user} opgave={opgave} setOpgave={setOpgave} opgaveID={opgaveID} kunde={kunde} posteringer={posteringer} setOpgaveAfsluttet={setOpgaveAfsluttet} åbnOpretFakturaModal={åbnOpretFakturaModal} setÅbnOpretFakturaModal={setÅbnOpretFakturaModal} vilBetaleMedMobilePay={vilBetaleMedMobilePay} setVilBetaleMedMobilePay={setVilBetaleMedMobilePay} opgaveLøstTilfredsstillende={opgaveLøstTilfredsstillende} setOpgaveLøstTilfredsstillende={setOpgaveLøstTilfredsstillende} allePosteringerUdfyldt={allePosteringerUdfyldt} setAllePosteringerUdfyldt={setAllePosteringerUdfyldt} useBetalMedFaktura={useBetalMedFaktura} totalFaktura={beregn.totalPris(posteringer, 2, false)?.beløb} setRedigerKundeModal={setRedigerKundeModal} redigerKundeModal={redigerKundeModal} isEnglish={isEnglish} />}

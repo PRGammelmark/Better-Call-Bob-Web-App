@@ -9,7 +9,7 @@ import PlusOptions from '../modals/plusOptions/PlusOptions.jsx'
 import TilføjLedighed from '../modals/tilføjLedighed/TilføjLedighed.jsx'
 import UploadDokumentModal from '../modals/UploadDokumentModal.jsx'
 import AddBesøg from '../modals/AddBesøg.jsx'
-import AddPostering from '../modals/AddPostering.jsx'
+import AddPosteringV2 from '../modals/AddPosteringV2'
 
 const Bottombar = () => {
 
@@ -79,7 +79,7 @@ const Bottombar = () => {
     <TilføjLedighed trigger={showTilføjLedighed} setTrigger={setShowTilføjLedighed}/>
     <UploadDokumentModal trigger={showUploadDokumentModal} setTrigger={setShowUploadDokumentModal}/>
     <AddBesøg trigger={showAddBesøgModal} setTrigger={setShowAddBesøgModal}/>
-    <AddPostering trigger={showAddPosteringModal} setTrigger={setShowAddPosteringModal}/>
+    <AddPosteringV2 trigger={showAddPosteringModal} setTrigger={setShowAddPosteringModal}/>
     </>
   )
 }

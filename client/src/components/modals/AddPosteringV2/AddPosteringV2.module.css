@@ -1,0 +1,3073 @@
+/* AddPosteringV2.module.css */
+
+/* Header section */
+.headerRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e5e5;
+}
+
+/* Dato button */
+.datePickerWrapper {
+    position: relative;
+}
+
+.headerButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #222222;
+    transition: all 0.2s ease;
+}
+
+.headerButton:hover {
+    background: #e8e8e8;
+    border-color: #d0d0d0;
+}
+
+/* Medarbejder button */
+.medarbejderWrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.medarbejderButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 6px;
+    background: #f5f5f5;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #222222;
+    transition: all 0.2s ease;
+}
+
+.medarbejderButton:not(:disabled) {
+    cursor: pointer;
+}
+
+.medarbejderButton:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+.medarbejderButton:not(:disabled):hover {
+    background: #e8e8e8;
+    border-color: #d0d0d0;
+}
+
+/* Dropdown */
+.dropdown {
+    position: absolute;
+    top: 100%;
+    margin-top: 8px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 8px;
+    min-width: 200px;
+    z-index: 1000;
+    max-height: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdownLeft {
+    left: 0;
+}
+
+.dropdownRight {
+    right: 0;
+}
+
+.datePickerDropdown {
+    padding: 10px;
+}
+
+/* Date input in dropdown */
+.dateInput {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+}
+
+/* Hidden date input for direct calendar picker */
+.hiddenDateInput {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Søgefelt */
+.searchFieldWrapper {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 10;
+    padding-bottom: 4px;
+    margin-bottom: 4px;
+}
+
+.searchFieldInner {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 10px;
+    color: #888;
+    pointer-events: none;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 8px 8px 32px;
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.searchInput:focus {
+    border-color: #59bf1a;
+}
+
+/* Medarbejder liste */
+.medarbejderList {
+    overflow-y: auto;
+    max-height: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.medarbejderItem {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    background: transparent;
+    transition: background 0.15s ease;
+}
+
+.medarbejderItem:hover {
+    background: #f0f0f0;
+}
+
+.medarbejderItemSelected {
+    background: rgba(89, 191, 26, 0.15);
+}
+
+.medarbejderItemSelected:hover {
+    background: rgba(89, 191, 26, 0.15);
+}
+
+/* Avatar */
+.avatarSmall {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatarMedium {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.avatarInitials {
+    border-radius: 50%;
+    background: #ebf5de;
+    border: 1px solid #c7e9b9;
+    color: #3c5a3f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: OmnesBold;
+}
+
+.avatarInitialsSmall {
+    width: 24px;
+    height: 24px;
+    font-size: 0.7rem;
+}
+
+.avatarInitialsMedium {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
+}
+
+/* Modal heading */
+.modalHeading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* OBS tekst */
+.obsTekst {
+    font-size: 0.7rem;
+    color: #FF0000;
+    margin-top: -15px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+}
+
+/* Timer sektion */
+.timerSektionWrapper {
+    animation: fadeIn 0.3s ease-out;
+    margin-bottom: 20px;
+}
+
+.buttonRow {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.flexButton {
+    flex: 1;
+}
+
+/* Section styling */
+.section {
+    margin-bottom: 32px;
+    position: relative;
+}
+
+.section:last-child {
+    margin-bottom: 0;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 0;
+    position: relative;
+    background: none;
+    width: fit-content;
+}
+
+.sectionHeader svg {
+    color: #59bf1a;
+}
+
+.sectionTitle {
+    font-family: OmnesBold;
+    font-size: 1rem;
+    color: #3c5a3f;
+    margin: 0;
+}
+
+/* Timer/Tillæg felter */
+.timerTillægFelter {
+    position: relative;
+    min-height: 150px;
+    padding: 16px;
+    background: #f9f9f9;
+    border-radius: 10px;
+    border: 1px dashed #e0e0e0;
+    margin-bottom: 16px;
+}
+
+.emptyStateText {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Add form */
+.addForm {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Horizontal add form */
+.addFormHorizontal {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    background: #f9f9f9;
+    /* padding: 12px; */
+    border-radius: 10px;
+    margin-bottom: 8px;
+    animation: fadeIn 0.3s ease-out;
+    flex-wrap: nowrap;
+    overflow: visible;
+    width: calc(100% - 16px);
+    max-width: 100%;
+}
+
+/* Form field */
+.formField {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 120px;
+}
+
+.formFieldSmall {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 20%;
+    min-width: 0;
+}
+
+.formFieldRabat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 20%;
+    min-width: 0;
+}
+
+.formFieldRabatEnhed {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 0 0 10%;
+    min-width: 0;
+}
+
+.formLabel {
+    font-family: Omnes;
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.formInput {
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    background: white;
+    transition: border-color 0.2s ease;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.formFieldSmall .formInput,
+.formFieldRabat .formInput {
+    padding: 10px 6px;
+    font-size: 0.85rem;
+    text-align: center;
+}
+
+.formInput:focus {
+    outline: none;
+    border-color: #59bf1a;
+}
+
+.formInputError {
+    border-color: #ef4444 !important;
+}
+
+.formInputError:focus {
+    border-color: #dc2626 !important;
+}
+
+.formFieldError {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    color: #ef4444;
+    margin-top: 4px;
+    display: block;
+}
+
+/* Timetype selector */
+.timetypeSelectorWrapper {
+    position: relative;
+    flex: 0 0 60%;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.timetypeSelectorButton {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    text-align: left;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.timetypeSelectorButton:hover {
+    border-color: #59bf1a;
+}
+
+.timetypeSelectorButton svg {
+    margin-left: auto;
+    color: #888;
+}
+
+.timetypeColorDot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.timetypeNumber {
+    font-family: OmnesBold;
+    font-size: 0.8rem;
+    color: #555;
+    min-width: 18px;
+}
+
+.timetypeName {
+    flex: 1;
+    color: #222;
+    font-size: 0.85rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.timetypeDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.timetypeOption {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    text-align: left;
+}
+
+.timetypeOption:hover {
+    background: #f5f5f5;
+}
+
+.timetypeOptionSelected {
+    background: rgba(89, 191, 26, 0.1);
+}
+
+.timetypeOptionSelected:hover {
+    background: rgba(89, 191, 26, 0.15);
+}
+
+
+.rabatEnhedSelect {
+    padding: 10px 6px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    background: white;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    text-align: center;
+    height: 42px;
+    box-sizing: border-box;
+}
+
+.rabatEnhedSelect:focus {
+    outline: none;
+    border-color: #59bf1a;
+}
+
+/* Tilføj rabat knap */
+.tilføjRabatKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    background: transparent;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    align-self: flex-end;
+    flex: 0 0 20%;
+    min-width: 0;
+}
+
+.tilføjRabatKnap:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+/* Timer-række (tilføjede timer) */
+.timerRække {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 14px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.timerRække:hover {
+    border-color: #59bf1a;
+    background: rgba(89, 191, 26, 0.02);
+}
+
+.timerRækkeActive {
+    border-color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    margin-bottom: 0;
+}
+
+.timerRækkeTimetype {
+    flex: 0 0 60%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.timerRækkeNavn {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #222;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.timerRækkeAntal {
+    flex: 0 0 20%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.timerRækkeRabat {
+    flex: 0 0 20%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    justify-content: center;
+}
+
+.timerRækkeVærdi {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    color: #222;
+}
+
+.timerRækkeEnhed {
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.timerRækkeIngenRabat {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+/* Timer-række layout */
+.timerRækkeHoved {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    min-width: 0;
+}
+
+.timerRækkeTillaeg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+    width: 100%;
+}
+
+.timerRækkeTillaegBadge {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+/* Tillæg sektion */
+.tillaegSektion {
+    margin-top: 8px;
+    position: relative;
+}
+
+.tillaegHeader {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tilføjTillaegKnap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tilføjTillaegKnap:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.chevronRotated {
+    transform: rotate(180deg);
+    transition: transform 0.2s ease;
+}
+
+.valgteTillaegBadges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.tillaegBadge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 16px;
+}
+
+.tillaegBadgeRemove {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    border-radius: 50%;
+    padding: 2px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tillaegBadgeRemove:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.tillaegDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-width: 350px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    margin-top: 6px;
+    max-height: 250px;
+    overflow-y: auto;
+    animation: dropdownFadeIn 0.2s ease-out;
+}
+
+.tillaegOption {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 14px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+}
+
+.tillaegOption:last-child {
+    border-bottom: none;
+}
+
+.tillaegOption:hover {
+    background: #f9f9f9;
+}
+
+.tillaegOptionSelected {
+    background: rgba(89, 191, 26, 0.08);
+}
+
+.tillaegOptionSelected:hover {
+    background: rgba(89, 191, 26, 0.12);
+}
+
+.tillaegColorDot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.tillaegNavn {
+    flex: 1;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #222;
+}
+
+.tillaegProcent {
+    font-family: OmnesBold;
+    font-size: 0.85rem;
+    color: #59bf1a;
+}
+
+.tillaegCheck {
+    color: #59bf1a;
+    flex-shrink: 0;
+}
+
+.tillaegEmpty {
+    font-family: Omnes;
+    font-size: 0.85rem;
+    color: #888;
+    text-align: center;
+    padding: 16px;
+    margin: 0;
+}
+
+/* Udlæg styling */
+.udlægListe {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.udlægKort {
+    display: flex;
+    gap: 16px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+}
+
+.udlægKort:hover {
+    border-color: #d0d0d0;
+}
+
+.udlægKvitteringSektion {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+}
+
+.udlægKvitteringLoading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.udlægKvitteringPreview {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.udlægKvitteringPreview:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.udlægKvitteringPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.udlægKvitteringUpload {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #f9f9f9;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #888;
+}
+
+.udlægKvitteringUpload:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.udlægKvitteringUpload span {
+    font-family: Omnes;
+    font-size: 0.65rem;
+    text-align: center;
+}
+
+.udlægKvitteringUpload input {
+    display: none;
+}
+
+.udlægIndhold {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.udlægFelt {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.udlægFeltRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.udlægFeltSmall {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    max-width: 150px;
+}
+
+.udlægSletKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.udlægSletKnap:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.udlægHjælpetekst {
+    font-family: Omnes;
+    font-size: 0.7rem;
+    color: #999;
+    margin: 0;
+    font-style: italic;
+}
+
+/* Materialer styling */
+.materialeListe {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 20px;
+}
+
+.materialeKort {
+    display: flex;
+    gap: 16px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 16px;
+    transition: all 0.2s ease;
+}
+
+.materialeKort:hover {
+    border-color: #d0d0d0;
+}
+
+.materialeKvitteringSektion {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+}
+
+.materialeKvitteringLoading {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border-radius: 8px;
+}
+
+.materialeKvitteringPreview,
+.materialeBilledePreview {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: flex-start;
+}
+
+.materialeKvitteringPreview:hover,
+.materialeBilledePreview:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+}
+
+.materialeKvitteringPreview img,
+.materialeBilledePreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: top;
+}
+
+.materialeKvitteringUpload {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: #f9f9f9;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #888;
+}
+
+.materialeKvitteringUpload:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.materialeKvitteringUpload span {
+    font-family: Omnes;
+    font-size: 0.65rem;
+    text-align: center;
+}
+
+.materialeKvitteringUpload input {
+    display: none;
+}
+
+.materialePlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #59bf1a 0%, #4a9916 100%);
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.materialeIndhold {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    min-width: 0;
+}
+
+.materialeFeltRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 10px;
+}
+
+.materialeFeltXSmall {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 0 0 80px;
+}
+
+.materialeFeltSmall {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    max-width: 140px;
+}
+
+.materialeFeltMedium {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 2;
+}
+
+.materialeUdlaegSwitch {
+    padding: 8px 0;
+}
+
+.switchContainer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    min-height: 44px;
+}
+
+.switchContainer input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 44px;
+    height: 44px;
+    cursor: pointer;
+    z-index: 10;
+    margin: 0;
+}
+
+.switchSlider {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    background-color: #ccc;
+    border-radius: 24px;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;
+}
+
+.switchSlider::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+}
+
+.switchContainer input[type="checkbox"]:checked + .switchSlider {
+    background-color: #59bf1a;
+}
+
+.switchContainer input[type="checkbox"]:checked + .switchSlider::before {
+    transform: translateX(20px);
+}
+
+.switchLabel {
+    font-family: Omnes;
+    font-size: 0.85rem;
+    color: #333;
+}
+
+.materialeActions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.materialeSletKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeSletKnap:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+/* Kompakt materiale kort */
+.materialeKortKompakt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 12px;
+    transition: all 0.2s ease;
+}
+
+.materialeKortKompakt:hover {
+    border-color: #d0d0d0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.materialeKvitteringSektionKompakt {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+}
+
+.materialeBilledePreviewKompakt,
+.materialeKvitteringPreviewKompakt {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeBilledePreviewKompakt:hover,
+.materialeKvitteringPreviewKompakt:hover {
+    opacity: 0.9;
+    transform: scale(1.05);
+}
+
+.materialeBilledePreviewKompakt img,
+.materialeKvitteringPreviewKompakt img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.materialePlaceholderKompakt {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #59bf1a 0%, #4a9916 100%);
+    border-radius: 6px;
+    font-family: Omnes;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.materialeIndholdKompakt {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.materialeHovedInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.materialeVarenummerText {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #666;
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.materialeBeskrivelseText {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #222;
+}
+
+.materialeDetaljer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.materialeDetaljeItem {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.materialeUdlaegBadge {
+    font-family: Omnes;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+.materialeActionsKompakt {
+    position: relative;
+    display: flex;
+    gap: 6px;
+}
+
+.materialeMenuKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeMenuKnap:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+    color: #333;
+}
+
+.materialePopupMenu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 4px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    min-width: 140px;
+    overflow: hidden;
+}
+
+.materialePopupMenuItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 14px;
+    background: transparent;
+    border: none;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-align: left;
+}
+
+.materialePopupMenuItem:hover {
+    background: #f5f5f5;
+}
+
+.materialePopupMenuItemDanger {
+    color: #ef4444;
+}
+
+.materialePopupMenuItemDanger:hover {
+    background: #fef2f2;
+}
+
+.materialeRedigerKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeRedigerKnap:hover {
+    background: #59bf1a;
+    border-color: #59bf1a;
+    color: white;
+}
+
+.materialeSletKnap {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+}
+
+/* Materiale edit actions */
+.materialeEditActions {
+    display: flex;
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #e8e8e8;
+}
+
+.materialeAnnullerKnap,
+.materialeGemKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeAnnullerKnap {
+    flex: 1;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    color: #666;
+}
+
+.materialeAnnullerKnap:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+.materialeGemKnap {
+    flex: 1;
+    background: #59bf1a;
+    border: 1px solid #59bf1a;
+    color: white;
+}
+
+.materialeGemKnap:hover {
+    background: #4a9916;
+    border-color: #4a9916;
+}
+
+/* Kvittering upload i manuel formular */
+.manuelMaterialeKvitteringUpload {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kvitteringPreviewWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.kvitteringPreviewContainer {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #e8e8e8;
+}
+
+.kvitteringPreviewImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.kvitteringSletKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 6px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    width: fit-content;
+}
+
+.kvitteringSletKnap:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+/* Edit mode kvittering styling */
+.materialeKvitteringSektionEdit {
+    flex-shrink: 0;
+    width: 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.materialeKvitteringEditWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.kvitteringSletKnapEdit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 4px 6px;
+    background: transparent;
+    border: 1px solid #e8e8e8;
+    border-radius: 4px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: Omnes;
+    font-size: 0.7rem;
+    width: 100%;
+}
+
+.kvitteringSletKnapEdit:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+    color: white;
+}
+
+.kvitteringUploadLabel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #f9f9f9;
+    border: 2px dashed #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #888;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    margin-bottom: 12px;
+}
+
+.kvitteringUploadLabel:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.kvitteringUploadLabel input {
+    display: none;
+}
+
+/* Vare tilføjet infoboks */
+.vareTilføjetInfo {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    background: #000000c6;
+    color: #ffffff;
+    padding: 12px 16px;
+    font-family: Omnes;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+    z-index: 10;
+    border-radius: 8px;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(25%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.vareTilføjetInfoVisible {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.vareTilføjetTimer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 0 0 8px 8px;
+    width: 100%;
+    transition: none;
+}
+
+.vareTilføjetTimerActive {
+    width: 0;
+    transition: width 3s linear;
+}
+
+/* Materiale søgning */
+.materialeSøgningContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.materialeSøgningWrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 10px;
+    padding: 10px 14px;
+    flex: 1;
+    min-width: 0;
+    height: 42px;
+    box-sizing: border-box;
+    transition: flex 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.materialeSøgningFokuseret .materialeSøgningWrapper {
+    flex: 1 0 100%;
+}
+
+.materialeSøgningIcon {
+    color: #888;
+    flex-shrink: 0;
+}
+
+.materialeSøgningInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #222;
+    background: transparent;
+}
+
+.materialeSøgningInput::placeholder {
+    color: #999;
+}
+
+.materialeSøgningClear {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.materialeSøgningClear:hover {
+    background: #f0f0f0;
+    color: #222;
+}
+
+.materialeTilføjManueltKnap {
+    padding: 10px 20px;
+    background: #59bf1a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    opacity: 1;
+    max-width: 200px;
+    overflow: hidden;
+    transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                background 0.2s ease;
+}
+
+.materialeSøgningFokuseret .materialeTilføjManueltKnap {
+    opacity: 0;
+    max-width: 0;
+    padding: 10px 0;
+    pointer-events: none;
+}
+
+.materialeTilføjManueltKnap:hover {
+    background: #4da315;
+}
+
+/* Søgeresultater */
+.materialeSøgeresultater {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Kompakt søgeresultat kort */
+.materialeVareKortKompakt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.materialeVareKortKompakt:hover {
+    border-color: #59bf1a;
+    box-shadow: 0 2px 6px rgba(89, 191, 26, 0.15);
+}
+
+.materialeVareBilledeWrapper {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+}
+
+.materialeVareBillede {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 6px;
+}
+
+.materialeVarePlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #59bf1a 0%, #4a9916 100%);
+    border-radius: 6px;
+    font-family: Omnes;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+}
+
+.materialeVareInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+}
+
+.materialeVareHovedInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.materialeVareVarenummer {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #666;
+    background: #f5f5f5;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+
+.materialeVareBeskrivelse {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #222;
+}
+
+.materialeVareDetaljer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.materialeVareDetalje {
+    font-family: Omnes;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+/* Legacy styling - kan fjernes senere */
+.materialeVareNavn {
+    font-family: Omnes;
+    font-size: 0.85rem;
+    color: #222;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.materialeVarenummer {
+    font-family: OmnesBold;
+    font-size: 0.75rem;
+    color: #888;
+}
+
+.materialeVarePris {
+    font-family: OmnesBold;
+    font-size: 0.9rem;
+    color: #59bf1a;
+}
+
+/* Empty state */
+.materialeEmptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+}
+
+.materialeEmptyIcon {
+    color: #ccc;
+    margin-bottom: 16px;
+}
+
+/* Manuel materiale formular */
+.manuelMaterialeFormular {
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.formFieldMedium {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+}
+
+.tilføjSalgsprisKnap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 14px;
+    background: transparent;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 42px;
+    box-sizing: border-box;
+    white-space: nowrap;
+    align-self: flex-end;
+    flex: 0 0 20%;
+    min-width: 0;
+}
+
+.tilføjSalgsprisKnap:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.manuelMaterialeBilledeUpload {
+    margin-top: 12px;
+    margin-bottom: 12px;
+}
+
+.manuelMaterialeBilledeLabel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    background: white;
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #888;
+}
+
+.manuelMaterialeBilledeLabel:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    background: rgba(89, 191, 26, 0.05);
+}
+
+.manuelMaterialeBilledeLabel span {
+    font-family: Omnes;
+    font-size: 0.85rem;
+}
+
+.manuelMaterialeBilledeLabel input {
+    display: none;
+}
+
+.manuelMaterialeBilledePreview {
+    position: relative;
+    width: 100%;
+    max-width: 200px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.manuelMaterialeBilledePreview img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.manuelMaterialeBilledeFjern {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: rgba(0, 0, 0, 0.6);
+    border: none;
+    border-radius: 50%;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.manuelMaterialeBilledeFjern:hover {
+    background: rgba(239, 68, 68, 0.9);
+}
+
+@media screen and (max-width: 500px) {
+    .udlægKort {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .udlægKvitteringSektion {
+        width: 100%;
+        height: 120px;
+    }
+
+    .udlægFeltSmall {
+        max-width: none;
+    }
+
+    .materialeSøgningContainer {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .materialeSøgningFokuseret {
+        flex-direction: column;
+    }
+
+    .materialeTilføjManueltKnap {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .manuelMaterialeFormular {
+        padding: 12px;
+    }
+
+    .manuelMaterialeFormular .addFormHorizontal {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .manuelMaterialeFormular .formFieldSmall {
+        flex: 1 1 calc(50% - 4px);
+        max-width: calc(50% - 4px);
+        min-width: 0;
+    }
+
+    .manuelMaterialeFormular .formFieldMedium {
+        flex: 1 1 100%;
+        order: -1;
+    }
+
+    .manuelMaterialeFormular .tilføjSalgsprisKnap {
+        flex: 1 1 calc(50% - 4px);
+        max-width: calc(50% - 4px);
+    }
+
+    .addFormHorizontal {
+        flex-wrap: nowrap;
+    }
+
+    .formFieldMedium {
+        flex: 1 1 100%;
+    }
+
+    /* Materiale kort mobil optimering */
+    .materialeKort {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .materialeKvitteringSektionEdit {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        gap: 10px;
+    }
+
+    .materialeKvitteringEditWrapper {
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .materialeKvitteringPreview,
+    .materialeBilledePreview {
+        width: 80px;
+        height: 80px;
+        flex-shrink: 0;
+    }
+
+    .materialeKvitteringUpload {
+        width: auto;
+        height: auto;
+        padding: 12px 16px;
+        flex-direction: row;
+    }
+
+    .materialeFeltRow {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .materialeFeltXSmall {
+        flex: 0 0 calc(33% - 6px);
+    }
+
+    .materialeFeltSmall {
+        flex: 1 1 calc(33% - 6px);
+        max-width: none;
+    }
+
+    .materialeFeltMedium {
+        flex: 1 1 100%;
+    }
+
+    /* Materialer søgeresultater mobil */
+    .materialeVareKortKompakt {
+        padding: 10px;
+    }
+
+    .materialeVareBilledeWrapper {
+        width: 40px;
+        height: 40px;
+    }
+
+    .materialeVareVarenummer {
+        font-size: 0.65rem;
+    }
+
+    .materialeVareBeskrivelse {
+        font-size: 0.8rem;
+    }
+
+    .materialeVareDetaljer {
+        gap: 8px;
+    }
+
+    .materialeVareDetalje {
+        font-size: 0.7rem;
+    }
+
+    /* Kompakt kort mobil */
+    .materialeKortKompakt {
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .materialeKvitteringSektionKompakt {
+        width: 40px;
+        height: 40px;
+    }
+
+    .materialeBeskrivelseText {
+        font-size: 0.8rem;
+    }
+
+    .materialeDetaljeItem {
+        font-size: 0.7rem;
+    }
+}
+
+/* Form actions */
+.formActions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    align-items: flex-end;
+}
+
+.formActions button {
+    white-space: nowrap;
+}
+
+/* Form actions icons - under formularen til højre */
+.formActionsIcons {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-bottom: 12px;
+    /* padding-right: 4px; */
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #222;
+}
+
+.iconButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.iconButtonPrimary {
+    color: #59bf1a;
+    border-color: #59bf1a;
+}
+
+.iconButtonPrimary:hover:not(:disabled) {
+    background: #59bf1a;
+    color: white;
+    border-color: #59bf1a;
+}
+
+.iconButtonSecondary {
+    color: #888;
+    border-color: #e0e0e0;
+}
+
+.iconButtonSecondary:hover:not(:disabled) {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+.iconButtonDelete {
+    color: #ef4444;
+    border-color: #ef4444;
+}
+
+.iconButtonDelete:hover:not(:disabled) {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+.tillaegTypeValg {
+    background: #f9f9f9;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+    margin-top: 12px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Add button wrapper - positioneret nede i højre hjørne */
+.addButtonWrapper {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+/* Lille knap til at tilføje timer/tillæg */
+.addButtonSmall {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    white-space: nowrap;
+}
+
+/* Primary variant styling */
+.addButtonSmallPrimary {
+    background: #3c5a3f;
+    color: #fff;
+    font-family: "OmnesBold";
+}
+
+.addButtonSmallPrimary:hover {
+    background: #59bf1a;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+/* Secondary variant styling */
+.addButtonSmallSecondary {
+    background-color: #e0e0e0;
+    color: #222222;
+    border: 1px solid #22222200;
+}
+
+.addButtonSmallSecondary:hover {
+    border: 1px solid #222222;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transform: translateY(-1px);
+}
+
+.addButtonSmall:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.addButtonSmall svg {
+    stroke-width: 2;
+    height: 14px;
+    width: 14px;
+}
+
+/* Add buttons */
+.addButtonPrimary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 16px;
+}
+
+.addButtonSecondary {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.addButtonsGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 16px;
+}
+
+/* Timer/Tillæg cards */
+.posteringCard {
+    margin-bottom: 15px;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: white;
+    transition: box-shadow 0.2s ease;
+}
+
+.posteringCard:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.posteringCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.cardTitle {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+
+.cardTitleText {
+    font-family: OmnesBold;
+    font-size: 0.95rem;
+    color: #3c5a3f;
+}
+
+.cardSubtitle {
+    font-family: Omnes;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.removeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    opacity: 0.6;
+    transition: opacity 0.2s ease;
+    flex-shrink: 0;
+}
+
+.removeButton:hover {
+    opacity: 1;
+}
+
+.removeIcon {
+    width: 18px;
+    height: 18px;
+}
+
+/* Button spacing */
+.addButton {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+/* Kvittering billede */
+.kvitteringImg {
+    cursor: pointer;
+}
+
+/* Udlæg OBS tekst */
+.udlægObsTekst {
+    font-size: 0.7rem;
+    color: #FF0000;
+    margin-top: 5px;
+    margin-left: 10px;
+}
+
+/* Label no wrap */
+.noWrap {
+    white-space: nowrap;
+}
+
+/* Disabled button */
+.disabledButton {
+    background: #a0a0a0 !important;
+}
+
+/* Keyframes */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Tabs */
+.tabsContainer {
+    display: flex;
+    gap: 0;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #e5e5e5;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.tabsContainer::-webkit-scrollbar {
+    display: none;
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #888;
+    font-family: Omnes;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    position: relative;
+    flex: 1;
+    white-space: nowrap;
+}
+
+.tab::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.tab:hover {
+    color: #555;
+}
+
+.tab svg {
+    stroke-width: 1.5;
+    transition: all 0.2s ease;
+}
+
+.tabActive {
+    color: #3c5a3f;
+}
+
+.tabActive svg {
+    color: #59bf1a;
+    stroke-width: 2;
+}
+
+.tabActive::after {
+    background: #59bf1a;
+}
+
+.tabContent {
+    animation: fadeIn 0.2s ease-out;
+    min-height: 300px;
+    position: relative;
+}
+
+/* Upload sektion */
+.uploadHeading {
+    font-family: OmnesBold;
+    font-size: 0.95rem;
+    margin-top: 24px;
+    margin-bottom: 12px;
+    color: #3c5a3f;
+}
+
+.billederDiv {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.uploadetBillede {
+    border: 1px solid #c9c9c9;
+    color: grey;
+    border-radius: 10px;
+    width: 50px;
+    height: 70px;
+    padding: 0;
+    position: relative;
+    overflow: visible;
+    cursor: pointer;
+}
+
+.imagePreview {
+    height: 100%;
+    width: 48px;
+    object-fit: cover;
+    border-radius: 9px;
+}
+
+.playVideoPlaceholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s ease;
+    flex-direction: column;
+    border-radius: 9px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.playVideoPlaceholder:hover {
+    color: #59bf1a;
+}
+
+.deleteButton {
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+    z-index: 10;
+    height: 24px;
+    width: 24px;
+    border: 1px solid transparent;
+    background: #ffbbbb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    bottom: -12px;
+    left: 12px;
+    color: #FF0000;
+    border-radius: 20px;
+    transition: 0.2s ease;
+    cursor: pointer;
+    transform: translateY(6px);
+    padding: 5px;
+}
+
+.deleteButton:hover {
+    border: 1px solid #FF0000;
+}
+
+.uploadetBillede:hover > .deleteButton {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.fileInput {
+    border: 1px dashed #3c5a4080;
+    color: grey;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    font-family: Omnes;
+    font-size: 0.9rem;
+    text-align: center;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    width: 50px;
+    height: 70px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    justify-content: center;
+}
+
+.fileInput:hover {
+    border-color: #59bf1a;
+    color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.2);
+}
+
+.fileInput:focus {
+    border-color: #59bf1a;
+    box-shadow: 0 0 10px rgba(89, 191, 26, 0.4);
+    outline: none;
+}
+
+.fileInput.dragover {
+    border-color: #59bf1a;
+    background-color: #e6ffe6;
+}
+
+.spinnerDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 50px;
+}
+
+@media screen and (max-width: 500px) {
+    .tab {
+        padding: 10px 8px;
+        font-size: 0.65rem;
+        min-width: 0;
+    }
+    
+    .tab span {
+        white-space: nowrap;
+    }
+    
+    .tab svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .spinnerDiv {
+        width: calc(20% - 10px);
+        min-width: calc(20% - 10px);
+        max-width: calc(20% - 10px);
+    }
+
+    .billederDiv {
+        gap: 8px;
+    }
+
+    .uploadetBillede {
+        width: calc(20% - 10px);
+        min-width: calc(20% - 10px);
+        max-width: calc(20% - 10px);
+    }
+
+    .uploadetBillede:hover > .deleteButton {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .imagePreview {
+        width: 100%;
+    }
+
+    .fileInput {
+        width: calc(20% - 10px);
+        min-width: calc(20% - 10px);
+        max-width: calc(20% - 10px);
+    }
+
+    /* Mobile improvements for Timer & Tillæg section */
+    .section {
+        margin-bottom: 24px;
+    }
+
+    .sectionHeader {
+        margin-bottom: 8px;
+        padding: 0;
+        background: none;
+    }
+
+    .sectionTitle {
+        font-size: 0.9rem;
+    }
+
+    .timerTillægFelter {
+        padding: 12px;
+        min-height: 100px;
+    }
+
+    .addForm {
+        padding: 12px;
+    }
+
+    .addFormHorizontal {
+        /* padding: 10px; */
+        gap: 6px;
+        width: calc(100% - 12px);
+    }
+
+    .timetypeSelectorWrapper {
+        flex: 1 1 40%;
+        min-width: 0;
+    }
+
+    .formFieldSmall,
+    .formFieldRabat {
+        flex: 0 0 auto;
+        min-width: 60px;
+        max-width: 70px;
+    }
+
+    .tilføjRabatKnap {
+        flex: 0 0 auto;
+        min-width: 60px;
+        font-size: 0.7rem;
+        padding: 8px 6px;
+    }
+
+    .formActionsIcons {
+        justify-content: flex-end;
+        margin-bottom: 12px;
+    }
+
+    .addButtonWrapper {
+        bottom: 8px;
+        right: 8px;
+    }
+
+    .addButtonSmall {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+    }
+
+    .addButtonSmall svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .posteringCard {
+        padding: 12px;
+    }
+
+    .cardTitleText {
+        font-size: 0.9rem;
+    }
+
+    .cardSubtitle {
+        font-size: 0.75rem;
+    }
+
+    .addButtonsGroup {
+        gap: 8px;
+    }
+}
+
+/* Pause starttidspunkt input */
+.pauseStarttidspunktInput {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.pauseStarttidspunktInput .formInput {
+    width: 100%;
+    max-width: 300px;
+}
+
+/* ========================================
+   KREDIT-POSTERING SEKTION
+   ======================================== */
+
+.kreditSection {
+    background: #fef3c7;
+    border: 1px solid #f59e0b;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.kreditSectionHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.kreditSectionTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #92400e;
+    margin: 0;
+}
+
+.betaBadge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: white;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    padding: 2px 8px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.kreditPosteringVælger {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.kreditLabel {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #78350f;
+    margin-bottom: 6px;
+}
+
+.kreditPosteringInput {
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px 12px;
+    cursor: pointer;
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+}
+
+.kreditPosteringInput:hover {
+    border-color: #9ca3af;
+}
+
+.kreditPosteringPlaceholder {
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.valgtKreditPostering {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 8px;
+}
+
+.valgtKreditPosteringInfo {
+    font-size: 0.85rem;
+    color: #374151;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.fjernKreditPostering {
+    background: #fee2e2;
+    border: none;
+    border-radius: 4px;
+    padding: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dc2626;
+    flex-shrink: 0;
+}
+
+.fjernKreditPostering:hover {
+    background: #fecaca;
+}
+
+.kreditPosteringDropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    margin-top: 4px;
+    max-height: 350px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.kreditSøgefelt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e5e7eb;
+    color: #9ca3af;
+}
+
+.kreditSøgefelt input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-size: 0.9rem;
+    background: transparent;
+}
+
+.kreditSøgefelt input::placeholder {
+    color: #9ca3af;
+}
+
+.kreditPosteringListe {
+    overflow-y: auto;
+    max-height: 280px;
+}
+
+.kreditPosteringItem {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.kreditPosteringItem:hover {
+    background: #f9fafb;
+}
+
+.kreditPosteringItem.selected {
+    background: #fef3c7;
+}
+
+.kreditPosteringItem:last-child {
+    border-bottom: none;
+}
+
+.kreditPosteringItemHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.kreditPosteringAvatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.kreditPosteringInitials {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.kreditPosteringNavn {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #374151;
+    flex: 1;
+}
+
+.kreditPosteringDato {
+    font-size: 0.75rem;
+    color: #9ca3af;
+}
+
+.kreditPosteringItemDetaljer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    padding-left: 32px;
+}
+
+.kreditPosteringBeskrivelse {
+    font-size: 0.8rem;
+    color: #6b7280;
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.kreditPosteringPris {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #374151;
+    flex-shrink: 0;
+}
+
+.ingenPosteringer {
+    padding: 20px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+/* Modregningsbeløb visning */
+.modregningBeløb {
+    margin-top: 16px;
+    padding: 12px;
+    background: #fef9c3;
+    border-radius: 6px;
+    border: 1px solid #fcd34d;
+}
+
+.modregningBeløbRække {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+}
+
+.modregningBeløbRække:not(:last-child) {
+    border-bottom: 1px dashed #fcd34d;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+}
+
+.modregningBeløbLabel {
+    font-size: 0.85rem;
+    color: #78350f;
+    font-weight: 500;
+}
+
+.modregningBeløbVærdi {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #dc2626;
+}
+
+/* ========================================
+   TILBUDSPRIS SEKTION
+   ======================================== */
+
+.tilbudsprisSection {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.tilbudsprisSectionTitle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 12px 0;
+}
+
+/* ========================================
+   KOMMER SNART SEKTION
+   ======================================== */
+
+.kommerSnartContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #f9fafb 0%, #f0f4f0 100%);
+    border-radius: 12px;
+    border: 1px dashed #d0d0d0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.kommerSnartIcon {
+    color: #59bf1a;
+    margin-bottom: 16px;
+    opacity: 0.6;
+}
+
+.kommerSnartTitle {
+    font-family: OmnesBold;
+    font-size: 1.2rem;
+    color: #3c5a3f;
+    margin: 0 0 8px 0;
+}
+
+.kommerSnartText {
+    font-family: Omnes;
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+    max-width: 280px;
+    line-height: 1.5;
+}

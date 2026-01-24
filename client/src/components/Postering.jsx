@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import PosteringSatserModal from './modals/PosteringSatserModal';
 import VisBilledeModal from './modals/VisBillede.jsx'
-import RedigerPostering from './modals/RedigerPostering';
+import AddPosteringV2 from './modals/AddPosteringV2';
 import RetPrissatsModal from './modals/RetPrissatsModal';
 import RetLønsatsModal from './modals/RetLønsatsModal';
 import Styles from './Postering.module.css'
@@ -51,7 +51,8 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
     // 3 = faktura sendt
 
     let posteringBetalt = 0;
-    const posteringTotalPris = postering.totalPris * 1.25;
+    // Understøt både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+    const posteringTotalPris = postering.totalPrisInklMoms ?? (postering.totalPris * 1.25);
     const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0) || 0;
     if(betalingerSum > 0) {
         if(betalingerSum < posteringTotalPris) {
@@ -181,69 +182,161 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                                 })}
                             </div>
                             <div className={Styles.posteringListe}>
-                                {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Opstart </span>
-                                        <span>{beregn.opstartHonorar(postering).formateret}</span>
-                                    </div>
+                                {/* Timeregistreringer */}
+                                {postering.timeregistrering && postering.timeregistrering.length > 0 && postering.dynamiskHonorarBeregning && (
+                                    postering.timeregistrering.map((tr, index) => {
+                                        const honorarBeløb = tr.honorar?.total || 0;
+                                        const formateretHonorar = honorarBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = tr.honorar?.rabatProcent || 0;
+                                        return (
+                                            <div key={`tr-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{tr.antal || 0} x {tr.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretHonorar}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
-                                        <span>{beregn.handymanHonorar(postering).formateret}</span>
-                                    </div>
+                                
+                                {/* Faste tillæg */}
+                                {postering.fasteTillæg && postering.fasteTillæg.length > 0 && postering.dynamiskHonorarBeregning && (
+                                    postering.fasteTillæg.map((ft, index) => {
+                                        const honorarBeløb = ft.honorar?.total || 0;
+                                        const formateretHonorar = honorarBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = ft.honorar?.rabatProcent || 0;
+                                        return (
+                                            <div key={`ft-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{ft.antal || 0} x {ft.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretHonorar}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
-                                        <span>{beregn.tømrerHonorar(postering).formateret}</span>
-                                    </div>
+                                
+                                {/* Procent tillæg */}
+                                {postering.procentTillæg && postering.procentTillæg.length > 0 && postering.dynamiskHonorarBeregning && (
+                                    postering.procentTillæg.map((pt, index) => {
+                                        const honorarBeløb = pt.honorar?.total || 0;
+                                        const formateretHonorar = honorarBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = pt.honorar?.rabatProcent || 0;
+                                        return (
+                                            <div key={`pt-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{pt.timetypeAntal || 0} x {pt.timetypeNavn} - {pt.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretHonorar}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
-                                        <span>{beregn.rådgivningHonorar(postering).formateret}</span>
-                                    </div>
+                                
+                                {/* Materialer (kun hvis medarbejderudlæg) */}
+                                {postering.materialer && postering.materialer.length > 0 && postering.dynamiskHonorarBeregning && (
+                                    postering.materialer
+                                        .filter(m => m.totalMedarbejderUdlaeg > 0)
+                                        .map((m, index) => {
+                                            const honorarBeløb = m.totalMedarbejderUdlaeg || 0;
+                                            const formateretHonorar = honorarBeløb.toLocaleString('da-DK', {
+                                                style: 'currency',
+                                                currency: 'DKK',
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2
+                                            });
+                                            return (
+                                                <div key={`mat-${index}`} className={Styles.posteringRække}>
+                                                    <span className={Styles.posteringRækkeBeskrivelse}>{m.antal || 0} x {m.beskrivelse}</span>
+                                                    <span></span>
+                                                    <span style={{textAlign: 'right'}}>{formateretHonorar}</span>
+                                                </div>
+                                            );
+                                        })
                                 )}
-                                {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Aftentillæg (+{postering.satser.aftenTillægHonorar}% pr. time) </span>
-                                        <span>{beregn.aftenTillægHonorar(postering).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.natTillæg && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Nattillæg (+{postering.satser.natTillægHonorar}% pr. time) </span>
-                                        <span>{beregn.natTillægHonorar(postering).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.trailer && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Trailer </span>
-                                        <span>{beregn.trailerHonorar(postering).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.udlæg.length > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
-                                        <span>{beregn.udlægHonorar(postering).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.rabatProcent > 0 && postering.dynamiskHonorarBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                        <span>- {beregn.rabatHonorar(postering).formateret}</span>
-                                    </div>
-                                )}
+                                
+                                {/* Fast honorar */}
                                 {!postering.dynamiskHonorarBeregning && (
                                     <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Fast honorar: </span>
-                                        <span>{beregn.fastHonorar(postering).formateret}</span>
+                                        <span className={Styles.posteringRækkeBeskrivelse}>Fast honorar:</span>
+                                        <span></span>
+                                        <span style={{textAlign: 'right'}}>{beregn.fastHonorar([postering]).formateret}</span>
                                     </div>
                                 )}
+                                
+                                {/* Legacy support - vis gamle felter kun hvis de nye arrays er tomme */}
+                                {(!postering.fasteTillæg || postering.fasteTillæg.length === 0) && (!postering.timeregistrering || postering.timeregistrering.length === 0) && (!postering.procentTillæg || postering.procentTillæg.length === 0) && (!postering.materialer || postering.materialer.length === 0) && (!postering.udlæg || postering.udlæg.length === 0) && (
+                                    <>
+                                        {postering.opstart > 0 && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Opstart </span>
+                                                <span>{beregn.opstartHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.handymanTimer > 0 && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
+                                                <span>{beregn.handymanHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.tømrerTimer > 0 && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
+                                                <span>{beregn.tømrerHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
+                                                <span>{beregn.rådgivningHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.aftenTillæg && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Aftentillæg (+{postering.satser?.aftenTillægHonorar || 0}% pr. time) </span>
+                                                <span>{beregn.aftenTillægHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.natTillæg && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Nattillæg (+{postering.satser?.natTillægHonorar || 0}% pr. time) </span>
+                                                <span>{beregn.natTillægHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.trailer && postering.dynamiskHonorarBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Trailer </span>
+                                                <span>{beregn.trailerHonorar([postering]).formateret}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                
                                 <div className={Styles.totalRække}>
                                     <b className={Styles.totalRækkeBeskrivelse}>Løn, total: </b>
-                                    <b className={Styles.totalRækkeResultat}>{beregn.totalHonorar(postering).formateret}</b>
+                                    <span></span>
+                                    <b className={Styles.totalRækkeResultat} style={{textAlign: 'right'}}>{beregn.totalHonorar([postering]).formateret}</b>
                                 </div>
                             </div>
                         </div>
@@ -283,69 +376,159 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
                                 })}
                             </div>
                             <div className={Styles.posteringListe}>
-                                {postering.opstart > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Opstart </span>
-                                        <span>{beregn.opstartPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
+                                {/* Timeregistreringer - Pris side */}
+                                {postering.timeregistrering && postering.timeregistrering.length > 0 && postering.dynamiskPrisBeregning && (
+                                    postering.timeregistrering.map((tr, index) => {
+                                        const prisBeløb = visInklMoms ? (tr.pris?.totalInklMoms || 0) : (tr.pris?.totalEksMoms || 0);
+                                        const formateretPris = prisBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = tr.pris?.rabatProcent || 0;
+                                        return (
+                                            <div key={`tr-pris-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{tr.antal || 0} x {tr.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretPris}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.handymanTimer > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
-                                        <span>{beregn.handymanPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
+                                
+                                {/* Faste tillæg - Pris side */}
+                                {postering.fasteTillæg && postering.fasteTillæg.length > 0 && postering.dynamiskPrisBeregning && (
+                                    postering.fasteTillæg.map((ft, index) => {
+                                        const prisBeløb = visInklMoms ? (ft.pris?.totalInklMoms || 0) : (ft.pris?.totalEksMoms || 0);
+                                        const formateretPris = prisBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = ft.pris?.rabatProcent || 0;
+                                        return (
+                                            <div key={`ft-pris-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{ft.antal || 0} x {ft.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretPris}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.tømrerTimer > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
-                                        <span>{beregn.tømrerPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
+                                
+                                {/* Procent tillæg - Pris side */}
+                                {postering.procentTillæg && postering.procentTillæg.length > 0 && postering.dynamiskPrisBeregning && (
+                                    postering.procentTillæg.map((pt, index) => {
+                                        const prisBeløb = visInklMoms ? (pt.pris?.totalInklMoms || 0) : (pt.pris?.totalEksMoms || 0);
+                                        const formateretPris = prisBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        const rabatProcent = pt.pris?.rabatProcent || 0;
+                                        return (
+                                            <div key={`pt-pris-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{pt.timetypeAntal || 0} x {pt.timetypeNavn} - {pt.navn}</span>
+                                                {rabatProcent > 0 && (
+                                                    <span className={Styles.posteringRækkeRabat}>-{rabatProcent}%</span>
+                                                )}
+                                                {rabatProcent === 0 && <span></span>}
+                                                <span style={{textAlign: 'right'}}>{formateretPris}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
-                                        <span>{beregn.rådgivningPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
+                                
+                                {/* Materialer - Pris side */}
+                                {postering.materialer && postering.materialer.length > 0 && postering.dynamiskPrisBeregning && (
+                                    postering.materialer.map((m, index) => {
+                                        const prisBeløb = visInklMoms ? (m.totalInklMoms || 0) : (m.totalEksMoms || 0);
+                                        const formateretPris = prisBeløb.toLocaleString('da-DK', {
+                                            style: 'currency',
+                                            currency: 'DKK',
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2
+                                        });
+                                        return (
+                                            <div key={`mat-pris-${index}`} className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{m.antal || 0} x {m.beskrivelse}</span>
+                                                <span></span>
+                                                <span style={{textAlign: 'right'}}>{formateretPris}</span>
+                                            </div>
+                                        );
+                                    })
                                 )}
-                                {postering.aftenTillæg && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Aftentillæg </span>
-                                        <span>{beregn.aftenTillægPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.natTillæg && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Nattillæg </span>
-                                        <span>{beregn.natTillægPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.trailer && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Trailer </span>
-                                        <span>{beregn.trailerPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.udlæg.length > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.udlæg.length > 0 ? postering.udlæg.length : 0} udlæg </span>
-                                        <span>{beregn.udlægPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
-                                )}
-                                {postering.rabatProcent > 0 && postering.dynamiskPrisBeregning && (
-                                    <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>{postering.rabatProcent}% rabat</span>
-                                        <span>- {beregn.rabatPris(postering, 2, visInklMoms).formateret}</span>
-                                    </div>
-                                )}
+                                
+                                {/* Fast pris */}
                                 {!postering.dynamiskPrisBeregning && (
                                     <div className={Styles.posteringRække}>
-                                        <span className={Styles.posteringRækkeBeskrivelse}>Fast pris: </span>
-                                        <span>{beregn.fastPris(postering, 2, visInklMoms).formateret}</span>
+                                        <span className={Styles.posteringRækkeBeskrivelse}>Fast pris:</span>
+                                        <span></span>
+                                        <span style={{textAlign: 'right'}}>{beregn.fastPris([postering], 2, visInklMoms).formateret}</span>
                                     </div>
                                 )}
+                                
+                                {/* Legacy support - vis gamle felter kun hvis de nye arrays er tomme */}
+                                {(!postering.fasteTillæg || postering.fasteTillæg.length === 0) && (!postering.timeregistrering || postering.timeregistrering.length === 0) && (!postering.procentTillæg || postering.procentTillæg.length === 0) && (!postering.materialer || postering.materialer.length === 0) && (!postering.udlæg || postering.udlæg.length === 0) && (
+                                    <>
+                                        {postering.opstart > 0 && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Opstart </span>
+                                                <span>{beregn.opstartPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.handymanTimer > 0 && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.handymanTimer || 0} timer (handyman) </span>
+                                                <span>{beregn.handymanPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.tømrerTimer > 0 && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.tømrerTimer || 0} timer (tømrer) </span>
+                                                <span>{beregn.tømrerPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.rådgivningOpmålingVejledning > 0 && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>{postering.rådgivningOpmålingVejledning || 0} timer (rådgivning) </span>
+                                                <span>{beregn.rådgivningPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.aftenTillæg && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Aftentillæg </span>
+                                                <span>{beregn.aftenTillægPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.natTillæg && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Nattillæg </span>
+                                                <span>{beregn.natTillægPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                        {postering.trailer && postering.dynamiskPrisBeregning && (
+                                            <div className={Styles.posteringRække}>
+                                                <span className={Styles.posteringRækkeBeskrivelse}>Trailer </span>
+                                                <span>{beregn.trailerPris([postering], 2, visInklMoms).formateret}</span>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
+                                
                                 <div className={Styles.totalRække}>
                                     <b className={Styles.totalRækkeBeskrivelse}>Pris, total: </b>
-                                    <b className={Styles.totalRækkeResultat}>{beregn.totalPris(postering, 2, visInklMoms).formateret}</b>
+                                    <span></span>
+                                    <b className={Styles.totalRækkeResultat} style={{textAlign: 'right'}}>{beregn.totalPris([postering], 2, visInklMoms).formateret}</b>
                                 </div>
                             </div>
                         </div>
@@ -358,7 +541,12 @@ const Postering = ({ postering, brugere, user, posteringer, setPosteringer, fær
             </div>
         </div>
         <VisBilledeModal trigger={kvitteringBillede} setTrigger={setKvitteringBillede}/>
-        <RedigerPostering trigger={openPosteringModalID === postering._id} setTrigger={setOpenPosteringModalID} postering={postering} refetchPostering={refetchPostering} />
+        <AddPosteringV2 
+            trigger={openPosteringModalID === postering._id} 
+            setTrigger={setOpenPosteringModalID} 
+            eksisterendePostering={postering} 
+            refetchPostering={refetchPostering} 
+        />
         <PosteringSatserModal trigger={openPosteringSatser && openPosteringSatser._id === postering._id} setTrigger={setOpenPosteringSatser} postering={postering} brugere={brugere} />
         <RetPrissatsModal trigger={openRetPrissatsModalID === postering._id} setTrigger={setOpenRetPrissatsModalID} postering={postering} refetchPostering={refetchPostering} />
         <RetLønsatsModal trigger={openRetLønsatsModalID === postering._id} setTrigger={setOpenRetLønsatsModalID} postering={postering} refetchPostering={refetchPostering}/>

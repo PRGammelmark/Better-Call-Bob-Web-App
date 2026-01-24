@@ -1,59 +1,80 @@
-// LISTE: FUNKTIONER TIL HONORAR-BEREGNINGER
-// -----------------------------------------------
-// beregnFasteHonorarer()
-// beregnOpstartHonorar()
-// beregnHandymanHonorar()
-// beregnTømrerHonorar()
-// beregnRådgivningHonorar()
-// beregnTrailerHonorar()
-// beregnAftenTillægHonorar()
-// beregnNatTillægHonorar()
-// beregnUdlægHonorar()
-// beregnRabatterHonorar()
-// beregnTotalHonorar()
+// =============================================================================
+// BEREGNINGER.JS - Opdateret til ny posteringstruktur (version 2)
+// =============================================================================
+// Posteringer bruger nu arrays: timeregistrering[], fasteTillæg[], procentTillæg[], materialer[]
+// Hver post har pre-beregnede værdier: pris.totalEksMoms, pris.momsBeløb, honorar.total
+// Posteringen har også totaler: totalPrisEksklMoms, totalMoms, totalDynamiskHonorar, etc.
+// =============================================================================
 
 // LISTE: FUNKTIONER TIL PRIS-BEREGNINGER
 // -----------------------------------------------
-// beregnFastePriser()
-// beregnOpstartPris()
-// beregnHandymanPris()
-// beregnTømrerPris()
-// beregnRådgivningPris()
-// beregnTrailerPris()
-// beregnAftenTillægPris()
-// beregnNatTillægPris()
-// beregnUdlægPris()
-// beregnRabatterPris()
-// beregnTotalPris()
+// fastPris()
+// timeregistreringPris()
+// fasteTillægPris()
+// procentTillægPris()
+// materialePris()
+// udlægPris()
+// rabatPris()
+// totalPris()
+// totalMoms()
+
+// LISTE: FUNKTIONER TIL HONORAR-BEREGNINGER
+// -----------------------------------------------
+// fastHonorar()
+// timeregistreringHonorar()
+// fasteTillægHonorar()
+// procentTillægHonorar()
+// materialeUdlæg() (medarbejders udlæg for materialer)
+// udlægHonorar()
+// rabatHonorar()
+// totalHonorar()
 
 // LISTE: FUNKTIONER TIL ANTAL-BEREGNINGER
 // -----------------------------------------------
-// beregnAntalOpstartsgebyrer()
-// beregnAntalHandymanTimer()
-// beregnAntalTømrerTimer()
-// beregnAntalRådgivningOpmålingVejledning()
-// beregnAntalTrailer()
-// beregnAntalAftenTillæg()
-// beregnAntalNatTillæg()
-// beregnAntalUdlæg()
+// antalTimeregistreringer()
+// antalFasteTillæg()
+// antalProcentTillæg()
+// antalMaterialer()
+// antalUdlæg()
 
 // LISTE: FUNKTIONER TIL BETALING-BEREGNINGER
 // -----------------------------------------------
 // totalBetalinger()
 
-export function totalBetalinger(posteringer, decimaler = 2) {
-    if (!posteringer) return;
+// LISTE: LEGACY WRAPPER-FUNKTIONER (bevaret for kompatibilitet)
+// -----------------------------------------------
+// opstartPris/Honorar, handymanPris/Honorar, tømrerPris/Honorar, 
+// rådgivningPris/Honorar, trailerPris/Honorar, aftenTillægPris/Honorar, 
+// natTillægPris/Honorar, etc.
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
+// =============================================================================
+// HJÆLPE-FUNKTIONER
+// =============================================================================
 
-    const totalBetalinger = posteringerListe.reduce((akk, nuv) => {
-        const betalinger = Array.isArray(nuv.betalinger) ? nuv.betalinger : [];
-        return akk + betalinger.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0);
-    }, 0) * 1.25;
+function lavListe(posteringer) {
+    return Array.isArray(posteringer) ? posteringer : [posteringer];
+}
 
+/**
+ * Henter total pris inkl. moms for en enkelt postering
+ * Understøtter både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+ * @param {Object} postering - Posteringen
+ * @returns {number} Total pris inkl. moms
+ */
+export function getPosteringTotalPrisInklMoms(postering) {
+    if (!postering) return 0;
+    // Ny struktur har totalPrisInklMoms direkte
+    if (postering.totalPrisInklMoms !== undefined && postering.totalPrisInklMoms !== null) {
+        return postering.totalPrisInklMoms;
+    }
+    // Gammel struktur: totalPris er eks. moms, så vi ganger med 1.25
+    return (postering.totalPris || 0) * 1.25;
+}
+
+function formaterBeløb(beløb, decimaler = 2) {
     return {
-        beløb: totalBetalinger,
-        formateret: totalBetalinger.toLocaleString('da-DK', {
+        beløb: beløb,
+        formateret: beløb.toLocaleString('da-DK', {
             style: 'currency',
             currency: 'DKK',
             minimumFractionDigits: decimaler,
@@ -62,780 +83,696 @@ export function totalBetalinger(posteringer, decimaler = 2) {
     };
 }
 
+// =============================================================================
+// FUNKTIONER TIL BETALING-BEREGNINGER
+// =============================================================================
 
-// FUNKTIONER TIL PRIS-BEREGNINGER
+export function totalBetalinger(posteringer, decimaler = 2) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-export function fastPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalFastePriser = posteringerListe.reduce((akk, nuv) => akk + (!nuv.dynamiskPrisBeregning ? nuv.fastPris : 0), 0);
+    const total = posteringerListe.reduce((akk, nuv) => {
+        const betalinger = Array.isArray(nuv.betalinger) ? nuv.betalinger : [];
+        return akk + betalinger.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0);
+    }, 0) * 1.25;
 
-    if (inklMoms) {
-        totalFastePriser *= 1.25;
-    }
-
-    return {
-        beløb: totalFastePriser,
-        formateret: totalFastePriser.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-export function opstartPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalOpstartPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrPris) : 0), 0)
+// =============================================================================
+// FUNKTIONER TIL PRIS-BEREGNINGER (NYE)
+// =============================================================================
 
-    if (inklMoms) {
-        totalOpstartPris *= 1.25;
-    }
+/**
+ * Fast pris (tilbudspris) - bruges når dynamiskPrisBeregning er false
+ */
+export function fastPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-    return {
-        beløb: totalOpstartPris,
-        formateret: totalOpstartPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function handymanPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalHandymanPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPris) : 0), 0);
-
-    if (inklMoms) {
-        totalHandymanPris *= 1.25;
-    }
-
-    return {
-        beløb: totalHandymanPris,
-        formateret: totalHandymanPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function tømrerPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTømrerPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) : 0), 0);
-
-    if (inklMoms) {
-        totalTømrerPris *= 1.25;
-    }
-
-    return {
-        beløb: totalTømrerPris,
-        formateret: totalTømrerPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function rådgivningPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalRådgivningPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris) : 0), 0);
-
-    if (inklMoms) {
-        totalRådgivningPris *= 1.25;
-    }
-
-    return {
-        beløb: totalRådgivningPris,
-        formateret: totalRådgivningPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function trailerPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTrailerPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.trailer * nuv.satser.trailerPris) : 0), 0);
-
-    if (inklMoms) {
-        totalTrailerPris *= 1.25;
-    }
-
-    return {
-        beløb: totalTrailerPris,
-        formateret: totalTrailerPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function aftenTillægPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    // let totalAftenTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklAftenTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklAftenTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
-    let totalAftenTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.aftenTillæg ? ((nuv.satser.aftenTillægPris / 100) * ((nuv.handymanTimer * nuv.satser.handymanTimerPris) + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris))) : 0) : 0), 0);
-
-    if (inklMoms) {
-        totalAftenTillægPris *= 1.25;
-    }
-
-    return {
-        beløb: totalAftenTillægPris,
-        formateret: totalAftenTillægPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function handymanPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalHandymanPrisInklAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPrisInklAftenTillæg) : 0), 0);
-
-    if (inklMoms) {
-        totalHandymanPrisInklAftenTillæg *= 1.25;
-    }
-    
-    return {
-        beløb: totalHandymanPrisInklAftenTillæg,
-        formateret: totalHandymanPrisInklAftenTillæg.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function handymanPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalHandymanPrisInklNatTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerPrisInklNatTillæg) : 0), 0);
-
-    if (inklMoms) {
-        totalHandymanPrisInklNatTillæg *= 1.25;
-    }
-    
-    return {
-        beløb: totalHandymanPrisInklNatTillæg,
-        formateret: totalHandymanPrisInklNatTillæg.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function tømrerPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTømrerPrisInklAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPrisInklAftenTillæg) : 0), 0);
-
-    if (inklMoms) {
-        totalTømrerPrisInklAftenTillæg *= 1.25;
-    }
-    
-    return {
-        beløb: totalTømrerPrisInklAftenTillæg,
-        formateret: totalTømrerPrisInklAftenTillæg.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function tømrerPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTømrerPrisInklNatTillæg = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerPrisInklNatTillæg) : 0), 0);
-
-    if (inklMoms) {
-        totalTømrerPrisInklNatTillæg *= 1.25;
-    }
-    
-    return {
-        beløb: totalTømrerPrisInklNatTillæg,
-        formateret: totalTømrerPrisInklNatTillæg.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function natTillægPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    // let totalNatTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.handymanTimer * (nuv.satser.handymanTimerPrisInklNatTillæg - nuv.satser.handymanTimerPris) + ((nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) * (nuv.satser.tømrerTimerPrisInklNatTillæg - nuv.satser.tømrerTimerPris)))) : 0) : 0), 0);
-    let totalNatTillægPris = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? (nuv.natTillæg ? ((nuv.satser.natTillægPris / 100) * ((nuv.handymanTimer * nuv.satser.handymanTimerPris) + (nuv.tømrerTimer * nuv.satser.tømrerTimerPris) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningPris))) : 0) : 0), 0);
-
-    if (inklMoms) {
-        totalNatTillægPris *= 1.25;
-    }
-
-    return {
-        beløb: totalNatTillægPris,
-        formateret: totalNatTillægPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function totalPrisEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const totalPrisEksklUdlægOgRabat = (
-        fastPris(posteringer, 2, inklMoms).beløb
-         + opstartPris(posteringer, 2, inklMoms).beløb
-         + handymanPris(posteringer, 2, inklMoms).beløb
-         + tømrerPris(posteringer, 2, inklMoms).beløb
-         + rådgivningPris(posteringer, 2, inklMoms).beløb
-         + trailerPris(posteringer, 2, inklMoms).beløb
-         + aftenTillægPris(posteringer, 2, inklMoms).beløb
-         + natTillægPris(posteringer, 2, inklMoms).beløb
-     )
-    
-     return {
-        beløb: totalPrisEksklUdlægOgRabat,
-        formateret: totalPrisEksklUdlægOgRabat.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function udlægPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalUdlægPris = posteringerListe.reduce((akk, nuv) => {
-        const udlægSum = nuv?.udlæg?.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + (nuv.dynamiskPrisBeregning ? udlægSum : 0);
+    let total = posteringerListe.reduce((akk, nuv) => {
+        // Brug tilbudsPrisEksklMoms hvis sat, ellers check om dynamiskPrisBeregning er false
+        if (!nuv.dynamiskPrisBeregning) {
+            return akk + (nuv.tilbudsPrisEksklMoms ?? nuv.totalPrisEksklMoms ?? 0);
+        }
+        return akk;
     }, 0);
 
     if (inklMoms) {
-        totalUdlægPris *= 1.25;
+        total *= 1.25;
     }
 
-    return {
-        beløb: totalUdlægPris,
-        formateret: totalUdlægPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-export function rabatPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
+/**
+ * Pris fra timeregistrering array
+ */
+export function timeregistreringPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-
-    let totalRabatterPris = posteringerListe.reduce((akk, nuv) => {
+    let total = posteringerListe.reduce((akk, nuv) => {
         if (!nuv.dynamiskPrisBeregning) return akk;
-
-        const rabatProcent = nuv.rabatProcent || 0;
-        const totalUdenUdlæg = totalPrisEksklUdlægOgRabat(nuv, 2, false).beløb;
-        const rabatBeløb = totalUdenUdlæg * (rabatProcent / 100);
-
-        return akk + rabatBeløb;
+        const sum = (nuv.timeregistrering || []).reduce((s, tr) => s + (tr.pris?.totalEksMoms || 0), 0);
+        return akk + sum;
     }, 0);
 
     if (inklMoms) {
-        totalRabatterPris *= 1.25;
+        total *= 1.25;
     }
 
-    return {
-        beløb: totalRabatterPris,
-        formateret: totalRabatterPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-export function totalPris(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
+/**
+ * Pris fra faste tillæg array
+ */
+export function fasteTillægPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-    const totalPris = (
-        fastPris(posteringer, 2, inklMoms).beløb
-        + opstartPris(posteringer, 2, inklMoms).beløb
-        + handymanPris(posteringer, 2, inklMoms).beløb
-        + tømrerPris(posteringer, 2, inklMoms).beløb
-        + rådgivningPris(posteringer, 2, inklMoms).beløb
-        + trailerPris(posteringer, 2, inklMoms).beløb
-        + aftenTillægPris(posteringer, 2, inklMoms).beløb
-        + natTillægPris(posteringer, 2, inklMoms).beløb
-        + udlægPris(posteringer, 2, inklMoms).beløb
-        - rabatPris(posteringer, 2, inklMoms).beløb
-    )
-
-    return {
-        beløb: totalPris,
-        formateret: totalPris.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-// FUNKTIONER TIL HONORAR-BEREGNINGER
-
-export function fastHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalFasteHonorarer = posteringerListe.reduce((akk, nuv) => akk + (!nuv.dynamiskHonorarBeregning ? nuv.fastHonorar : 0), 0);
-
-    if (inklMoms) {
-        totalFasteHonorarer *= 1.25;
-    }
-
-    return {
-        beløb: totalFasteHonorarer,
-        formateret: totalFasteHonorarer.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function opstartHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalOpstartHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.opstart * nuv.satser.opstartsgebyrHonorar) : 0), 0);
-    
-    if (inklMoms) {
-        totalOpstartHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalOpstartHonorar,
-        formateret: totalOpstartHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function handymanHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalHandymanHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.handymanTimer * nuv.satser.handymanTimerHonorar) : 0), 0);
-    
-    if (inklMoms) {
-        totalHandymanHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalHandymanHonorar,
-        formateret: totalHandymanHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function tømrerHonorar(posteringer, decimaler = 2, inklMoms = false){ 
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTømrerHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) : 0), 0)
-    
-    if (inklMoms) {
-        totalTømrerHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalTømrerHonorar,
-        formateret: totalTømrerHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function rådgivningHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalRådgivningHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar) : 0), 0);
-
-    if (inklMoms) {
-        totalRådgivningHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalRådgivningHonorar,
-        formateret: totalRådgivningHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function trailerHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalTrailerHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.trailer * nuv.satser.trailerHonorar) : 0), 0);
-
-    if (inklMoms) {
-        totalTrailerHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalTrailerHonorar,
-        formateret: totalTrailerHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function aftenTillægHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalAftenTillægHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.aftenTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.aftenTillægHonorar / 100)) : 0) : 0), 0);
-
-    if (inklMoms) {
-        totalAftenTillægHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalAftenTillægHonorar,
-        formateret: totalAftenTillægHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function natTillægHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalNatTillægHonorar = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskHonorarBeregning ? (nuv.natTillæg ? ((((nuv.handymanTimer * nuv.satser.handymanTimerHonorar) + (nuv.tømrerTimer * nuv.satser.tømrerTimerHonorar) + (nuv.rådgivningOpmålingVejledning * nuv.satser.rådgivningOpmålingVejledningHonorar)) * nuv.satser.natTillægHonorar / 100)) : 0) : 0), 0);
-
-    if (inklMoms) {
-        totalNatTillægHonorar *= 1.25;
-    }
-
-    return {
-        beløb: totalNatTillægHonorar,
-        formateret: totalNatTillægHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function totalHonorarEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-    
-    const totalHonorarEksklUdlægOgRabat = (
-        fastHonorar(posteringer, 2, inklMoms).beløb
-         + opstartHonorar(posteringer, 2, inklMoms).beløb
-         + handymanHonorar(posteringer, 2, inklMoms).beløb
-         + tømrerHonorar(posteringer, 2, inklMoms).beløb
-         + rådgivningHonorar(posteringer, 2, inklMoms).beløb
-         + trailerHonorar(posteringer, 2, inklMoms).beløb
-         + aftenTillægHonorar(posteringer, 2, inklMoms).beløb
-         + natTillægHonorar(posteringer, 2, inklMoms).beløb
-     )
-    
-     return {
-        beløb: totalHonorarEksklUdlægOgRabat,
-        formateret: totalHonorarEksklUdlægOgRabat.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
-}
-
-export function udlægHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
-
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let totalUdlægHonorar = posteringerListe.reduce((akk, nuv) => {
-        const udlægSum = nuv.udlæg.reduce((sum, udlæg) => sum + (parseFloat(udlæg.beløb) || 0), 0);
-        return akk + (nuv.dynamiskHonorarBeregning ? udlægSum : 0);
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+        const sum = (nuv.fasteTillæg || []).reduce((s, ft) => s + (ft.pris?.totalEksMoms || 0), 0);
+        return akk + sum;
     }, 0);
 
     if (inklMoms) {
-        totalUdlægHonorar *= 1;
+        total *= 1.25;
     }
 
-    return {
-        beløb: totalUdlægHonorar,
-        formateret: totalUdlægHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-export function rabatHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
-    }
+/**
+ * Pris fra procent tillæg array
+ */
+export function procentTillægPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-
-    let totalRabatterHonorar = posteringerListe.reduce((akk, nuv) => {
-        if (!nuv.dynamiskHonorarBeregning) return akk;
-
-        const rabatProcent = nuv.rabatProcent || 0;
-        const totalUdenUdlæg = totalHonorarEksklUdlægOgRabat(nuv, 2, false).beløb;
-        const rabatBeløb = totalUdenUdlæg * (rabatProcent / 100);
-
-        return akk + rabatBeløb;
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+        const sum = (nuv.procentTillæg || []).reduce((s, pt) => s + (pt.pris?.totalEksMoms || 0), 0);
+        return akk + sum;
     }, 0);
 
     if (inklMoms) {
-        totalRabatterHonorar *= 1.25;
+        total *= 1.25;
     }
 
-    return {
-        beløb: totalRabatterHonorar,
-        formateret: totalRabatterHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-export function totalHonorar(posteringer, decimaler = 2, inklMoms = false){
-    if(!posteringer){
-        return
+/**
+ * Pris fra materialer array
+ */
+export function materialePris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+        const sum = (nuv.materialer || []).reduce((s, m) => s + (m.totalEksMoms || 0), 0);
+        return akk + sum;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const totalHonorar = (
-        totalHonorarEksklUdlægOgRabat(posteringer, 2, inklMoms).beløb
-         + udlægHonorar(posteringer, 2, inklMoms).beløb
-         - rabatHonorar(posteringer, 2, inklMoms).beløb
-     )
-
-    return {
-        beløb: totalHonorar,
-        formateret: totalHonorar.toLocaleString('da-DK', {
-            style: 'currency',
-            currency: 'DKK',
-            minimumFractionDigits: decimaler,
-            maximumFractionDigits: decimaler
-        })
-    }
+    return formaterBeløb(total, decimaler);
 }
 
-// FUNKTIONER TIL ANTAL-BEREGNINGER
+/**
+ * Pris fra udlæg array
+ */
+export function udlægPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-export function antalOpstartsgebyrerForPris(posteringer){
-    if(!posteringer){
-        return
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+        const sum = (nuv.udlæg || []).reduce((s, u) => s + (u.totalEksMoms ?? parseFloat(u.beløb) ?? 0), 0);
+        return akk + sum;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalOpstartsgebyrer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.opstart : 0), 0);
-
-    return antalOpstartsgebyrer;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalHandymanTimerForPris(posteringer){
-    if(!posteringer){
-        return
+/**
+ * Samlet rabat på pris - sum af alle rabatBeløb fra arrays
+ */
+export function rabatPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.dynamiskPrisBeregning) return akk;
+        
+        // Sum rabatBeløb fra alle arrays
+        const trRabat = (nuv.timeregistrering || []).reduce((s, tr) => s + (tr.pris?.rabatBeløb || 0), 0);
+        const ftRabat = (nuv.fasteTillæg || []).reduce((s, ft) => s + (ft.pris?.rabatBeløb || 0), 0);
+        const ptRabat = (nuv.procentTillæg || []).reduce((s, pt) => s + (pt.pris?.rabatBeløb || 0), 0);
+        
+        return akk + trRabat + ftRabat + ptRabat;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalHandymanTimer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.handymanTimer : 0), 0);
-
-    return antalHandymanTimer;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalTømrerTimerForPris(posteringer){
-    if(!posteringer){
-        return
-    }
+/**
+ * Total pris ekskl. udlæg og rabat (til rabatberegning)
+ */
+export function totalPrisEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    
+    const total = 
+        fastPris(posteringer, 2, inklMoms).beløb +
+        timeregistreringPris(posteringer, 2, inklMoms).beløb +
+        fasteTillægPris(posteringer, 2, inklMoms).beløb +
+        procentTillægPris(posteringer, 2, inklMoms).beløb +
+        materialePris(posteringer, 2, inklMoms).beløb;
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalTømrerTimer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.tømrerTimer : 0), 0);
-
-    return antalTømrerTimer;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalRådgivningOpmålingVejledningForPris(posteringer){
-    if(!posteringer){
-        return
+/**
+ * Total pris - bruger pre-beregnet værdi eller summer fra arrays
+ */
+export function totalPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        // Brug pre-beregnet total hvis tilgængelig
+        if (nuv.dynamiskPrisBeregning) {
+            return akk + (nuv.totalPrisEksklMoms || 0);
+        } else {
+            // For fast pris, brug tilbudsPrisEksklMoms
+            return akk + (nuv.tilbudsPrisEksklMoms ?? nuv.totalPrisEksklMoms ?? 0);
+        }
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalRådgivningOpmålingVejledning = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.rådgivningOpmålingVejledning : 0), 0);
-
-    return antalRådgivningOpmålingVejledning;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalTrailerForPris(posteringer){
-    if(!posteringer){
-        return
-    }
+/**
+ * Total moms - sum af alle momsbeløb
+ */
+export function totalMoms(posteringer, decimaler = 2) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalTrailer = posteringerListe.reduce((akk, nuv) => akk + (nuv.dynamiskPrisBeregning ? nuv.trailer : 0), 0);
+    const total = posteringerListe.reduce((akk, nuv) => {
+        return akk + (nuv.totalMoms || 0);
+    }, 0);
 
-    return antalTrailer;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalAftenTillægForPris(posteringer){
-    if(!posteringer){
-        return
+// =============================================================================
+// FUNKTIONER TIL HONORAR-BEREGNINGER (NYE)
+// =============================================================================
+
+/**
+ * Fast honorar - bruges når brugDynamiskHonorar er false
+ */
+export function fastHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar && nuv.brugFastHonorar) {
+            return akk + (nuv.totalFastHonorar || 0);
+        }
+        return akk;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalAftenTillæg = posteringerListe.reduce((akk, nuv) => akk + ((nuv.dynamiskPrisBeregning && nuv.aftenTillæg) ? (nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) : 0), 0);
-
-    return antalAftenTillæg;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalNatTillægForPris(posteringer){
-    if(!posteringer){
-        return
+/**
+ * Honorar fra timeregistrering array
+ */
+export function timeregistreringHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        const sum = (nuv.timeregistrering || []).reduce((s, tr) => s + (tr.honorar?.total || 0), 0);
+        return akk + sum;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalNatTillæg = posteringerListe.reduce((akk, nuv) => akk + ((nuv.dynamiskPrisBeregning && nuv.natTillæg) ? (nuv.handymanTimer + nuv.tømrerTimer + nuv.rådgivningOpmålingVejledning) : 0), 0);
-
-    return antalNatTillæg;
+    return formaterBeløb(total, decimaler);
 }
 
-export function antalUdlæg(posteringer){
-    if(!posteringer){
-        return
+/**
+ * Honorar fra faste tillæg array
+ */
+export function fasteTillægHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        const sum = (nuv.fasteTillæg || []).reduce((s, ft) => s + (ft.honorar?.total || 0), 0);
+        return akk + sum;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
     }
 
-    const posteringerListe = Array.isArray(posteringer) ? posteringer : [posteringer];
-    let antalUdlæg = posteringerListe.reduce((akk, nuv) => akk + (nuv?.udlæg?.length || 0), 0);
+    return formaterBeløb(total, decimaler);
+}
 
-    return antalUdlæg;
+/**
+ * Honorar fra procent tillæg array
+ */
+export function procentTillægHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        const sum = (nuv.procentTillæg || []).reduce((s, pt) => s + (pt.honorar?.total || 0), 0);
+        return akk + sum;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
+    }
+
+    return formaterBeløb(total, decimaler);
+}
+
+/**
+ * Medarbejder-udlæg fra materialer (kostpris der skal refunderes)
+ */
+export function materialeUdlæg(posteringer, decimaler = 2) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    const total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        const sum = (nuv.materialer || []).reduce((s, m) => s + (m.totalMedarbejderUdlaeg || 0), 0);
+        return akk + sum;
+    }, 0);
+
+    return formaterBeløb(total, decimaler);
+}
+
+/**
+ * Honorar fra udlæg array
+ */
+export function udlægHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        // Udlæg tæller som honorar (medarbejderen har lagt ud)
+        const udlægSum = (nuv.udlæg || []).reduce((s, u) => s + (u.totalEksMoms ?? parseFloat(u.beløb) ?? 0), 0);
+        // Plus materiale-udlæg
+        const materialeSum = (nuv.materialer || []).reduce((s, m) => s + (m.totalMedarbejderUdlaeg || 0), 0);
+        return akk + udlægSum + materialeSum;
+    }, 0);
+
+    // Honorar normalt ikke inkl. moms, men behold parameter for kompatibilitet
+    if (inklMoms) {
+        total *= 1;
+    }
+
+    return formaterBeløb(total, decimaler);
+}
+
+/**
+ * Samlet rabat på honorar - sum af alle honorar rabatBeløb fra arrays
+ */
+export function rabatHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (!nuv.brugDynamiskHonorar) return akk;
+        
+        // Sum rabatBeløb fra alle arrays
+        const trRabat = (nuv.timeregistrering || []).reduce((s, tr) => s + (tr.honorar?.rabatBeløb || 0), 0);
+        const ftRabat = (nuv.fasteTillæg || []).reduce((s, ft) => s + (ft.honorar?.rabatBeløb || 0), 0);
+        const ptRabat = (nuv.procentTillæg || []).reduce((s, pt) => s + (pt.honorar?.rabatBeløb || 0), 0);
+        
+        return akk + trRabat + ftRabat + ptRabat;
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
+    }
+
+    return formaterBeløb(total, decimaler);
+}
+
+/**
+ * Total honorar ekskl. udlæg og rabat (til rabatberegning)
+ */
+export function totalHonorarEksklUdlægOgRabat(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    
+    const total = 
+        fastHonorar(posteringer, 2, inklMoms).beløb +
+        timeregistreringHonorar(posteringer, 2, inklMoms).beløb +
+        fasteTillægHonorar(posteringer, 2, inklMoms).beløb +
+        procentTillægHonorar(posteringer, 2, inklMoms).beløb;
+
+    return formaterBeløb(total, decimaler);
+}
+
+/**
+ * Total honorar - bruger pre-beregnet værdi
+ */
+export function totalHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const posteringerListe = lavListe(posteringer);
+
+    let total = posteringerListe.reduce((akk, nuv) => {
+        if (nuv.brugDynamiskHonorar) {
+            return akk + (nuv.totalDynamiskHonorar || 0);
+        } else if (nuv.brugFastHonorar) {
+            return akk + (nuv.totalFastHonorar || 0);
+        }
+        // Fallback til totalDynamiskHonorar hvis ingen flags sat
+        return akk + (nuv.totalDynamiskHonorar || nuv.totalFastHonorar || 0);
+    }, 0);
+
+    if (inklMoms) {
+        total *= 1.25;
+    }
+
+    return formaterBeløb(total, decimaler);
+}
+
+// =============================================================================
+// FUNKTIONER TIL ANTAL-BEREGNINGER (NYE)
+// =============================================================================
+
+/**
+ * Antal timeregistreringer (sum af antal fra alle timeregistrering poster)
+ */
+export function antalTimeregistreringer(posteringer) {
+    if (!posteringer) return 0;
+    const posteringerListe = lavListe(posteringer);
+
+    return posteringerListe.reduce((akk, nuv) => {
+        const sum = (nuv.timeregistrering || []).reduce((s, tr) => s + (tr.antal || 0), 0);
+        return akk + sum;
+    }, 0);
+}
+
+/**
+ * Antal faste tillæg (sum af antal fra alle fasteTillæg poster)
+ */
+export function antalFasteTillæg(posteringer) {
+    if (!posteringer) return 0;
+    const posteringerListe = lavListe(posteringer);
+
+    return posteringerListe.reduce((akk, nuv) => {
+        const sum = (nuv.fasteTillæg || []).reduce((s, ft) => s + (ft.antal || 0), 0);
+        return akk + sum;
+    }, 0);
+}
+
+/**
+ * Antal procent tillæg (antal poster, ikke sum)
+ */
+export function antalProcentTillæg(posteringer) {
+    if (!posteringer) return 0;
+    const posteringerListe = lavListe(posteringer);
+
+    return posteringerListe.reduce((akk, nuv) => {
+        return akk + (nuv.procentTillæg?.length || 0);
+    }, 0);
+}
+
+/**
+ * Antal materialer (antal poster)
+ */
+export function antalMaterialer(posteringer) {
+    if (!posteringer) return 0;
+    const posteringerListe = lavListe(posteringer);
+
+    return posteringerListe.reduce((akk, nuv) => {
+        return akk + (nuv.materialer?.length || 0);
+    }, 0);
+}
+
+/**
+ * Antal udlæg
+ */
+export function antalUdlæg(posteringer) {
+    if (!posteringer) return 0;
+    const posteringerListe = lavListe(posteringer);
+
+    return posteringerListe.reduce((akk, nuv) => {
+        return akk + (nuv.udlæg?.length || 0);
+    }, 0);
+}
+
+// =============================================================================
+// LEGACY WRAPPER-FUNKTIONER (bevaret for kompatibilitet med eksisterende kode)
+// Disse funktioner finder poster i de nye arrays baseret på navn
+// =============================================================================
+
+/**
+ * Helper: Find poster i timeregistrering baseret på navne-match
+ */
+function findTimeregistreringByName(posteringer, navnMatch) {
+    const posteringerListe = lavListe(posteringer);
+    return posteringerListe.flatMap(p => 
+        (p.timeregistrering || []).filter(tr => 
+            tr.navn?.toLowerCase().includes(navnMatch.toLowerCase())
+        )
+    );
+}
+
+/**
+ * Helper: Find poster i fasteTillæg baseret på navne-match
+ */
+function findFasteTillægByName(posteringer, navnMatch) {
+    const posteringerListe = lavListe(posteringer);
+    return posteringerListe.flatMap(p => 
+        (p.fasteTillæg || []).filter(ft => 
+            ft.navn?.toLowerCase().includes(navnMatch.toLowerCase())
+        )
+    );
+}
+
+/**
+ * Helper: Find poster i procentTillæg baseret på navne-match
+ */
+function findProcentTillægByName(posteringer, navnMatch) {
+    const posteringerListe = lavListe(posteringer);
+    return posteringerListe.flatMap(p => 
+        (p.procentTillæg || []).filter(pt => 
+            pt.navn?.toLowerCase().includes(navnMatch.toLowerCase())
+        )
+    );
+}
+
+// ----- PRIS WRAPPERS -----
+
+export function opstartPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findFasteTillægByName(posteringer, 'opstart');
+    let total = poster.reduce((s, ft) => s + (ft.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function handymanPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'handyman');
+    let total = poster.reduce((s, tr) => s + (tr.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function tømrerPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'tømrer');
+    let total = poster.reduce((s, tr) => s + (tr.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function rådgivningPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'rådgivning');
+    let total = poster.reduce((s, tr) => s + (tr.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function trailerPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findFasteTillægByName(posteringer, 'trailer');
+    let total = poster.reduce((s, ft) => s + (ft.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function aftenTillægPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findProcentTillægByName(posteringer, 'aften');
+    let total = poster.reduce((s, pt) => s + (pt.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function natTillægPris(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findProcentTillægByName(posteringer, 'nat');
+    let total = poster.reduce((s, pt) => s + (pt.pris?.totalEksMoms || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+// Inkl. tillæg varianter - returnerer 0 da tillæg nu er separate poster
+export function handymanPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false) {
+    return handymanPris(posteringer, decimaler, inklMoms);
+}
+
+export function handymanPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false) {
+    return handymanPris(posteringer, decimaler, inklMoms);
+}
+
+export function tømrerPrisInklAftenTillæg(posteringer, decimaler = 2, inklMoms = false) {
+    return tømrerPris(posteringer, decimaler, inklMoms);
+}
+
+export function tømrerPrisInklNatTillæg(posteringer, decimaler = 2, inklMoms = false) {
+    return tømrerPris(posteringer, decimaler, inklMoms);
+}
+
+// ----- HONORAR WRAPPERS -----
+
+export function opstartHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findFasteTillægByName(posteringer, 'opstart');
+    let total = poster.reduce((s, ft) => s + (ft.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function handymanHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'handyman');
+    let total = poster.reduce((s, tr) => s + (tr.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function tømrerHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'tømrer');
+    let total = poster.reduce((s, tr) => s + (tr.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function rådgivningHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findTimeregistreringByName(posteringer, 'rådgivning');
+    let total = poster.reduce((s, tr) => s + (tr.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function trailerHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findFasteTillægByName(posteringer, 'trailer');
+    let total = poster.reduce((s, ft) => s + (ft.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function aftenTillægHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findProcentTillægByName(posteringer, 'aften');
+    let total = poster.reduce((s, pt) => s + (pt.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+export function natTillægHonorar(posteringer, decimaler = 2, inklMoms = false) {
+    if (!posteringer) return;
+    const poster = findProcentTillægByName(posteringer, 'nat');
+    let total = poster.reduce((s, pt) => s + (pt.honorar?.total || 0), 0);
+    if (inklMoms) total *= 1.25;
+    return formaterBeløb(total, decimaler);
+}
+
+// ----- ANTAL WRAPPERS -----
+
+export function antalOpstartsgebyrerForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findFasteTillægByName(posteringer, 'opstart');
+    return poster.reduce((s, ft) => s + (ft.antal || 0), 0);
+}
+
+export function antalHandymanTimerForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findTimeregistreringByName(posteringer, 'handyman');
+    return poster.reduce((s, tr) => s + (tr.antal || 0), 0);
+}
+
+export function antalTømrerTimerForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findTimeregistreringByName(posteringer, 'tømrer');
+    return poster.reduce((s, tr) => s + (tr.antal || 0), 0);
+}
+
+export function antalRådgivningOpmålingVejledningForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findTimeregistreringByName(posteringer, 'rådgivning');
+    return poster.reduce((s, tr) => s + (tr.antal || 0), 0);
+}
+
+export function antalTrailerForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findFasteTillægByName(posteringer, 'trailer');
+    return poster.reduce((s, ft) => s + (ft.antal || 0), 0);
+}
+
+export function antalAftenTillægForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findProcentTillægByName(posteringer, 'aften');
+    return poster.length;
+}
+
+export function antalNatTillægForPris(posteringer) {
+    if (!posteringer) return 0;
+    const poster = findProcentTillægByName(posteringer, 'nat');
+    return poster.length;
 }

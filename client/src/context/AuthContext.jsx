@@ -52,7 +52,7 @@ export const AuthContextProvider = ({ children }) => {
                 localStorage.removeItem('jwt'); // Clear invalid token
             }
         } else {
-            console.log('No user or token found. User is logged out.');
+            // console.log('No user or token found. User is logged out.');
             dispatch({ type: 'LOGOUT' }); // Logout if no token is found
         }
 

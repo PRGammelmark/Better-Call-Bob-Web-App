@@ -4,6 +4,11 @@ import opgaverRoutes from "./routes/opgaver.js"
 import kunderRoutes from "./routes/kunder.js"
 import brugerRoutes from "./routes/brugere.js"
 import opgavetyperRoutes from "./routes/opgavetyper.js"
+import timetyperRoutes from "./routes/timetyper.js"
+import fasteTillaegRoutes from "./routes/fasteTillaeg.js"
+import procentTillaegRoutes from "./routes/procentTillaeg.js"
+import varerRoutes from "./routes/varer.js"
+import pauserRoutes from "./routes/pauser.js"
 import posteringRoutes from "./routes/posteringer.js"
 import kommentarerRoutes from "./routes/kommentarer.js"
 import ledigeTiderRoutes from "./routes/ledigeTider.js"
@@ -39,6 +44,7 @@ import { natligFakturaBetalingTjek } from './utils/natligFakturaBetalingTjek.js'
 import fakturaBetalingstjekRoutes from "./routes/fakturaBetalingstjek.js";
 import { lazyFakturaBetalingstjek } from './middleware/lazyFakturaBetalingstjek.js';
 import opfølgendeSpørgsmålRoutes from "./routes/opfølgendeSpørgsmål.js";
+import searchRoutes from "./routes/search.js";
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -165,6 +171,11 @@ app.use('/api/faktura-opkraevninger', fakturaOpkraevningerRoutes);
 app.use('/api/sms', smsRoutes);
 app.use("/api/indstillinger", indstillingerRoutes);
 app.use('/api/opgavetyper', opgavetyperRoutes)
+app.use('/api/timetyper', timetyperRoutes)
+app.use('/api/fasteTillaeg', fasteTillaegRoutes)
+app.use('/api/procentTillaeg', procentTillaegRoutes)
+app.use('/api/varer', varerRoutes)
+app.use('/api/pauser', pauserRoutes)
 app.use('/api/mobilepay', mobilePayRoutes);
 app.use('/api/dokumenter-uploads', dokumenterUploadsRoutes);
 app.use("/api/webhook", elementorWebhookRouter);
@@ -184,6 +195,9 @@ app.use('/api/ai', aiRoutes);
 
 // Opfølgende spørgsmål til booking systemet
 app.use('/api/opfolgendeSporgsmaal', opfølgendeSpørgsmålRoutes);
+
+// Søgning
+app.use('/api/search', searchRoutes);
 
 // connect to db
 mongoose.connect(process.env.MONGO_URI)

@@ -2285,6 +2285,12 @@
         margin-top: 0px;
     }
 
+    .kundeHeadingContainer .opgavestatusContainerMobile {
+        position: absolute;
+        top: 0;
+        right: 0;
+    }
+
     .statusSelectWrapperMobile {
         position: relative;
         display: flex;

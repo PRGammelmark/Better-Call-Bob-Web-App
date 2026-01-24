@@ -4,7 +4,7 @@
       rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
     border-radius: 10px;
     margin-bottom: 20px;
-    overflow: hidden;
+    overflow: visible!important;
   }
   
   .row {
@@ -13,23 +13,80 @@
     align-items: center;
     justify-content: space-between;
     padding: 10px 10px 10px 20px;
-    overflow: hidden;
+    overflow: visible;
     transition: 0.2s ease;
     border-bottom: 1px solid #22222220;
     min-height: 50px;
     font-size: 0.9rem;
   }
+
+  .row:first-child {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+  }
   
   .row:last-child {
     border-bottom: none;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+  }
+
+  /* Number picker row - allows content to wrap */
+  .numberPickerRow {
+    display: block;
+    padding: 0;
+  }
+
+  .numberPickerWrapper {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+    align-items: center;
+    padding: 10px 10px 10px 20px;
+    min-height: 50px;
+    box-sizing: border-box;
+  }
+
+  .numberPickerHeader {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .numberPickerHeader .iconAndTitleDiv {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* valueButton from NumberPicker - positioned in top right */
+  .numberPickerWrapper > div:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* wheelContainer from NumberPicker - full width below */
+  .numberPickerWrapper > div:nth-child(3) {
+    grid-column: 1 / -1;
+    grid-row: 2;
   }
   
   .row:hover {
     background: #f0f0f0;
   }
+
+  .numberPickerRow:hover {
+    background: transparent;
+  }
   
   .row:hover .infoBox {
     border: 1px solid #59bf1a;
+  }
+
+  .row:has(.switch):hover {
+    background: transparent;
   }
 
 .iconAndTitleDiv {
@@ -56,13 +113,13 @@
   font-weight: 400;
 }
 
-  .iconSpan {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 16px;
-    width: 16px;
-  }
+.iconSpan {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16px;
+  width: 16px;
+}
   
   .infoBoxes {
     display: flex;
@@ -156,6 +213,67 @@
   .inputField[type='number'] {
     -moz-appearance: textfield;
   }
+
+  /* Date input specific styling */
+  .dateInput {
+    /* Remove native styling from date inputs */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+    display: inline-block !important;
+    /* Fix for iOS Safari blue text color */
+    color: #222222 !important;
+    -webkit-text-fill-color: #222222 !important;
+    /* Force right alignment */
+    direction: ltr;
+    text-align: right;
+    text-align-last: right;
+    -webkit-text-align: right;
+    -webkit-text-align-last: right;
+    /* Ensure consistent font size */
+    font-size: 0.9rem;
+    /* Make calendar picker icon visible */
+    cursor: pointer;
+    /* Ensure it looks like a regular input field */
+    width: 100%;
+    height: auto;
+  }
+
+  .dateInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    margin-left: 5px;
+    filter: invert(0.3);
+  }
+
+  .dateInput::-webkit-calendar-picker-indicator:hover {
+    opacity: 1;
+  }
+
+  /* Ensure date input container handles date inputs properly */
+  .inputContainer:has(.dateInput) {
+    justify-content: flex-end;
+  }
+
+  /* Mobile specific date input fixes */
+  @media (max-width: 750px) {
+    .dateInput {
+      text-align: right !important;
+      direction: ltr !important;
+      -webkit-text-align: right !important;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+      font-size: 0.9rem !important;
+      text-align-last: right !important;
+      -webkit-text-align-last: right !important;
+    }
+  }
   
   .itemValue {
     font-size: 0.9rem;
@@ -198,4 +316,27 @@
   .fileUploadButton:disabled {
     background: #ccc;
     cursor: not-allowed;
+  }
+
+  .customContent {
+    width: 100%;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #e8e8e8;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      max-height: 0;
+      padding-top: 0;
+      margin-top: 0;
+    }
+    to {
+      opacity: 1;
+      max-height: 200px;
+      padding-top: 12px;
+      margin-top: 12px;
+    }
   }

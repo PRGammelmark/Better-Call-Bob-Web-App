@@ -2,120 +2,150 @@
     margin-top: 5px;
 }
 
-/* The switch - the box around the slider */
+/* The switch - matching booking system style */
 .switch {
+    width: 48px;
+    height: 26px;
+    background: #e8e9ea;
+    border-radius: 13px;
     position: relative;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
     display: inline-block;
-    width: 31px;
-    min-width: 31px;
-    height: 18px;
-    min-height: 18px;
-    margin-right: 10px;
+    cursor: pointer;
 }
 
 /* Hide default HTML checkbox */
-.switch input {
-  opacity: 0;
-  width: 34px;
-  height: 34px;
-  z-index: 100000;
-  position: absolute;
-  top: -5px;
-  left: 5px;
+.switch input,
+.checkboxInput {
+    opacity: 0;
+    width: 48px;
+    height: 26px;
+    z-index: 100000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    cursor: pointer;
+    margin: 0;
 }
 
-/* The slider */
+/* The slider - for backwards compatibility with existing code */
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  border-radius: 17px;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border-radius: 13px;
+    background-color: #e8e9ea;
+    transition: background 0.2s ease;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 2px;
-  bottom: 2px;
-  border-radius: 50%;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    top: 3px;
+    border-radius: 50%;
+    background-color: #ffffff;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-input:checked + .slider {
-  background-color: #59bf1a;
+input:checked + .slider,
+.checkboxInput:checked + .slider {
+    background-color: #59bf1a;
 }
 
-input:focus + .slider {
-  box-shadow: 0 0 1px #59bf1a;
+input:focus + .slider,
+.checkboxInput:focus + .slider {
+    box-shadow: 0 0 1px #59bf1a;
 }
 
-input:checked + .slider:before {
-  -webkit-transform: translateX(13px);
-  -ms-transform: translateX(13px);
-  transform: translateX(13px);
+input:checked + .slider:before,
+.checkboxInput:checked + .slider:before {
+    transform: translateX(22px);
 }
 
-.slider:before {
-  border-radius: 50%;
+/* Switch thumb - matching booking system style */
+.switchThumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.switchActive {
+    background: #59bf1a;
+}
+
+.switchActive .switchThumb {
+    transform: translateX(22px);
 }
 
 .checkboxContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 0;
 }
 
 @media (max-width: 750px) {
     .switch {
-      width: 44px;
-      min-width: 44px;
-      height: 24px;
-      min-height: 24px;
-      margin-right: 10px;
-      -webkit-tap-highlight-color: transparent;
-      touch-action: manipulation;
+        width: 48px;
+        height: 26px;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
     }
 
-    .slider {
-      position: absolute;
-      cursor: pointer;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 17px;
-      background-color: #ccc;
-      -webkit-transition: .4s;
-      transition: .4s;
+    .switch input,
+    .checkboxInput {
+        width: 48px;
+        height: 26px;
+        /* Gør touch target større på mobil */
+        min-width: 48px;
+        min-height: 44px;
+        top: -9px;
+        left: 0;
+        margin: 0;
+        padding: 0;
     }
-    
+
     .slider:before {
-      position: absolute;
-      content: "";
-      height: 20px;
-      width: 20px;
-      left: 2px;
-      bottom: 2px;
-      border-radius: 50%;
-      background-color: white;
-      -webkit-transition: .4s;
-      transition: .4s;
+        height: 20px;
+        width: 20px;
     }
 
-    input:checked + .slider:before {
-      -webkit-transform: translateX(20px);
-      -ms-transform: translateX(20px);
-      transform: translateX(20px);
+    input:checked + .slider:before,
+    .checkboxInput:checked + .slider:before {
+        transform: translateX(22px);
+    }
+
+    .switchThumb {
+        width: 20px;
+        height: 20px;
+    }
+
+    .switchActive .switchThumb {
+        transform: translateX(22px);
+    }
+
+    .checkboxContainer {
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+    }
+
+    .checkboxContainer label {
+        min-height: 44px;
+        padding: 8px 0;
+        -webkit-tap-highlight-color: transparent;
     }
 }

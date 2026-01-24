@@ -25,7 +25,8 @@ const RegistrerBetalingModal = ({trigger, setTrigger, postering, refetchPosterin
 
 
     useEffect(() => {
-        const samletPris = Math.ceil(postering.totalPris * 1.25 * 100) / 100
+        // Understøt både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+        const samletPris = Math.ceil((postering.totalPrisInklMoms ?? (postering.totalPris * 1.25)) * 100) / 100
         const tidligereBetalinger = postering.betalinger.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0)
         const restbeløb = samletPris - tidligereBetalinger
 

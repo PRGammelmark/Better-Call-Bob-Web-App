@@ -5,6 +5,7 @@ import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
+import { getPosteringTotalPrisInklMoms } from '../utils/beregninger.js'
 
 const adminTabs = [
   {
@@ -217,8 +218,7 @@ const OpgaverHurtigtAdminOverblik = () => {
               const posteringUpdatedAt = firstPostering.updatedAt ? dayjs(firstPostering.updatedAt) : null
               const isRecent = posteringCreatedAt.isAfter(dayStart) || posteringCreatedAt.isSame(dayStart) || (posteringUpdatedAt && (posteringUpdatedAt.isAfter(dayStart) || posteringUpdatedAt.isSame(dayStart)))
               const totalPosteringerAmount = posteringer.reduce((total, postering) => {
-                const posteringTotalPris = (postering.totalPris || 0) * 1.25
-                return total + posteringTotalPris
+                return total + getPosteringTotalPrisInklMoms(postering)
               }, 0)
               
               const totalOpkrævetAmount = posteringer.reduce((total, postering) => {
@@ -227,7 +227,7 @@ const OpgaverHurtigtAdminOverblik = () => {
               }, 0)
               
               const totalRemainingAmount = posteringer.reduce((total, postering) => {
-                const posteringTotalPris = (postering.totalPris || 0) * 1.25
+                const posteringTotalPris = getPosteringTotalPrisInklMoms(postering)
                 const betalingerSum = postering?.betalinger?.reduce((sum, betaling) => sum + (betaling.betalingsbeløb || 0), 0) || 0
                 const remainingAmount = posteringTotalPris - betalingerSum
                 return total + remainingAmount

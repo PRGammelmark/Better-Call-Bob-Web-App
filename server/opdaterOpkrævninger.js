@@ -28,13 +28,13 @@ const opdaterOpkrævningsbeløbFraTotalbeløb = async () => {
       continue;
     }
 
-    // Check if postering has totalPris
-    if (!postering.totalPris || postering.totalPris === 0) {
+    // Check if postering has totalPris (gammel struktur) eller totalPrisInklMoms (ny struktur)
+    if ((!postering.totalPris || postering.totalPris === 0) && (!postering.totalPrisInklMoms || postering.totalPrisInklMoms === 0)) {
       continue;
     }
 
-    // Calculate totalbeløb inkl. moms (25% VAT)
-    const totalbeløbInklMoms = postering.totalPris * 1.25;
+    // Understøt både ny struktur (totalPrisInklMoms) og gammel struktur (totalPris * 1.25)
+    const totalbeløbInklMoms = postering.totalPrisInklMoms ?? (postering.totalPris * 1.25);
 
     // Check if there are any faktura-opkrævninger
     const fakturaOpkrævninger = postering.opkrævninger.filter(

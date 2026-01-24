@@ -10,8 +10,6 @@ import { useBesøg } from '../../context/BesøgContext.jsx'
 import ÅbenOpgaveCalendar from '../../components/traditionalCalendars/ÅbenOpgaveCalendar.jsx'
 import ManagerCalendar from '../../components/traditionalCalendars/ManagerCalendar.jsx'
 import OpenTasks from '../../components/tables/OpenTasks'
-import PersonligtØkonomiskOverblik from '../../components/okonomi/PersonligtØkonomiskOverblik'
-import AdminØkonomiskOverblik from '../../components/okonomi/AdminØkonomiskOverblik'
 import { useOverblikView } from '../../context/OverblikViewContext.jsx'
 import { getHilsen } from '../../utils/hilsener.js'
 import PopUpMenu from '../../components/basicComponents/PopUpMenu.jsx'
@@ -148,7 +146,6 @@ const Overblik = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
-        <AdminØkonomiskOverblik user={user} />
       </div>}
       
       {!managerOverblik && <div className={Styles.overblikContainer}>
@@ -183,7 +180,6 @@ const Overblik = () => {
                         setAlleBesøg={setAlleBesøg}
                         userID={userID}
                         />
-        <PersonligtØkonomiskOverblik user={user}/>
       </div>}
       </div>
   )

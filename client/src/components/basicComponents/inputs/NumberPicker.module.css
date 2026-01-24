@@ -1,0 +1,268 @@
+/* Container class no longer used - NumberPicker now returns Fragment */
+
+/* The clickable value button - styled to match form inputs */
+.valueButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: Omnes;
+  font-size: 0.85rem;
+  color: #222222;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: border-color 0.2s ease;
+  min-width: 50px;
+  height: 42px;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.valueButton:hover {
+  border-color: #59bf1a;
+}
+
+.valueButton:active {
+  border-color: #59bf1a;
+}
+
+/* Editable input for desktop */
+.valueInput {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 6px;
+  background: white;
+  border-radius: 8px;
+  font-family: Omnes;
+  font-size: 0.85rem;
+  color: #222222;
+  min-width: 50px;
+  max-width: 80px;
+  text-align: center;
+  border: 1px solid #59bf1a;
+  outline: none;
+  height: 42px;
+  box-sizing: border-box;
+}
+
+/* Bottom sheet overlay */
+.bottomSheetOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.bottomSheetOverlayClosing {
+  animation: fadeOut 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+  opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Bottom sheet container */
+.bottomSheet {
+  width: 100%;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 20px);
+  animation: slideUp 0.3s ease-out;
+}
+
+.bottomSheetClosing {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+/* Bottom sheet header */
+.bottomSheetHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bottomSheetTitle {
+  font-family: OmnesBold;
+  font-size: 1rem;
+  color: #222;
+}
+
+.bottomSheetCancel,
+.bottomSheetConfirm {
+  background: none;
+  border: none;
+  font-family: Omnes;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.bottomSheetCancel {
+  color: #888;
+}
+
+.bottomSheetCancel:hover {
+  background: #f0f0f0;
+}
+
+.bottomSheetConfirm {
+  color: #59bf1a;
+  font-family: OmnesBold;
+}
+
+.bottomSheetConfirm:hover {
+  background: rgba(89, 191, 26, 0.1);
+}
+
+.wheelMask {
+  position: relative;
+  height: 250px;
+  overflow: hidden;
+  background: #fafafa;
+  border-radius: 0;
+  border: none;
+}
+
+/* Gradient overlays */
+.wheelMask::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(250, 250, 250, 1) 0%, rgba(250, 250, 250, 0.8) 50%, rgba(250, 250, 250, 0) 100%);
+}
+
+.wheelMask::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  z-index: 10;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(250, 250, 250, 1) 0%, rgba(250, 250, 250, 0.8) 50%, rgba(250, 250, 250, 0) 100%);
+}
+
+/* Center selection indicator */
+.centerIndicator {
+  position: absolute;
+  top: 50%;
+  left: 10px;
+  right: 10px;
+  height: 50px;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.wheel {
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 100px 0;
+  /* Hide scrollbar */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Native scroll snapping */
+  scroll-snap-type: y mandatory;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.wheelSpacer {
+  height: 50px;
+  pointer-events: none;
+}
+
+.wheelItem {
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: Omnes;
+  font-size: 1rem;
+  color: #888888;
+  cursor: pointer;
+  transition: color 0.15s ease;
+  user-select: none;
+  -webkit-user-select: none;
+  position: relative;
+  scroll-snap-align: center;
+}
+
+.wheelItem:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+/* Item that is currently in the center (visible) */
+.wheelItemCentered {
+  color: #222222;
+}
+
+/* Item that matches the selected value */
+.wheelItemSelected {
+  color: #222222;
+}
+
+.wheelItemCentered.wheelItemSelected {
+  color: #222222;
+}

@@ -14,6 +14,30 @@
 // 
 
 const changes = [{
+    version: "4.0.0",
+    date: "25. januar 2026",
+    changes: [
+        "Posteringer er blevet opdaterede med faner og dynamiske timetyper, tillæg og materialekartotek. Al indhold på posteringer kan styres af administratoren fra systemindstillinger.",
+        "Kredit-posteringer er blevet introduceret i beta-version.",
+        "Medarbejderes løntrin og satser opdaterer nu på de dynamiske timetyper og tillægstyper i app'en.",
+        "Implementerede en number-picker-funktion på flere steder i app'en, hvor simple tal skal indtastes.",
+        "Nu kan man søge opgaver, kunder, medarbejdere osv. frem via søgefeltet i toppen af app'en.",
+        "Besøgs-popup'en har fået et nyt, bedre og mere overskueligt design.",
+        "Justerede mobil-headeren, så knapperne udnytter pladsen bedre.",
+        "Notifikationsvinduet vil nu altid åbne med korrekt fane-visning.",
+        "Når man åbner notifikationer på mobilen vil headeren nu ikke vise andet end en lukke-knap. Knappen vil lukke notifikationerne igen.",
+        "Rettede en fejl, der gjorde, at man ikke altid kunne hente flere notifikationer i mobilvinduet.",
+        "På åbne opgaver er 'Rediger kunde' nu blevet erstattet af en dropdown-menu, hvor man både kan redigere i kundeinformationerne samt gå til kunden direkte. Et tryk på kundens navn leder nu også til kundens side.",
+        "Popup'en, hvori man fra opgavesiden kan redigere i kundeinformationerne, er nu blevet mere overskuelig.",
+        "Switcher-knapper i app'en har fået et nyt og mere moderne udtryk.",
+        "Optimerede navigationen i indstillinger-view'et på mobilen, så titlen og tilbageknappen på indstillinger-undersider nu står i headeren i stedet for i content-vinduet.",
+        "'Timer & tillæg'-siden i indstillinger er blevet opdateret. Nu kan administratorer tilpasse timer, tillæg, rabat og låse-indstillinger for posteringerne i app'en – herunder også priser og standard-honorarsatser.",
+        "Administratorer kan nu tilpasse moms-indstillinger for app'en under app-indstillinger.",
+        "Administratorer kan nu oprette og redigere i et fast, internt varesortiment, som medarbejdere nemt kan fremsøge og vælge elementer fra i 'Materialer'-tabben fra posteringer.",
+        "Log ud-knappen på desktop er blevet flyttet fra headeren og til sidebaren.",
+        "Der er blevet oprettet en ny side: 'Økonomi'. Det økonomiske overblik, der tidligere lå på 'Overblik'-siden, er blevet flyttet til denne side."
+    ]
+},{
     version: "3.11.3",
     date: "21. december 2025",
     changes: [

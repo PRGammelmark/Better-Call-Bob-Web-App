@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Styles from './popUpMenu.module.css';
+import SwitcherStyles from '../../pages/Switcher.module.css';
 import { Ellipsis, X } from 'lucide-react';
 
-const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassName, text, icon, direction = 'right', variant = 'white' }) => {
+const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassName, text, icon, direction = 'right', variant = 'white', openAbove = false }) => {
   const [open, setOpen] = useState(false);
   const [closing, setClosing] = useState(false);
   const menuRef = useRef();
@@ -42,7 +43,7 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
       onClick={e => e.stopPropagation()}
       onPointerDown={e => e.stopPropagation()}
     >
-      <button className={`${Styles.popUpMenuButton} ${text ? Styles.withText : ''} ${variant === 'grey' ? Styles.greyButton : ''} ${open ? Styles.buttonOnMenuOpen : ""} ${buttonClassName}`} onClick={handleToggle}>
+      <button type="button" className={`${Styles.popUpMenuButton} ${text ? Styles.withText : ''} ${variant === 'grey' ? Styles.greyButton : ''} ${open ? Styles.buttonOnMenuOpen : ""} ${buttonClassName}`} onClick={handleToggle}>
         {!text && <X className={`${Styles.popUpMenuIcon} ${open ? Styles.iconClose : ''}`} />}
         {text ? (
           <span className={`${Styles.popUpMenuText ?? ''} ${open ? '' : Styles.iconOpen}`}>
@@ -55,12 +56,41 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
       </button>
 
       {open && (
-        <div ref={menuRef} className={`${Styles.popUpMenu} ${direction === 'left' ? Styles.alignLeft : Styles.alignRight} ${variant === 'grey' ? Styles.menuTight : ''} ${closing ? Styles.closing : Styles.opening} ${menuClassName}`}>
+        <div ref={menuRef} className={`${Styles.popUpMenu} ${direction === 'left' ? Styles.alignLeft : Styles.alignRight} ${variant === 'grey' ? Styles.menuTight : ''} ${openAbove ? Styles.openAbove : ''} ${closing ? Styles.closing : Styles.opening} ${menuClassName}`}>
           {actions.map((action, index) => (
-            <button key={index} onClick={() => { action.onClick(); handleClose(); }}>
+            action.switch ? (
+              <div key={index} className={Styles.switchMenuItem} onClick={(e) => e.stopPropagation()}>
+                <span className={Styles.switchMenuLabel}>{action.label}</span>
+                <div className={SwitcherStyles.checkboxContainer} style={{ marginTop: 0 }} onClick={(e) => e.stopPropagation()}>
+                  <label 
+                    htmlFor={`popup-switch-${index}`} 
+                    style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      id={`popup-switch-${index}`}
+                      name={`popup-switch-${index}`}
+                      className={SwitcherStyles.checkboxInput}
+                      checked={action.checked ?? false}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        action.onChange?.(e.target.checked);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className={`${SwitcherStyles.switch} ${action.checked ? SwitcherStyles.switchActive : ''}`}>
+                      <div className={SwitcherStyles.switchThumb}></div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <button type="button" key={index} onClick={() => { action.onClick(); handleClose(); }}>
               {action.icon && <span className={Styles.popUpMenuInnerIcon}>{action.icon}</span>}
               <span>{action.label}</span>
             </button>
+            )
           ))}
         </div>
       )}

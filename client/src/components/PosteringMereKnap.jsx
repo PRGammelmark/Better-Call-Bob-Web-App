@@ -122,10 +122,10 @@ const PosteringMereKnap = ({ postering, setOpenMenuForPosteringID, sletPostering
               {/* REDIGER-UNDERMENU */}
               {undermenuValg === 'rediger' && (
                 <>
-                  {posteringBetalt === 0 && <button onClick={() => { setOpenPosteringModalID(postering._id); handleClose(); }}>
+                  {(user?.isAdmin || posteringBetalt === 0) && <button onClick={() => { setOpenPosteringModalID(postering._id); handleClose(); }}>
                     <span><TableOfContents className={Styles.posteringMereInnerKnapIcon}/> Indhold</span>
                   </button>}
-                  {posteringBetalt === 0 && <button onClick={() => { setOpenRetPrissatsModalID(postering._id); handleClose(); }}>
+                  {(user?.isAdmin || posteringBetalt === 0) && <button onClick={() => { setOpenRetPrissatsModalID(postering._id); handleClose(); }}>
                     <span><Settings2 className={Styles.posteringMereInnerKnapIcon}/> Prissats</span>
                   </button>}
                   {user.isAdmin && <button onClick={() => { setOpenRetLønsatsModalID(postering._id); handleClose(); }}>

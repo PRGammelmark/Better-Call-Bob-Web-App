@@ -111,6 +111,46 @@ const indstillingerSchema = Joi.object({
     bookingRedirectUrl: Joi.string()
       .max(2000)
       .allow("")
+      .optional(),
+    
+    medarbejdereKanGiveRabat: Joi.boolean()
+      .optional(),
+    
+    maksRabatSats: Joi.number()
+      .min(0)
+      .max(100)
+      .optional(),
+    
+    modregnKunderabatIMedarbejderlon: Joi.boolean()
+      .optional(),
+    
+    modregningsmetode: Joi.string()
+      .valid("Match beløb", "Match procentdel")
+      .optional(),
+    
+    laasPosteringerEfterAntalDage: Joi.boolean()
+      .optional(),
+    
+    laasPosteringerEfterAntalDageVærdi: Joi.number()
+      .min(1)
+      .max(7)
+      .optional(),
+    
+    laasPosteringerAutomatisk: Joi.boolean()
+      .optional(),
+    
+    laasPosteringerAutomatiskType: Joi.string()
+      .valid("ugedag", "månedsdag")
+      .optional(),
+    
+    laasPosteringerAutomatiskUgedag: Joi.number()
+      .min(0)
+      .max(6)
+      .optional(),
+    
+    laasPosteringerAutomatiskMånedsdag: Joi.number()
+      .min(1)
+      .max(31)
       .optional()
 });
 
@@ -201,6 +241,16 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.bookingLogo !== undefined) updateData.bookingLogo = value.bookingLogo;
     if (value.bookingFavicon !== undefined) updateData.bookingFavicon = value.bookingFavicon;
     if (value.bookingRedirectUrl !== undefined) updateData.bookingRedirectUrl = value.bookingRedirectUrl;
+    if (value.medarbejdereKanGiveRabat !== undefined) updateData.medarbejdereKanGiveRabat = value.medarbejdereKanGiveRabat;
+    if (value.maksRabatSats !== undefined) updateData.maksRabatSats = value.maksRabatSats;
+    if (value.modregnKunderabatIMedarbejderlon !== undefined) updateData.modregnKunderabatIMedarbejderlon = value.modregnKunderabatIMedarbejderlon;
+    if (value.modregningsmetode !== undefined) updateData.modregningsmetode = value.modregningsmetode;
+    if (value.laasPosteringerEfterAntalDage !== undefined) updateData.laasPosteringerEfterAntalDage = value.laasPosteringerEfterAntalDage;
+    if (value.laasPosteringerEfterAntalDageVærdi !== undefined) updateData.laasPosteringerEfterAntalDageVærdi = value.laasPosteringerEfterAntalDageVærdi;
+    if (value.laasPosteringerAutomatisk !== undefined) updateData.laasPosteringerAutomatisk = value.laasPosteringerAutomatisk;
+    if (value.laasPosteringerAutomatiskType !== undefined) updateData.laasPosteringerAutomatiskType = value.laasPosteringerAutomatiskType;
+    if (value.laasPosteringerAutomatiskUgedag !== undefined) updateData.laasPosteringerAutomatiskUgedag = value.laasPosteringerAutomatiskUgedag;
+    if (value.laasPosteringerAutomatiskMånedsdag !== undefined) updateData.laasPosteringerAutomatiskMånedsdag = value.laasPosteringerAutomatiskMånedsdag;
 
     console.log("Update data:", updateData);
 

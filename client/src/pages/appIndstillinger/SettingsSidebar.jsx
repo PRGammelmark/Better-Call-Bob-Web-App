@@ -1,6 +1,6 @@
 import React from 'react'
 import SettingsButtons from '../../components/basicComponents/buttons/SettingsButtons.jsx'
-import { Settings, Coins, Users, Calendar } from 'lucide-react'
+import { Settings, Coins, Users, Calendar, ClipboardList } from 'lucide-react'
 import Styles from './SettingsSidebar.module.css'
 
 const SettingsSidebar = ({ activePage, setActivePage, isMobile }) => {
@@ -15,12 +15,20 @@ const SettingsSidebar = ({ activePage, setActivePage, isMobile }) => {
             ]
         },
         {
-            name: "Priser & betaling",
+            name: "Ressourcer",
             icon: <Coins size={18} />,
             items: [
                 { id: 'timer-tillæg', label: 'Timer & tillæg' },
                 { id: 'materialer', label: 'Materialer' },
-                { id: 'opkrævning', label: 'Opkrævning' }
+                { id: 'pauser', label: 'Pauser' }
+            ]
+        },
+        {
+            name: "Registrering",
+            icon: <ClipboardList size={18} />,
+            items: [
+                { id: 'opkrævning', label: 'Opkrævning' },
+                { id: 'arbejdssedler', label: 'Arbejdssedler' }
             ]
         },
         {

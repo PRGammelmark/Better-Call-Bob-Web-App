@@ -6,10 +6,15 @@ import Cropper from 'react-easy-crop'
 import { getCroppedImg } from '../../utils/cropImage.js'
 import imageCompression from 'browser-image-compression'
 import axios from 'axios'
+import { useAuthContext } from '../../hooks/useAuthContext'
 import Styles from './ProfilePictureModal.module.css'
 import { Camera, X, Check } from 'lucide-react'
 
 const ProfilePictureModal = ({ trigger, setTrigger, user, bruger, refetchBruger, setRefetchBruger }) => {
+    const { updateUser } = useAuthContext()
+    const currentUserID = user?.id || user?._id
+    const brugerID = bruger?._id || bruger?.id
+    const isOwnProfile = currentUserID === brugerID
     const [imageSrc, setImageSrc] = useState(null)
     const [crop, setCrop] = useState({ x: 0, y: 0 })
     const [zoom, setZoom] = useState(1)
@@ -105,6 +110,14 @@ const ProfilePictureModal = ({ trigger, setTrigger, user, bruger, refetchBruger,
                 }
             )
 
+            // Update AuthContext if it's the current user's profile
+            if (isOwnProfile && updateUser) {
+                updateUser({
+                    ...user,
+                    profilbillede: downloadURL
+                })
+            }
+
             // Refresh user data
             setRefetchBruger((prev) => !prev)
             setTrigger(false)
@@ -189,6 +202,14 @@ const ProfilePictureModal = ({ trigger, setTrigger, user, bruger, refetchBruger,
                                                         },
                                                     }
                                                 )
+
+                                                // Update AuthContext if it's the current user's profile
+                                                if (isOwnProfile && updateUser) {
+                                                    updateUser({
+                                                        ...user,
+                                                        profilbillede: null
+                                                    })
+                                                }
 
                                                 setRefetchBruger((prev) => !prev)
                                                 setTrigger(false)

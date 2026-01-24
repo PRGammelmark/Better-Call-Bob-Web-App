@@ -29,10 +29,20 @@ export const natligFakturaBetalingTjek = async (options = {}) => {
         let samletBetaltBeløb = 0;
         const betalteFakturaer = [];
         
+        // Hjælpefunktion til at få total pris inkl. moms (understøtter både ny og gammel struktur)
+        const getTotalPrisInklMoms = (postering) => {
+            // Ny struktur har totalPrisInklMoms direkte
+            if (postering.totalPrisInklMoms !== undefined && postering.totalPrisInklMoms !== null) {
+                return postering.totalPrisInklMoms;
+            }
+            // Gammel struktur: totalPris er eks. moms, så vi ganger med 1.25
+            return (postering.totalPris || 0) * 1.25;
+        };
+
         // Gennemgå hver postering
         for (const postering of allePosteringer) {
             // Beregn om posteringen er fuldt betalt
-            const posteringTotalPris = postering.totalPris * 1.25;
+            const posteringTotalPris = getTotalPrisInklMoms(postering);
             const betalingerSum = postering.betalinger?.reduce((sum, betaling) => sum + betaling.betalingsbeløb, 0) || 0;
             
             // Spring over hvis posteringen allerede er fuldt betalt

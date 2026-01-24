@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate, matchPath } from 'react-router-dom'
 import LogoPlaceholder from '../assets/logo-placeholder.png'
 import HamburgerIcon from '../assets/hamburgerIcon.svg'
 import BackIcon from '../assets/backMobile.svg'
 import SwitchArrows from '../assets/switchArrows.svg'
-import { useLogout } from '../hooks/useLogout.js'
 import Styles from './Header.module.css'
 import { useAuthContext } from '../hooks/useAuthContext'
 import MobileNavMenu from './MobileNavMenu'
 import { useOverblikView } from '../context/OverblikViewContext.jsx'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
+import { useAppSettingsNavigation } from '../context/AppSettingsNavigationContext.jsx'
 import { currentVersion, changes } from '../version.js'
-import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, LogOut, Menu, Calendar } from 'lucide-react';
+import { ArrowLeftRight, LayoutGrid, ClipboardList, ClipboardCheck, Trash2, Pin, User, IdCardLanyard, Users, UserRoundPlus, ScrollText, Settings, CircleQuestionMark, ClipboardPlus, Menu, Calendar, ChevronLeft, Coins } from 'lucide-react';
 import NotifikationKlokke from './NotifikationKlokke'
+import Søgning from './Søgning'
 
 
 const Header = () => {
@@ -20,12 +21,17 @@ const Header = () => {
   const [showNavMenu, setShowNavMenu] = useState(false);
   const [navTitle, setNavTitle] = useState("")
   const [showBackIcon, setShowBackIcon] = useState(false)
+  const [åbenNotifikationer, setÅbenNotifikationer] = useState(false);
+  const [åbenSøgning, setÅbenSøgning] = useState(false);
+  const notifikationKlokkeDesktopRef = useRef(null);
+  const søgningDesktopRef = useRef(null);
   const { managerOverblik, setManagerOverblik } = useOverblikView()
   const { user } = useAuthContext();
-  const { logout } = useLogout();
   const { indstillinger } = useIndstillinger();
+  const { activeSettingsPage, setActiveSettingsPage } = useAppSettingsNavigation();
   const location = useLocation();
   const navigate = useNavigate();
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 750);
   
   // Use logo from indstillinger if available, otherwise use placeholder logo
   const headerLogo = indstillinger?.logo || LogoPlaceholder;
@@ -47,6 +53,7 @@ const Header = () => {
     '/din-konto': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
     '/profil/:brugerID': (<div className={Styles.mobileTitle}> <User height={20} />Profil</div>),
     '/app-indstillinger': (<div className={Styles.mobileTitle}> <Settings height={20} />App-indstillinger</div>),
+    '/okonomi': (<div className={Styles.mobileTitle}> <Coins height={20} />Økonomi</div>),
     '/ny-kunde': (<div className={Styles.mobileTitle}> <UserRoundPlus height={20} />Opret ny kunde</div>),
     '/hjaelp': (<div className={Styles.mobileTitle}> <CircleQuestionMark height={20} />Hjælp</div>),
     '/version': `Ændringslog (v${currentVersion})`,
@@ -56,17 +63,32 @@ const Header = () => {
     '/login': "Log ind"
   }
 
-  // ===== PADDING TOP FOR ANDROID =====
-  // useEffect(() => {
-  //   const isAndroid = /android/i.test(navigator.userAgent);
-  //   const headerEl = document.querySelector(`.${Styles.header}`);
-  //   if (isAndroid && headerEl) {
-  //     // typisk 24px er statusbar-højde på Android
-  //     headerEl.style.paddingTop = '24px';
-  //   }
-  // }, []);
-
   const showBackIconRoutes = ['/opgave/:opgaveID', '/ny-opgave', '/ny-bruger', '/kunde/:kundeID', '/ny-kunde'];
+
+  // Page titles for app settings sub-pages
+  const settingsPageTitles = {
+    'virksomhedsoplysninger': 'Virksomhedsoplysninger',
+    'links': 'Links',
+    'beta-funktioner': 'Beta-funktioner',
+    'timer-tillæg': 'Timer & tillæg',
+    'materialer': 'Materialer',
+    'opkrævning': 'Opkrævning',
+    'rettigheder': 'Rettigheder',
+    'arbejdspræferencer': 'Arbejdspræferencer',
+    'branding': 'Branding',
+    'fintuning': 'Fintuning',
+    'informationsbokse': 'Informationsbokse'
+  };
+
+  // Handle window resize for mobile detection
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 750);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
 const matchedRoute = showBackIconRoutes.find(route =>
   matchPath({ path: route, end: false }, location.pathname)
@@ -77,28 +99,66 @@ const currentTitleRoute = Object.keys(routeTitles).find(route =>
 );
 
 useEffect(() => {
-  if (location.pathname.startsWith('/opgave/')) {
+  // Reset active settings page if we navigate away from app-indstillinger
+  if (location.pathname !== '/app-indstillinger' && activeSettingsPage) {
+    setActiveSettingsPage(null);
+  }
+
+  // Check if we're on app-indstillinger with an active sub-page (mobile only)
+  const isOnSettingsWithSubPage = location.pathname === '/app-indstillinger' && activeSettingsPage && isMobile;
+  
+  if (isOnSettingsWithSubPage) {
+    // Show sub-page title in header
+    setNavTitle(settingsPageTitles[activeSettingsPage] || "Indstillinger");
+    setShowBackIcon(true);
+  } else if (location.pathname.startsWith('/opgave/')) {
     const opgaveID = location.pathname.split('/').pop() || "";
     const lastThreeChars = opgaveID.slice(-3);
     setNavTitle(<div className={Styles.mobileTitle}><ClipboardList height={20} />Opgave #{lastThreeChars}</div>);
+    setShowBackIcon(!!matchedRoute);
   } else if (currentTitleRoute) {
     setNavTitle(routeTitles[currentTitleRoute]);
+    setShowBackIcon(!!matchedRoute);
   } else {
     setNavTitle("Ingen titel");
+    setShowBackIcon(!!matchedRoute);
   }
+}, [location.pathname, activeSettingsPage, isMobile, setActiveSettingsPage]);
 
-  setShowBackIcon(!!matchedRoute);
-}, [location.pathname]);
-
-
-  const handleLogout = () => {
-    if(window.confirm("Er du sikker på, at du vil logge ud?")) {
-      logout()
+useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (åbenNotifikationer) {
+      const isClickInsideDesktop = notifikationKlokkeDesktopRef.current?.contains(event.target);
+      
+      if (!isClickInsideDesktop) {
+        setÅbenNotifikationer(false);
+      }
     }
+    // På mobil håndterer Søgning-komponenten selv sin close-logik via "Annuller"-knappen
+    // så vi skal ikke lukke den via click outside her
+    if (åbenSøgning && !isMobile) {
+      const isClickInsideSøgning = søgningDesktopRef.current?.contains(event.target);
+      
+      if (!isClickInsideSøgning) {
+        setÅbenSøgning(false);
+      }
+    }
+  };
+
+  if (åbenNotifikationer || (åbenSøgning && !isMobile)) {
+    document.addEventListener('mousedown', handleClickOutside);
   }
+
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
+  };
+}, [åbenNotifikationer, åbenSøgning, isMobile]);
 
   const handleBackClick = () => {
-    if (window.history.length > 1) {
+    // If we're on app-indstillinger with an active sub-page, go back to settings sidebar
+    if (location.pathname === '/app-indstillinger' && activeSettingsPage && isMobile) {
+      setActiveSettingsPage(null);
+    } else if (window.history.length > 1) {
       navigate(-1);
     } else {
       navigate('/');
@@ -119,22 +179,25 @@ useEffect(() => {
             style={{ height: `${logoSize}%` }}
           />
           <div className={Styles.headerButtonsContainer}>
-            <NotifikationKlokke background="#e7eae7" color="#222222" />
-            <div className={Styles.headerButton} onClick={handleLogout}>
-              <LogOut />
+            <div ref={søgningDesktopRef}>
+              <Søgning background="#e7eae7" color="#222222" åbenSøgning={åbenSøgning} setÅbenSøgning={setÅbenSøgning} onOpen={() => setÅbenNotifikationer(false)} />
+            </div>
+            <div ref={notifikationKlokkeDesktopRef}>
+              <NotifikationKlokke background="#e7eae7" color="#222222" åbenNotifikationer={åbenNotifikationer} setÅbenNotifikationer={setÅbenNotifikationer} onOpen={() => setÅbenSøgning(false)} />
             </div>
           </div>
-          {/* <nav>
-              <ul className={Styles.headerUl}>
-                  {user ? <li className={Styles.headerLi} onClick={handleLogout}><LogOut />Log ud</li> : null}
-              </ul>
-          </nav> */}
       </header>
       <header className={`${Styles.header} ${Styles.mobileHeader}`}>
           <nav className={Styles.mobileNavList}>
-              <div className={Styles.backIconContainer}>
-                {showBackIcon && <img src={BackIcon} alt="" className={Styles.backIconMobile} onClick={handleBackClick}/>}
-                {user.isAdmin && location.pathname === '/' && 
+              <div className={`${Styles.backIconContainer} ${(åbenNotifikationer || åbenSøgning) ? Styles.fadeOut : ''}`}>
+                {showBackIcon && (
+                  location.pathname === '/app-indstillinger' && activeSettingsPage && isMobile ? (
+                    <ChevronLeft size={24} className={Styles.backChevronMobile} onClick={handleBackClick} />
+                  ) : (
+                    <img src={BackIcon} alt="" className={Styles.backIconMobile} onClick={handleBackClick}/>
+                  )
+                )}
+                {user.isAdmin && location.pathname === '/' && !activeSettingsPage && 
                 <div className={Styles.switchButtonContainer} onClick={handleSwitchClick}>
                     <p className={`${Styles.switchText} ${managerOverblik ? Styles.switchTextVisible : ''}`}>
                       Manager
@@ -144,18 +207,16 @@ useEffect(() => {
                     </p>
                   <div className={Styles.switchIconContainer}>
                     <ArrowLeftRight size={20} />
-                    {/* <img src={SwitchArrows} alt="" className={`${Styles.backIconMobile} ${Styles.switchIcon}`} /> */}
                   </div>
                 </div>}
               </div>
-              <h3 className={Styles.mobileNavHeading}>{navTitle || "Ingen titel"}</h3>
+              <h3 className={`${Styles.mobileNavHeading} ${(åbenNotifikationer || åbenSøgning) ? Styles.fadeOut : ''}`}>{navTitle || "Ingen titel"}</h3>
               <div className={Styles.headerButtonsContainer}>
-              <NotifikationKlokke background="#ffffff20" color="#ffffff" />
-              {/* <div className={Styles.hamburgerMobileContainer}><Menu onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} size={20} /></div> */}
+                <Søgning background={"#ffffff20"} color={"#ffffff"} åbenSøgning={åbenSøgning} setÅbenSøgning={setÅbenSøgning} onOpen={() => setÅbenNotifikationer(false)} />
+                <NotifikationKlokke background={"#ffffff20"} color={"#ffffff"} åbenNotifikationer={åbenNotifikationer} setÅbenNotifikationer={setÅbenNotifikationer} onOpen={() => setÅbenSøgning(false)} />
               </div>
-              {/* <img onClick={() => {showNavMenu ? setShowNavMenu(false) : setShowNavMenu(true)}} className={Styles.hamburgerMobile} src={HamburgerIcon} alt="" /> */}
           </nav>
-          {showNavMenu ? <MobileNavMenu handleLogout={handleLogout} setShowNavMenu={setShowNavMenu}/> : null}
+          {showNavMenu ? <MobileNavMenu setShowNavMenu={setShowNavMenu}/> : null}
       </header>
     </>
   )

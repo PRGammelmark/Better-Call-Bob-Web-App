@@ -39,6 +39,7 @@ import Kalender from './pages/kalender/Kalender'
 import KalenderV2 from './pages/kalender/KalenderV2'
 import MobilePayOversigt from './pages/MobilePayOversigt'
 import MineOpgaver2 from './pages/MineOpgaver2'
+import Okonomi from './pages/Okonomi'
 
 
 // Redirect component for /din-konto -> /profil/:brugerID
@@ -104,6 +105,7 @@ function App() {
           <Route path="din-konto" element={<RedirectToProfil />} errorElement={<ErrorPage />}/>
           <Route path="version" element={<Version />} errorElement={<ErrorPage />}/>
           <Route path="app-indstillinger" element={<AppIndstillinger />} errorElement={<ErrorPage />}/>
+          <Route path="okonomi" element={<Okonomi />} errorElement={<ErrorPage />}/>
           <Route path="hjaelp" element={<Hjaelp />} errorElement={<ErrorPage />}/>
           <Route path="opgave/:opgaveID" element={<ÅbenOpgave />} errorElement={<ErrorPage />}/>
           <Route path="ny-opgave" element={<NyOpgave />} errorElement={<ErrorPage />}/>

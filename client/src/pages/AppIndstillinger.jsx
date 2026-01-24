@@ -3,12 +3,12 @@ import Styles from './AppIndstillinger.module.css'
 import axios from 'axios'
 import { useAuthContext } from '../hooks/useAuthContext.js'
 import { useIndstillinger } from '../context/IndstillingerContext.jsx'
+import { useAppSettingsNavigation } from '../context/AppSettingsNavigationContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import { storage } from '../firebase.js'
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage'
 import imageCompression from 'browser-image-compression'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronLeft } from 'lucide-react'
 import SettingsSidebar from './appIndstillinger/SettingsSidebar.jsx'
 import Virksomhedsoplysninger from './appIndstillinger/Virksomhedsoplysninger.jsx'
 import Links from './appIndstillinger/Links.jsx'
@@ -17,7 +17,9 @@ import Branding from './appIndstillinger/Branding.jsx'
 import Fintuning from './appIndstillinger/Fintuning.jsx'
 import TimerTillæg from './appIndstillinger/TimerTillæg.jsx'
 import Materialer from './appIndstillinger/Materialer.jsx'
+import Pauser from './appIndstillinger/Pauser.jsx'
 import Opkrævning from './appIndstillinger/Opkrævning.jsx'
+import Arbejdssedler from './appIndstillinger/Arbejdssedler.jsx'
 import Rettigheder from './appIndstillinger/Rettigheder.jsx'
 import Informationsbokse from './appIndstillinger/Informationsbokse.jsx'
 import BetaFunktioner from './appIndstillinger/BetaFunktioner.jsx'
@@ -29,7 +31,9 @@ const PAGE_ORDER = [
     'beta-funktioner',
     'timer-tillæg',
     'materialer',
+    'pauser',
     'opkrævning',
+    'arbejdssedler',
     'rettigheder',
     'arbejdspræferencer',
     'branding',
@@ -44,7 +48,9 @@ const PAGE_TITLES = {
     'beta-funktioner': 'Beta-funktioner',
     'timer-tillæg': 'Timer & tillæg',
     'materialer': 'Materialer',
+    'pauser': 'Pauser',
     'opkrævning': 'Opkrævning',
+    'arbejdssedler': 'Arbejdssedler',
     'rettigheder': 'Rettigheder',
     'arbejdspræferencer': 'Arbejdspræferencer',
     'branding': 'Branding',
@@ -82,6 +88,8 @@ const AppIndstillinger = () => {
     const navigate = useNavigate();
     const { user } = useAuthContext();
     const { indstillinger } = useIndstillinger();
+    const { activeSettingsPage, setActiveSettingsPage } = useAppSettingsNavigation();
+    const isUpdatingFromContextRef = useRef(false) // Track if update is from context (Header)
 
     const [activePage, setActivePage] = useState(null) // null means show sidebar on mobile
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 750)
@@ -130,6 +138,10 @@ const AppIndstillinger = () => {
         }
         
         setActivePage(newPage)
+        // Mark that we're updating from local change, so useEffect ignores it
+        isUpdatingFromContextRef.current = true
+        // Update context for Header component (null when showing sidebar)
+        setActiveSettingsPage(newPage)
     }
 
     // Handle window resize for mobile detection
@@ -153,6 +165,38 @@ const AppIndstillinger = () => {
         }
     }, [isMobile, activePage])
 
+    // Sync local activePage state with context (for back button from Header)
+    // This effect handles when Header updates the context (e.g., back button click)
+    useEffect(() => {
+        // Skip if this update came from our own handlePageChange
+        if (isUpdatingFromContextRef.current) {
+            isUpdatingFromContextRef.current = false
+            return
+        }
+        
+        // Only sync if context differs from local state (external change from Header)
+        if (activeSettingsPage !== activePage) {
+            if (activeSettingsPage === null && activePage !== null) {
+                // Going back to sidebar from Header back button
+                setAnimationDirection('backward')
+                setActivePage(null)
+            } else if (activeSettingsPage !== null && activePage !== activeSettingsPage) {
+                // Navigating to a different page (shouldn't normally happen from Header)
+                const newIndex = PAGE_ORDER.indexOf(activeSettingsPage)
+                const currentIndex = activePage !== null ? PAGE_ORDER.indexOf(activePage) : -1
+                setAnimationDirection(newIndex > currentIndex ? 'forward' : 'backward')
+                setActivePage(activeSettingsPage)
+            }
+        }
+    }, [activeSettingsPage]) // Only depend on activeSettingsPage to detect external changes
+
+    // Cleanup: reset active settings page when component unmounts
+    useEffect(() => {
+        return () => {
+            setActiveSettingsPage(null)
+        }
+    }, [setActiveSettingsPage])
+
     if(!user.isAdmin) {
         window.alert("Du skal være administrator for at kunne tilgå denne side.")
         return
@@ -166,7 +210,7 @@ const AppIndstillinger = () => {
         })
         .then(res => {
             setOpgavetyper(res.data)
-            console.log(res.data)
+            // console.log(res.data)
         })
         .catch(error => console.log(error))
     }, [refetchOpgavetyper])
@@ -356,7 +400,6 @@ const AppIndstillinger = () => {
                     }
                 }
             )
-            console.log("Hjemmeside opdateret")
         } catch (err) {
             console.error("Fejl ved opdatering af hjemmeside", err)
         }
@@ -781,8 +824,12 @@ const AppIndstillinger = () => {
                 return <TimerTillæg />
             case 'materialer':
                 return <Materialer />
+            case 'pauser':
+                return <Pauser />
             case 'opkrævning':
                 return <Opkrævning />
+            case 'arbejdssedler':
+                return <Arbejdssedler />
             case 'rettigheder':
                 return <Rettigheder />
             case 'informationsbokse':
@@ -806,7 +853,7 @@ const AppIndstillinger = () => {
 
     return (
         <div className={Styles.pageContent}>
-            <h1>App-indstillinger</h1>
+            {/* <h1>App-indstillinger</h1> */}
             <div className={Styles.container}>
                 {!isMobile && (
                     <SettingsSidebar 
@@ -852,18 +899,6 @@ const AppIndstillinger = () => {
                                     width: '100%'
                                 }}
                             >
-                                {isMobile && (
-                                    <div className={Styles.mobileHeader}>
-                                        <button 
-                                            className={Styles.backButton}
-                                            onClick={() => handlePageChange(null)}
-                                        >
-                                            <ChevronLeft size={20} />
-                                            Tilbage
-                                        </button>
-                                        <div className={Styles.mobilePageTitle}>{PAGE_TITLES[activePage]}</div>
-                                    </div>
-                                )}
                                 {renderPage()}
                             </motion.div>
                         )}

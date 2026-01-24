@@ -20,12 +20,12 @@ export const NotifikationProvider = ({ children }) => {
     axios.get(`${import.meta.env.VITE_API_URL}/notifikationer/bruger/${userID}`)
       .then(res => {
         setNotifikationer(res.data);
-        console.log("Notifikationer hentet:", res.data);
+        // console.log("Notifikationer hentet:", res.data);
       })
       .catch(err => console.error("Kunne ikke hente notifikationer:", err));
 
     const connectSSE = () => {
-      console.log("Opretter SSE forbindelse...");
+      // console.log("Opretter SSE forbindelse...");
       evtSourceRef.current = new EventSource(`${import.meta.env.VITE_API_URL}/notifikationer/stream/${userID}`);
 
       evtSourceRef.current.onmessage = (event) => {
