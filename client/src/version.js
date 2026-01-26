@@ -14,6 +14,12 @@
 // 
 
 const changes = [{
+    version: "4.0.2",
+    date: "26. januar 2026",
+    changes: [
+        "Rettede en fejl i materialeregistrering på mobil, der gjorde det umuligt at tilføje kostpris til nye materialer.s",
+    ]
+},{
     version: "4.0.1",
     date: "26. januar 2026",
     changes: [

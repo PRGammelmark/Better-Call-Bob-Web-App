@@ -240,29 +240,19 @@ const MaterialerTab = ({
                         <div className={Styles.addFormHorizontal}>
                             <div className={Styles.formFieldSmall}>
                                 <label className={Styles.formLabel}>Kostpris (ekskl. moms)</label>
-                                {isMobile ? (
-                                    <NumberPicker
-                                        min={0}
-                                        max={100000}
-                                        value={nyMaterialeKostpris ? parseFloat(nyMaterialeKostpris) : 0}
-                                        onChange={(val) => setNyMaterialeKostpris(val.toString())}
-                                        step={1}
-                                    />
-                                ) : (
-                                    <input
-                                        type="number"
-                                        className={Styles.formInput}
-                                        value={nyMaterialeKostpris}
-                                        onChange={(e) => {
-                                            const val = e.target.value.replace(',', '.');
-                                            if (/^[0-9]*\.?[0-9]*$/.test(val) || val === "") {
-                                                setNyMaterialeKostpris(val);
-                                            }
-                                        }}
-                                        placeholder="0"
-                                        min="0"
-                                    />
-                                )}
+                                <input
+                                    type="text"
+                                    inputMode="decimal"
+                                    className={Styles.formInput}
+                                    value={nyMaterialeKostpris}
+                                    onChange={(e) => {
+                                        const val = e.target.value.replace(',', '.');
+                                        if (/^[0-9]*\.?[0-9]*$/.test(val) || val === "") {
+                                            setNyMaterialeKostpris(val);
+                                        }
+                                    }}
+                                    placeholder="0"
+                                />
                             </div>
                             {!visSalgspris ? (
                                 <button
@@ -275,29 +265,19 @@ const MaterialerTab = ({
                             ) : (
                                 <div className={Styles.formFieldSmall}>
                                     <label className={Styles.formLabel}>Salgspris (ekskl. moms)</label>
-                                    {isMobile ? (
-                                        <NumberPicker
-                                            min={0}
-                                            max={100000}
-                                            value={nyMaterialeSalgspris ? parseFloat(nyMaterialeSalgspris) : 0}
-                                            onChange={(val) => setNyMaterialeSalgspris(val.toString())}
-                                            step={1}
-                                        />
-                                    ) : (
-                                        <input
-                                            type="number"
-                                            className={Styles.formInput}
-                                            value={nyMaterialeSalgspris}
-                                            onChange={(e) => {
-                                                const val = e.target.value.replace(',', '.');
-                                                if (/^[0-9]*\.?[0-9]*$/.test(val) || val === "") {
-                                                    setNyMaterialeSalgspris(val);
-                                                }
-                                            }}
-                                            placeholder="0"
-                                            min="0"
-                                        />
-                                    )}
+                                    <input
+                                        type="text"
+                                        inputMode="decimal"
+                                        className={Styles.formInput}
+                                        value={nyMaterialeSalgspris}
+                                        onChange={(e) => {
+                                            const val = e.target.value.replace(',', '.');
+                                            if (/^[0-9]*\.?[0-9]*$/.test(val) || val === "") {
+                                                setNyMaterialeSalgspris(val);
+                                            }
+                                        }}
+                                        placeholder="0"
+                                    />
                                 </div>
                             )}
                         </div>
