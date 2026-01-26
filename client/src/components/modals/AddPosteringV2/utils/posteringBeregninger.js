@@ -130,11 +130,9 @@ export function beregnDynamiskHonorarOgPris({
         });
     });
 
-    // Tilføj udlæg (rabat påvirker ikke udlæg)
-    const totalOutlays = outlays.reduce((sum, item) => sum + Number(item.beløb || 0), 0);
-    totalHonorar += totalOutlays;
-    totalPris += totalOutlays;
-
+    // NOTE: Legacy udlæg-array tælles IKKE med - kun materialer bruges nu
+    const totalOutlays = 0; // Legacy felt - udlæg bruges ikke længere
+    
     // Tilføj materialer
     materialer.forEach((materiale) => {
         const antal = Number(materiale.antal) || 1;
@@ -416,20 +414,19 @@ export function bygMaterialer(materialer) {
 
 /**
  * Beregner totaler fra alle dele
+ * NOTE: Legacy udlæg-array tælles IKKE med - kun materialer bruges nu
  */
 export function beregnTotaler(timeregistrering, fasteTillæg, procentTillæg, udlæg, materialer = []) {
     const totalPrisEksklMoms = 
         timeregistrering.reduce((sum, tr) => sum + tr.pris.totalEksMoms, 0) +
         fasteTillæg.reduce((sum, ft) => sum + ft.pris.totalEksMoms, 0) +
         procentTillæg.reduce((sum, pt) => sum + pt.pris.totalEksMoms, 0) +
-        udlæg.reduce((sum, u) => sum + u.totalEksMoms, 0) +
         materialer.reduce((sum, m) => sum + m.totalEksMoms, 0);
 
     const totalMoms = 
         timeregistrering.reduce((sum, tr) => sum + tr.pris.momsBeløb, 0) +
         fasteTillæg.reduce((sum, ft) => sum + ft.pris.momsBeløb, 0) +
         procentTillæg.reduce((sum, pt) => sum + pt.pris.momsBeløb, 0) +
-        udlæg.reduce((sum, u) => sum + u.momsBeløb, 0) +
         materialer.reduce((sum, m) => sum + m.momsBeløb, 0);
 
     const totalPrisInklMoms = totalPrisEksklMoms + totalMoms;
@@ -438,7 +435,6 @@ export function beregnTotaler(timeregistrering, fasteTillæg, procentTillæg, ud
         timeregistrering.reduce((sum, tr) => sum + tr.honorar.total, 0) +
         fasteTillæg.reduce((sum, ft) => sum + ft.honorar.total, 0) +
         procentTillæg.reduce((sum, pt) => sum + pt.honorar.total, 0) +
-        udlæg.reduce((sum, u) => sum + u.totalEksMoms, 0) +
         materialer.reduce((sum, m) => sum + m.totalMedarbejderUdlaeg, 0);
 
     return {

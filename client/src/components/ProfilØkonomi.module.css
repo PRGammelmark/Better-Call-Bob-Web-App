@@ -1,0 +1,651 @@
+.økonomiContainer {
+    padding: 0;
+    max-width: 800px;
+}
+
+/* ===== MÅNEDSNAVIGATION ===== */
+.månedNavigationContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(135deg, #f8faf8 0%, #f0f4f0 100%);
+    border: 1px solid #e0e8e0;
+    border-radius: 16px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+}
+
+.månedNavButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1px solid #d0d8d0;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: #3c5a3f;
+}
+
+.månedNavButton:hover:not(:disabled) {
+    background: #3c5a3f;
+    color: white;
+    border-color: #3c5a3f;
+    transform: scale(1.05);
+}
+
+.månedNavButton:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.månedInfo {
+    text-align: center;
+}
+
+.månedInfo h3 {
+    font-family: "OmnesBold";
+    font-size: 1.25rem;
+    color: #222;
+    margin: 0;
+    text-transform: capitalize;
+}
+
+.periodeText {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* ===== KOLLAPSIBEL SEKTION ===== */
+.kollapsibel {
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 14px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+    overflow: hidden;
+    transition: box-shadow 0.25s ease;
+}
+
+.kollapsibel:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+h2.sektionHeading {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.sektionHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    padding: 16px 18px;
+    background: transparent;
+    border: none;
+    font-family: "OmnesBold";
+    font-size: 1.1rem;
+    color: #3c5a3f;
+    margin: 0;
+    transition: background 0.15s ease;
+}
+
+.sektionHeading span {
+    font-family: "OmnesBold";
+}
+
+.sektionHeading:hover {
+    background: #fafafa;
+}
+
+.kollapsibeltIndhold {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    overflow: hidden;
+    transition: grid-template-rows 0.3s ease, opacity 0.25s ease, padding 0.3s ease;
+    padding: 0px 18px;
+}
+
+.kollapsibeltIndhold > * {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.kollapsibel.åben .kollapsibeltIndhold {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    padding: 18px;
+}
+
+/* Chevron animation */
+.chevron {
+    transition: transform 0.3s ease;
+}
+
+.kollapsibel.åben .chevron {
+    transform: rotate(-180deg);
+}
+
+/* Fjern margin-bottom fra child elements når de er i kollapsibel */
+.kollapsibel .overblikGrid {
+    margin-bottom: 0;
+}
+
+.kollapsibel .udlægListe {
+    margin-bottom: 16px;
+}
+
+.sektionHeading svg {
+    color: #59bf1a;
+}
+
+/* ===== OVERBLIK ===== */
+.overblikSektion {
+    margin-bottom: 32px;
+}
+
+.overblikGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.overblikKort {
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 14px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.overblikKort:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.totalKort {
+    background: linear-gradient(135deg, #3c5a3f 0%, #4a6b4d 100%);
+    border: none;
+}
+
+.totalKort .overblikLabel,
+.totalKort .overblikSubtext {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.totalKort .overblikBeløb {
+    color: white;
+}
+
+.overblikLabel {
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.overblikBeløb {
+    font-family: "OmnesBold";
+    font-size: 1.4rem;
+    margin-bottom: 2px;
+}
+
+.overblikBeløb.optjent {
+    color: #59bf1a;
+}
+
+.overblikBeløb.udlæg {
+    color: #f5a623;
+}
+
+.overblikSubtext {
+    font-size: 0.75rem;
+    color: #aaa;
+}
+
+/* ===== LØNSPECIFIKATION ===== */
+.lønspecifikationSektion {
+    margin-bottom: 32px;
+}
+
+.specifikationContainer {
+    background: #f8f9fa;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.specifikationHeader {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr;
+    gap: 8px;
+    padding: 14px 16px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #e8e8e8;
+    font-family: "OmnesBold";
+    font-size: 0.8rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.specifikationHeader span:not(:first-child) {
+    text-align: right;
+}
+
+.specifikationRække {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr;
+    gap: 8px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.9rem;
+    transition: background 0.15s ease;
+}
+
+.specifikationRække:hover {
+    background: #fafafa;
+}
+
+.specifikationRække span:not(:first-child) {
+    text-align: right;
+    color: #666;
+}
+
+.specifikationRække span:last-child {
+    font-family: "OmnesBold";
+    color: #222;
+}
+
+.udlægRække span:last-child {
+    color: #f5a623;
+}
+
+.rabatRække span:last-child {
+    color: #c1193999;
+}
+
+.specifikationTotal {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1.2fr;
+    gap: 8px;
+    padding: 16px;
+    background: linear-gradient(135deg, #3c5a3f 0%, #4a6b4d 100%);
+    font-family: "OmnesBold";
+    color: white;
+}
+
+.specifikationTotal span {
+    color: white !important;
+}
+
+.specifikationTotal span:not(:first-child) {
+    text-align: right;
+}
+
+/* ===== UDLÆG SEKTION ===== */
+.udlægSektion {
+    margin-bottom: 32px;
+}
+
+.udlægListe {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.udlægKort {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 14px 16px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.udlægKort:hover {
+    border-color: #f5a623;
+    box-shadow: 0 4px 12px rgba(245, 166, 35, 0.12);
+}
+
+.udlægInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.udlægBeskrivelse {
+    font-family: "OmnesBold";
+    font-size: 0.95rem;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.materialeBadge {
+    font-family: "Omnes";
+    font-size: 0.7rem;
+    background: #e8f4ff;
+    color: #2d7dd2;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+.udlægDato {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.udlægActions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.udlægBeløb {
+    font-family: "OmnesBold";
+    font-size: 1rem;
+    color: #f5a623;
+}
+
+.kvitteringKnap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fafafa;
+    font-family: "Omnes";
+    font-size: 0.8rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.kvitteringKnap:hover {
+    background: #3c5a3f;
+    color: white;
+    border-color: #3c5a3f;
+}
+
+.udlægTotal {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: linear-gradient(135deg, #fff8e6 0%, #fff5d9 100%);
+    border: 1px solid #f5d78e;
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: "OmnesBold";
+}
+
+.udlægTotal span:last-child {
+    color: #f5a623;
+    font-size: 1.1rem;
+}
+
+/* ===== DIAGRAM ===== */
+.diagramSektion {
+    margin-bottom: 32px;
+}
+
+.diagramContainer {
+    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    transition: padding 0.3s ease;
+}
+
+.kollapsibel.åben .diagramContainer {
+    padding: 20px 16px 16px 16px;
+}
+
+.diagramLegend {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    padding-top: 16px;
+    border-top: 1px solid #f0f0f0;
+    margin-top: 8px;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.legendDot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+}
+
+.legendOptjent {
+    background: linear-gradient(180deg, #6dd627 0%, #4a9e18 100%);
+}
+
+.legendUdlæg {
+    background: linear-gradient(180deg, #ffb74d 0%, #e59818 100%);
+}
+
+/* ===== KVITTERING POPUP ===== */
+.kvitteringOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.kvitteringModal {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.kvitteringBillede {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.lukKvittering {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+.lukKvittering:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.åbnIFaneKnap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+    color: white;
+    font-family: "Omnes";
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.åbnIFaneKnap:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+/* ===== TOM TILSTAND ===== */
+.tomTilstand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    text-align: center;
+    color: #888;
+}
+
+.tomTilstand svg {
+    color: #ddd;
+    margin-bottom: 16px;
+}
+
+.tomTilstand p {
+    font-family: "OmnesBold";
+    font-size: 1.1rem;
+    color: #666;
+    margin: 0 0 8px 0;
+}
+
+.tomTilstand span {
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE ===== */
+@media screen and (max-width: 750px) {
+    .økonomiContainer {
+        padding: 0;
+    }
+
+    .månedNavigationContainer {
+        padding: 14px 16px;
+        margin-bottom: 20px;
+    }
+
+    .månedNavButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .månedInfo h3 {
+        font-size: 1.1rem;
+    }
+
+    .overblikGrid {
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+    }
+
+    .totalKort {
+        grid-column: span 2;
+    }
+
+    .overblikKort {
+        padding: 16px 12px;
+    }
+
+    .overblikBeløb {
+        font-size: 1.2rem;
+    }
+
+    .specifikationHeader,
+    .specifikationRække,
+    .specifikationTotal {
+        grid-template-columns: 1.5fr 0.8fr 0.8fr 1fr;
+        gap: 6px;
+        font-size: 0.8rem;
+        padding: 10px 12px;
+    }
+
+    .specifikationHeader {
+        font-size: 0.7rem;
+    }
+
+    .udlægKort {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .udlægActions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .diagramContainer {
+        padding: 16px 12px;
+        min-height: 280px;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .overblikGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .totalKort {
+        grid-column: span 1;
+    }
+
+    .specifikationHeader,
+    .specifikationRække,
+    .specifikationTotal {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .specifikationHeader span:nth-child(2),
+    .specifikationHeader span:nth-child(3),
+    .specifikationRække span:nth-child(2),
+    .specifikationRække span:nth-child(3),
+    .specifikationTotal span:nth-child(2),
+    .specifikationTotal span:nth-child(3) {
+        display: none;
+    }
+}
+

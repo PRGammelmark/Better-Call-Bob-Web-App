@@ -22,6 +22,7 @@ import { useIndstillinger } from '../context/IndstillingerContext.jsx'
 import * as beregn from '../utils/beregninger.js'
 import SettingsButtons from '../components/basicComponents/buttons/SettingsButtons.jsx'
 import satser from '../variables.js'
+import ProfilØkonomi from '../components/ProfilØkonomi.jsx'
 
 // Tab configuration
 const tabConfig = [
@@ -564,7 +565,7 @@ const Profil = () => {
           )}
 
           {/* Økonomi Tab */}
-          {activeTab === "økonomi" && (
+          {activeTab === "økonomi" && canViewFullProfile && (
             <motion.div
               key="økonomi"
               initial={{ opacity: 0 }}
@@ -572,9 +573,11 @@ const Profil = () => {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <div>
-                {/* Tom for nu */}
-              </div>
+              <ProfilØkonomi 
+                posteringer={posteringer} 
+                user={user} 
+                bruger={bruger}
+              />
             </motion.div>
           )}
 

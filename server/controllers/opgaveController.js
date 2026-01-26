@@ -533,7 +533,7 @@ const createBooking = async (req, res) => {
                 const danskStartTid = getDanskTidspunkt(valgtTidspunkt.start);
                 const aftaledato = danskStartTid.format("DD. MMMM YYYY");
                 const aftaltklokkesletStart = danskStartTid.format("HH:mm");
-                bekræftelsesTekst = `<b>Vi bekræfter hermed, at vi kommer den ${aftaledato} omkring kl. ${aftaltklokkesletStart}.</b>`;
+                bekræftelsesTekst = `<b>Vi bekræfter hermed, at vi kommer den ${aftaledato} omkring kl. ${aftaltklokkesletStart} (plus/minus en time).</b>`;
             } else if (opgave.onsketTidspunkt) {
                 bekræftelsesTekst = `<b>Dit ønskede tidspunkt: ${opgave.onsketTidspunkt}</b><br />Vi vender tilbage til dig hurtigst muligt for at afstemme præcist hvornår vi kan komme.`;
             }

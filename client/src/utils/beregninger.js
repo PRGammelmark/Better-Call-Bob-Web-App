@@ -406,7 +406,8 @@ export function materialeUdlæg(posteringer, decimaler = 2) {
 }
 
 /**
- * Honorar fra udlæg array
+ * Honorar fra materiale-udlæg (medarbejderens udlæg for materialer)
+ * NOTE: Legacy udlæg-array tælles IKKE med - kun materialer med erUdlaeg flag
  */
 export function udlægHonorar(posteringer, decimaler = 2, inklMoms = false) {
     if (!posteringer) return;
@@ -414,11 +415,9 @@ export function udlægHonorar(posteringer, decimaler = 2, inklMoms = false) {
 
     let total = posteringerListe.reduce((akk, nuv) => {
         if (!nuv.brugDynamiskHonorar) return akk;
-        // Udlæg tæller som honorar (medarbejderen har lagt ud)
-        const udlægSum = (nuv.udlæg || []).reduce((s, u) => s + (u.totalEksMoms ?? parseFloat(u.beløb) ?? 0), 0);
-        // Plus materiale-udlæg
+        // Kun materiale-udlæg tælles med (medarbejderen har lagt ud for materialer)
         const materialeSum = (nuv.materialer || []).reduce((s, m) => s + (m.totalMedarbejderUdlaeg || 0), 0);
-        return akk + udlægSum + materialeSum;
+        return akk + materialeSum;
     }, 0);
 
     // Honorar normalt ikke inkl. moms, men behold parameter for kompatibilitet

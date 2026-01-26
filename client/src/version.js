@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "4.0.3",
+    date: "26. januar 2026",
+    changes: [
+        "Nu kan man få et overblik over sin personlige økonomi/indtjening på siden 'Profil -> Økonomi'. Administratorer kan tilgå denne side for alle medarbejdere.",
+        "Rettede en fejl, der gjorde, at udlæg blev talt dobbelt i nogle beregninger.",
+        "Smårettelser i emailen, som nye kunder modtager ved booking."
+    ]
+},{
     version: "4.0.2",
     date: "26. januar 2026",
     changes: [
