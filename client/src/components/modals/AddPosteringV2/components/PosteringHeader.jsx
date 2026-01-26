@@ -34,6 +34,30 @@ const PosteringHeader = ({
         <div className={Styles.headerRow}>
             {/* Dato-knap til venstre */}
             <div data-date-picker className={Styles.datePickerWrapper}>
+                <button
+                    type="button"
+                    className={Styles.headerButton}
+                    onClick={(e) => {
+                        // On desktop, trigger the input
+                        e.preventDefault();
+                        e.stopPropagation();
+                        if (dateInputRef.current) {
+                            dateInputRef.current.focus();
+                            dateInputRef.current.click();
+                            // Try showPicker() if available (works on modern browsers)
+                            if (typeof dateInputRef.current.showPicker === 'function') {
+                                try {
+                                    dateInputRef.current.showPicker();
+                                } catch (err) {
+                                    // showPicker() failed, but click() should work
+                                }
+                            }
+                        }
+                    }}
+                >
+                    <Calendar size={16} />
+                    <span>{dayjs(posteringDato).format('DD/MM/YYYY')}</span>
+                </button>
                 <input
                     ref={dateInputRef}
                     type="date"
@@ -41,20 +65,14 @@ const PosteringHeader = ({
                     onChange={(e) => {
                         setPosteringDato(e.target.value);
                     }}
-                    className={Styles.hiddenDateInput}
-                />
-                <button
-                    type="button"
-                    onClick={() => {
-                        if (dateInputRef.current) {
-                            dateInputRef.current.showPicker();
-                        }
+                    className={Styles.overlayDateInput}
+                    onClick={(e) => {
+                        e.stopPropagation();
                     }}
-                    className={Styles.headerButton}
-                >
-                    <Calendar size={16} />
-                    <span>{dayjs(posteringDato).format('DD/MM/YYYY')}</span>
-                </button>
+                    onTouchStart={(e) => {
+                        e.stopPropagation();
+                    }}
+                />
             </div>
 
             {/* Medarbejder-knap i midten */}

@@ -157,6 +157,8 @@
   font-family: Omnes;
   font-size: 0.95rem;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .switchMenuLabel {

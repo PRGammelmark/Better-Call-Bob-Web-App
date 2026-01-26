@@ -59,13 +59,40 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
         <div ref={menuRef} className={`${Styles.popUpMenu} ${direction === 'left' ? Styles.alignLeft : Styles.alignRight} ${variant === 'grey' ? Styles.menuTight : ''} ${openAbove ? Styles.openAbove : ''} ${closing ? Styles.closing : Styles.opening} ${menuClassName}`}>
           {actions.map((action, index) => (
             action.switch ? (
-              <div key={index} className={Styles.switchMenuItem} onClick={(e) => e.stopPropagation()}>
+              <div 
+                key={index} 
+                className={Styles.switchMenuItem}
+                onTouchStart={(e) => {
+                  // Prevent menu from closing when touching switch area
+                  e.stopPropagation();
+                }}
+                onClick={(e) => {
+                  // Prevent menu from closing when clicking switch area
+                  e.stopPropagation();
+                }}
+              >
                 <span className={Styles.switchMenuLabel}>{action.label}</span>
-                <div className={SwitcherStyles.checkboxContainer} style={{ marginTop: 0 }} onClick={(e) => e.stopPropagation()}>
+                <div 
+                  className={SwitcherStyles.checkboxContainer} 
+                  style={{ marginTop: 0 }}
+                  onTouchStart={(e) => {
+                    e.stopPropagation();
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
                   <label 
                     htmlFor={`popup-switch-${index}`} 
                     style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}
-                    onClick={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => {
+                      // Allow touch events to work properly on mobile
+                      e.stopPropagation();
+                    }}
+                    onClick={(e) => {
+                      // Prevent menu from closing when clicking switch
+                      e.stopPropagation();
+                    }}
                   >
                     <input
                       type="checkbox"
@@ -77,7 +104,13 @@ const PopUpMenu = ({ actions = [], buttonSize = 40, buttonClassName, menuClassNa
                         e.stopPropagation();
                         action.onChange?.(e.target.checked);
                       }}
-                      onClick={(e) => e.stopPropagation()}
+                      onTouchStart={(e) => {
+                        // Ensure touch events work on mobile
+                        e.stopPropagation();
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                     />
                     <div className={`${SwitcherStyles.switch} ${action.checked ? SwitcherStyles.switchActive : ''}`}>
                       <div className={SwitcherStyles.switchThumb}></div>

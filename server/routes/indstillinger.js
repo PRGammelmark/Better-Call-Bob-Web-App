@@ -151,6 +151,9 @@ const indstillingerSchema = Joi.object({
     laasPosteringerAutomatiskMånedsdag: Joi.number()
       .min(1)
       .max(31)
+      .optional(),
+    
+    timelønViaArbejdssedler: Joi.boolean()
       .optional()
 });
 
@@ -251,6 +254,7 @@ router.patch("/", requireAuth, async (req, res) => {
     if (value.laasPosteringerAutomatiskType !== undefined) updateData.laasPosteringerAutomatiskType = value.laasPosteringerAutomatiskType;
     if (value.laasPosteringerAutomatiskUgedag !== undefined) updateData.laasPosteringerAutomatiskUgedag = value.laasPosteringerAutomatiskUgedag;
     if (value.laasPosteringerAutomatiskMånedsdag !== undefined) updateData.laasPosteringerAutomatiskMånedsdag = value.laasPosteringerAutomatiskMånedsdag;
+    if (value.timelønViaArbejdssedler !== undefined) updateData.timelønViaArbejdssedler = value.timelønViaArbejdssedler;
 
     console.log("Update data:", updateData);
 

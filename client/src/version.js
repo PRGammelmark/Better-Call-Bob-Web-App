@@ -14,6 +14,14 @@
 // 
 
 const changes = [{
+    version: "4.0.1",
+    date: "26. januar 2026",
+    changes: [
+        "Rettede en fejl, hvor nye posteringer i udgangspunktet ikke satte korrekte honorarværdier.",
+        "Forbedrede switch-knappers responsivitet på mobilvisninger.",
+        "Fiksede dato-knappen på nye posteringer. Man kunne ikke trykke på den på mobilen – det kan man nu."
+    ]
+},{
     version: "4.0.0",
     date: "25. januar 2026",
     changes: [
