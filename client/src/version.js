@@ -14,6 +14,13 @@
 // 
 
 const changes = [{
+    version: "4.0.4",
+    date: "27. januar 2026",
+    changes: [
+        "Rettede en fejl, hvor brugere nogle gange ville få en 'Kunde ikke registreret'-fejl ved oprettelse af posteringer.",
+        "Nu viser besøgsinfo-modalen kun 'Gå til opgave'-knappen hvis man ikke allerede er inde på opgaven."
+    ]
+},{
     version: "4.0.3",
     date: "26. januar 2026",
     changes: [

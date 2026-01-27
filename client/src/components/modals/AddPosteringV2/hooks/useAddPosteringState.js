@@ -273,7 +273,7 @@ export function useAddPosteringState(props) {
         setRedigerTimerIndex(null);
         setPosteringDato(dayjs().format('YYYY-MM-DD'));
         setPosteringBeskrivelse("");
-        setDynamiskHonorarBeregning(false); // Reset til false - sættes af indstillinger
+        setDynamiskHonorarBeregning(false);
         setDynamiskPrisBeregning(true);
         setPosteringFastHonorar(0);
         setPosteringFastPris(0);
@@ -282,10 +282,6 @@ export function useAddPosteringState(props) {
         setPreviewDynamiskOutlays(0);
         setRabatProcent(0);
         setKvitteringBillede(null);
-        setOpgave(null);
-        setOpgaveID(null);
-        setNuværendeAnsvarlige([]);
-        setPosteringer([]);
         setVisDatoPicker(false);
         setVisMedarbejderDropdown(false);
         setPosteringBilleder([]);
@@ -308,7 +304,6 @@ export function useAddPosteringState(props) {
         setNyMaterialeBilledePreview(null);
         setNyMaterialeErUdlaeg(false);
         setValgtePauser([]);
-        // Nye felter
         setPosteringType('debet');
         setKreditererPostering(null);
         setKreditKommentar("");

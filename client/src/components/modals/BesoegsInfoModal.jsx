@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import dayjs from 'dayjs'
 import axios from 'axios'
 import Modal from '../Modal.jsx'
@@ -15,6 +15,7 @@ const BesoegsInfoModal = ({
   onDeleted
 }) => {
   const navigate = useNavigate()
+  const location = useLocation()
   const { user } = useAuthContext()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -233,13 +234,13 @@ const BesoegsInfoModal = ({
               <p>{opgave.opgaveBeskrivelse}</p>
             </>
           )}
-          {opgave?._id && (
+          {opgave?._id && !location.pathname.includes(`/opgave/${opgave._id}`) && (
             <button className={ModalStyles.buttonFullWidth} onClick={() => navigate(`../opgave/${opgave._id}`)} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', color: '#fff' }}>
               <span style={{ color: '#fff', fontSize: '0.85rem', fontFamily: 'OmnesBold' }}>Gå til opgaven</span>
               <ArrowRight size={18} />
             </button>
           )}
-          {(besoeg.brugerID === (user?.id || user?._id) || user.isAdmin) && <div className={ModalStyles.deleteEditButtons}>
+          {(besoeg.brugerID === (user?.id || user?._id) || user.isAdmin) && <div className={ModalStyles.deleteEditButtons} style={{ marginTop: location.pathname.includes(`/opgave/${opgave?._id}`) ? '20px' : undefined }}>
             <button className={ModalStyles.deleteButton} style={{marginTop: 0}} onClick={handleDelete}>Slet besøg</button>
             <button className={ModalStyles.editButton} onClick={() => setEditMode(true)}>Rediger besøg</button>
           </div>}
